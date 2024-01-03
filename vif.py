@@ -41,11 +41,11 @@ class VIFp(metrics.Full_Reference_Metrics_Interface):
 
         score_val = vif_p(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'], **kwargs)
         # score_val = vifp(img_r, img_m, **self.parameters)
-        self.score_val = score_val
+        self.score_val = float(score_val)
         return score_val
 
-    def print_score(self):
+    def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('VIFp: {}'.format(self.score_val))
+            print('VIFp: {}'.format(round(self.score_val, decimals)))
         else:
             print('No score value for VIFp. Run score() first.')

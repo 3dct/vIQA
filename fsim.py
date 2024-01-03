@@ -34,11 +34,11 @@ class FSIM(metrics.Full_Reference_Metrics_Interface):
 
         score_val = fsim(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'],
                          chromatic=self._parameters['chromatic'], **kwargs)
-        self.score_val = score_val
+        self.score_val = float(score_val)
         return score_val
 
-    def print_score(self):
+    def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('FSIM: {}'.format(self.score_val))
+            print('FSIM: {}'.format(round(self.score_val, decimals)))
         else:
             print('No score value for FSIM. Run score() first.')

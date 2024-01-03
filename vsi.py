@@ -40,11 +40,11 @@ class VSI(metrics.Full_Reference_Metrics_Interface):
 
         score_val = vsi(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'], **kwargs)
         # score_val = vifp(img_r, img_m, **self.parameters)
-        self.score_val = score_val
+        self.score_val = float(score_val)
         return score_val
 
-    def print_score(self):
+    def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('VSI: {}'.format(self.score_val))
+            print('VSI: {}'.format(round(self.score_val, decimals)))
         else:
             print('No score value for VSI. Run score() first.')
