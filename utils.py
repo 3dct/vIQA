@@ -173,3 +173,8 @@ def normalize_data(img_arr, data_range):
             raise Exception("Data range not supported. Please use 1, 255 or 65535.")
 
     return img_arr
+
+
+def _to_float(img):
+    img.astype(np.float64)
+    return img
