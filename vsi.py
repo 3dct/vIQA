@@ -1,13 +1,12 @@
 import metrics
 from utils import check_imgs
-from sewar import vifp
-from piq import vif_p
+from piq import vsi
 import torch
 
 
-class VIFp(metrics.Full_Reference_Metrics_Interface):
+class VSI(metrics.Full_Reference_Metrics_Interface):
     """
-    Calculates the visual information fidelity in pixel domain (VIFp) between two images.
+    Calculates the visual saliency index (VSI) between two images.
     """
 
     def __init__(self, data_range=255, **kwargs):
@@ -20,7 +19,7 @@ class VIFp(metrics.Full_Reference_Metrics_Interface):
 
     def score(self, img_r, img_m, **kwargs):
         """
-        Calculates the visual information fidelity in pixel domain (VIFp) between two images.
+        Calculates the visual saliency index (VSI) between two images.
         :param img_r: Reference image
         :param img_m: Modified image
         :return: Score value
@@ -39,13 +38,13 @@ class VIFp(metrics.Full_Reference_Metrics_Interface):
             img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
             img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
 
-        score_val = vif_p(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'], **kwargs)
+        score_val = vsi(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'], **kwargs)
         # score_val = vifp(img_r, img_m, **self.parameters)
         self.score_val = float(score_val)
         return score_val
 
     def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('VIFp: {}'.format(round(self.score_val, decimals)))
+            print('VSI: {}'.format(round(self.score_val, decimals)))
         else:
-            print('No score value for VIFp. Run score() first.')
+            print('No score value for VSI. Run score() first.')
