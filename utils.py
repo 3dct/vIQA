@@ -29,11 +29,13 @@ def load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or 
 
         data_file_path = os.path.join(file_dir, file_header["ElementDataFile"])  # Get data file path from header
 
+        # Extract dimension
         file_header.update({"DimSize": [int(val) for val in file_header["DimSize"].split()]})  # Change DimSize to type int
         dim_size = file_header["DimSize"]  # Get DimSize from header
 
         # Check bit depth
         bit_depth = file_header["ElementType"]  # Get ElementType from header
+
         # Set data type according to bit depth
         if bit_depth == 'MET_USHORT':
             data_type = np.ushort  # Set data type to unsigned short
@@ -68,7 +70,7 @@ def load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or 
         else:
             raise Exception("Bit depth not supported")  # Raise exception if bit depth is not supported
 
-        data_file_path = os.path.join(file_dir, file_name)
+        data_file_path = os.path.join(file_dir, file_name)  # Get data file path
     else:
         raise Exception("File extension not supported")  # Raise exception if file extension is not supported
 
@@ -111,8 +113,6 @@ def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_rang
         case _:
             raise Exception("Input type not supported")  # Raise exception if input type is not supported
 
-    img_arr.astype(np.float32)  # Change data type to float64
-
     # Normalize data
     if normalize:
         img_arr = normalize_data(img_arr, data_range)
@@ -147,9 +147,29 @@ def normalize_data(img_arr, data_range):
     :param data_range: Data range of the returned data
     :return: Input numpy array normalized to data_range
     """
-    # Normalize data
-    img_min = np.min(img_arr)  # Get minimum value of numpy array
-    img_max = np.max(img_arr)  # Get maximum value of numpy array
-    img_arr = (img_arr - img_min) / (img_max - img_min)  # Normalize numpy array
-    img_arr *= data_range  # Scale numpy array to data_range
+    # Check data type
+    if np.issubdtype(img_arr.dtype, np.integer):  # If data type is integer
+        info = np.iinfo(img_arr.dtype)
+    elif np.issubdtype(img_arr.dtype, np.floating):  # If data type is float
+        info = np.finfo(img_arr.dtype)
+    else:
+        raise Exception("Data type not supported")
+
+    # Check if data is already normalized
+    if info.max is not data_range:
+        # Normalize data
+        img_min = np.min(img_arr)  # Get minimum value of numpy array
+        img_max = np.max(img_arr)  # Get maximum value of numpy array
+        img_arr = (img_arr - img_min) / (img_max - img_min)  # Normalize numpy array
+        img_arr *= data_range  # Scale numpy array to data_range
+
+        if data_range == 2**8 - 1:
+            img_arr = img_arr.astype(np.uint8)
+        elif data_range == 2**16 - 1:
+            img_arr = img_arr.astype(np.uint16)
+        elif data_range == 1:
+            img_arr = img_arr.astype(np.float32)
+        else:
+            raise Exception("Data range not supported. Please use 1, 255 or 65535.")
+
     return img_arr

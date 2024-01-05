@@ -1,6 +1,7 @@
 import metrics
 from utils import check_imgs
-from sewar import msssim
+from piq import multi_scale_ssim
+import torch
 
 
 class MSSSIM(metrics.Full_Reference_Metrics_Interface):
@@ -25,8 +26,20 @@ class MSSSIM(metrics.Full_Reference_Metrics_Interface):
         """
         img_r, img_m = check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
-        score_val = msssim(img_r, img_m, **kwargs)
-        self.score_val = score_val
+        # check if chromatic
+        if self._parameters['chromatic'] is False:
+            # 3D images
+            # img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2)
+            # img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2)
+            # 2D images
+            img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0)
+            img_m_tensor = torch.tensor(img_m).unsqueeze(0).unsqueeze(0)
+        else:
+            img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
+            img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
+
+        score_val = multi_scale_ssim(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'], **kwargs)
+        self.score_val = float(score_val)
         return score_val
 
     def print_score(self, decimals=2):
