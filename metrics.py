@@ -13,3 +13,24 @@ class Full_Reference_Metrics_Interface(ABC):
     @abstractmethod
     def print_score(self):
         pass
+
+    def __eq__(self, other):
+        return self.score_val == other.score_val
+
+    def __lt__(self, other):
+        return self.score_val < other.score_val
+
+    def __gt__(self, other):
+        return self.score_val > other.score_val
+
+    def __le__(self, other):
+        return self.score_val <= other.score_val
+
+    def __ge__(self, other):
+        return self.score_val >= other.score_val
+
+    def __ne__(self, other):
+        return self.score_val != other.score_val
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(score_val={self.score_val})'
