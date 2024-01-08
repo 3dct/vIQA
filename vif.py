@@ -1,5 +1,5 @@
 import metrics
-from utils import check_imgs
+from utils import _check_imgs
 from sewar import vifp
 from piq import vif_p
 import torch
@@ -25,8 +25,8 @@ class VIFp(metrics.Full_Reference_Metrics_Interface):
         :param img_m: Modified image
         :return: Score value
         """
-        img_r, img_m = check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                  normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
+                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
         # check if chromatic
         if self._parameters['chromatic'] is False:
             # 3D images

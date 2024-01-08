@@ -1,4 +1,4 @@
-from utils import load_data, load_data_from_disk
+from utils import load_data, _load_data_from_disk
 import matplotlib.pyplot as plt
 import os
 import re

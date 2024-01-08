@@ -1,7 +1,7 @@
 import metrics
 import numpy as np
 from skimage.metrics import mean_squared_error
-from utils import check_imgs
+from utils import _check_imgs
 
 
 class RMSE(metrics.Full_Reference_Metrics_Interface):
@@ -24,8 +24,8 @@ class RMSE(metrics.Full_Reference_Metrics_Interface):
         :param img_m: Modified image
         :return: Score value
         """
-        img_r, img_m = check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                  normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
+                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
         score_val = np.sqrt(mean_squared_error(img_r, img_m))
         self.score_val = score_val
         return score_val

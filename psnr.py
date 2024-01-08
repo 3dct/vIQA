@@ -1,5 +1,5 @@
 import metrics
-from utils import check_imgs
+from utils import _check_imgs
 from skimage.metrics import peak_signal_noise_ratio
 
 
@@ -23,8 +23,8 @@ class PSNR(metrics.Full_Reference_Metrics_Interface):
         :param img_m: Modified image
         :return: Score value
         """
-        img_r, img_m = check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                  normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
+                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
         score_val = peak_signal_noise_ratio(img_r, img_m, data_range=self._parameters['data_range'])
         self.score_val = score_val
         return score_val

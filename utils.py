@@ -6,7 +6,7 @@ from pathlib import Path
 from torch import Tensor
 
 
-def load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or Path or os.PathLike) -> np.ndarray:
+def _load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or Path or os.PathLike) -> np.ndarray:
     """
     Loads data from a .mhd file and its corresponding .raw file or a .raw file only and normalizes it.
     :param file_dir: Directory of the file
@@ -101,11 +101,11 @@ def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_rang
                 img_arr = []  # Initialize list for numpy arrays
                 # Load data from disk for each file
                 for file in files:
-                    img_arr.append(load_data_from_disk(file_dir=os.path.dirname(file), file_name=os.path.basename(file)))
+                    img_arr.append(_load_data_from_disk(file_dir=os.path.dirname(file), file_name=os.path.basename(file)))
             else:
                 file_dir = os.path.dirname(img)
                 file_name = os.path.basename(img)
-                img_arr = load_data_from_disk(file_dir, file_name)  # Load data from disk
+                img_arr = _load_data_from_disk(file_dir, file_name)  # Load data from disk
         case np.ndarray():  # If input is a numpy array
             img_arr = img  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
@@ -120,7 +120,7 @@ def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_rang
     return img_arr
 
 
-def check_imgs(img_r, img_m, **kwargs) -> (np.ndarray, np.ndarray):
+def _check_imgs(img_r, img_m, **kwargs) -> (np.ndarray, np.ndarray):
     """
     Checks if two images are of the same type and shape.
     :param img_r: reference image
@@ -163,13 +163,73 @@ def normalize_data(img_arr, data_range):
         img_arr = (img_arr - img_min) / (img_max - img_min)  # Normalize numpy array
         img_arr *= data_range  # Scale numpy array to data_range
 
-        if data_range == 2**8 - 1:
-            img_arr = img_arr.astype(np.uint8)
-        elif data_range == 2**16 - 1:
-            img_arr = img_arr.astype(np.uint16)
-        elif data_range == 1:
-            img_arr = img_arr.astype(np.float32)
+        # Change data type
+        if data_range == 2**8 - 1:  # If data range is 255 (8 bit)
+            img_arr = img_arr.astype(np.uint8)  # Change data type to unsigned byte
+        elif data_range == 2**16 - 1:  # If data range is 65535 (16 bit)
+            img_arr = img_arr.astype(np.uint16)  # Change data type to unsigned short
+        elif data_range == 1:  # If data range is 1
+            img_arr = img_arr.astype(np.float32)  # Change data type to float32
         else:
             raise Exception("Data range not supported. Please use 1, 255 or 65535.")
 
     return img_arr
+
+
+def _to_float(img):
+    """
+    Converts a numpy array to float.
+    :param img: numpy array
+    :return: numpy array as float
+    """
+    return img.astype(np.float64)
+
+
+def correlate_convolve_abs(img, kernel, mode='correlate', border_mode='constant', value=0):
+    """
+    Correlates or convolves a numpy array with a kernel in the form mean(abs(img * kernel)). Works in 2D and 3D.
+    :param img: Input numpy array
+    :param kernel: Kernel
+    :param mode: 'correlate' or 'convolve'
+    :param border_mode: 'constant', 'reflect', 'nearest', 'mirror' or 'wrap'
+    :param value: Value for constant border mode
+    :return: Convolved result as numpy array
+    """
+    if mode == 'convolve':  # If mode is convolve
+        kernel = np.flip(kernel)  # Flip kernel
+
+    kernel_size = kernel.shape[0]  # Get kernel size
+    ndim = len(img.shape)  # Get number of dimensions
+
+    # Pad image
+    match border_mode:
+        case 'constant':
+            origin = np.pad(img, kernel_size, mode='constant', constant_values=value)
+        case 'reflect':
+            origin = np.pad(img, kernel_size, mode='reflect')
+        case 'nearest':
+            origin = np.pad(img, kernel_size, mode='edge')
+        case 'mirror':
+            origin = np.pad(img, kernel_size, mode='symmetric')
+        case 'wrap':
+            origin = np.pad(img, kernel_size, mode='wrap')
+        case _:
+            raise Exception("Border mode not supported")
+
+    # Correlate or convolve
+    res = np.zeros(img.shape)  # Initialize result array
+    for k in range(0, img.shape[0]):
+        for m in range(0, img.shape[1]):
+            # Check if 2D or 3D
+            if ndim == 3:
+                for n in range(0, img.shape[2]):
+                    res[k, m, n] = np.mean(abs(kernel * origin[k:k + kernel_size,
+                                                               m:m + kernel_size,
+                                                               n:n + kernel_size]))
+            elif ndim == 2:
+                res[k, m] = np.mean(abs(kernel * origin[k:k + kernel_size,
+                                                        m:m + kernel_size]))
+            else:
+                raise Exception("Number of dimensions not supported")
+
+    return res
