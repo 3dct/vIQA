@@ -182,7 +182,11 @@ def _to_float(img):
     :param img: numpy array
     :return: numpy array as float
     """
-    return img.astype(np.float64)
+    match img.dtype:
+        case np.float32 | np.float64:
+            return img
+        case _:
+            return img.astype(np.float64)
 
 
 def correlate_convolve_abs(img, kernel, mode='correlate', border_mode='constant', value=0):
