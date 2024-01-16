@@ -4,6 +4,7 @@ import glob
 import numpy as np
 from pathlib import Path
 from torch import Tensor
+import scipy.fft as fft
 
 
 def _load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or Path or os.PathLike) -> np.ndarray:
@@ -233,3 +234,27 @@ def correlate_convolve_abs(img, kernel, mode='correlate', border_mode='constant'
                 raise Exception("Number of dimensions not supported")
 
     return res
+
+
+def extract_blocks(img, block_size, stride):
+    """
+    Extracts blocks from an image.
+    :param img: Input image
+    :param block_size: Size of the block
+    :param stride: Stride
+    :return: Numpy array of blocks
+    """
+    boxes = []
+    m, n = img.shape
+    for i in range(0, m - (block_size - 1), stride):
+        for j in range(0, n - (block_size - 1), stride):
+            boxes.append(img[i:i + block_size, j:j + block_size])
+    return np.array(boxes)
+
+
+def _fft(img):
+    return fft.fftshift(fft.fftn(img))
+
+
+def _ifft(fourier_img):
+    return fft.ifftn(fft.ifftshift(fourier_img))
