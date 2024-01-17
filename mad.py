@@ -18,16 +18,18 @@ class MAD(metrics.Full_Reference_Metrics_Interface):
         super().__init__(data_range=data_range)
         self._parameters.update(**kwargs)
 
-    def score(self, img_r, img_m):
+    def score(self, img_r, img_m, **kwargs):
         """
         Calculates the most apparent disorder (MAD) between two images.
         :param img_r: Reference image
         :param img_m: Modified image
+        :param kwargs: account_monitor, display_function, luminance_function, block_size, block_overlap
         :return: Score value
         """
         img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
                                    normalize=self._parameters['normalize'], batch=self._parameters['batch'])
-        score_val = most_apparent_disorder_3D(img_r, img_m, account_monitor=False)
+        account_monitor = kwargs.pop('account_monitor')
+        score_val = most_apparent_disorder_3d(img_r, img_m, account_monitor=account_monitor, **kwargs)
         self.score_val = score_val
         return score_val
 
@@ -38,7 +40,7 @@ class MAD(metrics.Full_Reference_Metrics_Interface):
             print('No score value for MAD. Run score() first.')
 
 
-def most_apparent_disorder_3D(img_r, img_m, **kwargs):
+def most_apparent_disorder_3d(img_r, img_m, **kwargs):
     depth = img_r.shape[2]
     scores = []
     for d in range(depth):
@@ -69,11 +71,11 @@ def _high_quality(img_r, img_m, **kwargs):
 
     csf = _contrast_sensitivity_function(M, N, cycles_per_degree, lambda_=0.114, f_peak=7.8909)
 
-    # Convert to perceived luminance
+    # Convert to perceived lightness
     luminance_function = kwargs.pop('luminance_function', {'b': 0, 'k': 0.02874, 'gamma': 2.2})
 
-    lum_r = _pixel_to_luminance(img_r, **luminance_function)
-    lum_m = _pixel_to_luminance(img_m, **luminance_function)
+    lum_r = _pixel_to_lightness(img_r, **luminance_function)
+    lum_m = _pixel_to_lightness(img_m, **luminance_function)
 
     # Fourier transform
     lum_r_fft = _fft(lum_r)
@@ -108,6 +110,7 @@ def _high_quality(img_r, img_m, **kwargs):
             std_org[x:x+STRIDE, y:y+STRIDE] = std_org_p[block_n]
             std_err[x:x+STRIDE, y:y+STRIDE] = std_err_p[block_n]
             block_n += 1
+    del mu_org_p, std_org_p, std_err_p  # free memory
 
     C_org = std_org / mu_org
     C_err = np.zeros(std_err.shape)
@@ -127,18 +130,21 @@ def _high_quality(img_r, img_m, **kwargs):
     return d_detect
 
 
-def _pixel_to_luminance(img, k=0.02874, gamma=2.2):
+def _pixel_to_lightness(img, k=0.02874, gamma=2.2):
     """
-    Converts an image to perceived luminance.
+    Converts an image to perceived lightness.
     :param img: Input image
     :param k: Constant
     :param gamma: Gamma correction factor
     :return: Luminance image
     """
-    # Create LUT
-    LUT = np.arange(0, 256)
-    LUT = k * LUT**(gamma/3)
-    img_lum = LUT[img]  # apply LUT
+    if issubclass(img.dtype.type, np.integer):
+        # Create LUT
+        LUT = np.arange(0, 256)
+        LUT = k * LUT**(gamma/3)
+        img_lum = LUT[img]  # apply LUT
+    else:
+        img_lum = k * img**(gamma/3)
     return img_lum
 
 
@@ -198,12 +204,17 @@ def _gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3
                     bandwidth_param=0.55, d_theta_on_sigma=1.5):
     """
     Computes Gabor filter responses. \n
-    bandwidth_param vs wavelength_scaling \n
+    Even spectral coverage and independence of filter output are dependent on bandwidth_param vs wavelength_scaling.
+    Some experimental values: \n
     0.85 <--> 1.3 \n
     0.74 <--> 1.6 (1 octave bandwidth) \n
     0.65 <--> 2.1 \n
     0.55 <--> 3.0 (2 octave bandwidth) \n
+    Additionally d_theta_on_sigma should be set to 1.5 for approximately the minimum overlap needed to get even
+    spectral coverage. \n
 
+    For more information see: \n
+    https://www.peterkovesi.com/matlabfns/PhaseCongruency/Docs/convexpl.html \n
     AUTHOR
     ------
     This code was originally written in Matlab by Peter Kovesi and adapted by Eric Larson. \n
@@ -255,13 +266,14 @@ def _gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3
     :param im: Image to be filtered
     :param scales_num: Number of wavelet scales
     :param orientations_num: Number of filter orientations
-    :param min_wavelength: Wavelength of smallest scale filter
+    :param min_wavelength: Wavelength of smallest scale filter, maximum frequency is set by this value, should be >= 3
     :param wavelength_scaling: Scaling factor between successive filters
     :param bandwidth_param: Ratio of standard deviation of the Gaussian describing log Gabor filter's transfer function
-    in the frequency domain to the filter's center frequency (0.74 for 1 octave bandwidth, 0.55 for 2 octave bandwidth,
-    0.41 for 3 octave bandwidth)
+        in the frequency domain to the filter's center frequency
+        (0.74 for 1 octave bandwidth, 0.55 for 2 octave bandwidth, 0.41 for 3 octave bandwidth)
     :param d_theta_on_sigma: Ratio of angular interval between filter orientations and standard deviation of angular
-    Gaussian function used to construct filters in the frequency plane
+        Gaussian spreading function, a value of 1.5 results in approximately the minimum overlap needed to get even
+        spectral coverage
     :return:
     """
     # Precomputing and assigning variables
