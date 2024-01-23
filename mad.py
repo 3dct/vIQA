@@ -1,5 +1,5 @@
 import metrics
-from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, _gabor_convolve
+from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_convolve
 import numpy as np
 from scipy.ndimage import convolve
 from scipy.stats import skew, kurtosis
@@ -163,10 +163,10 @@ def _low_quality(img_r, img_m, **kwargs):
     weights = kwargs.pop('weights', [0.5, 0.75, 1, 5, 6])
     weights /= np.sum(weights)
 
-    gabor_org = _gabor_convolve(img_m, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
-                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
-    gabor_dst = _gabor_convolve(img_r, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
-                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
+    gabor_org = gabor_convolve(img_m, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
+                               wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
+    gabor_dst = gabor_convolve(img_r, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
+                               wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
 
     stats = np.zeros((M, N))
     for scale_n in range(scales_num):
