@@ -1,9 +1,13 @@
 import metrics
-from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft
-import math
+from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, _gabor_convolve
 import numpy as np
-import scipy.fft as fft
-from scipy.signal import convolve
+from scipy.ndimage import convolve
+from scipy.stats import skew, kurtosis
+
+M = 0
+N = 0
+BLOCK_SIZE = 0
+STRIDE = 0
 
 
 class MAD(metrics.Full_Reference_Metrics_Interface):
@@ -29,6 +33,11 @@ class MAD(metrics.Full_Reference_Metrics_Interface):
         """
         img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
                                    normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        global M, N, BLOCK_SIZE, STRIDE
+        M, N = img_r.shape
+        BLOCK_SIZE = kwargs.pop('block_size', 16)
+        overlap = kwargs.pop('block_overlap', 0.75)
+        STRIDE = BLOCK_SIZE - int(overlap * BLOCK_SIZE)
         account_monitor = kwargs.pop('account_monitor')
         score_val = most_apparent_disorder_3d(img_r, img_m, account_monitor=account_monitor, **kwargs)
         self.score_val = score_val
@@ -52,13 +61,22 @@ def most_apparent_disorder_3d(img_r, img_m, **kwargs):
 
 
 def most_apparent_disorder(img_r, img_m, **kwargs):
-    global M, N
-    M, N = img_r.shape
+    beta_1 = kwargs.pop('beta1', 0.467)
+    beta_2 = kwargs.pop('beta2', 0.130)
+    if kwargs['thresh1'] and kwargs['thresh2']:
+        thresh1 = kwargs.pop('thresh1', 2.55)
+        thresh2 = kwargs.pop('thresh2', 3.35)
+        beta_1 = np.exp(-thresh1 / thresh2)
+        beta_2 = 1 / (np.log(10) * thresh2)
 
     # Hiqh quality index
     d_detect = _high_quality(img_r, img_m, **kwargs)
+    # Low quality index
+    d_appear = _low_quality(img_r, img_m, **kwargs)
 
-    pass
+    alpha = 1 / (1 + beta_1 * d_detect ** beta_2)
+    mad_index = d_detect ** alpha * d_appear ** (1 - alpha)
+    return mad_index
 
 
 def _high_quality(img_r, img_m, **kwargs):
@@ -82,55 +100,52 @@ def _high_quality(img_r, img_m, **kwargs):
     lum_r_fft = _fft(lum_r)
     lum_m_fft = _fft(lum_m)
 
-    I_org = np.real(_ifft(csf * lum_r_fft))
-    I_dst = np.real(_ifft(csf * lum_m_fft))
+    i_org = np.real(_ifft(csf * lum_r_fft))
+    i_dst = np.real(_ifft(csf * lum_m_fft))
 
-    I_err = I_dst - I_org
+    i_err = i_dst - i_org
 
     # Contrast masking
-    BLOCK_SIZE = kwargs.pop('block_size', 16)
-    overlap = kwargs.pop('block_overlap', 0.75)
-    STRIDE = BLOCK_SIZE - int(overlap * BLOCK_SIZE)
-    I_org_blocks = extract_blocks(I_org, block_size=BLOCK_SIZE, stride=STRIDE)
-    I_err_blocks = extract_blocks(I_err, block_size=BLOCK_SIZE, stride=STRIDE)
+    i_org_blocks = extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
+    i_err_blocks = extract_blocks(i_err, block_size=BLOCK_SIZE, stride=STRIDE)
 
     # Calculate local statistics
-    mu_org_p = np.mean(I_org_blocks, axis=(1, 2))
-    std_err_p = np.std(I_err_blocks, axis=(1, 2), ddof=1)
+    mu_org_p = np.mean(i_org_blocks, axis=(1, 2))
+    std_err_p = np.std(i_err_blocks, axis=(1, 2), ddof=1)
 
-    std_org = _min_std(I_org)
+    std_org = _min_std(i_org)
 
-    mu_org = np.zeros(I_org.shape)
-    std_err = np.zeros(I_err.shape)
+    mu_org = np.zeros(i_org.shape)
+    std_err = np.zeros(i_err.shape)
 
     block_n = 0
-    for x in range(0, I_org.shape[0] - STRIDE*3, STRIDE):
-        for y in range(0, I_org.shape[1] - STRIDE*3, STRIDE):
+    for x in range(0, i_org.shape[0] - STRIDE*3, STRIDE):
+        for y in range(0, i_org.shape[1] - STRIDE*3, STRIDE):
             mu_org[x:x+STRIDE, y:y+STRIDE] = mu_org_p[block_n]
             std_err[x:x+STRIDE, y:y+STRIDE] = std_err_p[block_n]
             block_n += 1
     del mu_org_p, std_err_p  # free memory
 
-    C_org = std_org / mu_org
-    C_err = np.zeros(std_err.shape)
-    _ = np.divide(std_err, mu_org, out=C_err, where=mu_org > 0.5)
+    c_org = std_org / mu_org
+    c_err = np.zeros(std_err.shape)
+    _ = np.divide(std_err, mu_org, out=c_err, where=mu_org > 0.5)
 
-    Ci_org = np.log(C_org)
-    Ci_err = np.log(C_err)
+    ci_org = np.log(c_org)
+    ci_err = np.log(c_err)
 
-    C_slope = 1
-    Ci_thrsh = -5
-    Cd_thrsh = -5
-    tmp = C_slope * (Ci_org - Ci_thrsh) + Cd_thrsh
-    cond_1 = np.logical_and(Ci_err > tmp, Ci_org > Ci_thrsh)
-    cond_2 = np.logical_and(Ci_err > Cd_thrsh, Ci_thrsh >= Ci_org)
+    c_slope = 1
+    ci_thrsh = -5
+    cd_thrsh = -5
+    tmp = c_slope * (ci_org - ci_thrsh) + cd_thrsh
+    cond_1 = np.logical_and(ci_err > tmp, ci_org > ci_thrsh)
+    cond_2 = np.logical_and(ci_err > cd_thrsh, ci_thrsh >= ci_org)
 
     # in matlab: additional normalization parameter: ms_scale = 1
     # --> (... - ...) / ms_scale
     # not yet implemented
-    msk = np.zeros(C_err.shape)
-    _ = np.subtract(Ci_err, tmp, out=msk, where=cond_1)
-    _ = np.subtract(Ci_err, Cd_thrsh, out=msk, where=cond_2)
+    msk = np.zeros(c_err.shape)
+    _ = np.subtract(ci_err, tmp, out=msk, where=cond_1)
+    _ = np.subtract(ci_err, cd_thrsh, out=msk, where=cond_2)
 
     win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE ** 2
     lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode='reflect')
@@ -140,6 +155,52 @@ def _high_quality(img_r, img_m, **kwargs):
 
     d_detect = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200
     return d_detect
+
+
+def _low_quality(img_r, img_m, **kwargs):
+    orientations_num = kwargs.pop('orientations_num', 4)
+    scales_num = kwargs.pop('scales_num', 5)
+    weights = kwargs.pop('weights', [0.5, 0.75, 1, 5, 6])
+    weights /= np.sum(weights)
+
+    gabor_org = _gabor_convolve(img_m, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
+                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
+    gabor_dst = _gabor_convolve(img_r, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
+                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
+
+    stats = np.zeros((M, N))
+    for scale_n in range(scales_num):
+        for orientation_n in range(orientations_num):
+            std_ref_p, skw_ref_p, krt_ref_p = _get_statistics(np.abs(gabor_org[scale_n, orientation_n]),
+                                                              block_size=BLOCK_SIZE, stride=STRIDE)
+            std_dst_p, skw_dst_p, krt_dst_p = _get_statistics(np.abs(gabor_dst[scale_n, orientation_n]),
+                                                              block_size=BLOCK_SIZE, stride=STRIDE)
+
+            std_ref = np.zeros((M, N))
+            std_dst = np.zeros((M, N))
+            skw_ref = np.zeros((M, N))
+            skw_dst = np.zeros((M, N))
+            krt_ref = np.zeros((M, N))
+            krt_dst = np.zeros((M, N))
+
+            # --> as function?
+            block_n = 0
+            for x in range(0, M - STRIDE * 3, STRIDE):
+                for y in range(0, N - STRIDE * 3, STRIDE):
+                    std_ref[x:x + STRIDE, y:y + STRIDE] = std_ref_p[block_n]
+                    std_dst[x:x + STRIDE, y:y + STRIDE] = std_dst_p[block_n]
+                    skw_ref[x:x + STRIDE, y:y + STRIDE] = skw_ref_p[block_n]
+                    skw_dst[x:x + STRIDE, y:y + STRIDE] = skw_dst_p[block_n]
+                    krt_ref[x:x + STRIDE, y:y + STRIDE] = krt_ref_p[block_n]
+                    krt_dst[x:x + STRIDE, y:y + STRIDE] = krt_dst_p[block_n]
+                    block_n += 1
+
+            stats += weights[scale_n] * (
+                        np.abs(std_ref - std_dst) + 2 * np.abs(skw_ref - skw_dst) + np.abs(krt_ref - krt_dst))
+
+    mp2 = stats[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
+    d_appear = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape))
+    return d_appear
 
 
 def _pixel_to_lightness(img, k=0.02874, gamma=2.2):
@@ -152,9 +213,9 @@ def _pixel_to_lightness(img, k=0.02874, gamma=2.2):
     """
     if issubclass(img.dtype.type, np.integer):
         # Create LUT
-        LUT = np.arange(0, 256)
-        LUT = k * LUT**(gamma/3)
-        img_lum = LUT[img]  # apply LUT
+        lut = np.arange(0, 256)
+        lut = k * lut**(gamma/3)
+        img_lum = lut[img]  # apply LUT
     else:
         img_lum = k * img**(gamma/3)
     return img_lum
@@ -216,181 +277,44 @@ def _min_std(image):
     for i in range(0, M - 15, 4):
         for j in range(0, N - 15, 4):
             mean = 0
-            for k in range(i, i + 8):
-                for l in range(j, j + 8):
-                    mean += image[k, l]
+            for u in range(i, i + 8):
+                for v in range(j, j + 8):
+                    mean += image[u, v]
             mean /= 64
 
             stdev = 0
-            for k in range(i, i + 8):
-                for l in range(j, j + 8):
-                    stdev += (image[k, l] - mean) ** 2
+            for u in range(i, i + 8):
+                for v in range(j, j + 8):
+                    stdev += (image[u, v] - mean) ** 2
             stdev = np.sqrt(stdev / 63)
 
-            for k in range(i, i + 4):
-                for l in range(j, j + 4):
-                    tmp[k, l] = stdev
-                    stdout[k, l] = stdev
+            for u in range(i, i + 4):
+                for v in range(j, j + 4):
+                    tmp[u, v] = stdev
+                    stdout[u, v] = stdev
 
     for i in range(0, M - 15, 4):
         for j in range(0, N - 15, 4):
             val = tmp[i, j]
-            for k in range(i, i + 8, 5):
-                for l in range(j, j + 8, 5):
-                    if tmp[k, l] < val:
-                        val = tmp[k, l]
+            for u in range(i, i + 8, 5):
+                for v in range(j, j + 8, 5):
+                    if tmp[u, v] < val:
+                        val = tmp[u, v]
 
-            for k in range(i, i + 4):
-                for l in range(j, j + 4):
-                    stdout[k, l] = val
+            for u in range(i, i + 4):
+                for v in range(j, j + 4):
+                    stdout[u, v] = val
 
     return stdout
 
 
-def _gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3, wavelength_scaling=3,
-                    bandwidth_param=0.55, d_theta_on_sigma=1.5):
-    """
-    Computes Log Gabor filter responses. \n
-    Even spectral coverage and independence of filter output are dependent on bandwidth_param vs wavelength_scaling.
-    Some experimental values: \n
-    0.85 <--> 1.3 \n
-    0.74 <--> 1.6 (1 octave bandwidth) \n
-    0.65 <--> 2.1 \n
-    0.55 <--> 3.0 (2 octave bandwidth) \n
-    Additionally d_theta_on_sigma should be set to 1.5 for approximately the minimum overlap needed to get even
-    spectral coverage. \n
-
-    For more information see: \n
-    https://www.peterkovesi.com/matlabfns/PhaseCongruency/Docs/convexpl.html \n
-    AUTHOR
-    ------
-    This code was originally written in Matlab by Peter Kovesi and adapted by Eric Larson. \n
-    It is available from http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07). \n
-    It was translated to Python by Lukas Behammer. \n
-
-    Author: Peter Kovesi \n
-    Department of Computer Science & Software Engineering \n
-    The University of Western Australia \n
-    pk@cs.uwa.edu.au  https://peterkovesi.com/projects/ \n
-
-    Adaption: Eric Larson \n
-    Department of Electrical and Computer Engineering \n
-    Oklahoma State University, 2008 \n
-    University Of Washington Seattle, 2009 \n
-    Image Coding and Analysis lab
-
-    Translation: Lukas Behammer \n
-    Research Center Wels \n
-    University of Applied Sciences Upper Austria \n
-    CT Research Group \n
-
-    MODIFICATIONS
-    -------------
-    Original code, May 2001, Peter Kovesi \n
-    Altered, 2008, Eric Larson \n
-    Altered precomputations, 2011, Eric Larson \n
-    Translated to Python, 2024, Lukas Behammer
-
-    Literature
-    -------
-    D. J. Field, "Relations Between the Statistics of Natural Images and the
-    Response Properties of Cortical Cells", Journal of The Optical Society of
-    America A, Vol 4, No. 12, December 1987. pp 2379-2394
-
-    LICENSE
-    -------
-    Copyright (c) 2001-2010 Peter Kovesi
-    www.peterkovesi.com
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    The Software is provided "as is", without warranty of any kind.
-    :param im: Image to be filtered
-    :param scales_num: Number of wavelet scales
-    :param orientations_num: Number of filter orientations
-    :param min_wavelength: Wavelength of smallest scale filter, maximum frequency is set by this value, should be >= 3
-    :param wavelength_scaling: Scaling factor between successive filters
-    :param bandwidth_param: Ratio of standard deviation of the Gaussian describing log Gabor filter's transfer function
-        in the frequency domain to the filter's center frequency
-        (0.74 for 1 octave bandwidth, 0.55 for 2 octave bandwidth, 0.41 for 3 octave bandwidth)
-    :param d_theta_on_sigma: Ratio of angular interval between filter orientations and standard deviation of angular
-        Gaussian spreading function, a value of 1.5 results in approximately the minimum overlap needed to get even
-        spectral coverage
-    :return: Log Gabor filtered image
-    """
-    # Precomputing and assigning variables
-    scales = np.arange(0, scales_num)
-    orientations = np.arange(0, orientations_num)
-    rows, cols = im.shape  # image dimensions
-    # center of image
-    col_c = math.floor(cols/2)
-    row_c = math.floor(rows/2)
-
-    # set up filter wavelengths from scales
-    wavelengths = [min_wavelength * wavelength_scaling**scale_n for scale_n in range(0, scales_num)]
-
-    # convert image to frequency domain
-    im_fft = fft.fftn(im)
-
-    # compute matrices of same site as im with values ranging from -0.5 to 0.5 (-1.0 to 1.0) for horizontal and vertical directions each
-    if cols % 2 == 0:
-        x_range = np.linspace(-cols/2, (cols-2)/2, cols) / (cols/2)
-    else:
-        x_range = np.linspace(-cols/2, cols/2, cols) / (cols/2)
-    if rows % 2 == 0:
-        y_range = np.linspace(-rows/2, (rows-2)/2, rows) / (rows/2)
-    else:
-        y_range = np.linspace(-rows/2, rows/2, rows) / (rows/2)
-    x, y = np.meshgrid(x_range, y_range)
-
-    # filters have radial component (frequency band) and an angular component (orientation), those are multiplied to get the final filter
-
-    # compute radial distance from center of matrix
-    radius = np.sqrt(x**2 + y**2)
-    radius[radius == 0] = 1  # avoid logarithm of zero
-
-    # compute polar angle and its sine and cosine
-    theta = np.arctan2(-y, x)
-    sin_theta = np.sin(theta)
-    cos_theta = np.cos(theta)
-
-    # compute standard deviation of angular Gaussian function
-    theta_sigma = np.pi/orientations_num / d_theta_on_sigma
-
-    # compute radial component
-    radial_components = []
-    for scale_n, scale in enumerate(scales):  # for each scale
-        center_freq = 1.0/wavelengths[scale_n]  # center frequency of filter
-        normalised_center_freq = center_freq/0.5
-        # log Gabor response for each frequency band (scale)
-        log_gabor = np.exp((np.log(radius)-np.log(normalised_center_freq))**2 / -(2 * np.log(bandwidth_param)**2))
-        log_gabor[row_c, col_c] = 0
-        radial_components.append(log_gabor)
-
-    # angular component and final filtering
-    res = np.empty((scales_num, orientations_num), dtype=object)  # precompute result array
-    for orientation_n, orientation in enumerate(orientations):  # for each orientation
-        # compute angular component
-        # Pre-compute filter data specific to this orientation
-        # For each point in the filter matrix calculate the angular distance from the specified filter orientation.  To overcome the angular wrap-around problem sine difference and cosine difference values are first computed and then the atan2 function is used to determine angular distance.
-        angle = orientation_n*np.pi / orientations_num  # filter angle
-        diff_sin = sin_theta*np.cos(angle) - cos_theta*np.sin(angle)  # difference of sin
-        diff_cos = cos_theta*np.cos(angle) + sin_theta*np.sin(angle)  # difference of cos
-        angular_distance = abs(np.arctan2(diff_sin, diff_cos))  # absolute angular distance
-        spread = np.exp((-angular_distance**2)/(2 * theta_sigma**2))  # angular filter component
-
-        # filtering
-        for scale_n, scale in enumerate(scales):  # for each scale
-            # compute final filter
-            filter_ = fft.fftshift(radial_components[scale_n]*spread)
-            filter_[0, 0] = 0
-
-            # apply filter
-            res[scale_n, orientation_n] = fft.ifftn(im_fft*filter_)
-
-    return res
+def _get_statistics(image, block_size, stride):
+    # maybe implement in C
+    sub_blocks = extract_blocks(image, block_size=block_size, stride=stride)
+    std = np.std(sub_blocks, axis=(1, 2))
+    skw = []
+    krt = []
+    for block in sub_blocks:
+        skw.append(skew(np.abs(block.flatten())))
+        krt.append(kurtosis(np.abs(block.flatten())) + 3)
+    return std, skw, krt
