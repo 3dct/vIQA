@@ -3,6 +3,7 @@ from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft
 import math
 import numpy as np
 import scipy.fft as fft
+from scipy.signal import convolve
 
 
 class MAD(metrics.Full_Reference_Metrics_Interface):
@@ -95,38 +96,49 @@ def _high_quality(img_r, img_m, **kwargs):
 
     # Calculate local statistics
     mu_org_p = np.mean(I_org_blocks, axis=(1, 2))
-    std_org_p = np.array(
-        [_min_std(block, block_size=int(BLOCK_SIZE / 2), stride=int(BLOCK_SIZE / 2)) for block in I_org_blocks])
-    std_err_p = np.std(I_err_blocks, axis=(1, 2))
+    std_err_p = np.std(I_err_blocks, axis=(1, 2), ddof=1)
+
+    std_org = _min_std(I_org)
 
     mu_org = np.zeros(I_org.shape)
-    std_org = np.zeros(I_org.shape)
     std_err = np.zeros(I_err.shape)
 
     block_n = 0
     for x in range(0, I_org.shape[0] - STRIDE*3, STRIDE):
         for y in range(0, I_org.shape[1] - STRIDE*3, STRIDE):
             mu_org[x:x+STRIDE, y:y+STRIDE] = mu_org_p[block_n]
-            std_org[x:x+STRIDE, y:y+STRIDE] = std_org_p[block_n]
             std_err[x:x+STRIDE, y:y+STRIDE] = std_err_p[block_n]
             block_n += 1
-    del mu_org_p, std_org_p, std_err_p  # free memory
+    del mu_org_p, std_err_p  # free memory
 
     C_org = std_org / mu_org
     C_err = np.zeros(std_err.shape)
-    np.divide(std_err, mu_org, out=C_err, where=mu_org > 0.5)
+    _ = np.divide(std_err, mu_org, out=C_err, where=mu_org > 0.5)
 
-    delta = -5
-    cond_1 = np.logical_and(np.log(C_err) > np.log(C_org), np.log(C_org) > delta)
-    cond_2 = np.logical_and(np.log(C_err) > delta, delta >= np.log(C_org))
+    Ci_org = np.log(C_org)
+    Ci_err = np.log(C_err)
 
-    xi = np.zeros(C_err.shape)
-    np.subtract(np.log(C_err), np.log(C_org), out=xi, where=cond_1)
-    np.subtract(np.log(C_err), delta, out=xi, where=cond_2)
+    C_slope = 1
+    Ci_thrsh = -5
+    Cd_thrsh = -5
+    tmp = C_slope * (Ci_org - Ci_thrsh) + Cd_thrsh
+    cond_1 = np.logical_and(Ci_err > tmp, Ci_org > Ci_thrsh)
+    cond_2 = np.logical_and(Ci_err > Cd_thrsh, Ci_thrsh >= Ci_org)
 
-    # Combination of contrast masking and contrast sensitivity
-    D_p = np.sum(I_err**2) / (I_err.shape[0]*I_err.shape[1])
-    d_detect = np.sqrt(np.sum((xi*D_p)**2) / len(xi))
+    # in matlab: additional normalization parameter: ms_scale = 1
+    # --> (... - ...) / ms_scale
+    # not yet implemented
+    msk = np.zeros(C_err.shape)
+    _ = np.subtract(Ci_err, tmp, out=msk, where=cond_1)
+    _ = np.subtract(Ci_err, Cd_thrsh, out=msk, where=cond_2)
+
+    win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE ** 2
+    lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode='reflect')
+
+    mp = msk * lmse
+    mp2 = mp[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
+
+    d_detect = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200
     return d_detect
 
 
@@ -169,6 +181,9 @@ def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
     -------------
     Original code, 2008, Eric Larson \n
     Translated to Python, 2024, Lukas Behammer
+
+    PARAMETERS
+    ----------
     :param m: Size of image in y direction
     :param n: Size of image in x direction
     :param nfreq: Maximum spatial frequency
@@ -194,16 +209,48 @@ def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
     return csf
 
 
-def _min_std(image, block_size, stride):
+def _min_std(image):
     """Calculates the minimum standard deviation of blocks of a given image."""
-    sub_blocks = extract_blocks(image, block_size=block_size, stride=stride)
-    return np.min(np.std(sub_blocks, axis=(1, 2)))
+    tmp = np.empty(image.shape)
+    stdout = np.empty(image.shape)
+    for i in range(0, M - 15, 4):
+        for j in range(0, N - 15, 4):
+            mean = 0
+            for k in range(i, i + 8):
+                for l in range(j, j + 8):
+                    mean += image[k, l]
+            mean /= 64
+
+            stdev = 0
+            for k in range(i, i + 8):
+                for l in range(j, j + 8):
+                    stdev += (image[k, l] - mean) ** 2
+            stdev = np.sqrt(stdev / 63)
+
+            for k in range(i, i + 4):
+                for l in range(j, j + 4):
+                    tmp[k, l] = stdev
+                    stdout[k, l] = stdev
+
+    for i in range(0, M - 15, 4):
+        for j in range(0, N - 15, 4):
+            val = tmp[i, j]
+            for k in range(i, i + 8, 5):
+                for l in range(j, j + 8, 5):
+                    if tmp[k, l] < val:
+                        val = tmp[k, l]
+
+            for k in range(i, i + 4):
+                for l in range(j, j + 4):
+                    stdout[k, l] = val
+
+    return stdout
 
 
 def _gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3, wavelength_scaling=3,
                     bandwidth_param=0.55, d_theta_on_sigma=1.5):
     """
-    Computes Gabor filter responses. \n
+    Computes Log Gabor filter responses. \n
     Even spectral coverage and independence of filter output are dependent on bandwidth_param vs wavelength_scaling.
     Some experimental values: \n
     0.85 <--> 1.3 \n
@@ -274,7 +321,7 @@ def _gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3
     :param d_theta_on_sigma: Ratio of angular interval between filter orientations and standard deviation of angular
         Gaussian spreading function, a value of 1.5 results in approximately the minimum overlap needed to get even
         spectral coverage
-    :return:
+    :return: Log Gabor filtered image
     """
     # Precomputing and assigning variables
     scales = np.arange(0, scales_num)

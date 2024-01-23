@@ -253,8 +253,10 @@ def extract_blocks(img, block_size, stride):
 
 
 def _fft(img):
+    """Wrapper for scipy fft."""
     return fft.fftshift(fft.fftn(img))
 
 
 def _ifft(fourier_img):
+    """Wrapper for scipy ifft."""
     return fft.ifftn(fft.ifftshift(fourier_img))
