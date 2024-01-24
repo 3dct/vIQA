@@ -5,7 +5,7 @@ from piq import vif_p
 import torch
 
 
-class VIFp(metrics.Full_Reference_Metrics_Interface):
+class VIFp(metrics.FullReferenceMetricsInterface):
     """
     Calculates the visual information fidelity in pixel domain (VIFp) between two images.
     """

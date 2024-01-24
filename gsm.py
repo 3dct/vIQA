@@ -5,7 +5,7 @@ from kernels import *
 import scipy.ndimage as ndi
 
 
-class GSM(metrics.Full_Reference_Metrics_Interface):
+class GSM(metrics.FullReferenceMetricsInterface):
     """
     Calculates the gradient similarity (GSM) between two images. This implementation is adapted for 3D images.
     Therefore, 12 kernels are used instead of the original 4. Also, the gradient is calculated by

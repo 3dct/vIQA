@@ -13,7 +13,7 @@ from skimage.util.arraycrop import crop
 from skimage.util.dtype import dtype_range
 
 
-class SSIM(metrics.Full_Reference_Metrics_Interface):
+class SSIM(metrics.FullReferenceMetricsInterface):
     """
     Calculates the structural similarity index (SSIM) between two images.
     """

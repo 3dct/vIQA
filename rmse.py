@@ -4,7 +4,7 @@ from skimage.metrics import mean_squared_error
 from utils import _check_imgs
 
 
-class RMSE(metrics.Full_Reference_Metrics_Interface):
+class RMSE(metrics.FullReferenceMetricsInterface):
     """
     Calculates the root mean squared error (RMSE) between two images.
     """

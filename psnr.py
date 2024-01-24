@@ -3,7 +3,7 @@ from utils import _check_imgs
 from skimage.metrics import peak_signal_noise_ratio
 
 
-class PSNR(metrics.Full_Reference_Metrics_Interface):
+class PSNR(metrics.FullReferenceMetricsInterface):
     """
     Calculates the peak signal-to-noise ratio (PSNR) between two images.
     """

@@ -4,7 +4,7 @@ from piq import vsi
 import torch
 
 
-class VSI(metrics.Full_Reference_Metrics_Interface):
+class VSI(metrics.FullReferenceMetricsInterface):
     """
     Calculates the visual saliency index (VSI) between two images.
     """
