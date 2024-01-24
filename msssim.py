@@ -4,7 +4,7 @@ from piq import multi_scale_ssim
 import torch
 
 
-class MSSSIM(metrics.Full_Reference_Metrics_Interface):
+class MSSSIM(metrics.FullReferenceMetricsInterface):
     """
     Calculates the multiscale structural similarity index (MS-SSIM) between two images.
     """

@@ -4,7 +4,7 @@ from piq import fsim
 import torch
 
 
-class FSIM(metrics.Full_Reference_Metrics_Interface):
+class FSIM(metrics.FullReferenceMetricsInterface):
     """
     Calculates the feature similarity (FSIM) between two images.
     """
