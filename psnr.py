@@ -20,15 +20,16 @@ TODO: add examples
 # -------
 # TODO: add license
 
+from warnings import warn
+
+from skimage.metrics import peak_signal_noise_ratio
+
 import metrics
 from utils import _check_imgs
-from skimage.metrics import peak_signal_noise_ratio
-from warnings import warn
 
 
 class PSNR(metrics.FullReferenceMetricsInterface):
-    """
-    Class to calculate the peak signal-to-noise ratio (PSNR) between two images.
+    """Class to calculate the peak signal-to-noise ratio (PSNR) between two images.
 
     Parameters
     ----------
@@ -40,7 +41,7 @@ class PSNR(metrics.FullReferenceMetricsInterface):
         If True, the input images are expected to be given as path to a folder containing the images.
         .. note:: Currently not supported. Added for later implementation.
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to `vIQA.utils.load_data`.
         See below for details.
 
     Attributes
@@ -60,8 +61,9 @@ class PSNR(metrics.FullReferenceMetricsInterface):
     The parameter is set through the constructor of the class and is passed to the `score` method.
     """
 
-    def __init__(self, data_range=255, normalize=True, batch=False, **kwargs):
+    def __init__(self, data_range=255, normalize=True, batch=False, **kwargs) -> None:
         """Constructor method"""
+
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)
         self._parameters.update(**kwargs)
 
@@ -102,6 +104,7 @@ class PSNR(metrics.FullReferenceMetricsInterface):
         RuntimeWarning
             If no score value is available. Run score() first.
         """
+
         if self.score_val is not None:
             print('PSNR: {}'.format(round(self.score_val, decimals)))
         else:
