@@ -1,6 +1,39 @@
-BSD 3-Clause License
+Files: *
+Copyright: 2024 Lukas Behammer
+License: BSD-3-Clause
 
-Copyright (c) 2024, Behammer Lukas
+Function: vIQA/metrics/ssim.py:structural_similarity
+Copyright:  2009-2022 the scikit-image team
+            2024 Lukas Behammer
+License: BSD-3-Clause
+
+Functions:  vIQA/metrics/mad.py:most_apparent_disorder
+            vIQA/metrics/mad.py:_high_quality
+            vIQA/metrics/mad.py:_low_quality
+            vIQA/metrics/mad.py:_pixel_to_lightness
+            vIQA/metrics/mad.py:_contrast_sensitivity_function
+Copyright:  2008-2011 Eric Larson
+            2024 Lukas Behammer
+License: N/A
+
+Functions:  vIQA/utils.py:gabor_convolve
+Copyright:  2001-2010 Peter Kovesi
+            2008-2011 Eric Larson
+            2024 Lukas Behammer
+License:    By Peter Kovesi (www.peterkovesi.com):
+
+            Permission is hereby granted, free of charge, to any person obtaining a copy
+            of this software and associated documentation files (the "Software"), to deal
+            in the Software without restriction, subject to the following conditions:
+
+            The above copyright notice and this permission notice shall be included in
+            all copies or substantial portions of the Software.
+
+            The Software is provided "as is", without warranty of any kind.
+
+
+
+License: BSD 3-Clause
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -27,8 +60,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-For PIQ library:
 
+License: Apache 2.0
                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
