@@ -33,7 +33,6 @@ from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_con
 import numpy as np
 from warnings import warn
 from scipy.ndimage import convolve
-from multiprocessing import Pool
 
 # Global preinitialized variables
 M = 0
@@ -47,6 +46,13 @@ class MAD(metrics.FullReferenceMetricsInterface):
 
     Parameters
     ----------
+    data_range : {1, 255, 65535}, optional
+        Data range of the returned data in data loading. Can be omitted if `normalize` is False.
+    normalize : bool, default False
+        If True, the input images are normalized to the `data_range` argument.
+    batch : bool, default False
+        If True, the input images are expected to be given as path to a folder containing the images.
+        .. note:: Currently not supported. Added for later implementation.
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `utils.load_data`.
         See below for details.
@@ -58,16 +64,9 @@ class MAD(metrics.FullReferenceMetricsInterface):
 
     Other Parameters
     ----------------
-    data_range : {1, 255, 65535}, optional
-        Data range of the returned data in data loading. Can be omitted if `normalize` is False.
-    normalize : bool, default False
-        If True, the input images are normalized to the `data_range` argument.
-    batch : bool, default False
-        If True, the input images are expected to be given as path to a folder containing the images.
-        .. note:: Currently not supported. Added for later implementation.
     chromatic : bool, default False
-        If True, the input images are expected to be RGB images. Currently not supported.
-
+        If True, the input images are expected to be RGB images.
+        .. note:: Currently not supported.
 
     Notes
     -----
@@ -95,9 +94,9 @@ class MAD(metrics.FullReferenceMetricsInterface):
         Parameters
         ----------
         img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against
+            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
-            Distorted image to calculate score of
+            Distorted image to calculate score of.
         dim : {0, 1, 2}, optional
             If given, the MAD is calculated only for the given slice of the 3D image.
         im_slice : int, optional
@@ -133,6 +132,7 @@ class MAD(metrics.FullReferenceMetricsInterface):
         the given slice).
         """
 
+        # Check images
         img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
                                    normalize=self._parameters['normalize'], batch=self._parameters['batch'])
 
