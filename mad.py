@@ -10,7 +10,7 @@ References
 
 Examples
 --------
-TODO add examples
+TODO: add examples
 """
 
 # Authors
@@ -244,7 +244,7 @@ def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta
     img_m : np.ndarray or Tensor or str or os.PathLike
         Distorted image to calculate score of
     block_size : int, default=16
-        Size of the blocks in the MAD calculation.
+        Size of the blocks in the MAD calculation. Must be positive.
     block_overlap : float, default=0.75
         Overlap of the blocks in the MAD calculation. Given as a fraction of the block size.
     beta_1 : float, default=0.467
@@ -263,27 +263,36 @@ def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta
     mad_index : float
         MAD score value.
 
+    Raises
+    ------
+    ValueError
+        If `block_size` is not positive.
+    ValueError
+        If `weights` is not of length `scales_num`.
+
     Other Parameters
     ----------------
     account_monitor : bool, default False
         If True, the display function of the monitor is taken into account.
     display_function : dict, optional
-        Parameters of the display function of the monitor. Must be given if account_monitor is True.
+        Parameters of the display function of the monitor. Must be given if `account_monitor` is True.
         disp_res : float
             Display resolution.
         view_dis : float
-            Viewing distance. Same unit as disp_res.
+            Viewing distance. Same unit as `disp_res`.
     luminance_function : dict, optional
         Parameters of the luminance function. If not given, default values for sRGB displays are used.
         b : float, default=0.0
         k : float, default=0.02874
         gamma : float, default=2.2
+    ms_scale : float, default=1
+        Additional normalization parameter for the high quality index.
     orientations_num : int, default 4
         Number of orientations for the log-Gabor filters.
     scales_num : int, default 5
         Number of scales for the log-Gabor filters.
     weights : list, default [0.5, 0.75, 1, 5, 6]
-        Weights for the different scales of the log-Gabor filters. Must be of length scales_num.
+        Weights for the different scales of the log-Gabor filters. Must be of `length scales_num`.
 
     Notes
     -----
@@ -318,9 +327,13 @@ def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
+    # TODO: add option for block_size = 0
     # Set global variables
     global BLOCK_SIZE, STRIDE
-    BLOCK_SIZE = block_size
+    if block_size > 0:
+        BLOCK_SIZE = block_size
+    else:
+        raise ValueError('block_size must be positive.')
     STRIDE = BLOCK_SIZE - int(block_overlap * BLOCK_SIZE)
     global M, N
     M, N = img_r.shape
@@ -371,6 +384,7 @@ def _high_quality(img_r, img_m, **kwargs):
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
+    # TODO: add comments
     account_monitor = kwargs.pop('account_monitor', False)
     if account_monitor:
         assert 'display_function' in kwargs, 'If account_monitor is True, display_function must be given.'
@@ -431,13 +445,11 @@ def _high_quality(img_r, img_m, **kwargs):
     cond_1 = np.logical_and(ci_err > tmp, ci_org > ci_thrsh)
     cond_2 = np.logical_and(ci_err > cd_thrsh, ci_thrsh >= ci_org)
 
-    # TODO: add ms_scale
-    # in matlab: additional normalization parameter: ms_scale = 1
-    # --> (... - ...) / ms_scale
-    # not yet implemented
+    ms_scale = kwargs.pop('ms_scale', 1)  # additional normalization parameter
     msk = np.zeros(c_err.shape)
     _ = np.subtract(ci_err, tmp, out=msk, where=cond_1)
     _ = np.subtract(ci_err, cd_thrsh, out=msk, where=cond_2)
+    msk /= ms_scale
 
     win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE ** 2
     lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode='reflect')
@@ -484,6 +496,8 @@ def _low_quality(img_r, img_m, **kwargs):
     scales_num = kwargs.pop('scales_num', 5)
     weights = kwargs.pop('weights', [0.5, 0.75, 1, 5, 6])
     weights /= np.sum(weights)
+    if len(weights) != scales_num:
+        raise ValueError('weights must be of length scales_num.')
 
     gabor_org = gabor_convolve(img_m, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
@@ -493,29 +507,10 @@ def _low_quality(img_r, img_m, **kwargs):
     stats = np.zeros((M, N))
     for scale_n in range(scales_num):
         for orientation_n in range(orientations_num):
-            std_ref_p, skw_ref_p, krt_ref_p = _get_statistics(np.abs(gabor_org[scale_n, orientation_n]),
-                                                              block_size=BLOCK_SIZE, stride=STRIDE)
-            std_dst_p, skw_dst_p, krt_dst_p = _get_statistics(np.abs(gabor_dst[scale_n, orientation_n]),
-                                                              block_size=BLOCK_SIZE, stride=STRIDE)
-
-            std_ref = np.zeros((M, N))
-            std_dst = np.zeros((M, N))
-            skw_ref = np.zeros((M, N))
-            skw_dst = np.zeros((M, N))
-            krt_ref = np.zeros((M, N))
-            krt_dst = np.zeros((M, N))
-
-            # TODO: as function?
-            block_n = 0
-            for x in range(0, M - STRIDE * 3, STRIDE):
-                for y in range(0, N - STRIDE * 3, STRIDE):
-                    std_ref[x:x + STRIDE, y:y + STRIDE] = std_ref_p[block_n]
-                    std_dst[x:x + STRIDE, y:y + STRIDE] = std_dst_p[block_n]
-                    skw_ref[x:x + STRIDE, y:y + STRIDE] = skw_ref_p[block_n]
-                    skw_dst[x:x + STRIDE, y:y + STRIDE] = skw_dst_p[block_n]
-                    krt_ref[x:x + STRIDE, y:y + STRIDE] = krt_ref_p[block_n]
-                    krt_dst[x:x + STRIDE, y:y + STRIDE] = krt_dst_p[block_n]
-                    block_n += 1
+            std_ref, skw_ref, krt_ref = _get_statistics(np.abs(gabor_org[scale_n, orientation_n]),
+                                                        block_size=BLOCK_SIZE, stride=STRIDE)
+            std_dst, skw_dst, krt_dst = _get_statistics(np.abs(gabor_dst[scale_n, orientation_n]),
+                                                        block_size=BLOCK_SIZE, stride=STRIDE)
 
             stats += weights[scale_n] * (
                         np.abs(std_ref - std_dst) + 2 * np.abs(skw_ref - skw_dst) + np.abs(krt_ref - krt_dst))
@@ -633,12 +628,40 @@ def _get_statistics(image, block_size, stride):
     """Calculates the statistics of blocks of a given image."""
 
     # TODO: add comments
-    # TODO: change to manual calculation of statistics
-    sub_blocks = extract_blocks(image, block_size=block_size, stride=stride)
-    std = np.std(sub_blocks, axis=(1, 2))
-    skw = []
-    krt = []
-    for block in sub_blocks:
-        skw.append(skew(np.abs(block.flatten())))
-        krt.append(kurtosis(np.abs(block.flatten())) + 3)
-    return std, skw, krt
+    stdout = np.empty(image.shape)
+    skwout = np.empty(image.shape)
+    krtout = np.empty(image.shape)
+    for i in range(0, M-(block_size-1), stride):
+        for j in range(0, N-(block_size-1), stride):
+            mean = 0
+            for u in range(i, i + block_size):
+                for v in range(j, j + block_size):
+                    mean += image[u, v]
+            mean /= block_size ** 2
+
+            std = 0
+            skw = 0
+            krt = 0
+            for u in range(i, i + block_size):
+                for v in range(j, j + block_size):
+                    tmp = (image[u, v] - mean)
+                    std += tmp ** 2
+                    skw += tmp ** 3
+                    krt += tmp ** 4
+            stmp = np.sqrt(std / (block_size**2))
+            stdev = np.sqrt(std / (block_size**2 - 1))
+
+            if stmp != 0:
+                skw = skw / (block_size**2 * stmp**3)
+                krt = krt / (block_size**2 * stmp**4)  # -3 in kurtosis definition
+            else:
+                skw = 0
+                krt = 0
+
+            for u in range(i, i + stride):
+                for v in range(j, j + stride):
+                    stdout[u, v] = stdev
+                    skwout[u, v] = skw
+                    krtout[u, v] = krt
+
+    return stdout, skwout, krtout
