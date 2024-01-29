@@ -1,6 +1,5 @@
 import metrics
-import numpy as np
-from utils import _check_imgs, _to_float, correlate_convolve_abs
+from utils import _check_imgs, _to_float
 from kernels import *
 import scipy.ndimage as ndi
 

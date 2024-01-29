@@ -1,6 +1,5 @@
 import metrics
 from utils import _check_imgs
-from sewar import vifp
 from piq import vif_p
 import torch
 

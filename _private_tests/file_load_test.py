@@ -1,10 +1,6 @@
-from utils import load_data, _load_data_from_disk
-import matplotlib.pyplot as plt
 import os
 import re
 import numpy as np
-import torch
-
 
 file_dir = '../../samples'
 # file_name = 'Catec_Two_PlateIQI_20um_810proj_220kV_Rayscan-SimCT_800x800x1000_16bit.raw'
