@@ -2,11 +2,11 @@
 ...
 
 ## Usage
-...
 It is recommended to load the images directly with the `vIQA.utils.load_data` function first and then pass the image 
 arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case, the 
 images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a single 
 metric.
+The current recommended usage file is: [`.Image_Comparison.ipynb`](Image_Comparison.ipynb).
 
 ### TODO:
 - [ ] Add metrics
