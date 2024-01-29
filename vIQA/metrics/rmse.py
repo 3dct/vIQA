@@ -25,11 +25,11 @@ from warnings import warn
 import numpy as np
 from skimage.metrics import mean_squared_error
 
-import metrics
-from utils import _check_imgs
+from vIQA._metrics import FullReferenceMetricsInterface
+from vIQA.utils import _check_imgs
 
 
-class RMSE(metrics.FullReferenceMetricsInterface):
+class RMSE(FullReferenceMetricsInterface):
     """Class to calculate the root mean squared error (RMSE) between two images.
 
     Parameters

@@ -33,8 +33,8 @@ from warnings import warn
 import numpy as np
 from scipy.ndimage import convolve
 
-import metrics
-from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_convolve
+from vIQA._metrics import FullReferenceMetricsInterface
+from vIQA.utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_convolve
 
 # Global preinitialized variables
 M = 0
@@ -43,7 +43,7 @@ BLOCK_SIZE = 0
 STRIDE = 0
 
 
-class MAD(metrics.FullReferenceMetricsInterface):
+class MAD(FullReferenceMetricsInterface):
     """Class to calculate the most apparent disorder (MAD) between two images.
 
     Parameters
@@ -481,7 +481,7 @@ def _high_quality(img_r, img_m, **kwargs):
     mp2 = mp[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
 
     # Calculate high quality index by using the 2-norm
-    d_detect = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200
+    d_detect = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200  # fixed factor of 200
     return d_detect
 
 
@@ -550,6 +550,24 @@ def _low_quality(img_r, img_m, **kwargs):
 
 def _pixel_to_lightness(img, b=0, k=0.02874, gamma=2.2):
     """Converts an image to perceived lightness."""
+
+    # Authors
+    # -------
+    # Author: Eric Larson
+    # Department of Electrical and Computer Engineering
+    # Oklahoma State University, 2008
+    # University Of Washington Seattle, 2009
+    # Image Coding and Analysis Lab
+    #
+    # Translation: Lukas Behammer
+    # Research Center Wels
+    # University of Applied Sciences Upper Austria, 2023
+    # CT Research Group
+    #
+    # Modifications
+    # -------------
+    # Original code, 2008, Eric Larson
+    # Translated to Python, 2024, Lukas Behammer
 
     if issubclass(img.dtype.type, np.integer):  # if image is integer
         # Create LUT

@@ -24,11 +24,11 @@ from warnings import warn
 
 from skimage.metrics import peak_signal_noise_ratio
 
-import metrics
-from utils import _check_imgs
+from vIQA._metrics import FullReferenceMetricsInterface
+from vIQA.utils import _check_imgs
 
 
-class PSNR(metrics.FullReferenceMetricsInterface):
+class PSNR(FullReferenceMetricsInterface):
     """Class to calculate the peak signal-to-noise ratio (PSNR) between two images.
 
     Parameters

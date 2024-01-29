@@ -1,10 +1,11 @@
-import metrics
-from utils import _check_imgs, _to_float
-from kernels import *
 import scipy.ndimage as ndi
 
+from vIQA._metrics import FullReferenceMetricsInterface
+from vIQA.utils import _check_imgs
+from vIQA.kernels import *
 
-class GSM(metrics.FullReferenceMetricsInterface):
+
+class GSM(FullReferenceMetricsInterface):
     """
     Calculates the gradient similarity (GSM) between two images. This implementation is adapted for 3D images.
     Therefore, 12 kernels are used instead of the original 4. Also, the gradient is calculated by

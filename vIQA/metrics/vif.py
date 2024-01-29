@@ -1,10 +1,11 @@
-import metrics
-from utils import _check_imgs
-from piq import vif_p
 import torch
+from piq import vif_p
+
+from vIQA._metrics import FullReferenceMetricsInterface
+from vIQA.utils import _check_imgs
 
 
-class VIFp(metrics.FullReferenceMetricsInterface):
+class VIFp(FullReferenceMetricsInterface):
     """
     Calculates the visual information fidelity in pixel domain (VIFp) between two images.
     """

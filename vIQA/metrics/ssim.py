@@ -1,19 +1,19 @@
-import metrics
-
 import functools
 import warnings
-from utils import _check_imgs
+
 import numpy as np
 from scipy.ndimage import uniform_filter
-
 from skimage._shared import utils
 from skimage._shared.filters import gaussian
 from skimage._shared.utils import _supported_float_type, check_shape_equality, warn
 from skimage.util.arraycrop import crop
 from skimage.util.dtype import dtype_range
 
+from vIQA._metrics import FullReferenceMetricsInterface
+from vIQA.utils import _check_imgs
 
-class SSIM(metrics.FullReferenceMetricsInterface):
+
+class SSIM(FullReferenceMetricsInterface):
     """
     Calculates the structural similarity index (SSIM) between two images.
     """
