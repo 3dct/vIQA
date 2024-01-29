@@ -33,7 +33,7 @@ from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_con
 import numpy as np
 from warnings import warn
 from scipy.ndimage import convolve
-from scipy.stats import skew, kurtosis
+from multiprocessing import Pool
 
 # Global preinitialized variables
 M = 0
@@ -217,7 +217,7 @@ def most_apparent_disorder_3d(img_r, img_m, dim=2, **kwargs):
 
     x, y, z = img_r.shape  # get image dimensions
     scores = []
-    # calculate MAD for all slices of the given dimension
+    # Calculate MAD for all slices of the given dimension
     match dim:
         case 0:
             for slice_ in range(x):
@@ -293,6 +293,10 @@ def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta
         Number of scales for the log-Gabor filters.
     weights : list, default [0.5, 0.75, 1, 5, 6]
         Weights for the different scales of the log-Gabor filters. Must be of `length scales_num`.
+    csf_function : dict, optional
+        Parameters for the contrast sensitivity function. If not given, default values for sRGB displays are used.
+        lambda_ : float, default=0.114
+        f_peak : float, default=7.8909
 
     Notes
     -----
@@ -384,8 +388,8 @@ def _high_quality(img_r, img_m, **kwargs):
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
-    # TODO: add comments
     account_monitor = kwargs.pop('account_monitor', False)
+    # Account for display function of monitor
     if account_monitor:
         assert 'display_function' in kwargs, 'If account_monitor is True, display_function must be given.'
         display_function = kwargs.pop('display_function')
@@ -393,7 +397,10 @@ def _high_quality(img_r, img_m, **kwargs):
     else:
         cycles_per_degree = 32
 
-    csf = _contrast_sensitivity_function(M, N, cycles_per_degree, lambda_=0.114, f_peak=7.8909)
+    csf_function = kwargs.pop('csf_function', {'lambda_': 0.114, 'f_peak': 7.8909})
+    # Calculate contrast sensitivity function
+    csf = _contrast_sensitivity_function(M, N, cycles_per_degree, lambda_=csf_function['lambda_'],
+                                         f_peak=csf_function['f_peak'])
 
     # Convert to perceived lightness
     luminance_function = kwargs.pop('luminance_function', {'k': 0.02874, 'gamma': 2.2})
@@ -405,10 +412,10 @@ def _high_quality(img_r, img_m, **kwargs):
     lum_r_fft = _fft(lum_r)
     lum_m_fft = _fft(lum_m)
 
-    i_org = np.real(_ifft(csf * lum_r_fft))
-    i_dst = np.real(_ifft(csf * lum_m_fft))
+    i_org = np.real(_ifft(csf*lum_r_fft))
+    i_dst = np.real(_ifft(csf*lum_m_fft))
 
-    i_err = i_dst - i_org
+    i_err = i_dst-i_org  # error image
 
     # Contrast masking
     i_org_blocks = extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
@@ -418,11 +425,12 @@ def _high_quality(img_r, img_m, **kwargs):
     mu_org_p = np.mean(i_org_blocks, axis=(1, 2))
     std_err_p = np.std(i_err_blocks, axis=(1, 2), ddof=1)
 
-    std_org = _min_std(i_org)
+    std_org = _min_std(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
 
     mu_org = np.zeros(i_org.shape)
     std_err = np.zeros(i_err.shape)
 
+    # Assign local statistics to image blocks of size stride x stride
     block_n = 0
     for x in range(0, i_org.shape[0] - STRIDE*3, STRIDE):
         for y in range(0, i_org.shape[1] - STRIDE*3, STRIDE):
@@ -431,32 +439,45 @@ def _high_quality(img_r, img_m, **kwargs):
             block_n += 1
     del mu_org_p, std_err_p  # free memory
 
+    # Calculate contrast of reference and error image
     c_org = std_org / mu_org
     c_err = np.zeros(std_err.shape)
     _ = np.divide(std_err, mu_org, out=c_err, where=mu_org > 0.5)
 
+    # Create mask
+    # log(Contrast of ref-dst) vs. log(Contrast of reference)
+    #               /
+    #              /
+    #             / _| <- c_slope
+    #            /
+    # ----------+ < - cd_thresh(y axis height)
+    #           /\
+    #           ||
+    #        ci_thresh(x axis value)
     ci_org = np.log(c_org)
     ci_err = np.log(c_err)
-
     c_slope = 1
-    ci_thrsh = -5
-    cd_thrsh = -5
-    tmp = c_slope * (ci_org - ci_thrsh) + cd_thrsh
-    cond_1 = np.logical_and(ci_err > tmp, ci_org > ci_thrsh)
-    cond_2 = np.logical_and(ci_err > cd_thrsh, ci_thrsh >= ci_org)
+    ci_thresh = -5
+    cd_thresh = -5
+    tmp = c_slope*(ci_org-ci_thresh) + cd_thresh
+    cond_1 = np.logical_and(ci_err > tmp, ci_org > ci_thresh)
+    cond_2 = np.logical_and(ci_err > cd_thresh, ci_thresh >= ci_org)
 
     ms_scale = kwargs.pop('ms_scale', 1)  # additional normalization parameter
     msk = np.zeros(c_err.shape)
-    _ = np.subtract(ci_err, tmp, out=msk, where=cond_1)
-    _ = np.subtract(ci_err, cd_thrsh, out=msk, where=cond_2)
+    _ = np.subtract(ci_err, tmp, out=msk, where=cond_1) # contrast of heavy distortion - (0.75 * contrast of ref)
+    _ = np.subtract(ci_err, cd_thresh, out=msk, where=cond_2)  # contrast of low distortion - threshold
     msk /= ms_scale
 
+    # Use lmse and weight by distortion mask
     win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE ** 2
     lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode='reflect')
 
+    # Kill the edges
     mp = msk * lmse
     mp2 = mp[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
 
+    # Calculate high quality index by using the 2-norm
     d_detect = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200
     return d_detect
 
@@ -491,7 +512,6 @@ def _low_quality(img_r, img_m, **kwargs):
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
-    # TODO: add comments
     orientations_num = kwargs.pop('orientations_num', 4)
     scales_num = kwargs.pop('scales_num', 5)
     weights = kwargs.pop('weights', [0.5, 0.75, 1, 5, 6])
@@ -499,11 +519,13 @@ def _low_quality(img_r, img_m, **kwargs):
     if len(weights) != scales_num:
         raise ValueError('weights must be of length scales_num.')
 
+    # Decompose using log-Gabor filters
     gabor_org = gabor_convolve(img_m, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
     gabor_dst = gabor_convolve(img_r, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
                                wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
 
+    # Calculate statistics for each filterband
     stats = np.zeros((M, N))
     for scale_n in range(scales_num):
         for orientation_n in range(orientations_num):
@@ -511,11 +533,14 @@ def _low_quality(img_r, img_m, **kwargs):
                                                         block_size=BLOCK_SIZE, stride=STRIDE)
             std_dst, skw_dst, krt_dst = _get_statistics(np.abs(gabor_dst[scale_n, orientation_n]),
                                                         block_size=BLOCK_SIZE, stride=STRIDE)
-
+            # Combine statistics
             stats += weights[scale_n] * (
                         np.abs(std_ref - std_dst) + 2 * np.abs(skw_ref - skw_dst) + np.abs(krt_ref - krt_dst))
 
+    # Kill the edges
     mp2 = stats[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
+
+    # Calculate low quality index by using the 2-norm
     d_appear = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape))
     return d_appear
 
@@ -564,104 +589,117 @@ def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
-    # TODO: add comments
+    # Create a meshgrid that represents the spatial domain of the image.
     x_plane, y_plane = np.meshgrid(np.arange(-n/2 + 0.5, n/2 + 0.5), np.arange(-m/2 + 0.5, m/2 + 0.5))
-    plane = (x_plane + 1j*y_plane)*2 * nfreq/n
+    plane = (x_plane + 1j*y_plane)*2 * nfreq/n  # convert to frequency domain
     rad_freq = np.abs(plane)  # radial frequency
 
     # w is a symmetry parameter that gives approx. 3dB down along the diagonals
     w = 0.7
     theta = np.angle(plane)
+    # s is a function of theta that adjusts the radial frequency based on the direction of each point in the frequency
+    # domain.
     s = ((1-w)/2)*np.cos(4*theta) + ((1+w)/2)
     rad_freq /= s
 
+    # Parameters for the contrast sensitivity function
     lambda_ = kwargs.pop('lambda_', 0.114)
     f_peak = kwargs.pop('f_peak', 7.8909)
+    # Calculate contrast sensitivity function
     cond = rad_freq < f_peak
     csf = 2.6*(0.0192 + lambda_*rad_freq)*np.exp(-(lambda_*rad_freq)**1.1)
     csf[cond] = 0.9809
-
     return csf
 
 
-def _min_std(image):
+def _min_std(image, block_size, stride):
     """Calculates the minimum standard deviation of blocks of a given image."""
 
-    # TODO: add comments
+    # Preallocate arrays
     tmp = np.empty(image.shape)
     stdout = np.empty(image.shape)
-    for i in range(0, M - 15, 4):
-        for j in range(0, N - 15, 4):
+    # For each area of size stride x stride
+    for i in range(0, M-(block_size-1), stride):
+        for j in range(0, N-(block_size-1), stride):
+            # Calculate mean for each block
             mean = 0
-            for u in range(i, i + 8):
-                for v in range(j, j + 8):
+            for u in range(i, i+(block_size//2)):
+                for v in range(j, j+(block_size//2)):
                     mean += image[u, v]
             mean /= 64
 
+            # Calculate standard deviation for each block
             stdev = 0
-            for u in range(i, i + 8):
-                for v in range(j, j + 8):
-                    stdev += (image[u, v] - mean) ** 2
-            stdev = np.sqrt(stdev / 63)
+            for u in range(i, i+(block_size//2)):
+                for v in range(j, j+(block_size//2)):
+                    stdev += (image[u, v]-mean)**2
+            stdev = np.sqrt(stdev/63)
 
-            for u in range(i, i + 4):
-                for v in range(j, j + 4):
+            # Assign values to temp array and output array
+            for u in range(i, i+stride):
+                for v in range(j, j+stride):
                     tmp[u, v] = stdev
-                    stdout[u, v] = stdev
+                    stdout[u, v] = stdev  # preassign
 
-    for i in range(0, M - 15, 4):
-        for j in range(0, N - 15, 4):
+    # Calculate minimum standard deviation for each area
+    for i in range(0, M-(block_size-1), stride):
+        for j in range(0, N-(block_size-1), stride):
+            # Look for minimum standard deviation in blocks of size stride x stride
             val = tmp[i, j]
-            for u in range(i, i + 8, 5):
-                for v in range(j, j + 8, 5):
+            for u in range(i, i+(block_size//2), stride+1):
+                for v in range(j, j+(block_size//2), stride+1):
                     if tmp[u, v] < val:
                         val = tmp[u, v]
-
-            for u in range(i, i + 4):
-                for v in range(j, j + 4):
+            # Assign minimum standard deviation to output array
+            for u in range(i, i+(block_size//2)):
+                for v in range(j, j+(block_size//2)):
                     stdout[u, v] = val
-
     return stdout
 
 
 def _get_statistics(image, block_size, stride):
     """Calculates the statistics of blocks of a given image."""
 
-    # TODO: add comments
+    # Preallocate arrays
     stdout = np.empty(image.shape)
     skwout = np.empty(image.shape)
     krtout = np.empty(image.shape)
+    # For each area of size stride x stride
     for i in range(0, M-(block_size-1), stride):
         for j in range(0, N-(block_size-1), stride):
+            # Calculate mean for each block
             mean = 0
             for u in range(i, i + block_size):
                 for v in range(j, j + block_size):
                     mean += image[u, v]
             mean /= block_size ** 2
 
+            # Calculate standard deviation, skewness and kurtosis for each block
             std = 0
             skw = 0
             krt = 0
             for u in range(i, i + block_size):
                 for v in range(j, j + block_size):
+                    # Calculate numerators
                     tmp = (image[u, v] - mean)
                     std += tmp ** 2
                     skw += tmp ** 3
                     krt += tmp ** 4
-            stmp = np.sqrt(std / (block_size**2))
-            stdev = np.sqrt(std / (block_size**2 - 1))
+            stmp = np.sqrt(std / (block_size**2))  # temporary variable for denominator calculation
+            stdev = np.sqrt(std / (block_size**2 - 1))  # no denominator needed for standard deviation
 
-            if stmp != 0:
+            # Avoid division by zero
+            if stmp != 0:  # if denominator is not zero
+                # Calculate skewness and kurtosis by calculating the denominators
                 skw = skw / (block_size**2 * stmp**3)
-                krt = krt / (block_size**2 * stmp**4)  # -3 in kurtosis definition
+                krt = krt / (block_size**2 * stmp**4)
+                # krt -= 3  # original kurtosis definition not used by original code
             else:
                 skw = 0
                 krt = 0
 
-            for u in range(i, i + stride):
-                for v in range(j, j + stride):
-                    stdout[u, v] = stdev
-                    skwout[u, v] = skw
-                    krtout[u, v] = krt
-
+            # Assign values to output arrays
+            stdout[i:i+stride, j:j+stride] = stdev
+            skwout[i:i+stride, j:j+stride] = skw
+            krtout[i:i+stride, j:j+stride] = krt
     return stdout, skwout, krtout
