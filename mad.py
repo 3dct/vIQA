@@ -28,11 +28,13 @@ TODO: add examples
 # -------
 # TODO: add license
 
+from warnings import warn
+
+import numpy as np
+from scipy.ndimage import convolve
+
 import metrics
 from utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_convolve
-import numpy as np
-from warnings import warn
-from scipy.ndimage import convolve
 
 # Global preinitialized variables
 M = 0
@@ -54,7 +56,7 @@ class MAD(metrics.FullReferenceMetricsInterface):
         If True, the input images are expected to be given as path to a folder containing the images.
         .. note:: Currently not supported. Added for later implementation.
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to `vIQA.utils.load_data`.
         See below for details.
 
     Attributes
@@ -81,6 +83,7 @@ class MAD(metrics.FullReferenceMetricsInterface):
 
     def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
+
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)
         self._parameters.update(**kwargs)
 
@@ -88,8 +91,8 @@ class MAD(metrics.FullReferenceMetricsInterface):
         """Calculates the MAD between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
-        full volume or for a given slice of the image by setting the parameter dim to the desired dimension and
-        im_slice to the desired slice number.
+        full volume or for a given slice of the image by setting the parameter `dim` to the desired dimension and
+        `im_slice` to the desired slice number.
 
         Parameters
         ----------
@@ -273,7 +276,7 @@ def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta
     Other Parameters
     ----------------
     account_monitor : bool, default False
-        If True, the display function of the monitor is taken into account.
+        If True, the `display_function` of the monitor is taken into account.
     display_function : dict, optional
         Parameters of the display function of the monitor. Must be given if `account_monitor` is True.
         disp_res : float
@@ -292,7 +295,7 @@ def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta
     scales_num : int, default 5
         Number of scales for the log-Gabor filters.
     weights : list, default [0.5, 0.75, 1, 5, 6]
-        Weights for the different scales of the log-Gabor filters. Must be of `length scales_num`.
+        Weights for the different scales of the log-Gabor filters. Must be of length `scales_num`.
     csf_function : dict, optional
         Parameters for the contrast sensitivity function. If not given, default values for sRGB displays are used.
         lambda_ : float, default=0.114
