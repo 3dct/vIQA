@@ -57,7 +57,7 @@ class RMSE(FullReferenceMetricsInterface):
         .. note:: Currently not supported.
     """
 
-    def __init__(self, data_range=None, normalize=None, batch=None, **kwargs) -> None:
+    def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
 
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)

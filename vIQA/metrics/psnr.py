@@ -83,7 +83,7 @@ class PSNR(FullReferenceMetricsInterface):
     The parameter is set through the constructor of the class and is passed to the `score` method.
     """
 
-    def __init__(self, data_range=255, normalize=True, batch=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
 
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)
