@@ -1,4 +1,7 @@
 # vIQA &mdash; volumetric Image Quality Assessment
+
+[[_TOC_]]
+
 vIQA provides an extensive assessment suite for image quality of 2D-images or 3D-volumes as a python package.
 Image Quality Assessment (IQA) is a field of research that aims to quantify the quality of an image. This is usually 
 done by comparing the image to a reference image (full-reference metrics), but can also be done by evaluating the image 
@@ -13,23 +16,25 @@ The metrics used are:
 - Root Mean Square Error (RMSE)
 - Structured Similarity (SSIM) [^1]
 - Multi-Scale Structural Similarity (MS-SSIM) [^2]
-  [!NOTE]
-  can only be used for 2D images currently
+  > [!NOTE]
+  > can only be used for 2D images currently
 - Feature Similarity Index (FSIM) [^3]
-  [!NOTE]
-  can only be used for 2D images currently
+  > [!NOTE]
+  > can only be used for 2D images currently
 - Visual Information Fidelity in *pixel* domain (VIFp) [^4]
-  [!NOTE]
-  can only be used for 2D images currently
-  [!WARNING]
-  The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
-  caution as further testing is required.
+  > [!NOTE]
+  > can only be used for 2D images currently
+  
+  > [!WARNING]
+  > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
+  > caution as further testing is required.
 - Visual Saliency Index (VSI) [^5]
-  [!NOTE]
-  can only be used for 2D images currently
+  > [!NOTE]
+  > can only be used for 2D images currently
 - Most Apparent Distortion (MAD) [^6]
 - Gradient Similarity Measure (GSM) [^7]
-  [!CAUTION] This metric is not yet tested. The metric should be only used for testing purposes.
+  > [!CAUTION]
+  > This metric is not yet tested. The metric should be only used for testing purposes.
 
 ## Usage
 
@@ -38,9 +43,9 @@ The metrics used are:
 ### Workflow
 Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data 
 range (if the parameter `normalize=True` is set) and then compared. The scores are then calculated and can be printed. 
-If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8bit.raw`, `_16bit.mhd`) and the 
-dimensions of the images need to be given in the file name (e.g. `512x512x512`). The images are assumed to be grayscale. 
-Treatment of color images is planned for later versions.
+If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8bit.raw`, `_16bit.mhd`) and 
+the dimensions of the images need to be given in the file name (e.g. `512x512x512`). The images are assumed to be 
+grayscale. Treatment of color images is planned for later versions.
 The metrics are implemented to calculate the scores for an 8-bit data range (0-255) per default. For some metrics the
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
 data range should be used for all metrics. The data range can be changed by setting the parameter `data_range` for each 
@@ -116,13 +121,14 @@ score = psnr.score(file_path_img_r, file_path_img_m)
 psnr.print_score(decimals=2)
 ```
 
-[!TIP]
-It is recommended to load the images directly with the `vIQA.utils.load_data` function first and then pass the image 
-arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case, the 
-images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a single 
-metric.
-[!IMPORTANT]
-The current recommended usage file is: [`.Image_Comparison.ipynb`](Image_Comparison.ipynb).
+> [!TIP]
+> It is recommended to load the images directly with the `vIQA.utils.load_data` function first and then pass the image 
+> arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case, 
+> the images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a 
+> single metric.
+
+> [!IMPORTANT]
+> The current recommended usage file is: [`.Image_Comparison.ipynb`](Image_Comparison.ipynb).
 
 ## Requirements
 The following packages have to be installed:
