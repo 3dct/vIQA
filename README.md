@@ -12,23 +12,23 @@ The metrics used are:
 - Peak Signal to Noise Ratio (PSNR)
 - Root Mean Square Error (RMSE)
 - Structured Similarity (SSIM) [^1]
-- Multi-Scale Structural Similarity (MS-SSIM)
+- Multi-Scale Structural Similarity (MS-SSIM) [^2]
   [!NOTE]
   can only be used for 2D images currently
-- Feature Similarity Index (FSIM)
+- Feature Similarity Index (FSIM) [^3]
   [!NOTE]
   can only be used for 2D images currently
-- Visual Information Fidelity in *pixel* domain (VIFp)
+- Visual Information Fidelity in *pixel* domain (VIFp) [^4]
   [!NOTE]
   can only be used for 2D images currently
   [!WARNING]
   The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
   caution as further testing is required.
-- Visual Saliency Index (VSI)
+- Visual Saliency Index (VSI) [^5]
   [!NOTE]
   can only be used for 2D images currently
-- Most Apparent Distortion (MAD)
-- Gradient Similarity Measure (GSM)
+- Most Apparent Distortion (MAD) [^6]
+- Gradient Similarity Measure (GSM) [^7]
   [!CAUTION] This metric is not yet tested. The metric should be only used for testing purposes.
 
 ## Usage
@@ -38,8 +38,8 @@ The metrics used are:
 ### Workflow
 Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data 
 range (if the parameter `normalize=True` is set) and then compared. The scores are then calculated and can be printed. 
-If using paths file names need to be given with the bit depth denoted as a suffix (e.g. _8bit.raw, _16bit.mhd) and the 
-dimensions of the images need to be given in the file name (e.g. 512x512x512). The images are assumed to be grayscale. 
+If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8bit.raw`, `_16bit.mhd`) and the 
+dimensions of the images need to be given in the file name (e.g. `512x512x512`). The images are assumed to be grayscale. 
 Treatment of color images is planned for later versions.
 The metrics are implemented to calculate the scores for an 8-bit data range (0-255) per default. For some metrics the
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
@@ -90,7 +90,7 @@ calc_parameters = {
 
 # calculate and print MAD score
 mad = vIQA.MAD()
-score_mad = mad.score(img_r, img_m, **calc_parameters)
+score_mad = mad.score(img_r, img_m, dim=2, **calc_parameters)
 mad.print_score(decimals=2)
 ```
 Possible, but worse (recommended only if you want to calculate a single metric):
@@ -169,14 +169,14 @@ The following packages have to be installed:
     - [ ] Add tests for NIQE
     - [ ] Add tests for Q-Factor
 - [ ] Add documentation
-    - [ ] Add documentation for rmse.py
-    - [ ] Add documentation for psnr.py
+    - [x] Add documentation for rmse.py
+    - [x] Add documentation for psnr.py
     - [ ] Add documentation for ssim.py
     - [ ] Add documentation for msssim.py
     - [ ] Add documentation for fsim.py
     - [ ] Add documentation for vsi.py
     - [ ] Add documentation for vif.py
-    - [ ] Add documentation for mad.py
+    - [x] Add documentation for mad.py
     - [ ] Add documentation for gsm.py
     - [ ] Add documentation for metrics.py
     - [ ] Add documentation for utils.py
@@ -189,4 +189,19 @@ The following packages have to be installed:
     - [ ] VIF
 
 ## References
-[^1]:  
+[^1]:  Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality assessment: From error 
+visibility to structural similarity. IEEE Transactions on Image Processing, 13(4), 600–612. 
+https://doi.org/10.1109/TIP.2003.819861
+[^2]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural similarity for image quality 
+assessment. The Thirty-Seventh Asilomar Conference on Signals, Systems & Computers, 1298–1402. 
+https://doi.org/10.1109/ACSSC.2003.1292216
+[^3]: Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity index for image quality assessment. 
+IEEE Transactions on Image Processing, 20(8). https://doi.org/10.1109/TIP.2011.2109730
+[^4]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE Transactions on Image Processing, 
+15(2), 430–444. https://doi.org/10.1109/TIP.2005.859378
+[^5]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for perceptual image quality 
+assessment. IEEE Transactions on Image Processing, 23(10), 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
+[^6]: Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference image quality assessment and the 
+role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
+[^7]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE Transactions 
+on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
