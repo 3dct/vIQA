@@ -86,8 +86,8 @@ def _load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or
     return img_arr
 
 
-def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_range: int = 255, batch: bool = False,
-              normalize: bool = True) -> np.ndarray:
+def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_range: int = None, batch: bool = False,
+              normalize: bool = False) -> np.ndarray:
     """
     Loads data from a numpy array, a pytorch tensor or a file path.
     :param img: Numpy array, tensor or file path
@@ -119,6 +119,7 @@ def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_rang
         case _:
             raise Exception("Input type not supported")  # Raise exception if input type is not supported
 
+    # TODO add exceptions for data_range and normalize
     # Normalize data
     if normalize:
         img_arr = normalize_data(img_arr, data_range)
