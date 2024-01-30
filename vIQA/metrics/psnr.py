@@ -2,7 +2,28 @@
 
 Examples
 --------
-TODO: add examples
+>>> import numpy as np
+>>> from vIQA import PSNR
+>>> img_r = np.zeros((256, 256))
+>>> img_m = np.ones((256, 256))
+>>> psnr = PSNR(data_range=1, normalize=False)
+>>> psnr
+PSNR(score_val=None)
+>>> score = psnr.score(img_r, img_m)
+>>> score
+0.0
+>>> psnr.print_score()
+PSNR: 0.0
+>>> img_r = np.zeros((256, 256))
+>>> img_m = np.zeros((256, 256))
+>>> psnr.score(img_r, img_m)
+inf
+>>> img_r = np.random.rand(256, 256)
+>>> img_m = np.random.rand(128, 128)
+>>> psnr.score(img_r, img_m)
+Traceback (most recent call last):
+    ...
+ValueError: Image shapes do not match
 """
 
 # Authors
@@ -18,10 +39,11 @@ TODO: add examples
 #
 # License
 # -------
-# TODO: add license
+# BSD-3-Clause License
 
 from warnings import warn
 
+import numpy as np
 from skimage.metrics import peak_signal_noise_ratio
 
 from vIQA._metrics import FullReferenceMetricsInterface
@@ -87,7 +109,10 @@ class PSNR(FullReferenceMetricsInterface):
         img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
                                    normalize=self._parameters['normalize'], batch=self._parameters['batch'])
         # Calculate score
-        score_val = peak_signal_noise_ratio(img_r, img_m, data_range=self._parameters['data_range'])
+        if np.array_equal(img_r, img_m):
+            score_val = np.inf  # PSNR of identical images is infinity
+        else:
+            score_val = peak_signal_noise_ratio(img_r, img_m, data_range=self._parameters['data_range'])
         self.score_val = score_val
         return score_val
 
