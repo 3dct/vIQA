@@ -108,6 +108,8 @@ load_parameters = {'data_range': 1, 'normalize': True}
 
 psnr = vIQA.PSNR(**load_parameters)  # load_parameters necessary due to direct loading by class
                                      # also PSNR needs data_range to calculate the score
+                                     # if images would not be normalized, data_range should be
+                                     # 65535 for 16-bit images for correct calculation
 score = psnr.score(file_path_img_r, file_path_img_m)
 # --> images are loaded as 16-bit images and normalized to 0-1 via the `load_data` function 
 #     called by the score method
