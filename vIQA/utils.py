@@ -28,12 +28,14 @@ def _load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or
         f = open(file=file_path, mode="rt")  # Open header file
 
         file_header_txt = f.read().split("\n")  # Extract header lines
-        file_header = {key: value for line in file_header_txt[0:-1] for key, value in [line.split(" = ")]}  # Create dictionary from lines
+        # Create dictionary from lines
+        file_header = {key: value for line in file_header_txt[0:-1] for key, value in [line.split(" = ")]}
 
         data_file_path = os.path.join(file_dir, file_header["ElementDataFile"])  # Get data file path from header
 
         # Extract dimension
-        file_header.update({"DimSize": [int(val) for val in file_header["DimSize"].split()]})  # Change DimSize to type int
+        # Change DimSize to type int
+        file_header.update({"DimSize": [int(val) for val in file_header["DimSize"].split()]})
         dim_size = file_header["DimSize"]  # Get DimSize from header
 
         # Check bit depth
@@ -48,7 +50,7 @@ def _load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or
             raise Exception("Bit depth not supported")  # Raise exception if bit depth is not supported
     elif file_ext == '.raw':  # If file is a .raw file
         # Check dimension
-        dim_search_result = re.search("(\d+(x|_)\d+(x|_)\d+)", file_name_head)  # Search for dimension in file name
+        dim_search_result = re.search(r"(\d+([x_])\d+([x_])\d+)", file_name_head)  # Search for dimension in file name
         if dim_search_result is not None:  # If dimension was found
             dim = dim_search_result.group(1)  # Get dimension from file name
         else:
@@ -59,7 +61,7 @@ def _load_data_from_disk(file_dir: str or Path or os.PathLike, file_name: str or
         dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
 
         # Check bit depth
-        bit_depth_search_result = re.search("(\d{1,2}bit)", file_name_head)  # Search for bit depth in file name
+        bit_depth_search_result = re.search(r"(\d{1,2}bit)", file_name_head)  # Search for bit depth in file name
         if bit_depth_search_result is not None:  # If bit depth was found
             bit_depth = bit_depth_search_result.group(1)  # Get bit depth from file name
         else:
@@ -104,7 +106,8 @@ def load_data(img: np.ndarray or Tensor or str or Path or os.PathLike, data_rang
                 img_arr = []  # Initialize list for numpy arrays
                 # Load data from disk for each file
                 for file in files:
-                    img_arr.append(_load_data_from_disk(file_dir=os.path.dirname(file), file_name=os.path.basename(file)))
+                    img_arr.append(_load_data_from_disk(file_dir=os.path.dirname(file),
+                                                        file_name=os.path.basename(file)))
             else:
                 file_dir = os.path.dirname(img)
                 file_name = os.path.basename(img)
@@ -136,10 +139,10 @@ def _check_imgs(img_r, img_m, **kwargs) -> (np.ndarray, np.ndarray):
     img_m = load_data(img_m, **kwargs)
 
     if img_r.dtype != img_m.dtype:  # If image types do not match
-        raise Exception("Image types do not match")
+        raise ValueError("Image types do not match")
 
     if img_r.shape != img_m.shape:  # If image shapes do not match
-        raise Exception("Image shapes do not match")
+        raise ValueError("Image shapes do not match")
     return img_r, img_m
 
 
@@ -363,7 +366,8 @@ def gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3,
     # convert image to frequency domain
     im_fft = fft.fftn(im)
 
-    # compute matrices of same site as im with values ranging from -0.5 to 0.5 (-1.0 to 1.0) for horizontal and vertical directions each
+    # compute matrices of same site as im with values ranging from -0.5 to 0.5 (-1.0 to 1.0) for horizontal and vertical
+    #   directions each
     if _is_even(cols):
         x_range = np.linspace(-cols/2, (cols-2)/2, cols) / (cols/2)
     else:
@@ -374,7 +378,8 @@ def gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3,
         y_range = np.linspace(-rows/2, rows/2, rows) / (rows/2)
     x, y = np.meshgrid(x_range, y_range)
 
-    # filters have radial component (frequency band) and an angular component (orientation), those are multiplied to get the final filter
+    # filters have radial component (frequency band) and an angular component (orientation), those are multiplied to
+    #   get the final filter
 
     # compute radial distance from center of matrix
     radius = np.sqrt(x**2 + y**2)
@@ -403,7 +408,9 @@ def gabor_convolve(im, scales_num: int, orientations_num: int, min_wavelength=3,
     for orientation_n, orientation in enumerate(orientations):  # for each orientation
         # compute angular component
         # Pre-compute filter data specific to this orientation
-        # For each point in the filter matrix calculate the angular distance from the specified filter orientation.  To overcome the angular wrap-around problem sine difference and cosine difference values are first computed and then the atan2 function is used to determine angular distance.
+        # For each point in the filter matrix calculate the angular distance from the specified filter orientation.
+        #   To overcome the angular wrap-around problem sine difference and cosine difference values are first computed
+        #   and then the atan2 function is used to determine angular distance.
         angle = orientation_n*np.pi / orientations_num  # filter angle
         diff_sin = sin_theta*np.cos(angle) - cos_theta*np.sin(angle)  # difference of sin
         diff_cos = cos_theta*np.cos(angle) + sin_theta*np.sin(angle)  # difference of cos
