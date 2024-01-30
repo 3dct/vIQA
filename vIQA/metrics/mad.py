@@ -101,9 +101,9 @@ class MAD(FullReferenceMetricsInterface):
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
         dim : {0, 1, 2}, optional
-            If given, the MAD is calculated only for the given slice of the 3D image.
+            MAD for 3D images is calculated as mean over all slices of the given dimension.
         im_slice : int, optional
-            If given, the MAD is calculated only for the given slice of the 3D image.
+            If given, MAD is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
             `vIQA.mad.most_apparent_disorder()`.
@@ -474,6 +474,7 @@ def _high_quality(img_r, img_m, **kwargs):
 
     # Use lmse and weight by distortion mask
     win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE ** 2
+    # TODO: test for other datatypes than uint8
     lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode='reflect')
 
     # Kill the edges
