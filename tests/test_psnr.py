@@ -45,7 +45,7 @@ def test_psnr_with_different_data_ranges():
     assert score1 != score2, 'PSNR should be different for different data ranges'
 
 
-def test_psnr_with_different_image_shapes():
+def test_psnr_with_different_sized_images():
     img1 = np.random.rand(100, 100)
     img2 = np.random.rand(100, 200)
     psnr = vIQA.PSNR(data_range=1, normalize=False)
