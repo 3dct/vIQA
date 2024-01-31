@@ -86,9 +86,10 @@ rmse = vIQA.RMSE()
 score_rmse = rmse.score(img_r, img_m)  # RMSE does not need any parameters
 rmse.print_score(decimals=2)
 
-# normalize to 16-bit, both functions have the same effect
+# normalize to 16-bit
 img_r = normalize_data(img_r, data_range=65535)
 img_m = load_data(img_m, data_range=65535, normalize=True)
+# --> both functions have the same effect
 
 # calculate and print PSNR score
 psnr = vIQA.PSNR(data_range=65535)  # PSNR needs data_range to calculate the score
