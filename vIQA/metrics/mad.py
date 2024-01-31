@@ -1,4 +1,4 @@
-"""Module for the most apparent disorder (MAD) metric.
+"""Module for the most apparent distortion (MAD) metric.
 
 Notes
 ------
@@ -44,7 +44,7 @@ STRIDE = 0
 
 
 class MAD(FullReferenceMetricsInterface):
-    """Class to calculate the most apparent disorder (MAD) between two images.
+    """Class to calculate the most apparent distortion (MAD) between two images.
 
     Parameters
     ----------
@@ -106,7 +106,7 @@ class MAD(FullReferenceMetricsInterface):
             If given, MAD is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `vIQA.mad.most_apparent_disorder()`.
+            `vIQA.mad.most_apparent_distortion()`.
 
         Returns
         -------
@@ -145,22 +145,22 @@ class MAD(FullReferenceMetricsInterface):
                 # Calculate MAD for given slice of given dimension
                 match dim:
                     case 0:
-                        score_val = most_apparent_disorder(img_r[im_slice, :, :], img_m[im_slice, :, :], **kwargs)
+                        score_val = most_apparent_distortion(img_r[im_slice, :, :], img_m[im_slice, :, :], **kwargs)
                     case 1:
-                        score_val = most_apparent_disorder(img_r[:, im_slice, :], img_m[:, im_slice, :], **kwargs)
+                        score_val = most_apparent_distortion(img_r[:, im_slice, :], img_m[:, im_slice, :], **kwargs)
                     case 2:
-                        score_val = most_apparent_disorder(img_r[:, :, im_slice], img_m[:, :, im_slice], **kwargs)
+                        score_val = most_apparent_distortion(img_r[:, :, im_slice], img_m[:, :, im_slice], **kwargs)
                     case _:
                         raise ValueError('Invalid dim value. Must be 0, 1 or 2.')
             elif dim and not im_slice:  # if dim is given, but im_slice is not, calculate MAD for full volume
-                score_val = most_apparent_disorder_3d(img_r, img_m, dim=dim, **kwargs)
+                score_val = most_apparent_distortion_3d(img_r, img_m, dim=dim, **kwargs)
             else:
                 raise ValueError('If images are 3D, dim and im_slice (optional) must be given.')
         elif img_r.ndim == 2:
             if dim or im_slice:
                 warn('dim and im_slice are ignored for 2D images.', RuntimeWarning)
             # Calculate MAD for 2D images
-            score_val = most_apparent_disorder(img_r, img_m, **kwargs)
+            score_val = most_apparent_distortion(img_r, img_m, **kwargs)
         else:
             raise ValueError('Images must be 2D or 3D.')
 
@@ -187,7 +187,7 @@ class MAD(FullReferenceMetricsInterface):
             warn('No score value for MAD. Run score() first.', RuntimeWarning)
 
 
-def most_apparent_disorder_3d(img_r, img_m, dim=2, **kwargs):
+def most_apparent_distortion_3d(img_r, img_m, dim=2, **kwargs):
     """Calculates the MAD for a 3D image.
 
     Parameters
@@ -200,7 +200,7 @@ def most_apparent_disorder_3d(img_r, img_m, dim=2, **kwargs):
         Dimension to calculate MAD for.
     **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `vIQA.mad.most_apparent_disorder()`.
+            `vIQA.mad.most_apparent_distortion()`.
 
     Returns
     -------
@@ -224,21 +224,21 @@ def most_apparent_disorder_3d(img_r, img_m, dim=2, **kwargs):
     match dim:
         case 0:
             for slice_ in range(x):
-                scores.append(most_apparent_disorder(img_r[slice_, :, :], img_m[slice_, :, :], **kwargs))
+                scores.append(most_apparent_distortion(img_r[slice_, :, :], img_m[slice_, :, :], **kwargs))
         case 1:
             for slice_ in range(y):
-                scores.append(most_apparent_disorder(img_r[:, slice_, :], img_m[:, slice_, :], **kwargs))
+                scores.append(most_apparent_distortion(img_r[:, slice_, :], img_m[:, slice_, :], **kwargs))
         case 2:
             for slice_ in range(z):
-                scores.append(most_apparent_disorder(img_r[:, :, slice_], img_m[:, :, slice_], **kwargs))
+                scores.append(most_apparent_distortion(img_r[:, :, slice_], img_m[:, :, slice_], **kwargs))
         case _:
             raise ValueError('Invalid dim value. Must be 0, 1 or 2.')
     return np.mean(np.array(scores))
 
 
-def most_apparent_disorder(img_r, img_m, block_size=16, block_overlap=0.75, beta_1=0.467, beta_2=0.130, thresh_1=None,
-                           thresh_2=None, **kwargs):
-    """Calculates the most apparent disorder (MAD) between two images.
+def most_apparent_distortion(img_r, img_m, block_size=16, block_overlap=0.75, beta_1=0.467, beta_2=0.130, thresh_1=None,
+                             thresh_2=None, **kwargs):
+    """Calculates the most apparent distortion (MAD) between two images.
 
     Parameters
     ----------
@@ -468,7 +468,7 @@ def _high_quality(img_r, img_m, **kwargs):
 
     ms_scale = kwargs.pop('ms_scale', 1)  # additional normalization parameter
     msk = np.zeros(c_err.shape)
-    _ = np.subtract(ci_err, tmp, out=msk, where=cond_1) # contrast of heavy distortion - (0.75 * contrast of ref)
+    _ = np.subtract(ci_err, tmp, out=msk, where=cond_1)  # contrast of heavy distortion - (0.75 * contrast of ref)
     _ = np.subtract(ci_err, cd_thresh, out=msk, where=cond_2)  # contrast of low distortion - threshold
     msk /= ms_scale
 
