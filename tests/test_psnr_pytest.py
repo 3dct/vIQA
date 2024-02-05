@@ -106,3 +106,5 @@ class TestPrinting():
             psnr.print_score()
             captured = capsys.readouterr()
             assert captured.out == 'PSNR: inf\n', 'Printed score should be 0.0'
+
+    # TODO: Add tests for different values of decimals

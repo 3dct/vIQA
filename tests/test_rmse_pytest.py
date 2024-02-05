@@ -99,3 +99,5 @@ class TestPrinting:
             rmse.print_score()
             captured = capsys.readouterr()
             assert captured.out == 'RMSE: 0.0\n', 'Printed score should be 0.0'
+
+    # TODO: Add tests for different values of decimals

@@ -282,7 +282,6 @@ def structural_similarity(
         gamma = int(gamma)
         warnings.warn("gamma is not an integer. Cast to int.")
 
-
     # ndimage filters need floating point data
     im1 = im1.astype(float_type, copy=False)
     im2 = im2.astype(float_type, copy=False)

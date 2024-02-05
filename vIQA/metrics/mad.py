@@ -695,6 +695,7 @@ def _get_statistics(image, block_size, stride):
                 for v in range(j, j + block_size):
                     mean += image[u, v]
             mean /= block_size ** 2
+            # TODO: vectorization with numpy
 
             # Calculate standard deviation, skewness and kurtosis for each block
             std = 0
