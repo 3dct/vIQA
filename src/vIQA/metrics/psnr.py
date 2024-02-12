@@ -92,7 +92,7 @@ class PSNR(FullReferenceMetricsInterface):
         self._parameters.update(**kwargs)
 
     def score(self, img_r, img_m):
-        """Calculates the peak signal-to-noise ratio (PSNR) between two images.
+        """Calculate the peak signal-to-noise ratio (PSNR) between two images.
 
         Parameters
         ----------
@@ -119,7 +119,7 @@ class PSNR(FullReferenceMetricsInterface):
         return score_val
 
     def print_score(self, decimals=2):
-        """Prints the PSNR score value of the last calculation.
+        """Print the PSNR score value of the last calculation.
 
         Parameters
         ----------

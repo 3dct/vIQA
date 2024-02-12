@@ -2,7 +2,7 @@
 TODO: Add package docstring
 """
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __author__ = 'Lukas Behammer'
 
 from .metrics import *

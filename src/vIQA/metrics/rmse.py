@@ -85,7 +85,7 @@ class RMSE(FullReferenceMetricsInterface):
         self._parameters.update(**kwargs)
 
     def score(self, img_r, img_m):
-        """Calculates the RMSE score between two images.
+        """Calculate the RMSE score between two images.
 
         Parameters
         ----------
@@ -109,7 +109,7 @@ class RMSE(FullReferenceMetricsInterface):
         return score_val
 
     def print_score(self, decimals=2):
-        """Prints the RMSE score value of the last calculation.
+        """Print the RMSE score value of the last calculation.
 
         Parameters
         ----------

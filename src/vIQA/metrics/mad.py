@@ -1,8 +1,8 @@
 """Module for the most apparent distortion (MAD) metric.
 
 Notes
-------
-The code is adapted from the original MATLAB code available under [1]_. \n
+-----
+The code is adapted from the original MATLAB code available under [1]_.
 
 References
 ----------
@@ -34,7 +34,14 @@ import numpy as np
 from scipy.ndimage import convolve
 
 from vIQA._metrics import FullReferenceMetricsInterface
-from vIQA.utils import _check_imgs, _to_float, extract_blocks, _ifft, _fft, gabor_convolve
+from vIQA.utils import (
+    _check_imgs,
+    _to_float,
+    extract_blocks,
+    _ifft,
+    _fft,
+    gabor_convolve,
+)
 
 # Global preinitialized variables
 M = 0
@@ -82,13 +89,12 @@ class MAD(FullReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
-        """Constructor method"""
-
+        """Constructor method."""
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)
         self._parameters.update(**kwargs)
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
-        """Calculates the MAD between two images.
+        """Calculate the MAD between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
         full volume or for a given slice of the image by setting the parameter `dim` to the desired dimension and
@@ -134,10 +140,14 @@ class MAD(FullReferenceMetricsInterface):
         im_slice is given, the MAD is calculated for the given slice of the given dimension (represents a 2D metric of
         the given slice).
         """
-
         # Check images
-        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(
+            img_r,
+            img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            batch=self._parameters["batch"],
+        )
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:
@@ -145,30 +155,40 @@ class MAD(FullReferenceMetricsInterface):
                 # Calculate MAD for given slice of given dimension
                 match dim:
                     case 0:
-                        score_val = most_apparent_distortion(img_r[im_slice, :, :], img_m[im_slice, :, :], **kwargs)
+                        score_val = most_apparent_distortion(
+                            img_r[im_slice, :, :], img_m[im_slice, :, :], **kwargs
+                        )
                     case 1:
-                        score_val = most_apparent_distortion(img_r[:, im_slice, :], img_m[:, im_slice, :], **kwargs)
+                        score_val = most_apparent_distortion(
+                            img_r[:, im_slice, :], img_m[:, im_slice, :], **kwargs
+                        )
                     case 2:
-                        score_val = most_apparent_distortion(img_r[:, :, im_slice], img_m[:, :, im_slice], **kwargs)
+                        score_val = most_apparent_distortion(
+                            img_r[:, :, im_slice], img_m[:, :, im_slice], **kwargs
+                        )
                     case _:
-                        raise ValueError('Invalid dim value. Must be 0, 1 or 2.')
-            elif dim and not im_slice:  # if dim is given, but im_slice is not, calculate MAD for full volume
+                        raise ValueError("Invalid dim value. Must be 0, 1 or 2.")
+            elif (
+                dim and not im_slice
+            ):  # if dim is given, but im_slice is not, calculate MAD for full volume
                 score_val = most_apparent_distortion_3d(img_r, img_m, dim=dim, **kwargs)
             else:
-                raise ValueError('If images are 3D, dim and im_slice (optional) must be given.')
+                raise ValueError(
+                    "If images are 3D, dim and im_slice (optional) must be given."
+                )
         elif img_r.ndim == 2:
             if dim or im_slice:
-                warn('dim and im_slice are ignored for 2D images.', RuntimeWarning)
+                warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
             score_val = most_apparent_distortion(img_r, img_m, **kwargs)
         else:
-            raise ValueError('Images must be 2D or 3D.')
+            raise ValueError("Images must be 2D or 3D.")
 
         self.score_val = score_val
         return score_val
 
     def print_score(self, decimals=2):
-        """Prints the MAD score value of the last calculation.
+        """Print the MAD score value of the last calculation.
 
         Parameters
         ----------
@@ -180,15 +200,14 @@ class MAD(FullReferenceMetricsInterface):
         RuntimeWarning
             If no score value is available. Run score() first.
         """
-
         if self.score_val is not None:
-            print('MAD: {}'.format(round(self.score_val, decimals)))
+            print("MAD: {}".format(round(self.score_val, decimals)))
         else:
-            warn('No score value for MAD. Run score() first.', RuntimeWarning)
+            warn("No score value for MAD. Run score() first.", RuntimeWarning)
 
 
 def most_apparent_distortion_3d(img_r, img_m, dim=2, **kwargs):
-    """Calculates the MAD for a 3D image.
+    """Calculate the MAD for a 3D image.
 
     Parameters
     ----------
@@ -217,28 +236,48 @@ def most_apparent_distortion_3d(img_r, img_m, dim=2, **kwargs):
     .. [1] Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference image quality assessment
            and the role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
     """
-
     x, y, z = img_r.shape  # get image dimensions
     scores = []
     # Calculate MAD for all slices of the given dimension
     match dim:
         case 0:
             for slice_ in range(x):
-                scores.append(most_apparent_distortion(img_r[slice_, :, :], img_m[slice_, :, :], **kwargs))
+                scores.append(
+                    most_apparent_distortion(
+                        img_r[slice_, :, :], img_m[slice_, :, :], **kwargs
+                    )
+                )
         case 1:
             for slice_ in range(y):
-                scores.append(most_apparent_distortion(img_r[:, slice_, :], img_m[:, slice_, :], **kwargs))
+                scores.append(
+                    most_apparent_distortion(
+                        img_r[:, slice_, :], img_m[:, slice_, :], **kwargs
+                    )
+                )
         case 2:
             for slice_ in range(z):
-                scores.append(most_apparent_distortion(img_r[:, :, slice_], img_m[:, :, slice_], **kwargs))
+                scores.append(
+                    most_apparent_distortion(
+                        img_r[:, :, slice_], img_m[:, :, slice_], **kwargs
+                    )
+                )
         case _:
-            raise ValueError('Invalid dim value. Must be 0, 1 or 2.')
+            raise ValueError("Invalid dim value. Must be 0, 1 or 2.")
     return np.mean(np.array(scores))
 
 
-def most_apparent_distortion(img_r, img_m, block_size=16, block_overlap=0.75, beta_1=0.467, beta_2=0.130, thresh_1=None,
-                             thresh_2=None, **kwargs):
-    """Calculates the most apparent distortion (MAD) between two images.
+def most_apparent_distortion(
+    img_r,
+    img_m,
+    block_size=16,
+    block_overlap=0.75,
+    beta_1=0.467,
+    beta_2=0.130,
+    thresh_1=None,
+    thresh_2=None,
+    **kwargs,
+):
+    """Calculate the most apparent distortion (MAD) between two images.
 
     Parameters
     ----------
@@ -315,7 +354,6 @@ def most_apparent_distortion(img_r, img_m, block_size=16, block_overlap=0.75, be
            and the role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
     .. [2] Larson, E. C. (2008). http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07)
     """
-
     # Authors
     # -------
     # Author: Eric Larson
@@ -340,7 +378,7 @@ def most_apparent_distortion(img_r, img_m, block_size=16, block_overlap=0.75, be
     if block_size > 0:
         BLOCK_SIZE = block_size
     else:
-        raise ValueError('block_size must be positive.')
+        raise ValueError("block_size must be positive.")
     STRIDE = BLOCK_SIZE - int(block_overlap * BLOCK_SIZE)
     global M, N
     M, N = img_r.shape
@@ -356,23 +394,22 @@ def most_apparent_distortion(img_r, img_m, block_size=16, block_overlap=0.75, be
     d_appear = _low_quality(img_r, img_m, **kwargs)
 
     # Combine single metrics with weighting
-    alpha = 1 / (1 + beta_1 * d_detect ** beta_2)  # weighting factor
-    mad_index = d_detect ** alpha * d_appear ** (1 - alpha)
+    alpha = 1 / (1 + beta_1 * d_detect**beta_2)  # weighting factor
+    mad_index = d_detect**alpha * d_appear ** (1 - alpha)
     return mad_index
 
 
 def _high_quality(img_r, img_m, **kwargs):
-    """Calculates the high quality index of MAD.
+    """Calculate the high quality index of MAD.
 
     Notes
-    ------
-    The code is adapted from the original MATLAB code available under [1]_. \n
+    -----
+    The code is adapted from the original MATLAB code available under [1]_.
 
     References
     ----------
     .. [1] Larson, E. C. (2008). http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07)
     """
-
     # Authors
     # -------
     # Author: Eric Larson
@@ -391,22 +428,34 @@ def _high_quality(img_r, img_m, **kwargs):
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
-    account_monitor = kwargs.pop('account_monitor', False)
+    account_monitor = kwargs.pop("account_monitor", False)
     # Account for display function of monitor
     if account_monitor:
-        assert 'display_function' in kwargs, 'If account_monitor is True, display_function must be given.'
-        display_function = kwargs.pop('display_function')
-        cycles_per_degree = (display_function['disp_res']*display_function['view_dis']*np.tan(np.pi/180))/2
+        if "display_function" not in kwargs:
+            raise Exception(
+                "If account_monitor is True, display_function must be given."
+            )
+        display_function = kwargs.pop("display_function")
+        cycles_per_degree = (
+            display_function["disp_res"]
+            * display_function["view_dis"]
+            * np.tan(np.pi / 180)
+        ) / 2
     else:
         cycles_per_degree = 32
 
-    csf_function = kwargs.pop('csf_function', {'lambda_': 0.114, 'f_peak': 7.8909})
+    csf_function = kwargs.pop("csf_function", {"lambda_": 0.114, "f_peak": 7.8909})
     # Calculate contrast sensitivity function
-    csf = _contrast_sensitivity_function(M, N, cycles_per_degree, lambda_=csf_function['lambda_'],
-                                         f_peak=csf_function['f_peak'])
+    csf = _contrast_sensitivity_function(
+        M,
+        N,
+        cycles_per_degree,
+        lambda_=csf_function["lambda_"],
+        f_peak=csf_function["f_peak"],
+    )
 
     # Convert to perceived lightness
-    luminance_function = kwargs.pop('luminance_function', {'k': 0.02874, 'gamma': 2.2})
+    luminance_function = kwargs.pop("luminance_function", {"k": 0.02874, "gamma": 2.2})
 
     lum_r = _pixel_to_lightness(img_r, **luminance_function)
     lum_m = _pixel_to_lightness(img_m, **luminance_function)
@@ -415,10 +464,10 @@ def _high_quality(img_r, img_m, **kwargs):
     lum_r_fft = _fft(lum_r)
     lum_m_fft = _fft(lum_m)
 
-    i_org = np.real(_ifft(csf*lum_r_fft))
-    i_dst = np.real(_ifft(csf*lum_m_fft))
+    i_org = np.real(_ifft(csf * lum_r_fft))
+    i_dst = np.real(_ifft(csf * lum_m_fft))
 
-    i_err = i_dst-i_org  # error image
+    i_err = i_dst - i_org  # error image
 
     # Contrast masking
     i_org_blocks = extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
@@ -435,10 +484,10 @@ def _high_quality(img_r, img_m, **kwargs):
 
     # Assign local statistics to image blocks of size stride x stride
     block_n = 0
-    for x in range(0, i_org.shape[0] - STRIDE*3, STRIDE):
-        for y in range(0, i_org.shape[1] - STRIDE*3, STRIDE):
-            mu_org[x:x+STRIDE, y:y+STRIDE] = mu_org_p[block_n]
-            std_err[x:x+STRIDE, y:y+STRIDE] = std_err_p[block_n]
+    for x in range(0, i_org.shape[0] - STRIDE * 3, STRIDE):
+        for y in range(0, i_org.shape[1] - STRIDE * 3, STRIDE):
+            mu_org[x : x + STRIDE, y : y + STRIDE] = mu_org_p[block_n]
+            std_err[x : x + STRIDE, y : y + STRIDE] = std_err_p[block_n]
             block_n += 1
     del mu_org_p, std_err_p  # free memory
 
@@ -462,42 +511,47 @@ def _high_quality(img_r, img_m, **kwargs):
     c_slope = 1
     ci_thresh = -5
     cd_thresh = -5
-    tmp = c_slope*(ci_org-ci_thresh) + cd_thresh
+    tmp = c_slope * (ci_org - ci_thresh) + cd_thresh
     cond_1 = np.logical_and(ci_err > tmp, ci_org > ci_thresh)
     cond_2 = np.logical_and(ci_err > cd_thresh, ci_thresh >= ci_org)
 
-    ms_scale = kwargs.pop('ms_scale', 1)  # additional normalization parameter
+    ms_scale = kwargs.pop("ms_scale", 1)  # additional normalization parameter
     msk = np.zeros(c_err.shape)
-    _ = np.subtract(ci_err, tmp, out=msk, where=cond_1)  # contrast of heavy distortion - (0.75 * contrast of ref)
-    _ = np.subtract(ci_err, cd_thresh, out=msk, where=cond_2)  # contrast of low distortion - threshold
+    _ = np.subtract(
+        ci_err, tmp, out=msk, where=cond_1
+    )  # contrast of heavy distortion - (0.75 * contrast of ref)
+    _ = np.subtract(
+        ci_err, cd_thresh, out=msk, where=cond_2
+    )  # contrast of low distortion - threshold
     msk /= ms_scale
 
     # Use lmse and weight by distortion mask
-    win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE ** 2
+    win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE**2
     # TODO: test for other datatypes than uint8
-    lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode='reflect')
+    lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode="reflect")
 
     # Kill the edges
     mp = msk * lmse
     mp2 = mp[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
 
     # Calculate high quality index by using the 2-norm
-    d_detect = np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200  # fixed factor of 200
+    d_detect = (
+        np.linalg.norm(mp2) / np.sqrt(np.prod(mp2.shape)) * 200
+    )  # fixed factor of 200
     return d_detect
 
 
 def _low_quality(img_r, img_m, **kwargs):
-    """Calculates the low quality index of MAD.
+    """Calculate the low quality index of MAD.
 
     Notes
-    ------
-    The code is adapted from the original MATLAB code available under [1]_. \n
+    -----
+    The code is adapted from the original MATLAB code available under [1]_.
 
     References
     ----------
     .. [1] Larson, E. C. (2008). http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07)
     """
-
     # Authors
     # -------
     # Author: Eric Larson
@@ -516,30 +570,53 @@ def _low_quality(img_r, img_m, **kwargs):
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
 
-    orientations_num = kwargs.pop('orientations_num', 4)
-    scales_num = kwargs.pop('scales_num', 5)
-    weights = kwargs.pop('weights', [0.5, 0.75, 1, 5, 6])
+    orientations_num = kwargs.pop("orientations_num", 4)
+    scales_num = kwargs.pop("scales_num", 5)
+    weights = kwargs.pop("weights", [0.5, 0.75, 1, 5, 6])
     weights /= np.sum(weights)
     if len(weights) != scales_num:
-        raise ValueError('weights must be of length scales_num.')
+        raise ValueError("weights must be of length scales_num.")
 
     # Decompose using log-Gabor filters
-    gabor_org = gabor_convolve(img_m, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
-                               wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
-    gabor_dst = gabor_convolve(img_r, scales_num=scales_num, orientations_num=orientations_num, min_wavelength=3,
-                               wavelength_scaling=3, bandwidth_param=0.55, d_theta_on_sigma=1.5)
+    gabor_org = gabor_convolve(
+        img_m,
+        scales_num=scales_num,
+        orientations_num=orientations_num,
+        min_wavelength=3,
+        wavelength_scaling=3,
+        bandwidth_param=0.55,
+        d_theta_on_sigma=1.5,
+    )
+    gabor_dst = gabor_convolve(
+        img_r,
+        scales_num=scales_num,
+        orientations_num=orientations_num,
+        min_wavelength=3,
+        wavelength_scaling=3,
+        bandwidth_param=0.55,
+        d_theta_on_sigma=1.5,
+    )
 
     # Calculate statistics for each filterband
     stats = np.zeros((M, N))
     for scale_n in range(scales_num):
         for orientation_n in range(orientations_num):
-            std_ref, skw_ref, krt_ref = _get_statistics(np.abs(gabor_org[scale_n, orientation_n]),
-                                                        block_size=BLOCK_SIZE, stride=STRIDE)
-            std_dst, skw_dst, krt_dst = _get_statistics(np.abs(gabor_dst[scale_n, orientation_n]),
-                                                        block_size=BLOCK_SIZE, stride=STRIDE)
+            std_ref, skw_ref, krt_ref = _get_statistics(
+                np.abs(gabor_org[scale_n, orientation_n]),
+                block_size=BLOCK_SIZE,
+                stride=STRIDE,
+            )
+            std_dst, skw_dst, krt_dst = _get_statistics(
+                np.abs(gabor_dst[scale_n, orientation_n]),
+                block_size=BLOCK_SIZE,
+                stride=STRIDE,
+            )
             # Combine statistics
             stats += weights[scale_n] * (
-                        np.abs(std_ref - std_dst) + 2 * np.abs(skw_ref - skw_dst) + np.abs(krt_ref - krt_dst))
+                np.abs(std_ref - std_dst)
+                + 2 * np.abs(skw_ref - skw_dst)
+                + np.abs(krt_ref - krt_dst)
+            )
 
     # Kill the edges
     mp2 = stats[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
@@ -550,8 +627,7 @@ def _low_quality(img_r, img_m, **kwargs):
 
 
 def _pixel_to_lightness(img, b=0, k=0.02874, gamma=2.2):
-    """Converts an image to perceived lightness."""
-
+    """Convert an image to perceived lightness."""
     # Authors
     # -------
     # Author: Eric Larson
@@ -573,26 +649,25 @@ def _pixel_to_lightness(img, b=0, k=0.02874, gamma=2.2):
     if issubclass(img.dtype.type, np.integer):  # if image is integer
         # Create LUT
         lut = np.arange(0, 256)
-        lut = b + k * lut**(gamma/3)
+        lut = b + k * lut ** (gamma / 3)
         img_lum = lut[img]  # apply LUT
     else:  # if image is float
-        img_lum = b + k * img**(gamma/3)
+        img_lum = b + k * img ** (gamma / 3)
     return img_lum
 
 
 def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
     """
-    Calculates the contrast sensitivity function.
+    Calculate the contrast sensitivity function.
 
     Notes
-    ------
-    The code is adapted from the original MATLAB code available under [1]_. \n
+    -----
+    The code is adapted from the original MATLAB code available under [1]_.
 
     References
     ----------
     .. [1] Larson, E. C. (2008). http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07)
     """
-
     # Authors
     # -------
     # Author: Eric Larson
@@ -612,8 +687,10 @@ def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
     # Translated to Python, 2024, Lukas Behammer
 
     # Create a meshgrid that represents the spatial domain of the image.
-    x_plane, y_plane = np.meshgrid(np.arange(-n/2 + 0.5, n/2 + 0.5), np.arange(-m/2 + 0.5, m/2 + 0.5))
-    plane = (x_plane + 1j*y_plane)*2 * nfreq/n  # convert to frequency domain
+    x_plane, y_plane = np.meshgrid(
+        np.arange(-n / 2 + 0.5, n / 2 + 0.5), np.arange(-m / 2 + 0.5, m / 2 + 0.5)
+    )
+    plane = (x_plane + 1j * y_plane) * 2 * nfreq / n  # convert to frequency domain
     rad_freq = np.abs(plane)  # radial frequency
 
     # w is a symmetry parameter that gives approx. 3dB down along the diagonals
@@ -621,95 +698,97 @@ def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
     theta = np.angle(plane)
     # s is a function of theta that adjusts the radial frequency based on the direction of each point in the frequency
     # domain.
-    s = ((1-w)/2)*np.cos(4*theta) + ((1+w)/2)
+    s = ((1 - w) / 2) * np.cos(4 * theta) + ((1 + w) / 2)
     rad_freq /= s
 
     # Parameters for the contrast sensitivity function
-    lambda_ = kwargs.pop('lambda_', 0.114)
-    f_peak = kwargs.pop('f_peak', 7.8909)
+    lambda_ = kwargs.pop("lambda_", 0.114)
+    f_peak = kwargs.pop("f_peak", 7.8909)
     # Calculate contrast sensitivity function
     cond = rad_freq < f_peak
-    csf = 2.6*(0.0192 + lambda_*rad_freq)*np.exp(-(lambda_*rad_freq)**1.1)
+    csf = 2.6 * (0.0192 + lambda_ * rad_freq) * np.exp(-((lambda_ * rad_freq) ** 1.1))
     csf[cond] = 0.9809
     return csf
 
 
-def _min_std(image, block_size, stride):
-    """Calculates the minimum standard deviation of blocks of a given image."""
-
+def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
+    """Calculate the minimum standard deviation of blocks of a given image."""
     # Preallocate arrays
     tmp = np.empty(image.shape)
     stdout = np.empty(image.shape)
     # For each area of size stride x stride
-    for i in range(0, M-(block_size-1), stride):
-        for j in range(0, N-(block_size-1), stride):
+    for i in range(0, M - (block_size - 1), stride):
+        for j in range(0, N - (block_size - 1), stride):
             # Calculate mean for each block
-            mean = 0
-            for u in range(i, i+(block_size//2)):
-                for v in range(j, j+(block_size//2)):
+            mean = 0.0
+            for u in range(i, i + (block_size // 2)):
+                for v in range(j, j + (block_size // 2)):
                     mean += image[u, v]
             mean /= 64
 
             # Calculate standard deviation for each block
-            stdev = 0
-            for u in range(i, i+(block_size//2)):
-                for v in range(j, j+(block_size//2)):
-                    stdev += (image[u, v]-mean)**2
-            stdev = np.sqrt(stdev/63)
+            stdev = 0.0
+            for u in range(i, i + (block_size // 2)):
+                for v in range(j, j + (block_size // 2)):
+                    stdev += (image[u, v] - mean) ** 2
+            stdev = np.sqrt(stdev / 63)
 
             # Assign values to temp array and output array
-            for u in range(i, i+stride):
-                for v in range(j, j+stride):
+            for u in range(i, i + stride):
+                for v in range(j, j + stride):
                     tmp[u, v] = stdev
                     stdout[u, v] = stdev  # preassign
 
     # Calculate minimum standard deviation for each area
-    for i in range(0, M-(block_size-1), stride):
-        for j in range(0, N-(block_size-1), stride):
+    for i in range(0, M - (block_size - 1), stride):
+        for j in range(0, N - (block_size - 1), stride):
             # Look for minimum standard deviation in blocks of size stride x stride
             val = tmp[i, j]
-            for u in range(i, i+(block_size//2), stride+1):
-                for v in range(j, j+(block_size//2), stride+1):
+            for u in range(i, i + (block_size // 2), stride + 1):
+                for v in range(j, j + (block_size // 2), stride + 1):
                     if tmp[u, v] < val:
                         val = tmp[u, v]
             # Assign minimum standard deviation to output array
-            for u in range(i, i+(block_size//2)):
-                for v in range(j, j+(block_size//2)):
+            for u in range(i, i + (block_size // 2)):
+                for v in range(j, j + (block_size // 2)):
                     stdout[u, v] = val
     return stdout
 
 
-def _get_statistics(image, block_size, stride):
-    """Calculates the statistics of blocks of a given image."""
-
+def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
+    """Calculate the statistics of blocks of a given image."""
     # Preallocate arrays
     stdout = np.empty(image.shape)
     skwout = np.empty(image.shape)
     krtout = np.empty(image.shape)
     # For each area of size stride x stride
-    for i in range(0, M-(block_size-1), stride):
-        for j in range(0, N-(block_size-1), stride):
+    for i in range(0, M - (block_size - 1), stride):
+        for j in range(0, N - (block_size - 1), stride):
             # Calculate mean for each block
-            mean = 0
+            mean = 0.0
             for u in range(i, i + block_size):
                 for v in range(j, j + block_size):
                     mean += image[u, v]
-            mean /= block_size ** 2
+            mean /= block_size**2
             # TODO: vectorization with numpy
 
             # Calculate standard deviation, skewness and kurtosis for each block
-            std = 0
-            skw = 0
-            krt = 0
+            std = 0.0
+            skw = 0.0
+            krt = 0.0
             for u in range(i, i + block_size):
                 for v in range(j, j + block_size):
                     # Calculate numerators
-                    tmp = (image[u, v] - mean)
-                    std += tmp ** 2
-                    skw += tmp ** 3
-                    krt += tmp ** 4
-            stmp = np.sqrt(std / (block_size**2))  # temporary variable for denominator calculation
-            stdev = np.sqrt(std / (block_size**2 - 1))  # no denominator needed for standard deviation
+                    tmp = image[u, v] - mean
+                    std += tmp**2
+                    skw += tmp**3
+                    krt += tmp**4
+            stmp = np.sqrt(
+                std / (block_size**2)
+            )  # temporary variable for denominator calculation
+            stdev = np.sqrt(
+                std / (block_size**2 - 1)
+            )  # no denominator needed for standard deviation
 
             # Avoid division by zero
             if stmp != 0:  # if denominator is not zero
@@ -722,7 +801,7 @@ def _get_statistics(image, block_size, stride):
                 krt = 0
 
             # Assign values to output arrays
-            stdout[i:i+stride, j:j+stride] = stdev
-            skwout[i:i+stride, j:j+stride] = skw
-            krtout[i:i+stride, j:j+stride] = krt
+            stdout[i : i + stride, j : j + stride] = stdev
+            skwout[i : i + stride, j : j + stride] = skw
+            krtout[i : i + stride, j : j + stride] = krt
     return stdout, skwout, krtout
