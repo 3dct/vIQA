@@ -1,0 +1,143 @@
+[project]
+name = "vIQA"
+version = "0.2.0"
+description = "A Python package for volumetric image quality assessment"
+authors = [
+    { name = "Lukas Behammer", email = "lukas.behammer@fh-wels.at" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = [
+    "IQA",
+    "image quality assessment",
+    "volumetric data",
+    "image comparison",
+    "CT",
+    "computed tomography",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Private :: Do Not Upload"
+]
+license = { file = "LICENSE.txt" }
+dependencies = [
+    "scipy",
+    "numpy",
+    "torch",
+    "piq",
+    "scikit-image",
+]
+
+#[project.urls]
+
+[build-system]
+requires = ["meson-python"]
+build-backend = "mesonpy"
+
+######################################################################
+# PDM
+#[tool.pdm]
+
+[tool.pdm.dev-dependencies]
+tests = [
+    "pytest",
+    "pytest-cov",
+    "tox",
+    "tox-pdm",
+]
+lint = [
+    "mypy",
+    "ruff",
+    "pre-commit",
+]
+docs = [
+    "sphinx",
+    # sphinx napoleon,
+]
+dev = [
+    "packageName[tests, lint, docs]",
+    "meson-python",
+    "pdm",
+    "build",
+]
+
+[tool.pdm.scripts]
+pre-commit = "pre-commit run --all-files"
+#docs = "sphinx-build -M html docs/source docs/build"
+#docs = "make html"
+
+######################################################################
+# Ruff
+[tool.ruff]
+extend-include = ["*.ipynb"]
+extend-exclude = [".git"]
+per-file-ignores = {"__init__.py" = ["F403"]}
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "ARG",
+    "B",
+    "C4",
+    "CPY",
+    "D",
+    "E",
+    "F",
+    "I",
+    "N",
+    "W",
+    "C901",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"  # Accepts: "google", "numpy", or "pep257".
+
+[tool.ruff.isort]
+known-first-party = ["src/vIQA"]
+
+[tool.ruff.format]
+exclude = ["*.ipybn"]
+
+######################################################################
+# MyPy
+[tool.mypy]
+exclude = [
+    "tests",
+    "docs",
+    "build",
+    "dist",
+    "_private_tests"
+]
+strict = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = [
+    "scipy",
+    "scipy.ndimage",
+    "scipy.fft",
+    "piq",
+]
+ignore_missing_imports = true
+
+######################################################################
+# PyTest
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+
+######################################################################
+# Coverage
+[tool.coverage.run]
+source = "src/vIQA"
+omit = [
+    "src/vIQA/_private_tests/*",
+    "src/vIQA/tests/*",
+    "*/sphinxext/*",
+    "*/tmp/tmp*.py",
+]

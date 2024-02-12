@@ -1,7 +1,0 @@
-scipy~=1.11.4
-numpy~=1.26.2
-torch~=2.1.2
-piq~=0.8.0
-scikit-image~=0.22.0
-pytest~=8.0.0
-setuptools~=68.2.2
