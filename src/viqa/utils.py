@@ -2,16 +2,15 @@ import math
 import os
 import re
 import glob
-import numpy as np
-from pathlib import Path
+from warnings import warn
+from typing import Tuple
 
 from torch import Tensor
+import numpy as np
 import scipy.fft as fft
 
 
-def _load_data_from_disk(
-    file_dir: str or Path or os.PathLike, file_name: str or Path or os.PathLike
-) -> np.ndarray:
+def _load_data_from_disk(file_dir, file_name):
     """
     Loads data from a .mhd file and its corresponding .raw file or a .raw file only and normalizes it.
     :param file_dir: Directory of the file
@@ -59,7 +58,7 @@ def _load_data_from_disk(
         else:
             raise Exception(
                 "Bit depth not supported"
-            )  # Raise exception if bit depth is not supported
+            )  # Raise exception if the bit depth is not supported
     elif file_ext == ".raw":  # If file is a .raw file
         # Check dimension
         dim_search_result = re.search(
@@ -73,15 +72,17 @@ def _load_data_from_disk(
             )  # Raise exception if no dimension was found
 
         # Extract dimension
-        dim_size = re.split("x|_", dim)  # Split dimension string into list
+        dim_size = re.split("[x_]", dim)  # Split dimension string into list
         dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
 
         # Check bit depth
         bit_depth_search_result = re.search(
             r"(\d{1,2}bit)", file_name_head
-        )  # Search for bit depth in file name
-        if bit_depth_search_result is not None:  # If bit depth was found
-            bit_depth = bit_depth_search_result.group(1)  # Get bit depth from file name
+        )  # Search for the bit depth in file name
+        if bit_depth_search_result is not None:  # If the bit depth was found
+            bit_depth = bit_depth_search_result.group(
+                1
+            )  # Get the bit depth from file name
         else:
             raise Exception(
                 "No bit depth found"
@@ -95,7 +96,7 @@ def _load_data_from_disk(
         else:
             raise Exception(
                 "Bit depth not supported"
-            )  # Raise exception if bit depth is not supported
+            )  # Raise exception if the bit depth is not supported
 
         data_file_path = os.path.join(file_dir, file_name)  # Get data file path
     else:
@@ -115,11 +116,11 @@ def _load_data_from_disk(
 
 
 def load_data(
-    img: np.ndarray or Tensor or str or Path or os.PathLike,
-    data_range: int = None,
+    img: np.ndarray | Tensor | str | os.PathLike,
+    data_range: int | None = None,
     batch: bool = False,
     normalize: bool = False,
-) -> np.ndarray:
+) -> list | np.ndarray:
     """
     Loads data from a numpy array, a pytorch tensor or a file path.
     :param img: Numpy array, tensor or file path
@@ -129,12 +130,14 @@ def load_data(
     :return: Numpy array containing the data
     """
 
+    img_arr: list[np.ndarray] | np.ndarray
     # Check input type
     match img:
-        case str() | Path() | os.PathLike():  # If input is a file path
+        case str() | os.PathLike():  # If input is a file path
             # Check if batch
             if batch:
-                files = glob.glob(img)  # Get all files in directory
+                # Get all files in directory
+                files = glob.glob(img)  # type: ignore[type-var]
                 img_arr = []  # Initialize list for numpy arrays
                 # Load data from disk for each file
                 for file in files:
@@ -159,15 +162,32 @@ def load_data(
                 "Input type not supported"
             )  # Raise exception if input type is not supported
 
-    # TODO add exceptions for data_range and normalize
+    # exceptions and warning for data_range and normalize
+    if normalize and data_range is None:
+        raise ValueError("Parameter data_range must be set if normalize is True.")
+    if not normalize and data_range is not None:
+        warn(
+            "Parameter data_range is set but normalize is False. Parameter data_range will be ignored."
+        )
+
     # Normalize data
     if normalize:
-        img_arr = normalize_data(img_arr, data_range)
+        if batch:
+            img_arr = [
+                normalize_data(img, data_range)  # type: ignore[arg-type]
+                for img in img_arr
+            ]
+        else:
+            img_arr = normalize_data(img_arr, data_range)  # type: ignore[arg-type]
 
     return img_arr
 
 
-def _check_imgs(img_r, img_m, **kwargs) -> (np.ndarray, np.ndarray):
+def _check_imgs(
+    img_r: np.ndarray | Tensor | str | os.PathLike,
+    img_m: np.ndarray | Tensor | str | os.PathLike,
+    **kwargs,
+) -> Tuple[list | np.ndarray, list | np.ndarray]:
     """
     Checks if two images are of the same type and shape.
     :param img_r: reference image
@@ -176,18 +196,39 @@ def _check_imgs(img_r, img_m, **kwargs) -> (np.ndarray, np.ndarray):
     """
 
     # load images
-    img_r = load_data(img_r, **kwargs)
-    img_m = load_data(img_m, **kwargs)
+    img_r_loaded = load_data(img_r, **kwargs)
+    img_m_loaded = load_data(img_m, **kwargs)
 
-    if img_r.dtype != img_m.dtype:  # If image types do not match
-        raise ValueError("Image types do not match")
+    if isinstance(img_r_loaded, np.ndarray) and isinstance(
+        img_m_loaded, np.ndarray
+    ):  # If both images are numpy arrays
+        # Check if images are of the same type and shape
+        if img_r_loaded.dtype != img_m_loaded.dtype:  # If image types do not match
+            raise ValueError("Image types do not match")
+        if img_r_loaded.shape != img_m_loaded.shape:  # If image shapes do not match
+            raise ValueError("Image shapes do not match")
+    elif type(img_r_loaded) is not type(img_m_loaded):  # If image types do not match
+        raise ValueError(
+            "Image types do not match. img_r is of type {type(img_r_loaded)} and img_m is of type {type("
+            "img_m_loaded)}"
+        )
+    else:  # If both images are lists or else
+        if len(img_r_loaded) != len(img_m_loaded):  # If number of images do not match
+            raise ValueError(
+                "Number of images do not match. img_r has {len(img_r_loaded)} images and img_m has {len("
+                "img_m_loaded)} images"
+            )
+        for img_a, img_b in zip(
+            img_r_loaded, img_m_loaded
+        ):  # For each image in the list
+            if img_a.dtype != img_b.dtype:  # If image types do not match
+                raise ValueError("Image types do not match")
+            if img_a.dtype != img_b.shape:  # If image shapes do not match
+                raise ValueError("Image shapes do not match")
+    return img_r_loaded, img_m_loaded
 
-    if img_r.shape != img_m.shape:  # If image shapes do not match
-        raise ValueError("Image shapes do not match")
-    return img_r, img_m
 
-
-def normalize_data(img_arr, data_range):
+def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     """
     Normalizes a numpy array to a given data range.
     :param img_arr: Input numpy array
@@ -196,9 +237,9 @@ def normalize_data(img_arr, data_range):
     """
     # Check data type
     if np.issubdtype(img_arr.dtype, np.integer):  # If data type is integer
-        info = np.iinfo(img_arr.dtype)
+        info = np.iinfo(img_arr.dtype)  # type: ignore[assignment]
     elif np.issubdtype(img_arr.dtype, np.floating):  # If data type is float
-        info = np.finfo(img_arr.dtype)
+        info = np.finfo(img_arr.dtype)  # type: ignore[assignment]
     else:
         raise Exception("Data type not supported")
 
@@ -276,12 +317,19 @@ def correlate_convolve_abs(
             # Check if 2D or 3D
             if ndim == 3:
                 for n in range(0, img.shape[2]):
-                    res[k, m, n] = np.mean(abs(kernel * origin[k:k+kernel_size,
-                                                               m:m+kernel_size,
-                                                               n:n+kernel_size]))
+                    res[k, m, n] = np.mean(
+                        abs(
+                            kernel
+                            * origin[
+                                k : k + kernel_size,
+                                m : m + kernel_size,
+                                n : n + kernel_size,
+                            ]
+                        )
+                    )
             elif ndim == 2:
                 res[k, m] = np.mean(
-                    abs(kernel * origin[k:k+kernel_size, m:m+kernel_size])
+                    abs(kernel * origin[k : k + kernel_size, m : m + kernel_size])
                 )
             else:
                 raise Exception("Number of dimensions not supported")
@@ -301,7 +349,7 @@ def extract_blocks(img, block_size, stride):
     m, n = img.shape
     for i in range(0, m - (block_size - 1), stride):
         for j in range(0, n - (block_size - 1), stride):
-            boxes.append(img[i:i+block_size, j:j+block_size])
+            boxes.append(img[i : i + block_size, j : j + block_size])
     return np.array(boxes)
 
 
