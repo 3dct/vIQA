@@ -42,13 +42,11 @@ The metrics used are:
 The following packages have to be installed:
 - numpy
 - scipy
-- matplotlib
 - pytorch
 - piq
 - scikit-image
+- matplotlib
 - jupyter
-- pytest
-- setuptools
 
 <!-- ## Documentation TODO: add link to documentation -->
 
@@ -69,20 +67,22 @@ necessary to calculate the score (e.g. PSNR).
 
 ### Examples
 Better:
+
 ```python
-import vIQA
-from vIQA import load_data
-from vIQA.utils import normalize_data
+import viqa
+from viqa import load_data
+from viqa.utils import normalize_data
 
 ## load images
 file_path_img_r = 'path/to/reference_image_8bit.raw'
 file_path_img_m = 'path/to/modified_image_8bit.raw'
-img_r = load_data(file_path_img_r, data_range=1, normalize=False, batch=False)  # data_range ignored due to normalize=False
+img_r = load_data(file_path_img_r, data_range=1, normalize=False,
+                  batch=False)  # data_range ignored due to normalize=False
 img_m = load_data(file_path_img_m)  # per default: batch=False, normalize=False
 # --> both images are loaded as 8-bit images
 
 # calculate and print RMSE score
-rmse = vIQA.RMSE()
+rmse = viqa.RMSE()
 score_rmse = rmse.score(img_r, img_m)  # RMSE does not need any parameters
 rmse.print_score(decimals=2)
 
@@ -92,30 +92,31 @@ img_m = load_data(img_m, data_range=65535, normalize=True)
 # --> both functions have the same effect
 
 # calculate and print PSNR score
-psnr = vIQA.PSNR(data_range=65535)  # PSNR needs data_range to calculate the score
+psnr = viqa.PSNR(data_range=65535)  # PSNR needs data_range to calculate the score
 score_psnr = psnr.score(img_r, img_m)
 psnr.print_score(decimals=2)
 
 # set optional parameters for MAD as dict
 calc_parameters = {
-  'block_size': 16, 
-  'block_overlap': 0.75, 
-  'beta_1': 0.467, 
-  'beta_2': 0.130, 
-  'luminance_function': {'b': 0, 'k': 0.02874, 'gamma': 2.2}, 
-  'orientations_num': 4, 
-  'scales_num': 5, 
-  'weights': [0.5, 0.75, 1, 5, 6]
+    'block_size': 16,
+    'block_overlap': 0.75,
+    'beta_1': 0.467,
+    'beta_2': 0.130,
+    'luminance_function': {'b': 0, 'k': 0.02874, 'gamma': 2.2},
+    'orientations_num': 4,
+    'scales_num': 5,
+    'weights': [0.5, 0.75, 1, 5, 6]
 }
 
 # calculate and print MAD score
-mad = vIQA.MAD()
+mad = viqa.MAD()
 score_mad = mad.score(img_r, img_m, dim=2, **calc_parameters)
 mad.print_score(decimals=2)
 ```
 Possible, but worse (recommended only if you want to calculate a single metric):
+
 ```python
-import vIQA
+import viqa
 
 file_path_img_r = 'path/to/reference_image_16bit.raw'
 file_path_img_m = 'path/to/modified_image_16bit.raw'
@@ -126,10 +127,10 @@ load_parameters = {'data_range': 1, 'normalize': True}
 # be used as default for loading and calculating 
 # the score
 
-psnr = vIQA.PSNR(**load_parameters)  # load_parameters necessary due to direct loading by class
-                                     # also PSNR needs data_range to calculate the score
-                                     # if images would not be normalized, data_range should be
-                                     # 65535 for 16-bit images for correct calculation
+psnr = viqa.PSNR(**load_parameters)  # load_parameters necessary due to direct loading by class
+# also PSNR needs data_range to calculate the score
+# if images would not be normalized, data_range should be
+# 65535 for 16-bit images for correct calculation
 score = psnr.score(file_path_img_r, file_path_img_m)
 # --> images are loaded as 16-bit images and normalized to 0-1 via the `load_data` function 
 #     called by the score method
