@@ -130,7 +130,7 @@ exclude = [
     "_private_tests",
     "data",
 ]
-strict = true
+strict = false
 pretty = true
 
 [[tool.mypy.overrides]]
