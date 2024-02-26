@@ -1,8 +1,8 @@
 import torch
 from piq import multi_scale_ssim
 
-from vIQA._metrics import FullReferenceMetricsInterface
-from vIQA.utils import _check_imgs
+from viqa._metrics import FullReferenceMetricsInterface
+from viqa.utils import _check_imgs
 
 
 class MSSSIM(FullReferenceMetricsInterface):

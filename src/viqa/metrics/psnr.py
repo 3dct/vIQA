@@ -1,26 +1,26 @@
-"""Module for the root mean squared error (RMSE) metric.
+"""Module for calculating the peak signal-to-noise ratio (PSNR) between two images.
 
 Examples
 --------
 >>> import numpy as np
->>> from vIQA import RMSE
+>>> from viqa import PSNR
 >>> img_r = np.zeros((256, 256))
 >>> img_m = np.ones((256, 256))
->>> rmse = RMSE()
->>> rmse
-RMSE(score_val=None)
->>> score = rmse.score(img_r, img_m)
+>>> psnr = PSNR(data_range=1, normalize=False)
+>>> psnr
+PSNR(score_val=None)
+>>> score = psnr.score(img_r, img_m)
 >>> score
-1.0
->>> rmse.print_score()
-RMSE: 1.0
+0.0
+>>> psnr.print_score()
+PSNR: 0.0
 >>> img_r = np.zeros((256, 256))
 >>> img_m = np.zeros((256, 256))
->>> rmse.score(img_r, img_m)
-0.0
+>>> psnr.score(img_r, img_m)
+inf
 >>> img_r = np.random.rand(256, 256)
 >>> img_m = np.random.rand(128, 128)
->>> rmse.score(img_r, img_m)
+>>> psnr.score(img_r, img_m)
 Traceback (most recent call last):
     ...
 ValueError: Image shapes do not match
@@ -44,18 +44,18 @@ ValueError: Image shapes do not match
 from warnings import warn
 
 import numpy as np
-from skimage.metrics import mean_squared_error
+from skimage.metrics import peak_signal_noise_ratio
 
-from vIQA._metrics import FullReferenceMetricsInterface
-from vIQA.utils import _check_imgs
+from viqa._metrics import FullReferenceMetricsInterface
+from viqa.utils import _check_imgs
 
 
-class RMSE(FullReferenceMetricsInterface):
-    """Class to calculate the root mean squared error (RMSE) between two images.
+class PSNR(FullReferenceMetricsInterface):
+    """Class to calculate the peak signal-to-noise ratio (PSNR) between two images.
 
     Parameters
     ----------
-    data_range : {1, 255, 65535}, optional
+    data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Can be omitted if `normalize` is False.
     normalize : bool, default False
         If True, the input images are normalized to the `data_range` argument.
@@ -63,29 +63,36 @@ class RMSE(FullReferenceMetricsInterface):
         If True, the input images are expected to be given as path to a folder containing the images.
         .. note:: Currently not supported. Added for later implementation.
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `vIQA.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
 
     Attributes
     ----------
     score_val : float
-        RMSE score value of the last calculation.
+        PSNR score value of the last calculation.
 
     Other Parameters
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
         .. note:: Currently not supported.
+
+    Notes
+    -----
+    The parameter `data_range` for image loading is also used for the PSNR calculation and therefore must be set.
+    The parameter is set through the constructor of the class and is passed to the `score` method.
     """
 
-    def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
 
+        if data_range is None:
+            raise ValueError('Parameter data_range must be set.')
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)
         self._parameters.update(**kwargs)
 
     def score(self, img_r, img_m):
-        """Calculate the RMSE score between two images.
+        """Calculate the peak signal-to-noise ratio (PSNR) between two images.
 
         Parameters
         ----------
@@ -97,19 +104,22 @@ class RMSE(FullReferenceMetricsInterface):
         Returns
         -------
         score_val : float
-            RMSE score value.
+            PSNR score value.
         """
 
         # Check images
         img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
                                    normalize=self._parameters['normalize'], batch=self._parameters['batch'])
         # Calculate score
-        score_val = np.sqrt(mean_squared_error(img_r, img_m))
+        if np.array_equal(img_r, img_m):
+            score_val = np.inf  # PSNR of identical images is infinity
+        else:
+            score_val = peak_signal_noise_ratio(img_r, img_m, data_range=self._parameters['data_range'])
         self.score_val = score_val
         return score_val
 
     def print_score(self, decimals=2):
-        """Print the RMSE score value of the last calculation.
+        """Print the PSNR score value of the last calculation.
 
         Parameters
         ----------
@@ -123,6 +133,6 @@ class RMSE(FullReferenceMetricsInterface):
         """
 
         if self.score_val is not None:
-            print('RMSE: {}'.format(round(self.score_val, decimals)))
+            print('PSNR: {}'.format(round(self.score_val, decimals)))
         else:
-            warn('No score value for RMSE. Run score() first.', RuntimeWarning)
+            warn('No score value for PSNR. Run score() first.', RuntimeWarning)

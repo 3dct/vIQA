@@ -33,8 +33,8 @@ from warnings import warn
 import numpy as np
 from scipy.ndimage import convolve
 
-from vIQA._metrics import FullReferenceMetricsInterface
-from vIQA.utils import (
+from viqa._metrics import FullReferenceMetricsInterface
+from viqa.utils import (
     _check_imgs,
     _to_float,
     extract_blocks,
@@ -63,7 +63,7 @@ class MAD(FullReferenceMetricsInterface):
         If True, the input images are expected to be given as path to a folder containing the images.
         .. note:: Currently not supported. Added for later implementation.
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `vIQA.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
 
     Attributes
@@ -112,7 +112,7 @@ class MAD(FullReferenceMetricsInterface):
             If given, MAD is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `vIQA.mad.most_apparent_distortion()`.
+            `viqa.mad.most_apparent_distortion()`.
 
         Returns
         -------
@@ -219,7 +219,7 @@ def most_apparent_distortion_3d(img_r, img_m, dim=2, **kwargs):
         Dimension to calculate MAD for.
     **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `vIQA.mad.most_apparent_distortion()`.
+            `viqa.mad.most_apparent_distortion()`.
 
     Returns
     -------

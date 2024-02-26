@@ -9,8 +9,8 @@ from skimage._shared.utils import _supported_float_type, check_shape_equality, w
 from skimage.util.arraycrop import crop
 from skimage.util.dtype import dtype_range
 
-from vIQA._metrics import FullReferenceMetricsInterface
-from vIQA.utils import _check_imgs
+from viqa._metrics import FullReferenceMetricsInterface
+from viqa.utils import _check_imgs
 
 
 class SSIM(FullReferenceMetricsInterface):

@@ -1,8 +1,8 @@
 import scipy.ndimage as ndi
 
-from vIQA._metrics import FullReferenceMetricsInterface
-from vIQA.utils import _check_imgs
-from vIQA.kernels import *
+from viqa._metrics import FullReferenceMetricsInterface
+from viqa.utils import _check_imgs
+from viqa.kernels import *
 
 
 class GSM(FullReferenceMetricsInterface):
