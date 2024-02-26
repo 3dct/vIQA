@@ -1,3 +1,25 @@
+"""Module for utility functions.
+
+Examples
+--------
+TODO: add examples
+"""
+
+# Authors
+# -------
+# Author: Lukas Behammer
+# Research Center Wels
+# University of Applied Sciences Upper Austria, 2023
+# CT Research Group
+#
+# Modifications
+# -------------
+# Original code, 2024, Lukas Behammer
+#
+# License
+# -------
+# TODO: add license
+
 import math
 import os
 import re
@@ -10,12 +32,32 @@ import numpy as np
 import scipy.fft as fft
 
 
-def _load_data_from_disk(file_dir, file_name):
+def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.ndarray:
     """
-    Loads data from a .mhd file and its corresponding .raw file or a .raw file only and normalizes it.
-    :param file_dir: Directory of the file
-    :param file_name: Name of the file with extension
-    :return: Numpy array containing the data
+    Load data from a .mhd file and its corresponding .raw file or a .raw file only and normalize it.
+
+    Parameters
+    ----------
+    file_dir : str or os.PathLike
+        Directory of the file
+    file_name : str or os.PathLike
+        Name of the file with extension
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Numpy array containing the data
+
+    Raises
+    ------
+    ValueError
+        If the file extension is not supported
+    ValueError
+        If the bit depth is not supported
+    ValueError
+        If no bit depth was found
+    ValueError
+        If no dimension was found
     """
 
     # Create file path components
@@ -56,7 +98,7 @@ def _load_data_from_disk(file_dir, file_name):
         elif bit_depth == "MET_UCHAR":
             data_type = np.ubyte  # Set data type to unsigned byte
         else:
-            raise Exception(
+            raise ValueError(
                 "Bit depth not supported"
             )  # Raise exception if the bit depth is not supported
     elif file_ext == ".raw":  # If file is a .raw file
@@ -67,7 +109,7 @@ def _load_data_from_disk(file_dir, file_name):
         if dim_search_result is not None:  # If dimension was found
             dim = dim_search_result.group(1)  # Get dimension from file name
         else:
-            raise Exception(
+            raise ValueError(
                 "No dimension found"
             )  # Raise exception if no dimension was found
 
@@ -84,7 +126,7 @@ def _load_data_from_disk(file_dir, file_name):
                 1
             )  # Get the bit depth from file name
         else:
-            raise Exception(
+            raise ValueError(
                 "No bit depth found"
             )  # Raise exception if no bit depth was found
 
@@ -94,24 +136,26 @@ def _load_data_from_disk(file_dir, file_name):
         elif bit_depth == "8bit":
             data_type = np.ubyte  # Set data type to unsigned byte
         else:
-            raise Exception(
+            raise ValueError(
                 "Bit depth not supported"
             )  # Raise exception if the bit depth is not supported
 
         data_file_path = os.path.join(file_dir, file_name)  # Get data file path
     else:
-        raise Exception(
+        raise ValueError(
             "File extension not supported"
         )  # Raise exception if file extension is not supported
 
     # Load data
-    f = open(file=data_file_path, mode="rb")  # Open data file
-    img_arr_orig = np.fromfile(
-        file=f, dtype=data_type
-    )  # Read data file into numpy array according to data type
+    with open(file=data_file_path, mode="rb") as f:  # Open data file
+        img_arr_orig = np.fromfile(
+            file=f, dtype=data_type
+        )  # Read data file into numpy array according to data type
+
+    # Reshape numpy array according to DimSize
     img_arr = img_arr_orig.reshape(
         *dim_size[::-1]
-    )  # Reshape numpy array according to DimSize
+    )
     return img_arr
 
 
@@ -122,12 +166,39 @@ def load_data(
     normalize: bool = False,
 ) -> list | np.ndarray:
     """
-    Loads data from a numpy array, a pytorch tensor or a file path.
-    :param img: Numpy array, tensor or file path
-    :param data_range: Maximum value of the returned data
-    :param batch: If True, img is a file path and all files in the directory are loaded
-    :param normalize: If True, data is normalized to data_range
-    :return: Numpy array containing the data
+    Load data from a numpy array, a pytorch tensor or a file path.
+
+    Parameters
+    ----------
+    img : np.ndarray, torch.Tensor, str or os.PathLike
+        Numpy array, tensor or file path
+    data_range : int, optional
+        Maximum value of the returned data, default None
+    batch : bool, optional
+        If True, img is a file path and all files in the directory are loaded, default False
+    normalize : bool, optional
+        If True, data is normalized to data_range, default False
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Numpy array containing the data
+
+    Raises
+    ------
+    ValueError
+        If input type is not supported
+    ValueError
+        If data_range is None if normalize is True
+
+    Warns
+    -----
+    RuntimeWarning
+        If data_range is set but normalize is False. Parameter data_range will be ignored.
+
+    Examples
+    --------
+    # TODO: add examples
     """
 
     img_arr: list[np.ndarray] | np.ndarray
@@ -158,7 +229,7 @@ def load_data(
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
         case _:
-            raise Exception(
+            raise ValueError(
                 "Input type not supported"
             )  # Raise exception if input type is not supported
 
@@ -167,7 +238,8 @@ def load_data(
         raise ValueError("Parameter data_range must be set if normalize is True.")
     if not normalize and data_range is not None:
         warn(
-            "Parameter data_range is set but normalize is False. Parameter data_range will be ignored."
+            "Parameter data_range is set but normalize is False. Parameter data_range will be ignored.",
+            RuntimeWarning
         )
 
     # Normalize data
@@ -189,6 +261,7 @@ def _check_imgs(
     **kwargs,
 ) -> Tuple[list | np.ndarray, list | np.ndarray]:
     """
+    TODO: change docstring
     Checks if two images are of the same type and shape.
     :param img_r: reference image
     :param img_m: modified image
@@ -230,6 +303,7 @@ def _check_imgs(
 
 def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     """
+    TODO: change docstring
     Normalizes a numpy array to a given data range.
     :param img_arr: Input numpy array
     :param data_range: Data range of the returned data
@@ -266,6 +340,7 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
 
 def _to_float(img):
     """
+    TODO: change docstring
     Converts a numpy array to float.
     :param img: numpy array
     :return: numpy array as float
@@ -281,6 +356,7 @@ def correlate_convolve_abs(
     img, kernel, mode="correlate", border_mode="constant", value=0
 ):
     """
+    TODO: change docstring
     Correlates or convolves a numpy array with a kernel in the form mean(abs(img * kernel)). Works in 2D and 3D.
     :param img: Input numpy array
     :param kernel: Kernel
@@ -321,15 +397,15 @@ def correlate_convolve_abs(
                         abs(
                             kernel
                             * origin[
-                                k : k + kernel_size,
-                                m : m + kernel_size,
-                                n : n + kernel_size,
+                                k:k + kernel_size,
+                                m:m + kernel_size,
+                                n:n + kernel_size,
                             ]
                         )
                     )
             elif ndim == 2:
                 res[k, m] = np.mean(
-                    abs(kernel * origin[k : k + kernel_size, m : m + kernel_size])
+                    abs(kernel * origin[k:k + kernel_size, m:m + kernel_size])
                 )
             else:
                 raise Exception("Number of dimensions not supported")
@@ -339,6 +415,7 @@ def correlate_convolve_abs(
 
 def extract_blocks(img, block_size, stride):
     """
+    TODO: change docstring
     Extracts blocks from an image.
     :param img: Input image
     :param block_size: Size of the block
@@ -349,7 +426,7 @@ def extract_blocks(img, block_size, stride):
     m, n = img.shape
     for i in range(0, m - (block_size - 1), stride):
         for j in range(0, n - (block_size - 1), stride):
-            boxes.append(img[i : i + block_size, j : j + block_size])
+            boxes.append(img[i:i + block_size, j:j + block_size])
     return np.array(boxes)
 
 
@@ -378,6 +455,7 @@ def gabor_convolve(
     d_theta_on_sigma=1.5,
 ):
     """
+    TODO: change docstring
     Computes Log Gabor filter responses. \n
     Even spectral coverage and independence of filter output are dependent on bandwidth_param vs wavelength_scaling.
     Some experimental values: \n
