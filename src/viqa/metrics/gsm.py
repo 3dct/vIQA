@@ -1,7 +1,7 @@
 import scipy.ndimage as ndi
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs
+from viqa.utils import _check_imgs, _to_float
 from viqa.kernels import *
 
 
@@ -30,11 +30,25 @@ class GSM(FullReferenceMetricsInterface):
         accentuation of luminance.
         :return: Score value
         """
-        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(
+            img_r,
+            img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            batch=self._parameters["batch"],
+        )
 
-        kernels = [gsm_kernel_x(), gsm_kernel_y(), gsm_kernel_z(), gsm_kernel_xy1(), gsm_kernel_xy2(), gsm_kernel_yz1(),
-                   gsm_kernel_yz2(), gsm_kernel_xz1(), gsm_kernel_xz2()]
+        kernels = [
+            gsm_kernel_x(),
+            gsm_kernel_y(),
+            gsm_kernel_z(),
+            gsm_kernel_xy1(),
+            gsm_kernel_xy2(),
+            gsm_kernel_yz1(),
+            gsm_kernel_yz2(),
+            gsm_kernel_xz1(),
+            gsm_kernel_xz2(),
+        ]
 
         gradients_r = []
         gradients_m = []
@@ -51,9 +65,11 @@ class GSM(FullReferenceMetricsInterface):
         img_r_gradient = _to_float(img_r_gradient)
         img_m_gradient = _to_float(img_m_gradient)
         k = c / max(np.max(img_r_gradient), np.max(img_m_gradient))
-        r = np.abs(img_r_gradient - img_m_gradient) / max(img_r_gradient, img_m_gradient, key=_mean_of_abs)
-        con_struc_sim = ((2 * 1 - r) + k) / (1 + (1 - r)**2 + k)
-        lum_sim = 1 - ((img_r - img_m) / self._parameters['data_range'])**2
+        r = np.abs(img_r_gradient - img_m_gradient) / max(
+            img_r_gradient, img_m_gradient, key=_mean_of_abs
+        )
+        con_struc_sim = ((2 * 1 - r) + k) / (1 + (1 - r) ** 2 + k)
+        lum_sim = 1 - ((img_r - img_m) / self._parameters["data_range"]) ** 2
         weight = p * con_struc_sim
         quality = (1 - weight) * con_struc_sim + weight * lum_sim
 
@@ -63,6 +79,6 @@ class GSM(FullReferenceMetricsInterface):
 
     def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('GSM: {}'.format(round(self.score_val, decimals)))
+            print("GSM: {}".format(round(self.score_val, decimals)))
         else:
-            print('No score value for GSM. Run score() first.')
+            print("No score value for GSM. Run score() first.")

@@ -25,10 +25,15 @@ class MSSSIM(FullReferenceMetricsInterface):
         :param img_m: Modified image
         :return: Score value
         """
-        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(
+            img_r,
+            img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            batch=self._parameters["batch"],
+        )
         # check if chromatic
-        if self._parameters['chromatic'] is False:
+        if self._parameters["chromatic"] is False:
             # 3D images
             # img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2)
             # img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2)
@@ -39,12 +44,17 @@ class MSSSIM(FullReferenceMetricsInterface):
             img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
             img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
 
-        score_val = multi_scale_ssim(img_r_tensor, img_m_tensor, data_range=self._parameters['data_range'], **kwargs)
+        score_val = multi_scale_ssim(
+            img_r_tensor,
+            img_m_tensor,
+            data_range=self._parameters["data_range"],
+            **kwargs,
+        )
         self.score_val = float(score_val)
         return score_val
 
     def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('MS-SSIM: {}'.format(round(self.score_val, decimals)))
+            print("MS-SSIM: {}".format(round(self.score_val, decimals)))
         else:
-            print('No score value for MS-SSIM. Run score() first.')
+            print("No score value for MS-SSIM. Run score() first.")

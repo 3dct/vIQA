@@ -87,7 +87,7 @@ class PSNR(FullReferenceMetricsInterface):
         """Constructor method"""
 
         if data_range is None:
-            raise ValueError('Parameter data_range must be set.')
+            raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, batch=batch)
         self._parameters.update(**kwargs)
 
@@ -108,13 +108,20 @@ class PSNR(FullReferenceMetricsInterface):
         """
 
         # Check images
-        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(
+            img_r,
+            img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            batch=self._parameters["batch"],
+        )
         # Calculate score
         if np.array_equal(img_r, img_m):
             score_val = np.inf  # PSNR of identical images is infinity
         else:
-            score_val = peak_signal_noise_ratio(img_r, img_m, data_range=self._parameters['data_range'])
+            score_val = peak_signal_noise_ratio(
+                img_r, img_m, data_range=self._parameters["data_range"]
+            )
         self.score_val = score_val
         return score_val
 
@@ -133,6 +140,6 @@ class PSNR(FullReferenceMetricsInterface):
         """
 
         if self.score_val is not None:
-            print('PSNR: {}'.format(round(self.score_val, decimals)))
+            print("PSNR: {}".format(round(self.score_val, decimals)))
         else:
-            warn('No score value for PSNR. Run score() first.', RuntimeWarning)
+            warn("No score value for PSNR. Run score() first.", RuntimeWarning)

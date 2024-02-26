@@ -33,17 +33,24 @@ class SSIM(FullReferenceMetricsInterface):
         :param img_m: Modified image
         :return: Score value
         """
-        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
-        score_val = structural_similarity(img_r, img_m, data_range=self._parameters['data_range'], **kwargs)
+        img_r, img_m = _check_imgs(
+            img_r,
+            img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            batch=self._parameters["batch"],
+        )
+        score_val = structural_similarity(
+            img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+        )
         self.score_val = score_val
         return score_val
 
     def print_score(self, decimals=2):
         if self.score_val is not None:
-            print('SSIM: {}'.format(round(self.score_val, decimals)))
+            print("SSIM: {}".format(round(self.score_val, decimals)))
         else:
-            print('No score value for SSIM. Run score() first.')
+            print("No score value for SSIM. Run score() first.")
 
 
 def structural_similarity(
@@ -199,16 +206,16 @@ def structural_similarity(
         else:
             return mssim
 
-    K1 = kwargs.pop('K1', 0.01)
-    K2 = kwargs.pop('K2', 0.03)
-    sigma = kwargs.pop('sigma', 1.5)
+    K1 = kwargs.pop("K1", 0.01)
+    K2 = kwargs.pop("K2", 0.03)
+    sigma = kwargs.pop("sigma", 1.5)
     if K1 < 0:
         raise ValueError("K1 must be positive")
     if K2 < 0:
         raise ValueError("K2 must be positive")
     if sigma < 0:
         raise ValueError("sigma must be positive")
-    use_sample_covariance = kwargs.pop('use_sample_covariance', True)
+    use_sample_covariance = kwargs.pop("use_sample_covariance", True)
 
     if gaussian_weights:
         # Set to give an 11-tap filter with the default sigma of 1.5 to match
@@ -225,28 +232,28 @@ def structural_similarity(
 
     if np.any((np.asarray(im1.shape) - win_size) < 0):
         raise ValueError(
-            'win_size exceeds image extent. '
-            'Either ensure that your images are '
-            'at least 7x7; or pass win_size explicitly '
-            'in the function call, with an odd value '
-            'less than or equal to the smaller side of your '
-            'images. If your images are multichannel '
-            '(with color channels), set channel_axis to '
-            'the axis number corresponding to the channels.'
+            "win_size exceeds image extent. "
+            "Either ensure that your images are "
+            "at least 7x7; or pass win_size explicitly "
+            "in the function call, with an odd value "
+            "less than or equal to the smaller side of your "
+            "images. If your images are multichannel "
+            "(with color channels), set channel_axis to "
+            "the axis number corresponding to the channels."
         )
 
     if not (win_size % 2 == 1):
-        raise ValueError('Window size must be odd.')
+        raise ValueError("Window size must be odd.")
 
     if data_range is None:
         if np.issubdtype(im1.dtype, np.floating) or np.issubdtype(
             im2.dtype, np.floating
         ):
             raise ValueError(
-                'Since image dtype is floating point, you must specify '
-                'the data_range parameter. Please read the documentation '
-                'carefully (including the note). It is recommended that '
-                'you always specify the data_range anyway.'
+                "Since image dtype is floating point, you must specify "
+                "the data_range parameter. Please read the documentation "
+                "carefully (including the note). It is recommended that "
+                "you always specify the data_range anyway."
             )
         if im1.dtype != im2.dtype:
             warn(
@@ -267,10 +274,10 @@ def structural_similarity(
 
     if gaussian_weights:
         filter_func = gaussian
-        filter_args = {'sigma': sigma, 'truncate': truncate, 'mode': 'reflect'}
+        filter_args = {"sigma": sigma, "truncate": truncate, "mode": "reflect"}
     else:
         filter_func = uniform_filter
-        filter_args = {'size': win_size}
+        filter_args = {"size": win_size}
 
     if not isinstance(alpha, int):
         alpha = int(alpha)
@@ -323,7 +330,7 @@ def structural_similarity(
     stru = (vxy + C3) / (np.sqrt(vx) * np.sqrt(vy) + C3)
     # D = B1 * B2
     # S = (A1 * A2) / D
-    S = (lum ** alpha) * (con ** beta) * (stru ** gamma)
+    S = (lum**alpha) * (con**beta) * (stru**gamma)
 
     # to avoid edge effects will ignore filter radius strip around edges
     pad = (win_size - 1) // 2

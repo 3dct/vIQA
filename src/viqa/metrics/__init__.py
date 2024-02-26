@@ -1,4 +1,4 @@
-__all__ = ['FSIM', 'MAD', 'MSSSIM', 'PSNR', 'RMSE', 'SSIM', 'VIFp', 'VSI']
+__all__ = ["FSIM", "MAD", "MSSSIM", "PSNR", "RMSE", "SSIM", "VIFp", "VSI"]
 
 from .fsim import FSIM
 # from .gsm import GSM

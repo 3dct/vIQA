@@ -101,8 +101,13 @@ class RMSE(FullReferenceMetricsInterface):
         """
 
         # Check images
-        img_r, img_m = _check_imgs(img_r, img_m, data_range=self._parameters['data_range'],
-                                   normalize=self._parameters['normalize'], batch=self._parameters['batch'])
+        img_r, img_m = _check_imgs(
+            img_r,
+            img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            batch=self._parameters["batch"],
+        )
         # Calculate score
         score_val = np.sqrt(mean_squared_error(img_r, img_m))
         self.score_val = score_val
@@ -123,6 +128,6 @@ class RMSE(FullReferenceMetricsInterface):
         """
 
         if self.score_val is not None:
-            print('RMSE: {}'.format(round(self.score_val, decimals)))
+            print("RMSE: {}".format(round(self.score_val, decimals)))
         else:
-            warn('No score value for RMSE. Run score() first.', RuntimeWarning)
+            warn("No score value for RMSE. Run score() first.", RuntimeWarning)
