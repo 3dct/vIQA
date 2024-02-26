@@ -2,7 +2,7 @@ import os
 import re
 import numpy as np
 
-file_dir = '../../samples'
+file_dir = '../../../samples'
 # file_name = 'Catec_Two_PlateIQI_20um_810proj_220kV_Rayscan-SimCT_800x800x1000_16bit.raw'
 file_name = 'AI_Referenz_CFK_3_3um_Probe2_60kV_noinlMED-BHC0_man16bit+VS_Calibrated_1220x854x976.raw'
 # file_name = 'AI_Referenz_CFK_3_3um_Probe2_60kV_noinlMED-BHC0_man16bit+VS_Calibrated.raw'
