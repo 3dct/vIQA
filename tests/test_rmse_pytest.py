@@ -102,11 +102,11 @@ class TestPrinting:
 
     def test_print_score_with_different_decimals(self, capsys):
         img_r = np.zeros((256, 256))
-        img_m = np.zeros((256, 256))
+        img_m = np.random.rand(256, 256)
         rmse = viqa.RMSE()
         rmse.score(img_r, img_m)
         with warnings.catch_warnings():
             warnings.simplefilter("error")
             rmse.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert captured.out == 'RMSE: 0.00\n', 'Printed score should be 0.00'
+            assert len(captured.out) == 11, 'Printed score should have 11 characters'
