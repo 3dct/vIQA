@@ -26,7 +26,7 @@ class TestInit:
 
     def test_init_without_data_range(self):
         with pytest.raises(ValueError, match=re.escape('Parameter data_range must be set.')):
-            psnr = viqa.PSNR(data_range=None, normalize=True, batch=True, chromatic=True)
+            viqa.PSNR(data_range=None, normalize=True, batch=True, chromatic=True)
 
 
 class TestScoring2D:
@@ -106,6 +106,15 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             psnr.print_score()
             captured = capsys.readouterr()
-            assert captured.out == 'PSNR: inf\n', 'Printed score should be 0.0'
+            assert captured.out == 'PSNR: inf\n', 'Printed score should be inf'
 
-    # TODO: Add tests for different values of decimals
+    def test_psnr_print_score_with_different_decimals(self, capsys):
+        img_r = np.zeros((256, 256))
+        img_m = np.ones((256, 256))
+        psnr = viqa.PSNR()
+        psnr.score(img_r, img_m)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            psnr.print_score(decimals=2)
+            captured = capsys.readouterr()
+            assert len(captured.out) == 12, 'Printed score should have 11 characters'
