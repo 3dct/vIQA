@@ -34,6 +34,12 @@ dependencies = [
     "scikit-image",
 ]
 
+[project.optional-dependencies]
+book = [
+    "jupyter",
+    "matplotlib",
+]
+
 #[project.urls]
 
 [build-system]
@@ -58,10 +64,10 @@ lint = [
 ]
 docs = [
     "sphinx",
-    # sphinx napoleon,
+    "furo",
 ]
 dev = [
-    "packageName[tests, lint, docs]",
+    "vIQA[tests, lint, docs]",
     "meson-python",
     "pdm",
     "build",
@@ -69,18 +75,27 @@ dev = [
 
 [tool.pdm.scripts]
 pre-commit = "pre-commit run --all-files"
+#docs = "sphinx-apidoc -f -o docs/source src/viqa"
 #docs = "sphinx-build -M html docs/source docs/build"
-#docs = "make html"
 
 ######################################################################
 # Ruff
 [tool.ruff]
 extend-include = ["*.ipynb"]
-extend-exclude = [".git"]
-per-file-ignores = {"__init__.py" = ["F403"]}
+extend-exclude = [
+    ".git",
+    "data",
+    "docs",
+    "build",
+    "dist",
+    "_private_tests",
+    "tests",
+]
 target-version = "py311"
+per-file-ignores = { "__init__.py" = ["F403"] }
 
 [tool.ruff.lint]
+preview = true
 select = [
     "ARG",
     "B",
@@ -112,7 +127,8 @@ exclude = [
     "docs",
     "build",
     "dist",
-    "_private_tests"
+    "_private_tests",
+    "data",
 ]
 strict = true
 pretty = true
@@ -129,15 +145,15 @@ ignore_missing_imports = true
 ######################################################################
 # PyTest
 [tool.pytest.ini_options]
-addopts = "--doctest-modules"
+addopts = "--doctest-modules --cov=viqa --cov-report html"
 
 ######################################################################
 # Coverage
 [tool.coverage.run]
-source = "src/vIQA"
+source = ["src/viqa"]
 omit = [
-    "src/vIQA/_private_tests/*",
-    "src/vIQA/tests/*",
+    "src/viqa/_private_tests/*",
+    "src/viqa/tests/*",
     "*/sphinxext/*",
     "*/tmp/tmp*.py",
 ]

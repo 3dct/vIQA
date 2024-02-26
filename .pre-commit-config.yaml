@@ -17,9 +17,10 @@ repos:
     hooks:
       - id: validate-pyproject
         name: Validate pyproject.toml
+        stages: [commit]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.2
+    rev: v0.2.2
     hooks:
       - id: ruff
         stages: [commit]
@@ -31,6 +32,7 @@ repos:
     hooks:
       - id: mypy
         language: system
+        stages: [commit]
 
   # TODO: add pytest-cov
 
