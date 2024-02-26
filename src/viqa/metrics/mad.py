@@ -28,10 +28,13 @@ TODO: add examples
 # -------
 # TODO: add license
 
+import os
 from warnings import warn
+from typing import Any
 
 import numpy as np
 from scipy.ndimage import convolve
+from torch import Tensor
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.utils import (
@@ -206,14 +209,16 @@ class MAD(FullReferenceMetricsInterface):
             warn("No score value for MAD. Run score() first.", RuntimeWarning)
 
 
-def most_apparent_distortion_3d(img_r, img_m, dim=2, **kwargs):
+def most_apparent_distortion_3d(
+    img_r: np.ndarray, img_m: np.ndarray, dim: int = 2, **kwargs: Any
+) -> float:
     """Calculate the MAD for a 3D image.
 
     Parameters
     ----------
-    img_r : np.ndarray or Tensor or str or os.PathLike
+    img_r : np.ndarray
         Reference image to calculate score against
-    img_m : np.ndarray or Tensor or str or os.PathLike
+    img_m : np.ndarray
         Distorted image to calculate score of
     dim : {0, 1, 2}, default=2
         Dimension to calculate MAD for.
@@ -267,23 +272,23 @@ def most_apparent_distortion_3d(img_r, img_m, dim=2, **kwargs):
 
 
 def most_apparent_distortion(
-    img_r,
-    img_m,
-    block_size=16,
-    block_overlap=0.75,
-    beta_1=0.467,
-    beta_2=0.130,
-    thresh_1=None,
-    thresh_2=None,
+    img_r: np.ndarray,
+    img_m: np.ndarray,
+    block_size: int = 16,
+    block_overlap: float = 0.75,
+    beta_1: float = 0.467,
+    beta_2: float = 0.130,
+    thresh_1: float | None = None,
+    thresh_2: float | None = None,
     **kwargs,
-):
+) -> float:
     """Calculate the most apparent distortion (MAD) between two images.
 
     Parameters
     ----------
-    img_r : np.ndarray or Tensor or str or os.PathLike
+    img_r : np.ndarray
         Reference image to calculate score against
-    img_m : np.ndarray or Tensor or str or os.PathLike
+    img_m : np.ndarray
         Distorted image to calculate score of
     block_size : int, default=16
         Size of the blocks in the MAD calculation. Must be positive.
@@ -399,7 +404,7 @@ def most_apparent_distortion(
     return mad_index
 
 
-def _high_quality(img_r, img_m, **kwargs):
+def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     """Calculate the high quality index of MAD.
 
     Notes
@@ -541,7 +546,7 @@ def _high_quality(img_r, img_m, **kwargs):
     return d_detect
 
 
-def _low_quality(img_r, img_m, **kwargs):
+def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     """Calculate the low quality index of MAD.
 
     Notes
@@ -626,7 +631,9 @@ def _low_quality(img_r, img_m, **kwargs):
     return d_appear
 
 
-def _pixel_to_lightness(img, b=0, k=0.02874, gamma=2.2):
+def _pixel_to_lightness(
+    img: np.ndarray, b: int = 0, k: float = 0.02874, gamma: float = 2.2
+) -> np.ndarray:
     """Convert an image to perceived lightness."""
     # Authors
     # -------
@@ -648,7 +655,7 @@ def _pixel_to_lightness(img, b=0, k=0.02874, gamma=2.2):
 
     if issubclass(img.dtype.type, np.integer):  # if image is integer
         # Create LUT
-        lut = np.arange(0, 256)
+        lut = np.arange(0, 256, dtype=np.float64)
         lut = b + k * lut ** (gamma / 3)
         img_lum = lut[img]  # apply LUT
     else:  # if image is float
@@ -656,7 +663,7 @@ def _pixel_to_lightness(img, b=0, k=0.02874, gamma=2.2):
     return img_lum
 
 
-def _contrast_sensitivity_function(m, n, nfreq, **kwargs):
+def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.ndarray:
     """
     Calculate the contrast sensitivity function.
 
