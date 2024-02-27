@@ -65,6 +65,7 @@ class MAD(FullReferenceMetricsInterface):
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
         .. note:: Currently not supported. Added for later implementation.
+        # TODO: change doc layout
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
@@ -76,14 +77,14 @@ class MAD(FullReferenceMetricsInterface):
 
     Other Parameters
     ----------------
-    chromatic : bool, default False
-        If True, the input images are expected to be RGB images.
-        .. note:: Currently not supported.
+    chromatic : bool, default False, If True, the input images are expected to be RGB images.
+            .. note:: Currently not supported.
 
     Notes
     -----
     MAD [1]_ is a full-reference IQA metric. It is based on the human visual system and is designed to predict the
     perceived quality of an image.
+    # TODO: change doc layout
 
     References
     ----------
@@ -323,15 +324,15 @@ def most_apparent_distortion(
         If True, the `display_function` of the monitor is taken into account.
     display_function : dict, optional
         Parameters of the display function of the monitor. Must be given if `account_monitor` is True.
-        disp_res : float
-            Display resolution.
-        view_dis : float
-            Viewing distance. Same unit as `disp_res`.
+        disp_res : float, Display resolution.
+        view_dis : float, Viewing distance. Same unit as `disp_res`.
+        # TODO: change doc layout
     luminance_function : dict, optional
         Parameters of the luminance function. If not given, default values for sRGB displays are used.
         b : float, default=0.0
         k : float, default=0.02874
         gamma : float, default=2.2
+        # TODO: change doc layout
     ms_scale : float, default=1
         Additional normalization parameter for the high quality index.
     orientations_num : int, default 4
@@ -352,6 +353,7 @@ def most_apparent_distortion(
     metrics. If thresh_1 and thresh_2 are given, beta_1 and beta_2 are calculated from them, else beta_1 and beta_2 or
     their default values are used. For more information see [1]_. The code is adapted from the original MATLAB code
     available under [2]_.
+    # TODO: change doc layout
 
     References
     ----------
