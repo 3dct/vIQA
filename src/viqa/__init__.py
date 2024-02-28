@@ -1,8 +1,9 @@
 """
-TODO: Add package docstring
+vIQA (voulmetric Image Quality Assessment) is a Python package for the assessment of volumetric image quality.
+It provides a set of metrics to assess the quality of volumetric images. The package can be used for 2D and 3D images.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.5.0"
 __author__ = "Lukas Behammer"
 
 from .metrics import *

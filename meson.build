@@ -1,8 +1,8 @@
 project('viqa', 'c',
-    version: '0.4.0',
+    version: '0.5.0',
     license: 'BSD-3',
     default_options: [
-        'c_std=c99',
+        'c_std=c11',
     ],
 )
 
