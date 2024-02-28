@@ -10,7 +10,7 @@ Welcome to vIQA's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   viqa
+   modules
 
 
 
