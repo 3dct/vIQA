@@ -2,7 +2,7 @@
 
 Notes
 -----
-The code is adapted from the original MATLAB code available under [1]_.
+The code is adapted from the original MATLAB code available under [1].
 
 References
 ----------
@@ -63,9 +63,8 @@ class MAD(FullReferenceMetricsInterface):
     normalize : bool, default False
         If True, the input images are normalized to the `data_range` argument.
     batch : bool, default False
-        If True, the input images are expected to be given as path to a folder containing the images.
-        .. note:: Currently not supported. Added for later implementation.
-        # TODO: change doc layout
+        .. note:: If True, the input images are expected to be given as path to a folder containing the images.
+        Currently not supported. Added for later implementation.
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
@@ -77,14 +76,13 @@ class MAD(FullReferenceMetricsInterface):
 
     Other Parameters
     ----------------
-    chromatic : bool, default False, If True, the input images are expected to be RGB images.
-            .. note:: Currently not supported.
+    chromatic : bool, default False
+        .. note:: If True, the input images are expected to be RGB images. Currently not supported.
 
     Notes
     -----
-    MAD [1]_ is a full-reference IQA metric. It is based on the human visual system and is designed to predict the
+    MAD [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict the
     perceived quality of an image.
-    # TODO: change doc layout
 
     References
     ----------
@@ -131,11 +129,15 @@ class MAD(FullReferenceMetricsInterface):
             If images are neither 2D nor 3D.
         ValueError
             If images are 3D, but dim is not given.
+        ValueError
+            If im_slice is given, but not an integer.
 
         Warns
         -----
         RuntimeWarning
             If dim or im_slice is given for 2D images.
+        RuntimeWarning
+            If im_slice is not given, but dim is given for 3D images, MAD is calculated for the full volume.
 
         Notes
         -----
@@ -155,7 +157,7 @@ class MAD(FullReferenceMetricsInterface):
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:
-            if dim and im_slice:  # if dim and im_slice are given
+            if dim is not None and type(im_slice) is int:  # if dim and im_slice are given
                 # Calculate MAD for given slice of given dimension
                 match dim:
                     case 0:
@@ -171,12 +173,15 @@ class MAD(FullReferenceMetricsInterface):
                             img_r[:, :, im_slice], img_m[:, :, im_slice], **kwargs
                         )
                     case _:
-                        raise ValueError("Invalid dim value. Must be 0, 1 or 2.")
+                        raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
             elif (
-                dim and not im_slice
+                dim is not None and im_slice is None
             ):  # if dim is given, but im_slice is not, calculate MAD for full volume
+                warn("im_slice is not given. Calculating MAD for full volume.", RuntimeWarning)
                 score_val = most_apparent_distortion_3d(img_r, img_m, dim=dim, **kwargs)
             else:
+                if type(im_slice) is not int or None:
+                    raise ValueError("im_slice must be an integer.")
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
                 )
@@ -268,7 +273,7 @@ def most_apparent_distortion_3d(
                     )
                 )
         case _:
-            raise ValueError("Invalid dim value. Must be 0, 1 or 2.")
+            raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
     return np.mean(np.array(scores))
 
 
@@ -311,13 +316,6 @@ def most_apparent_distortion(
     mad_index : float
         MAD score value.
 
-    Raises
-    ------
-    ValueError
-        If `block_size` is not positive.
-    ValueError
-        If `weights` is not of length `scales_num`.
-
     Other Parameters
     ----------------
     account_monitor : bool, default False
@@ -343,16 +341,32 @@ def most_apparent_distortion(
         Weights for the different scales of the log-Gabor filters. Must be of length `scales_num`.
     csf_function : dict, optional
         Parameters for the contrast sensitivity function. If not given, default values for sRGB displays are used.
-        lambda_ : float, default=0.114
+        lambda_csf : float, default=0.114
         f_peak : float, default=7.8909
+
+    Raises
+    ------
+    ValueError
+        If `block_size` is not positive.
+    ValueError
+        If `weights` is not of length `scales_num`.
+
+    Warns
+    -----
+    RuntimeWarning
+        If either `thresh_1` or `thresh_2` and not both are given.
+    RuntimeWarning
+        If `thresh_1` and `thresh_2` and `beta_1` or `beta_2` are given.
 
     Notes
     -----
     The metric is calculated as combination of two single metrics. One for high quality and one for low quality of the
     image. The parameters beta_1, beta_2, thresh_1 and thresh_2 determine the weighting of the two combined single
     metrics. If thresh_1 and thresh_2 are given, beta_1 and beta_2 are calculated from them, else beta_1 and beta_2 or
-    their default values are used. For more information see [1]_. The code is adapted from the original MATLAB code
-    available under [2]_.
+    their default values are used. The values to be set for thresh_1 and thresh_2 that lead to the default values
+    beta_1=0.467 and beta_2=0.130 are thresh_1=2.55 and thresh_2=3.35. These need not to be set, since automatic values
+    for beta_1 and beta_2 are used when they are not given as parameter. For more information see [1]. The code is
+    adapted from the original MATLAB code available under [2].
     # TODO: change doc layout
 
     References
@@ -391,9 +405,13 @@ def most_apparent_distortion(
     M, N = img_r.shape
 
     # Parameters for single metrics combination
-    if thresh_1 and thresh_2:
+    if (thresh_1 or thresh_2) and not (thresh_1 and thresh_2):
+        warn("thresh_1 and thresh_2 must be given together. Using default values for beta_1 and beta_2.", RuntimeWarning)
+    elif thresh_1 and thresh_2:
         beta_1 = np.exp(-thresh_1 / thresh_2)
         beta_2 = 1 / (np.log(10) * thresh_2)
+        if beta_1 or beta_2:
+            warn("thresh_1 and thresh_2 are given. Ignoring beta_1 and beta_2.", RuntimeWarning)
 
     # Hiqh quality index
     d_detect = _high_quality(img_r, img_m, **kwargs)
@@ -411,7 +429,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
     Notes
     -----
-    The code is adapted from the original MATLAB code available under [1]_.
+    The code is adapted from the original MATLAB code available under [1].
 
     References
     ----------
@@ -451,13 +469,13 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     else:
         cycles_per_degree = 32
 
-    csf_function = kwargs.pop("csf_function", {"lambda_": 0.114, "f_peak": 7.8909})
+    csf_function = kwargs.pop("csf_function", {"lambda_csf": 0.114, "f_peak": 7.8909})
     # Calculate contrast sensitivity function
     csf = _contrast_sensitivity_function(
         M,
         N,
         cycles_per_degree,
-        lambda_=csf_function["lambda_"],
+        lambda_csf=csf_function["lambda_csf"],
         f_peak=csf_function["f_peak"],
     )
 
@@ -553,7 +571,7 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
     Notes
     -----
-    The code is adapted from the original MATLAB code available under [1]_.
+    The code is adapted from the original MATLAB code available under [1].
 
     References
     ----------
@@ -671,7 +689,7 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
 
     Notes
     -----
-    The code is adapted from the original MATLAB code available under [1]_.
+    The code is adapted from the original MATLAB code available under [1].
 
     References
     ----------
@@ -711,11 +729,11 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
     rad_freq /= s
 
     # Parameters for the contrast sensitivity function
-    lambda_ = kwargs.pop("lambda_", 0.114)
+    lambda_csf = kwargs.pop("lambda_csf", 0.114)
     f_peak = kwargs.pop("f_peak", 7.8909)
     # Calculate contrast sensitivity function
     cond = rad_freq < f_peak
-    csf = 2.6 * (0.0192 + lambda_ * rad_freq) * np.exp(-((lambda_ * rad_freq) ** 1.1))
+    csf = 2.6 * (0.0192 + lambda_csf * rad_freq) * np.exp(-((lambda_csf * rad_freq) ** 1.1))
     csf[cond] = 0.9809
     return csf
 
