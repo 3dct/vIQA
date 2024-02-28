@@ -177,7 +177,10 @@ def load_data(
     batch : bool, optional
         If True, img is a file path and all files in the directory are loaded, default False
     normalize : bool, optional
-        If True, data is normalized to data_range, default False
+        If True, the input images are expected to be given as path to a folder containing the images.
+
+        .. note::
+            Currently not supported. Added for later implementation.
 
     Returns
     -------
@@ -198,7 +201,17 @@ def load_data(
 
     Examples
     --------
-    # TODO: add examples
+        .. doctest-skip::
+
+            >>> from viqa import load_data
+            >>> path_r = "path/to/reference/image.mhd"
+            >>> path_m = "path/to/modified/image.mhd"
+            >>> img_r = load_data(path_r)
+            >>> img_m = load_data(path_m)
+
+    >>> from viqa import load_data
+    >>> img_r = np.random.rand(128, 128)
+    >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
 
     img_arr: list[np.ndarray] | np.ndarray
@@ -260,13 +273,7 @@ def _check_imgs(
     img_m: np.ndarray | Tensor | str | os.PathLike,
     **kwargs,
 ) -> Tuple[list | np.ndarray, list | np.ndarray]:
-    """
-    TODO: change docstring
-    Checks if two images are of the same type and shape.
-    :param img_r: reference image
-    :param img_m: modified image
-    :return: reference image and modified image
-    """
+    """Checks if two images are of the same type and shape."""
 
     # load images
     img_r_loaded = load_data(img_r, **kwargs)
@@ -302,12 +309,35 @@ def _check_imgs(
 
 
 def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
-    """
-    TODO: change docstring
-    Normalizes a numpy array to a given data range.
-    :param img_arr: Input numpy array
-    :param data_range: Data range of the returned data
-    :return: Input numpy array normalized to data_range
+    """Normalizes a numpy array to a given data range.
+
+    Parameters
+    ----------
+    img_arr : np.ndarray
+        Input image
+    data_range : int
+        Data range of the returned data
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Input image normalized to data_range
+
+    Raises
+    ------
+    ValueError
+        If data type is not supported
+    ValueError
+        If data range is not supported
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from viqa import normalize_data
+    >>> img = np.random.rand(128, 128)
+    >>> img_norm = normalize_data(img, data_range=255)
+    >>> np.max(img_norm)
+    255
     """
     # Check data type
     if np.issubdtype(img_arr.dtype, np.integer):  # If data type is integer
@@ -315,7 +345,7 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     elif np.issubdtype(img_arr.dtype, np.floating):  # If data type is float
         info = np.finfo(img_arr.dtype)  # type: ignore[assignment]
     else:
-        raise Exception("Data type not supported")
+        raise ValueError("Data type not supported")
 
     # Check if data is already normalized
     if info.max is not data_range:
@@ -333,18 +363,13 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
         elif data_range == 1:  # If data range is 1
             img_arr = img_arr.astype(np.float32)  # Change data type to float32
         else:
-            raise Exception("Data range not supported. Please use 1, 255 or 65535.")
+            raise ValueError("Data range not supported. Please use 1, 255 or 65535.")
 
     return img_arr
 
 
 def _to_float(img):
-    """
-    TODO: change docstring
-    Converts a numpy array to float.
-    :param img: numpy array
-    :return: numpy array as float
-    """
+    """Converts a numpy array to float."""
     match img.dtype:
         case np.float32 | np.float64:
             return img
@@ -355,15 +380,40 @@ def _to_float(img):
 def correlate_convolve_abs(
     img, kernel, mode="correlate", border_mode="constant", value=0
 ):
-    """
-    TODO: change docstring
-    Correlates or convolves a numpy array with a kernel in the form mean(abs(img * kernel)). Works in 2D and 3D.
-    :param img: Input numpy array
-    :param kernel: Kernel
-    :param mode: 'correlate' or 'convolve'
-    :param border_mode: 'constant', 'reflect', 'nearest', 'mirror' or 'wrap'
-    :param value: Value for constant border mode
-    :return: Convolved result as numpy array
+    """Correlates or convolves a numpy array with a kernel in the form mean(abs(img * kernel)). Works in 2D and 3D.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image
+    kernel : np.ndarray
+        Kernel
+    mode : str, optional
+        'correlate' or 'convolve', default 'correlate'
+    border_mode : str, optional
+        'constant', 'reflect', 'nearest', 'mirror' or 'wrap', default 'constant'
+    value : int, optional
+        Value for constant border mode, default 0
+
+    Returns
+    -------
+    res : np.ndarray
+        Convolved result as numpy array
+
+    Raises
+    ------
+    ValueError
+        If border mode is not supported
+    ValueError
+        If number of dimensions is not supported
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from viqa import kernels
+    >>> img = np.random.rand(128, 128)
+    >>> kernel = kernels.sobel_kernel_2d_x()
+    >>> res = correlate_convolve_abs(img, kernel, mode="correlate", border_mode="constant", value=0)
     """
     if mode == "convolve":  # If mode is convolve
         kernel = np.flip(kernel)  # Flip kernel
@@ -384,7 +434,7 @@ def correlate_convolve_abs(
         case "wrap":
             origin = np.pad(img, kernel_size, mode="wrap")
         case _:
-            raise Exception("Border mode not supported")
+            raise ValueError("Border mode not supported")
 
     # Correlate or convolve
     res = np.zeros(img.shape)  # Initialize result array
@@ -408,20 +458,29 @@ def correlate_convolve_abs(
                     abs(kernel * origin[k:k + kernel_size, m:m + kernel_size])
                 )
             else:
-                raise Exception("Number of dimensions not supported")
+                raise ValueError("Number of dimensions not supported")
 
     return res
 
 
-def extract_blocks(img, block_size, stride):
+def _extract_blocks(img, block_size, stride):
+    """Extracts blocks from an image.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image
+    block_size : int
+        Size of the block
+    stride : int
+        Stride
+
+    Returns
+    -------
+    np.ndarray
+        Numpy array of blocks
     """
-    TODO: change docstring
-    Extracts blocks from an image.
-    :param img: Input image
-    :param block_size: Size of the block
-    :param stride: Stride
-    :return: Numpy array of blocks
-    """
+    # TODO: change to generator
     boxes = []
     m, n = img.shape
     for i in range(0, m - (block_size - 1), stride):
@@ -446,7 +505,7 @@ def _is_even(num):
 
 
 def gabor_convolve(
-    im,
+    img,
     scales_num: int,
     orientations_num: int,
     min_wavelength=3,
@@ -454,85 +513,105 @@ def gabor_convolve(
     bandwidth_param=0.55,
     d_theta_on_sigma=1.5,
 ):
-    """
-    TODO: change docstring
-    Computes Log Gabor filter responses. \n
+    """Computes Log Gabor filter responses.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Image to be filtered
+    scales_num : int
+        Number of wavelet scales
+    orientations_num : int
+        Number of filter orientations
+    min_wavelength : int, default=3
+        Wavelength of smallest scale filter, maximum frequency is set by this value, should be >= 3
+    wavelength_scaling : int, default=3
+        Scaling factor between successive filters
+    bandwidth_param : float, default=0.55
+        Ratio of standard deviation of the Gaussian describing log Gabor filter's transfer function in the frequency
+        domain to the filter's center frequency (0.74 for 1 octave bandwidth, 0.55 for 2 octave bandwidth, 0.41 for 3
+        octave bandwidth)
+    d_theta_on_sigma : float, default=1.5
+        Ratio of angular interval between filter orientations and standard deviation of angular Gaussian spreading
+        function, a value of 1.5 results in approximately the minimum overlap needed to get even spectral coverage
+
+    Returns
+    -------
+    np.ndarray
+        Log Gabor filtered image
+
+    Notes
+    -----
     Even spectral coverage and independence of filter output are dependent on bandwidth_param vs wavelength_scaling.
-    Some experimental values: \n
-    0.85 <--> 1.3 \n
-    0.74 <--> 1.6 (1 octave bandwidth) \n
-    0.65 <--> 2.1 \n
-    0.55 <--> 3.0 (2 octave bandwidth) \n
+    Some experimental values:
+    0.85 <--> 1.3
+    0.74 <--> 1.6 (1 octave bandwidth)
+    0.65 <--> 2.1
+    0.55 <--> 3.0 (2 octave bandwidth)
     Additionally d_theta_on_sigma should be set to 1.5 for approximately the minimum overlap needed to get even
-    spectral coverage. \n
+    spectral coverage.
 
-    For more information see: \n
-    https://www.peterkovesi.com/matlabfns/PhaseCongruency/Docs/convexpl.html \n
-    AUTHOR
-    ------
-    This code was originally written in Matlab by Peter Kovesi and adapted by Eric Larson. \n
-    It is available from http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07). \n
-    It was translated to Python by Lukas Behammer. \n
+    For more information see [1]. This code was originally written in Matlab by Peter Kovesi and adapted by Eric
+    Larson. The adaption by Eric Larson is available under [2].
 
-    Author: Peter Kovesi \n
-    Department of Computer Science & Software Engineering \n
-    The University of Western Australia \n
-    pk@cs.uwa.edu.au  https://peterkovesi.com/projects/ \n
+    References
+    ----------
+    .. [1] Kovesi, Peter. https://www.peterkovesi.com/matlabfns/PhaseCongruency/Docs/convexpl.html
+    .. [2] Larson, E. C. (2008). http://vision.eng.shizuoka.ac.jp/mad (version 2011_10_07)
+    .. [3] Field, D. J. (1987). Relations between the statistics of natural images and the response properties of
+           cortical cells. Journal of The Optical Society of America A, 4(12), 2379–2394.
+           https://doi.org/10.1364/JOSAA.4.002379
 
-    Adaption: Eric Larson \n
-    Department of Electrical and Computer Engineering \n
-    Oklahoma State University, 2008 \n
-    University Of Washington Seattle, 2009 \n
-    Image Coding and Analysis lab
-
-    Translation: Lukas Behammer \n
-    Research Center Wels \n
-    University of Applied Sciences Upper Austria \n
-    CT Research Group \n
-
-    MODIFICATIONS
-    -------------
-    Original code, May 2001, Peter Kovesi \n
-    Altered, 2008, Eric Larson \n
-    Altered precomputations, 2011, Eric Larson \n
-    Translated to Python, 2024, Lukas Behammer
-
-    Literature
-    -------
-    D. J. Field, "Relations Between the Statistics of Natural Images and the
-    Response Properties of Cortical Cells", Journal of The Optical Society of
-    America A, Vol 4, No. 12, December 1987. pp 2379-2394
-
-    LICENSE
-    -------
-    Copyright (c) 2001-2010 Peter Kovesi
-    www.peterkovesi.com
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    The Software is provided "as is", without warranty of any kind.
-    :param im: Image to be filtered
-    :param scales_num: Number of wavelet scales
-    :param orientations_num: Number of filter orientations
-    :param min_wavelength: Wavelength of smallest scale filter, maximum frequency is set by this value, should be >= 3
-    :param wavelength_scaling: Scaling factor between successive filters
-    :param bandwidth_param: Ratio of standard deviation of the Gaussian describing log Gabor filter's transfer function
-        in the frequency domain to the filter's center frequency
-        (0.74 for 1 octave bandwidth, 0.55 for 2 octave bandwidth, 0.41 for 3 octave bandwidth)
-    :param d_theta_on_sigma: Ratio of angular interval between filter orientations and standard deviation of angular
-        Gaussian spreading function, a value of 1.5 results in approximately the minimum overlap needed to get even
-        spectral coverage
-    :return: Log Gabor filtered image
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from viqa.utils import gabor_convolve
+    >>> img = np.random.rand(128, 128)
+    >>> res = gabor_convolve(img, scales_num=3, orientations_num=4)
     """
+    # Authors
+    # -------
+    # Author: Peter Kovesi
+    # Department of Computer Science & Software Engineering
+    # The University of Western Australia
+    # pk@cs.uwa.edu.au  https://peterkovesi.com/projects/
+    #
+    # Adaption: Eric Larson
+    # Department of Electrical and Computer Engineering
+    # Oklahoma State University, 2008
+    # University Of Washington Seattle, 2009
+    # Image Coding and Analysis lab
+    #
+    # Translation: Lukas Behammer
+    # Research Center Wels
+    # University of Applied Sciences Upper Austria
+    # CT Research Group
+    #
+    # MODIFICATIONS
+    # -------------
+    # Original code, May 2001, Peter Kovesi
+    # Altered, 2008, Eric Larson
+    # Altered precomputations, 2011, Eric Larson
+    # Translated to Python, 2024, Lukas Behammer
+    #
+    # LICENSE
+    # -------
+    # Copyright (c) 2001-2010 Peter Kovesi
+    # www.peterkovesi.com
+    #
+    # Permission is hereby granted, free of charge, to any person obtaining a copy
+    # of this software and associated documentation files (the "Software"), to deal
+    # in the Software without restriction, subject to the following conditions:
+    #
+    # The above copyright notice and this permission notice shall be included in
+    # all copies or substantial portions of the Software.
+    #
+    # The Software is provided "as is", without warranty of any kind.
+
     # Precomputing and assigning variables
     scales = np.arange(0, scales_num)
     orientations = np.arange(0, orientations_num)
-    rows, cols = im.shape  # image dimensions
+    rows, cols = img.shape  # image dimensions
     # center of image
     col_c = math.floor(cols / 2)
     row_c = math.floor(rows / 2)
@@ -543,7 +622,7 @@ def gabor_convolve(
     ]
 
     # convert image to frequency domain
-    im_fft = fft.fftn(im)
+    im_fft = fft.fftn(img)
 
     # compute matrices of same site as im with values ranging from -0.5 to 0.5 (-1.0 to 1.0) for horizontal and vertical
     #   directions each
