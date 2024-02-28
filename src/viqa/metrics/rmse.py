@@ -2,28 +2,30 @@
 
 Examples
 --------
->>> import numpy as np
->>> from viqa import RMSE
->>> img_r = np.zeros((256, 256))
->>> img_m = np.ones((256, 256))
->>> rmse = RMSE()
->>> rmse
-RMSE(score_val=None)
->>> score = rmse.score(img_r, img_m)
->>> score
-1.0
->>> rmse.print_score()
-RMSE: 1.0
->>> img_r = np.zeros((256, 256))
->>> img_m = np.zeros((256, 256))
->>> rmse.score(img_r, img_m)
-0.0
->>> img_r = np.random.rand(256, 256)
->>> img_m = np.random.rand(128, 128)
->>> rmse.score(img_r, img_m)
-Traceback (most recent call last):
-    ...
-ValueError: Image shapes do not match
+    .. doctest-requires:: numpy
+
+        >>> import numpy as np
+        >>> from viqa import RMSE
+        >>> img_r = np.zeros((256, 256))
+        >>> img_m = np.ones((256, 256))
+        >>> rmse = RMSE()
+        >>> rmse
+        RMSE(score_val=None)
+        >>> score = rmse.score(img_r, img_m)
+        >>> score
+        1.0
+        >>> rmse.print_score()
+        RMSE: 1.0
+        >>> img_r = np.zeros((256, 256))
+        >>> img_m = np.zeros((256, 256))
+        >>> rmse.score(img_r, img_m)
+        0.0
+        >>> img_r = np.random.rand(256, 256)
+        >>> img_m = np.random.rand(128, 128)
+        >>> rmse.score(img_r, img_m)
+        Traceback (most recent call last):
+            ...
+        ValueError: Image shapes do not match
 """
 
 # Authors

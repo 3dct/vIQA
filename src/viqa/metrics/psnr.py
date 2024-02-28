@@ -2,28 +2,30 @@
 
 Examples
 --------
->>> import numpy as np
->>> from viqa import PSNR
->>> img_r = np.zeros((256, 256))
->>> img_m = np.ones((256, 256))
->>> psnr = PSNR(data_range=1, normalize=False)
->>> psnr
-PSNR(score_val=None)
->>> score = psnr.score(img_r, img_m)
->>> score
-0.0
->>> psnr.print_score()
-PSNR: 0.0
->>> img_r = np.zeros((256, 256))
->>> img_m = np.zeros((256, 256))
->>> psnr.score(img_r, img_m)
-inf
->>> img_r = np.random.rand(256, 256)
->>> img_m = np.random.rand(128, 128)
->>> psnr.score(img_r, img_m)
-Traceback (most recent call last):
-    ...
-ValueError: Image shapes do not match
+    .. doctest-requires:: numpy
+
+        >>> import numpy as np
+        >>> from viqa import PSNR
+        >>> img_r = np.zeros((256, 256))
+        >>> img_m = np.ones((256, 256))
+        >>> psnr = PSNR(data_range=1, normalize=False)
+        >>> psnr
+        PSNR(score_val=None)
+        >>> score = psnr.score(img_r, img_m)
+        >>> score
+        0.0
+        >>> psnr.print_score()
+        PSNR: 0.0
+        >>> img_r = np.zeros((256, 256))
+        >>> img_m = np.zeros((256, 256))
+        >>> psnr.score(img_r, img_m)
+        inf
+        >>> img_r = np.random.rand(256, 256)
+        >>> img_m = np.random.rand(128, 128)
+        >>> psnr.score(img_r, img_m)
+        Traceback (most recent call last):
+            ...
+        ValueError: Image shapes do not match
 """
 
 # Authors

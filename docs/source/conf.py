@@ -20,7 +20,10 @@ release = '0.5.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
     'sphinx_copybutton',
+    'pytest_doctestplus.sphinx.doctestplus',
 ]
 
 templates_path = ['_templates']

@@ -10,7 +10,8 @@ References
 
 Examples
 --------
-TODO: add examples
+.. todo::
+    add examples
 """
 
 # Authors
@@ -40,7 +41,7 @@ from viqa._metrics import FullReferenceMetricsInterface
 from viqa.utils import (
     _check_imgs,
     _to_float,
-    extract_blocks,
+    _extract_blocks,
     _ifft,
     _fft,
     gabor_convolve,
@@ -56,6 +57,11 @@ STRIDE = 0
 class MAD(FullReferenceMetricsInterface):
     """Class to calculate the most apparent distortion (MAD) between two images.
 
+    Attributes
+    ----------
+    score_val : float
+        MAD score value of the last calculation.
+
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
@@ -63,21 +69,22 @@ class MAD(FullReferenceMetricsInterface):
     normalize : bool, default False
         If True, the input images are normalized to the `data_range` argument.
     batch : bool, default False
-        .. note:: If True, the input images are expected to be given as path to a folder containing the images.
-        Currently not supported. Added for later implementation.
+        If True, the input images are expected to be given as path to a folder containing the images.
+
+        .. caution::
+            Currently not supported. Added for later implementation.
+
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
 
-    Attributes
-    ----------
-    score_val : float
-        MAD score value of the last calculation.
-
     Other Parameters
     ----------------
     chromatic : bool, default False
-        .. note:: If True, the input images are expected to be RGB images. Currently not supported.
+        If True, the input images are expected to be RGB images.
+
+        .. caution::
+            Currently not supported.
 
     Notes
     -----
@@ -322,15 +329,21 @@ def most_apparent_distortion(
         If True, the `display_function` of the monitor is taken into account.
     display_function : dict, optional
         Parameters of the display function of the monitor. Must be given if `account_monitor` is True.
-        disp_res : float, Display resolution.
-        view_dis : float, Viewing distance. Same unit as `disp_res`.
-        # TODO: change doc layout
+
+        .. admonition:: Dictionary layout
+
+            disp_res : float, Display resolution. \n
+            view_dis : float, Viewing distance. Same unit as `disp_res`.
+
     luminance_function : dict, optional
         Parameters of the luminance function. If not given, default values for sRGB displays are used.
-        b : float, default=0.0
-        k : float, default=0.02874
-        gamma : float, default=2.2
-        # TODO: change doc layout
+
+        .. admonition:: Dictionary layout
+
+            b : float, default=0.0 \n
+            k : float, default=0.02874 \n
+            gamma : float, default=2.2
+
     ms_scale : float, default=1
         Additional normalization parameter for the high quality index.
     orientations_num : int, default 4
@@ -367,7 +380,6 @@ def most_apparent_distortion(
     beta_1=0.467 and beta_2=0.130 are thresh_1=2.55 and thresh_2=3.35. These need not to be set, since automatic values
     for beta_1 and beta_2 are used when they are not given as parameter. For more information see [1]. The code is
     adapted from the original MATLAB code available under [2].
-    # TODO: change doc layout
 
     References
     ----------
@@ -383,7 +395,7 @@ def most_apparent_distortion(
     # University Of Washington Seattle, 2009
     # Image Coding and Analysis Lab
     #
-    # Translation: Lukas Behammer
+    # Translation and Adaption: Lukas Behammer
     # Research Center Wels
     # University of Applied Sciences Upper Austria, 2023
     # CT Research Group
@@ -391,7 +403,7 @@ def most_apparent_distortion(
     # Modifications
     # -------------
     # Original code, 2008, Eric Larson
-    # Translated to Python, 2024, Lukas Behammer
+    # Translated to Python and Adapted, 2024, Lukas Behammer
 
     # TODO: add option for block_size = 0
     # Set global variables
@@ -443,7 +455,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     # University Of Washington Seattle, 2009
     # Image Coding and Analysis Lab
     #
-    # Translation: Lukas Behammer
+    # Translation and Adaption: Lukas Behammer
     # Research Center Wels
     # University of Applied Sciences Upper Austria, 2023
     # CT Research Group
@@ -451,7 +463,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     # Modifications
     # -------------
     # Original code, 2008, Eric Larson
-    # Translated to Python, 2024, Lukas Behammer
+    # Translated to Python and Adapted, 2024, Lukas Behammer
 
     account_monitor = kwargs.pop("account_monitor", False)
     # Account for display function of monitor
@@ -495,8 +507,8 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     i_err = i_dst - i_org  # error image
 
     # Contrast masking
-    i_org_blocks = extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
-    i_err_blocks = extract_blocks(i_err, block_size=BLOCK_SIZE, stride=STRIDE)
+    i_org_blocks = _extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
+    i_err_blocks = _extract_blocks(i_err, block_size=BLOCK_SIZE, stride=STRIDE)
 
     # Calculate local statistics
     mu_org_p = np.mean(i_org_blocks, axis=(1, 2))

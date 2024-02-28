@@ -2,7 +2,8 @@
 
 Examples
 --------
-TODO: add examples
+.. todo::
+    add examples
 """
 
 # Authors
@@ -162,8 +163,8 @@ def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLi
 def load_data(
     img: np.ndarray | Tensor | str | os.PathLike,
     data_range: int | None = None,
-    batch: bool = False,
     normalize: bool = False,
+    batch: bool = False,
 ) -> list | np.ndarray:
     """
     Load data from a numpy array, a pytorch tensor or a file path.
@@ -174,13 +175,13 @@ def load_data(
         Numpy array, tensor or file path
     data_range : int, optional
         Maximum value of the returned data, default None
-    batch : bool, optional
-        If True, img is a file path and all files in the directory are loaded, default False
-    normalize : bool, optional
+    normalize : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
+    batch : bool, default False
+        If True, img is a file path and all files in the directory are loaded.
 
         .. note::
-            Currently not supported. Added for later implementation.
+            Currently not tested.
 
     Returns
     -------
