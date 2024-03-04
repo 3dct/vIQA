@@ -1,6 +1,6 @@
 [project]
 name = "vIQA"
-version = "0.5.0"
+version = "0.6.0"
 description = "A Python package for volumetric image quality assessment"
 authors = [
     { name = "Lukas Behammer", email = "lukas.behammer@fh-wels.at" },
@@ -54,6 +54,7 @@ build-backend = "mesonpy"
 tests = [
     "pytest",
     "pytest-cov",
+    "pytest-doctestplus",
     "tox",
     "tox-pdm",
 ]
@@ -145,7 +146,7 @@ ignore_missing_imports = true
 ######################################################################
 # PyTest
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --cov=viqa --cov-report html"
+addopts = "--doctest-plus --doctest-continue-on-failure --cov=viqa --cov-report html"
 
 ######################################################################
 # Coverage

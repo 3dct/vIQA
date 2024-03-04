@@ -1,25 +1,26 @@
 project('viqa', 'c',
-    version: '0.5.0',
+    version: '0.6.0',
     license: 'BSD-3',
     default_options: [
+        'buildtype=release',
         'c_std=c11',
     ],
 )
 
-cc = meson.get_compiler('c')
+#cc = meson.get_compiler('c')
 
-_global_c_args = cc.get_supported_arguments(
-  '-Wno-unused-function',
-)
-add_project_arguments(_global_c_args, language : 'c')
+#_global_c_args = cc.get_supported_arguments(
+#  '-Wno-unused-function',
+#)
+#add_project_arguments(_global_c_args, language : 'c')
 
 # We need -lm for all C code (assuming it uses math functions, which is safe to
 # assume for vIQA). For C++ it isn't needed, because libstdc++/libc++ is
 # guaranteed to depend on it. For Fortran code, Meson already adds `-lm`.
-m_dep = cc.find_library('m', required : false)
-if m_dep.found()
-  add_project_link_arguments('-lm', language : 'c')
-endif
+#m_dep = cc.find_library('m', required : false)
+#if m_dep.found()
+#  add_project_link_arguments('-lm', language : 'c')
+#endif
 
 # https://mesonbuild.com/Python-module.html
 py_mod = import('python')
