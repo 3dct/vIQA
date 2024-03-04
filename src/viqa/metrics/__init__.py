@@ -1,7 +1,7 @@
-__all__ = ["FSIM", "MAD", "MSSSIM", "PSNR", "RMSE", "SSIM", "VIFp", "VSI"]
+__all__ = ["FSIM", "GSM", "MAD", "MSSSIM", "PSNR", "RMSE", "SSIM", "VIFp", "VSI"]
 
 from .fsim import FSIM
-# from .gsm import GSM
+from .gsm import GSM
 from .mad import MAD
 from .msssim import MSSSIM
 from .psnr import PSNR
