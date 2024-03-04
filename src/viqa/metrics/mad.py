@@ -71,7 +71,7 @@ class MAD(FullReferenceMetricsInterface):
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
-        .. caution::
+        .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
@@ -83,7 +83,7 @@ class MAD(FullReferenceMetricsInterface):
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
 
-        .. caution::
+        .. note::
             Currently not supported.
 
     Notes
@@ -234,7 +234,7 @@ def most_apparent_distortion_3d(
     img_m : np.ndarray
         Distorted image to calculate score of
     dim : {0, 1, 2}, default=2
-        Dimension to calculate MAD for.
+        Dimension on which the slices are iterated.
     **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
             `viqa.mad.most_apparent_distortion()`.

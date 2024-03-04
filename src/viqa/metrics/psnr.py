@@ -65,7 +65,7 @@ class PSNR(FullReferenceMetricsInterface):
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
-        .. caution::
+        .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
@@ -87,7 +87,7 @@ class PSNR(FullReferenceMetricsInterface):
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
 
-        .. caution::
+        .. note::
             Currently not supported.
 
     Notes
