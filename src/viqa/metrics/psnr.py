@@ -58,12 +58,16 @@ class PSNR(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Can be omitted if `normalize` is False.
+        Data range of the returned data in data loading. Is used for image loading when `normalize` is True and for the
+        PSNR calculation.
     normalize : bool, default False
         If True, the input images are normalized to the `data_range` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
-        .. note:: Currently not supported. Added for later implementation.
+
+        .. caution::
+            Currently not supported. Added for later implementation.
+
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
@@ -73,11 +77,18 @@ class PSNR(FullReferenceMetricsInterface):
     score_val : float
         PSNR score value of the last calculation.
 
+    Raises
+    ------
+    ValueError
+        If the parameter `data_range` is not set.
+
     Other Parameters
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-        .. note:: Currently not supported.
+
+        .. caution::
+            Currently not supported.
 
     Notes
     -----

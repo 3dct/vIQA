@@ -63,7 +63,10 @@ class RMSE(FullReferenceMetricsInterface):
         If True, the input images are normalized to the `data_range` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
-        .. note:: Currently not supported. Added for later implementation.
+
+        .. caution::
+            Currently not supported. Added for later implementation.
+
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
@@ -77,7 +80,10 @@ class RMSE(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-        .. note:: Currently not supported.
+
+        .. caution::
+            Currently not supported.
+
     """
 
     def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
