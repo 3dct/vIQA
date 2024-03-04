@@ -27,7 +27,7 @@ import scipy.ndimage as ndi
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.utils import _check_imgs, _to_float
-from viqa.kernels import *
+from viqa._kernels import *
 
 # Load the kernels as constants
 KERNELS_3D = [

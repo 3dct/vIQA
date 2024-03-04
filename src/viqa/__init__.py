@@ -7,5 +7,5 @@ __version__ = "0.5.0"
 __author__ = "Lukas Behammer"
 
 from .metrics import *
-from .kernels import *
+from ._kernels import *
 from .utils import load_data, normalize_data
