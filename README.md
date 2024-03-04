@@ -32,6 +32,8 @@ The metrics used are:
   > [!NOTE]
   > can only be used for 2D images currently
 - Most Apparent Distortion (MAD) [^6]
+  > [!ATTENTION]
+  > The metric is tested, but not yet validated.
 - Gradient Similarity Measure (GSM) [^7]
   > [!CAUTION]
   > This metric is not yet tested. The metric should be only used for testing purposes.
@@ -175,7 +177,7 @@ psnr.print_score(decimals=2)
     - [ ] Add tests for FSIM
     - [ ] Add tests for VSI
     - [ ] Add tests for VIF
-    - [ ] Add tests for MAD
+    - [x] Add tests for MAD
     - [ ] Add tests for GSM
     - [ ] Add tests for SFF/IFS
     - [ ] Add tests for CNR
@@ -192,7 +194,7 @@ psnr.print_score(decimals=2)
     - [ ] Add documentation for vsi.py
     - [ ] Add documentation for vif.py
     - [x] Add documentation for mad.py
-    - [ ] Add documentation for gsm.py
+    - [x] Add documentation for gsm.py
     - [ ] Add documentation for metrics.py
     - [ ] Add documentation for utils.py
     - [ ] Add documentation for kernels.py
