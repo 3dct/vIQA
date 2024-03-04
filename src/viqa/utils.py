@@ -180,7 +180,7 @@ def load_data(
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
-        .. note::
+        .. caution::
             Currently not tested.
 
     Returns
@@ -411,7 +411,7 @@ def correlate_convolve_abs(
     Examples
     --------
     >>> import numpy as np
-    >>> from viqa import kernels
+    >>> from viqa import _kernels
     >>> img = np.random.rand(128, 128)
     >>> kernel = kernels.sobel_kernel_2d_x()
     >>> res = correlate_convolve_abs(img, kernel, mode="correlate", border_mode="constant", value=0)
@@ -544,11 +544,11 @@ def gabor_convolve(
     Notes
     -----
     Even spectral coverage and independence of filter output are dependent on bandwidth_param vs wavelength_scaling.
-    Some experimental values:
-    0.85 <--> 1.3
-    0.74 <--> 1.6 (1 octave bandwidth)
-    0.65 <--> 2.1
-    0.55 <--> 3.0 (2 octave bandwidth)
+    Some experimental values: \n
+    0.85 <--> 1.3 \n
+    0.74 <--> 1.6 (1 octave bandwidth) \n
+    0.65 <--> 2.1 \n
+    0.55 <--> 3.0 (2 octave bandwidth) \
     Additionally d_theta_on_sigma should be set to 1.5 for approximately the minimum overlap needed to get even
     spectral coverage.
 
