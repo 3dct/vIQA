@@ -186,9 +186,11 @@ class MAD(FullReferenceMetricsInterface):
             ):  # if dim is given, but im_slice is not, calculate MAD for full volume
                 warn("im_slice is not given. Calculating MAD for full volume.", RuntimeWarning)
                 score_val = most_apparent_distortion_3d(img_r, img_m, dim=dim, **kwargs)
+            elif (
+                dim is not None and type(im_slice) is not (int or None)
+            ):
+                raise ValueError("im_slice must be an integer or None.")
             else:
-                if type(im_slice) is not int or None:
-                    raise ValueError("im_slice must be an integer.")
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
                 )
