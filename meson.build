@@ -1,5 +1,5 @@
 project('viqa', 'c',
-    version: '0.6.0',
+    version: '0.7.0',
     license: 'BSD-3',
     default_options: [
         'buildtype=release',
