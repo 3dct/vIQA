@@ -242,6 +242,8 @@ def load_data(
             img_arr = img  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
+        # case list():  # If input is a list
+        #     # todo: add support for list of numpy arrays
         case _:
             raise ValueError(
                 "Input type not supported"
@@ -293,7 +295,7 @@ def _check_imgs(
             "Image types do not match. img_r is of type {type(img_r_loaded)} and img_m is of type {type("
             "img_m_loaded)}"
         )
-    else:  # If both images are lists or else
+    elif isinstance(img_r, list) and isinstance(img_m, list):  # If both images are lists or else
         if len(img_r_loaded) != len(img_m_loaded):  # If number of images do not match
             raise ValueError(
                 "Number of images do not match. img_r has {len(img_r_loaded)} images and img_m has {len("
@@ -306,6 +308,8 @@ def _check_imgs(
                 raise ValueError("Image types do not match")
             if img_a.dtype != img_b.shape:  # If image shapes do not match
                 raise ValueError("Image shapes do not match")
+    else:
+        raise ValueError("Image format not supported.")
     return img_r_loaded, img_m_loaded
 
 
