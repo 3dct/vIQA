@@ -87,3 +87,11 @@ CNR
    :members:
    :undoc-members:
    :show-inheritance:
+
+SNR
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: viqa.nr_metrics.snr
+   :members:
+   :undoc-members:
+   :show-inheritance:
