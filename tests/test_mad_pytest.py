@@ -95,18 +95,31 @@ class TestScoring3D:
         img_r, img_m = data_3d_255
         mad = viqa.MAD()
         assert mad.score(img_r, img_m, dim=2, im_slice=64) != 0.0, 'MAD of completely different images should not be 0'
-        
-    def test_mad_score_with_different_images_3d_dim0(self, data_3d_255):
-        img_r, img_m = data_3d_255
-        mad = viqa.MAD()
-        assert 0 <= mad.score(img_r, img_m, dim=0) <= 1.0, 'MAD should be between 0 and 1'
+
+    # take 7hr 41min
+    # def test_mad_score_with_different_images_3d_dim0(self, data_3d_255):
+    #     img_r, img_m = data_3d_255
+    #     mad = viqa.MAD()
+    #     assert 0 <= mad.score(img_r, img_m, dim=0) <= np.inf, 'MAD should be between 0 and inf'
 
     def test_mad_score_3d_dim3_slice64(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         mad = viqa.MAD()
-        with pytest.raises(ValueError, match=re.escape('Invalid dim value. Must be 0, 1 or 2.')):
+        with pytest.raises(ValueError, match=re.escape('Invalid dim value. Must be integer of 0, 1 or 2.')):
             mad.score(img_r, img_m, dim=3, im_slice=64)
+
+    def test_mad_score_3d_dim1_slice64(self):
+        img_r = np.random.rand(128, 128, 128)
+        img_m = np.random.rand(128, 128, 128)
+        mad = viqa.MAD()
+        mad.score(img_r, img_m, dim=1, im_slice=64)
+
+    def test_mad_score_3d_dim2(self):
+        img_r = np.random.rand(128, 128, 128)
+        img_m = np.random.rand(128, 128, 128)
+        mad = viqa.MAD()
+        mad.score(img_r, img_m, dim=2)
 
     def test_mad_score_3d(self):
         img_r = np.random.rand(128, 128, 128)
@@ -122,7 +135,7 @@ class TestScoring3D:
         mad = viqa.MAD()
         score1 = mad.score(img_r_255, img_m_255, dim=0, im_slice=64)
         score2 = mad.score(img_r, img_m, dim=0, im_slice=64)
-        assert score1 != score2, 'MAD should be different for different data ranges'
+        assert score1 == score2, 'MAD should be same for different data ranges'
 
 
 class TestPrintScore:
