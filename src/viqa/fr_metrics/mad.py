@@ -148,7 +148,7 @@ class MAD(FullReferenceMetricsInterface):
         Notes
         -----
         For 3D images if dim is given, but im_slice is not, the MAD is calculated for the full volume of the 3D image.
-        This is implemented as mean of the MAD values of all slices of the given dimension. If dim is given and
+        This is implemented as :math:`mean` of the MAD values of all slices of the given dimension. If dim is given and
         im_slice is given, the MAD is calculated for the given slice of the given dimension (represents a 2D metric of
         the given slice).
         """
@@ -355,8 +355,11 @@ def most_apparent_distortion(
         Weights for the different scales of the log-Gabor filters. Must be of length `scales_num`.
     csf_function : dict, optional
         Parameters for the contrast sensitivity function. If not given, default values for sRGB displays are used.
-        lambda_csf : float, default=0.114
-        f_peak : float, default=7.8909
+
+        .. admonition:: Dictionary layout
+
+            lambda_csf : float, default=0.114 \n
+            f_peak : float, default=7.8909
 
     Raises
     ------
@@ -375,12 +378,12 @@ def most_apparent_distortion(
     Notes
     -----
     The metric is calculated as combination of two single metrics. One for high quality and one for low quality of the
-    image. The parameters beta_1, beta_2, thresh_1 and thresh_2 determine the weighting of the two combined single
-    metrics. If thresh_1 and thresh_2 are given, beta_1 and beta_2 are calculated from them, else beta_1 and beta_2 or
-    their default values are used. The values to be set for thresh_1 and thresh_2 that lead to the default values
-    beta_1=0.467 and beta_2=0.130 are thresh_1=2.55 and thresh_2=3.35. These need not to be set, since automatic values
-    for beta_1 and beta_2 are used when they are not given as parameter. For more information see [1]. The code is
-    adapted from the original MATLAB code available under [2].
+    image. The parameters `beta_1`, `beta_2`, `thresh_1` and `thresh_2` determine the weighting of the two combined
+    single metrics. If `thresh_1` and `thresh_2` are given, `beta_1` and `beta_2` are calculated from them, else
+    `beta_1` and `beta_2` or their default values are used. The values to be set for `thresh_1` and `thresh_2` that lead
+    to the default values `beta_1=0.467` and `beta_2=0.130` are `thresh_1=2.55` and `thresh_2=3.35`. These need not to
+    be set, since automatic values for `beta_1` and `beta_2` are used when they are not given as parameter. For more
+    information see [1]. The code is adapted from the original MATLAB code available under [2].
 
     References
     ----------
@@ -810,7 +813,6 @@ def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
                 for v in range(j, j + block_size):
                     mean += image[u, v]
             mean /= block_size**2
-            # TODO: vectorization with numpy
 
             # Calculate standard deviation, skewness and kurtosis for each block
             std = 0.0

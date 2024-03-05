@@ -114,6 +114,10 @@ class GSM(FullReferenceMetricsInterface):
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the gradient similarity (GSM) between two images.
 
+        The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
+        full volume or for a given slice of the image by setting the parameter `dim` to the desired dimension and
+        `im_slice` to the desired slice number.
+
         Parameters
         ----------
         img_r : np.ndarray or Tensor or str or os.PathLike
@@ -149,12 +153,20 @@ class GSM(FullReferenceMetricsInterface):
         RuntimeWarning
             If dim or im_slice is given for 2D images.
         RuntimeWarning
-            If im_slice is not given, but dim is given for 3D images, MAD is calculated for the full volume.
+            If im_slice is not given, but dim is given for 3D images, GSM is calculated for the full volume.
 
         Notes
         -----
-        This implementation is adapted for 3D images. Therefore, 12 kernels are used instead of the original 4. Also,
-        the gradient is calculated by max{convolve(img, kernel)} instead of max{mean2(abs(x * kernel))}.
+        For 3D images if dim is given, but im_slice is not, the GSM is calculated for the full volume of the 3D image.
+        This is implemented as :math:`mean` of the GSM values of all slices of the given dimension. If dim is given and
+        im_slice is given, the GSM is calculated for the given slice of the given dimension (represents a 2D metric of
+        the given slice).
+        This implementation is adapted for 3D images if parameter `experimental=True`. Therefore, 12 kernels are used
+        instead of the original 4.
+        The gradient is calculated by
+
+        .. math::
+            max{convolve(img, kernel)} instead of max{mean2(abs(x * kernel))}.
         """
         img_r, img_m = _check_imgs(
             img_r,
@@ -187,7 +199,7 @@ class GSM(FullReferenceMetricsInterface):
                         raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
             elif (
                     dim is not None and im_slice is None
-            ):  # if dim is given, but im_slice is not, calculate MAD for full volume
+            ):  # if dim is given, but im_slice is not, calculate GSM for full volume
                 warn("im_slice is not given. Calculating GSM for full volume.", RuntimeWarning)
                 score_val = gradient_similarity_3d(img_r, img_m, data_range=self._parameters["data_range"],
                                                    dim=dim, **kwargs)
@@ -198,7 +210,7 @@ class GSM(FullReferenceMetricsInterface):
         elif img_r.ndim == 2:
             if dim or im_slice:
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
-            # Calculate MAD for 2D images
+            # Calculate GSM for 2D images
             score_val = gradient_similarity(img_r, img_m, data_range=self._parameters["data_range"], **kwargs)
         else:
             raise ValueError("Images must be 2D or 3D.")
@@ -266,7 +278,7 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     if not experimental:
         x, y, z = img_r.shape  # get image dimensions
         scores = []
-        # Calculate MAD for all slices of the given dimension
+        # Calculate GSM for all slices of the given dimension
         match dim:
             case 0:
                 for slice_ in range(x):
@@ -308,10 +320,10 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     data_range : {1, 255, 65535}
         Data range of the input images
     c : int, default=200
-        Constant as masking parameter. Typically, 200 <= c <= 1000. See [1] for details.
+        Constant as masking parameter. Typically, `200 <= c <= 1000`. See [1] for details.
     p : float, default=0.1
-        Constant for weighting between luminance and structure similarity. 0 <= p <= 1. Higher p means more accentuation
-        of luminance. Should be significantly smaller than 0.5. See [1] for details.
+        Constant for weighting between luminance and structure similarity. `0 <= p <= 1`. Higher `p` means more
+        accentuation of luminance. Should be significantly smaller than 0.5. See [1] for details.
 
     Returns
     -------
