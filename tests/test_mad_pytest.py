@@ -6,30 +6,6 @@ import numpy as np
 
 from .context import viqa
 
-REFERENCE = "../data/Catec_Two_PlateIQI_20um_1620proj_220kV_Rayscan-SimCT_800x800x1000_16bit.raw"
-MODIFIED = "../data/Catec_Two_PlateIQI_20um_810proj_220kV_Rayscan-SimCT_800x800x1000_16bit.raw"
-
-
-@pytest.fixture
-def data_2d_255():
-    img_r_2d = viqa.utils.load_data(REFERENCE, data_range=255, normalize=True)[200:800, 200, 200:600]
-    img_m_2d = viqa.utils.load_data(MODIFIED, data_range=255, normalize=True)[200:800, 200, 200:600]
-    return img_r_2d, img_m_2d
-
-
-@pytest.fixture
-def data_3d_255():
-    img_r_3d = viqa.utils.load_data(REFERENCE, data_range=255, normalize=True)[300:700, 300:700, 300:500]
-    img_m_3d = viqa.utils.load_data(MODIFIED, data_range=255, normalize=True)[300:700, 300:700, 300:500]
-    return img_r_3d, img_m_3d
-
-
-@pytest.fixture
-def data_3d():
-    img_r_3d = viqa.utils.load_data(REFERENCE, data_range=255, normalize=True)[300:700, 300:700, 300:500]
-    img_m_3d = viqa.utils.load_data(MODIFIED, data_range=255, normalize=True)[300:700, 300:700, 300:500]
-    return img_r_3d, img_m_3d
-
 
 class TestInit:
     def test_init_with_default_parameters(self):
@@ -56,8 +32,8 @@ class TestScoring2D:
         mad = viqa.MAD()
         assert mad.score(img_r, img_m) == 0.0, 'MAD of identical images should be 0'
 
-    def test_mad_score_with_different_images_2d(self, data_2d_255):
-        img_r, img_m = data_2d_255
+    def test_mad_score_with_different_images_2d(self, data_2d_255_600x400):
+        img_r, img_m = data_2d_255_600x400
         mad = viqa.MAD()
         assert mad.score(img_r, img_m) != 0.0, 'MAD of completely different images should not be 0'
 
@@ -91,14 +67,14 @@ class TestScoring3D:
         mad = viqa.MAD()
         assert mad.score(img_r, img_m, dim=1) == 0.0, 'MAD of identical images should be 0'
         
-    def test_mad_score_with_different_images_3d_dim2_slice64(self, data_3d_255):
-        img_r, img_m = data_3d_255
+    def test_mad_score_with_different_images_3d_dim2_slice64(self, data_3d_255_400x400x200):
+        img_r, img_m = data_3d_255_400x400x200
         mad = viqa.MAD()
         assert mad.score(img_r, img_m, dim=2, im_slice=64) != 0.0, 'MAD of completely different images should not be 0'
 
     # take 7hr 41min
-    # def test_mad_score_with_different_images_3d_dim0(self, data_3d_255):
-    #     img_r, img_m = data_3d_255
+    # def test_mad_score_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
+    #     img_r, img_m = data_3d_255_400x400x200
     #     mad = viqa.MAD()
     #     assert 0 <= mad.score(img_r, img_m, dim=0) <= np.inf, 'MAD should be between 0 and inf'
 
@@ -128,9 +104,10 @@ class TestScoring3D:
         with pytest.raises(ValueError, match=re.escape('If images are 3D, dim and im_slice (optional) must be given.')):
             mad.score(img_r, img_m)
 
-    def test_mad_score_with_different_data_ranges_3d_dim0_slice64(self, data_3d_255, data_3d):
-        img_r_255, img_m_255 = data_3d_255
-        img_r, img_m = data_3d
+    def test_mad_score_with_different_data_ranges_3d_dim0_slice64(self, data_3d_255_400x400x200,
+                                                                  data_3d_native_400x400x200):
+        img_r_255, img_m_255 = data_3d_255_400x400x200
+        img_r, img_m = data_3d_native_400x400x200
         print(img_r.ndim)
         mad = viqa.MAD()
         score1 = mad.score(img_r_255, img_m_255, dim=0, im_slice=64)
@@ -155,8 +132,8 @@ class TestPrintScore:
             captured = capsys.readouterr()
             assert captured.out == 'MAD: 0.0\n', 'Printed score is incorrect'
 
-    def test_print_score_with_different_decimals(self, data_2d_255, capsys):
-        img_r, img_m = data_2d_255
+    def test_print_score_with_different_decimals(self, data_2d_255_600x400, capsys):
+        img_r, img_m = data_2d_255_600x400
         mad = viqa.MAD()
         mad.score(img_r, img_m)
         with warnings.catch_warnings():
