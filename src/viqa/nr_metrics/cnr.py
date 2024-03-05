@@ -10,11 +10,10 @@ Examples
         >>> cnr = CNR(data_range=1, normalize=False)
         >>> cnr
         CNR(score_val=None)
-        >>> score = cnr.score(
-        ...                     img, 
-        ...                     background_center=(128, 128),
-        ...                     signal_center=(32, 32),
-        ...                     radius=16)
+        >>> score = cnr.score(img,
+        ...                   background_center=(128, 128),
+        ...                   signal_center=(32, 32),
+        ...                   radius=16)
 """
 
 # Authors
