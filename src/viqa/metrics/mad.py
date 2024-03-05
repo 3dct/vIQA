@@ -471,7 +471,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     # Account for display function of monitor
     if account_monitor:
         if "display_function" not in kwargs:
-            raise Exception(
+            raise ValueError(
                 "If account_monitor is True, display_function must be given."
             )
         display_function = kwargs.pop("display_function")
@@ -614,7 +614,7 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     weights = kwargs.pop("weights", [0.5, 0.75, 1, 5, 6])
     weights /= np.sum(weights)
     if len(weights) != scales_num:
-        raise ValueError("weights must be of length scales_num.")
+        raise ValueError(f"weights must be of length scales_num ({scales_num}).")
 
     # Decompose using log-Gabor filters
     gabor_org = gabor_convolve(
