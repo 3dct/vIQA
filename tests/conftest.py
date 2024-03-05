@@ -22,6 +22,7 @@ def reference_image_2d_255():
 @pytest.fixture(scope="session")
 def modified_image_2d_255():
     img_m_3d = viqa.utils.load_data(MODIFIED, data_range=255, normalize=True)[:, :, 200]
+    return img_m_3d
 
 
 @pytest.fixture(scope="session")
