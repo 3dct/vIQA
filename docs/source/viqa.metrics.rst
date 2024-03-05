@@ -1,10 +1,7 @@
-viqa.metrics package
+Metrics
 ====================
 
-Submodules
-----------
-
-viqa.metrics.fsim module
+FSIM
 ------------------------
 
 .. automodule:: viqa.metrics.fsim
@@ -12,7 +9,7 @@ viqa.metrics.fsim module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.gsm module
+GSM
 -----------------------
 
 .. automodule:: viqa.metrics.gsm
@@ -20,7 +17,7 @@ viqa.metrics.gsm module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.mad module
+MAD
 -----------------------
 
 .. automodule:: viqa.metrics.mad
@@ -28,7 +25,7 @@ viqa.metrics.mad module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.msssim module
+MSSSIM
 --------------------------
 
 .. automodule:: viqa.metrics.msssim
@@ -36,7 +33,7 @@ viqa.metrics.msssim module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.psnr module
+PSNR
 ------------------------
 
 .. automodule:: viqa.metrics.psnr
@@ -44,7 +41,7 @@ viqa.metrics.psnr module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.rmse module
+RMSE
 ------------------------
 
 .. automodule:: viqa.metrics.rmse
@@ -52,7 +49,7 @@ viqa.metrics.rmse module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.ssim module
+SSIM
 ------------------------
 
 .. automodule:: viqa.metrics.ssim
@@ -60,7 +57,7 @@ viqa.metrics.ssim module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.vif module
+VIF
 -----------------------
 
 .. automodule:: viqa.metrics.vif
@@ -68,18 +65,10 @@ viqa.metrics.vif module
    :undoc-members:
    :show-inheritance:
 
-viqa.metrics.vsi module
+VSI
 -----------------------
 
 .. automodule:: viqa.metrics.vsi
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: viqa.metrics
    :members:
    :undoc-members:
    :show-inheritance:

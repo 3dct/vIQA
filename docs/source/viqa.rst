@@ -1,37 +1,22 @@
-viqa package
+vIQA package
 ============
+.. automodule:: viqa
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-Subpackages
------------
+Metrics
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    viqa.metrics
 
-Submodules
-----------
-
-viqa.kernels module
--------------------
-
-.. automodule:: viqa.kernels
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-viqa.utils module
+Utilities module
 -----------------
 
 .. automodule:: viqa.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: viqa
    :members:
    :undoc-members:
    :show-inheritance:
