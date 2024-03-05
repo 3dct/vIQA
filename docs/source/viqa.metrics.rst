@@ -7,7 +7,7 @@ Full Reference
 FSIM
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.fsim
+.. automodule:: viqa.fr_metrics.fsim
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ FSIM
 GSM
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.gsm
+.. automodule:: viqa.fr_metrics.gsm
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ GSM
 MAD
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.mad
+.. automodule:: viqa.fr_metrics.mad
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ MAD
 MSSSIM
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.msssim
+.. automodule:: viqa.fr_metrics.msssim
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ MSSSIM
 PSNR
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.psnr
+.. automodule:: viqa.fr_metrics.psnr
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ PSNR
 RMSE
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.rmse
+.. automodule:: viqa.fr_metrics.rmse
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ RMSE
 SSIM
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.ssim
+.. automodule:: viqa.fr_metrics.ssim
    :members:
    :undoc-members:
    :show-inheritance:
@@ -63,7 +63,7 @@ SSIM
 VIF
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.vif
+.. automodule:: viqa.fr_metrics.vif
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,7 +71,7 @@ VIF
 VSI
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.vsi
+.. automodule:: viqa.fr_metrics.vsi
    :members:
    :undoc-members:
    :show-inheritance:
@@ -83,7 +83,7 @@ No Reference
 CNR
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: viqa.metrics.cnr
+.. automodule:: viqa.nr_metrics.cnr
    :members:
    :undoc-members:
    :show-inheritance:
