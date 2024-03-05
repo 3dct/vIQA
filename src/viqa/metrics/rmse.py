@@ -89,8 +89,7 @@ class RMSE(FullReferenceMetricsInterface):
     def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
 
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch)
-        self._parameters.update(**kwargs)
+        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m):
         """Calculate the RMSE score between two images.

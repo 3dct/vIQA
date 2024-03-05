@@ -10,13 +10,11 @@ class VSI(FullReferenceMetricsInterface):
     Calculates the visual saliency index (VSI) between two images.
     """
 
-    def __init__(self, data_range=255, **kwargs):
-        """
-        :param data_range: data range of the returned data in data loading
-        :param kwargs:
-        """
-        super().__init__(data_range=data_range)
-        self._parameters.update(**kwargs)
+    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
+        """Constructor method"""
+        if data_range is None:
+            raise ValueError("Parameter data_range must be set.")
+        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m, **kwargs):
         """

@@ -110,7 +110,6 @@ class GSM(FullReferenceMetricsInterface):
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
-        self._parameters.update(**kwargs)
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the gradient similarity (GSM) between two images.

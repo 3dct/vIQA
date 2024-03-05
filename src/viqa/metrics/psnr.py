@@ -101,8 +101,7 @@ class PSNR(FullReferenceMetricsInterface):
 
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch)
-        self._parameters.update(**kwargs)
+        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m):
         """Calculate the peak signal-to-noise ratio (PSNR) between two images.
