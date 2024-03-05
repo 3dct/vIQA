@@ -180,7 +180,7 @@ def load_data(
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
-        .. caution::
+        .. note::
             Currently not tested.
 
     Returns
@@ -552,7 +552,7 @@ def gabor_convolve(
     0.85 <--> 1.3 \n
     0.74 <--> 1.6 (1 octave bandwidth) \n
     0.65 <--> 2.1 \n
-    0.55 <--> 3.0 (2 octave bandwidth) \
+    0.55 <--> 3.0 (2 octave bandwidth) \n
     Additionally d_theta_on_sigma should be set to 1.5 for approximately the minimum overlap needed to get even
     spectral coverage.
 
