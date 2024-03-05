@@ -101,7 +101,7 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             cnr.print_score()
             captured = capsys.readouterr()
-            assert captured.out == 'CNR: 0.00\n', 'Printed score should be inf'
+            assert captured.out == 'CNR: 0\n', 'Printed score should be 0'
 
     def test_cnr_print_score_with_different_decimals(self, capsys, modified_image_2d_255):
         img = modified_image_2d_255
