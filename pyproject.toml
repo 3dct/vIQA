@@ -146,15 +146,15 @@ ignore_missing_imports = true
 ######################################################################
 # PyTest
 [tool.pytest.ini_options]
-addopts = "--doctest-plus --doctest-continue-on-failure --cov=viqa --cov-report html"
+addopts = "--doctest-plus --doctest-continue-on-failure --cov=src --cov-append --cov-report html"
 
 ######################################################################
 # Coverage
 [tool.coverage.run]
-source = ["src/viqa"]
 omit = [
     "src/viqa/_private_tests/*",
     "src/viqa/tests/*",
     "*/sphinxext/*",
     "*/tmp/tmp*.py",
+    "docs/*",
 ]
