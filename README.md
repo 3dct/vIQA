@@ -40,6 +40,24 @@ The metrics used are:
 - Contrast to Noise Ratio (CNR)
 - Signal to Noise Ratio (SNR)
 
+Overview
+--------
+| Metric  | Name                                          | Type | Dimensional behaviour | Range          | Tested             | Validated | Reference |
+|---------|-----------------------------------------------|------|-----------------------|----------------|--------------------|-----------|-----------|
+| PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             | $[0, \infty)$  | :heavy_check_mark: | :x:       | &mdash    |
+| RMSE    | Root Mean Square Error                        | FR   | 3D native             | $[0, 1)$       | :heavy_check_mark: | :x:       | &mdash    |
+| SSIM    | Structured Similarity                         | FR   | 3D native             |                | :x:                | :x:       | [^1]      |
+| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 2D                    |                | :x:                | :x:       | [^2]      |
+| FSIM    | Feature Similarity Index                      | FR   | 2D                    |                | :x:                | :x:       | [^3]      |
+| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 2D                    |                | :x:                | :x:       | [^4]      |
+| VSI     | Visual Saliency Index                         | FR   | 2D                    |                | :x:                | :x:       | [^5]      |
+| MAD     | Most Apparent Distortion                      | FR   | 3D slicing            | $[0, \infty)$  | :heavy_check_mark: | :x:       | [^6]      |
+| GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                | :x:                | :x:       | [^7]      |
+| CNR     | Contrast to Noise Ratio                       | FR   | 3D native             |                | :heavy_check_mark: | :x:       |           |
+| SNR     | Signal to Noise Ratio                         | FR   | 3D native             |                | :heavy_check_mark: | :x:       | &mdash    |
+
+
+
 <!-- ## Installation TODO: add installation instructions -->
 
 ## Requirements
