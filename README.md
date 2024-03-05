@@ -37,6 +37,8 @@ The metrics used are:
 - Gradient Similarity Measure (GSM) [^7]
   > [!CAUTION]
   > This metric is not yet tested. The metric should be only used for testing purposes.
+- Contrast to Noise Ratio (CNR)
+- Signal to Noise Ratio (SNR)
 
 <!-- ## Installation TODO: add installation instructions -->
 
@@ -164,7 +166,8 @@ psnr.print_score(decimals=2)
     - [x] Add MAD
     - [x] Add GSM
     - [ ] Add SFF/IFS
-    - [ ] Add CNR
+    - [x] Add CNR
+    - [x] Add SNR
     - [ ] Add Ma
     - [ ] Add PI
     - [ ] Add NIQE
@@ -180,7 +183,8 @@ psnr.print_score(decimals=2)
     - [x] Add tests for MAD
     - [ ] Add tests for GSM
     - [ ] Add tests for SFF/IFS
-    - [ ] Add tests for CNR
+    - [x] Add tests for CNR
+    - [x] Add tests for SNR
     - [ ] Add tests for Ma
     - [ ] Add tests for PI
     - [ ] Add tests for NIQE
@@ -195,9 +199,9 @@ psnr.print_score(decimals=2)
     - [ ] Add documentation for vif.py
     - [x] Add documentation for mad.py
     - [x] Add documentation for gsm.py
-    - [ ] Add documentation for metrics.py
-    - [ ] Add documentation for utils.py
-    - [ ] Add documentation for kernels.py
+    - [x] Add documentation for cnr.py
+    - [x] Add documentation for snr.py
+    - [x] Add documentation for utils.py
 - [ ] Adapt to 3D
     - [ ] SSIM
     - [ ] MSSSIM
