@@ -88,7 +88,7 @@ class CNR(NoReferenceMetricsInterface):
         img : np.ndarray or Tensor or str or os.PathLike
             Image to calculate score of.
         **kwargs : optional
-            Additional parameters for MAD calculation. The keyword arguments are passed to
+            Additional parameters for CNR calculation. The keyword arguments are passed to
             `viqa.cnr.contrast_to_noise_ratio()`.
 
         Returns
@@ -156,6 +156,10 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         CNR = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
+
+    .. important::
+        The background region should be chosen in a homogeneous area, while the signal region should be chosen in an
+        area with a high contrast.
 
     References
     ----------
