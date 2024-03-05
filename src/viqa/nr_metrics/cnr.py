@@ -34,14 +34,13 @@ Examples
 from warnings import warn
 
 import numpy as np
-from skimage.metrics import peak_signal_noise_ratio
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa.utils import load_data
 
 
 class CNR(NoReferenceMetricsInterface):
-    """Class to calculate the contrast-to-noise ratio (PSNR) between two images.
+    """Class to calculate the contrast-to-noise ratio (CNR) between two images.
 
     Parameters
     ----------
@@ -93,7 +92,7 @@ class CNR(NoReferenceMetricsInterface):
         Returns
         -------
         score_val : float
-            PSNR score value.
+            CNR score value.
         """
 
         # Check images
@@ -184,6 +183,9 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         raise ValueError("Image has to be either 2D or 3D.")
 
     # Calculate CNR
-    cnr_val = (np.mean(signal) - np.mean(background)) / np.std(background)
+    if np.mean(signal) - np.mean(background) == 0:
+        cnr_val = 0
+    else:
+        cnr_val = (np.mean(signal) - np.mean(background)) / np.std(background)
 
     return cnr_val
