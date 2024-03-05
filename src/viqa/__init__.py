@@ -3,7 +3,7 @@ vIQA (voulmetric Image Quality Assessment) is a Python package for the assessmen
 It provides a set of metrics to assess the quality of volumetric images. The package can be used for 2D and 3D images.
 """
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 __author__ = "Lukas Behammer"
 
 from .metrics import *
