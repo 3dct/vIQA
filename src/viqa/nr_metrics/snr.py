@@ -32,6 +32,7 @@ Examples
 # BSD-3-Clause License
 
 from warnings import warn
+from typing import Tuple
 
 import numpy as np
 
@@ -135,7 +136,7 @@ def signal_to_noise_ratio(img, signal_center, radius):
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     signal_center : Tuple(int)
-        Center of the signal.
+        Center of the signal. Order is (y, x) for 2D images and (z, y, x) for 3D images.
     radius : int
         Width of the regions.
 
@@ -143,6 +144,13 @@ def signal_to_noise_ratio(img, signal_center, radius):
     -------
     score_val : float
         SNR score value.
+
+    Raises
+    ------
+    ValueError
+        If the center is not a tuple of integers.
+        If the radius is not an integer.
+        If the image is not 2D or 3D.
 
     Notes
     -----
@@ -153,6 +161,16 @@ def signal_to_noise_ratio(img, signal_center, radius):
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
+
+    # check if signal_center is a tuple of integers and radius is an integer
+    match signal_center:
+        case Tuple(int(), int()) | Tuple(int(), int(), int()):
+            pass
+        case _:
+            raise ValueError("Center has to be a tuple of integers.")
+
+    if not isinstance(radius, int):
+        raise ValueError("Radius has to be an integer.")
 
     # Define regions
     if img.ndim == 2:  # 2D image

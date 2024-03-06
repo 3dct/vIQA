@@ -32,6 +32,7 @@ Examples
 # BSD-3-Clause License
 
 from warnings import warn
+from typing import Tuple
 
 import numpy as np
 
@@ -135,9 +136,9 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     background_center : Tuple(int)
-        Center of the background.
+        Center of the background. Order is (y, x) for 2D images and (z, y, x) for 3D images.
     signal_center : Tuple(int)
-        Center of the signal.
+        Center of the signal. Order is (y, x) for 2D images and (z, y, x) for 3D images.
     radius : int
         Width of the regions.
 
@@ -145,6 +146,13 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     -------
     score_val : float
         CNR score value.
+
+    Raises
+    ------
+    ValueError
+        If the input image is not 2D or 3D.
+        If the input center is not a tuple of integers.
+        If the input radius is not an integer.
 
     Notes
     -----
@@ -165,6 +173,22 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
            radiographic (CR) imaging systems. Medical Imaging 2010: Physics of Medical Imaging, 7622, 76224Q.
            https://doi.org/10.1117/12.844640
     """
+
+    # check if signal_center and background_center are tuples of integers and radius is an integer
+    match signal_center:
+        case Tuple(int(), int()) | Tuple(int(), int(), int()):
+            pass
+        case _:
+            raise ValueError("Center has to be a tuple of integers.")
+
+    match background_center:
+        case Tuple(int(), int()) | Tuple(int(), int(), int()):
+            pass
+        case _:
+            raise ValueError("Center has to be a tuple of integers.")
+
+    if not isinstance(radius, int):
+        raise ValueError("Radius has to be an integer.")
 
     # Define regions
     if img.ndim == 2:  # 2D image
