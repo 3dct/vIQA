@@ -96,10 +96,14 @@ from viqa import load_data
 from viqa.utils import normalize_data
 
 ## load images
-file_path_img_r = 'path/to/reference_image_8bit.raw'
-file_path_img_m = 'path/to/modified_image_8bit.raw'
-img_r = load_data(file_path_img_r, data_range=1, normalize=False,
-                  batch=False)  # data_range ignored due to normalize=False
+file_path_img_r = 'path/to/reference_image_8bit_512x512x512.raw'
+file_path_img_m = 'path/to/modified_image_8bit_512x512x512.raw'
+img_r = load_data(
+  file_path_img_r, 
+  data_range=1, 
+  normalize=False,
+  batch=False,
+)  # data_range ignored due to normalize=False
 img_m = load_data(file_path_img_m)  # per default: batch=False, normalize=False
 # --> both images are loaded as 8-bit images
 
@@ -131,7 +135,7 @@ calc_parameters = {
 }
 
 # calculate and print MAD score
-mad = viqa.MAD()
+mad = viqa.MAD(data_range=65535)  # MAD needs data_range to calculate the score
 score_mad = mad.score(img_r, img_m, dim=2, **calc_parameters)
 mad.print_score(decimals=2)
 ```
@@ -140,8 +144,8 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 ```python
 import viqa
 
-file_path_img_r = 'path/to/reference_image_16bit.raw'
-file_path_img_m = 'path/to/modified_image_16bit.raw'
+file_path_img_r = 'path/to/reference_image_512x512x512_16bit.raw'
+file_path_img_m = 'path/to/modified_image_512x512x512_16bit.raw'
 
 load_parameters = {'data_range': 1, 'normalize': True}
 # data_range is set to 1 to normalize the images 
@@ -217,8 +221,13 @@ psnr.print_score(decimals=2)
     - [ ] Add documentation for vif.py
     - [x] Add documentation for mad.py
     - [x] Add documentation for gsm.py
+    - [ ] Add documentation for sff.py
     - [x] Add documentation for cnr.py
     - [x] Add documentation for snr.py
+    - [ ] Add documentation for ma.py
+    - [ ] Add documentation for pi.py
+    - [ ] Add documentation for niqe.py
+    - [ ] Add documentation for qfactor.py
     - [x] Add documentation for utils.py
 - [ ] Adapt to 3D
     - [ ] SSIM
@@ -226,6 +235,7 @@ psnr.print_score(decimals=2)
     - [ ] FSIM
     - [ ] VSI
     - [ ] VIF
+- [ ] Validate metrics
 
 <!-- ## Citation TODO: add citation instructions -->
 
