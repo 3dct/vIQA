@@ -99,7 +99,7 @@ class MAD(FullReferenceMetricsInterface):
            and the role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
     """
 
-    def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
