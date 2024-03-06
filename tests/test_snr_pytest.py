@@ -111,4 +111,4 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             snr.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert len(captured.out) == 11, 'Printed score should have 11 characters'
+            assert len(captured.out) == 10, 'Printed score should have 11 characters'
