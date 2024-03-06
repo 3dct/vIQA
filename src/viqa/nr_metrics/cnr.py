@@ -183,7 +183,7 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         raise ValueError("Image has to be either 2D or 3D.")
 
     # Calculate CNR
-    if np.mean(signal) - np.mean(background) == 0:
+    if np.std(background) == 0:
         cnr_val = 0
     else:
         cnr_val = (np.mean(signal) - np.mean(background)) / np.std(background)
