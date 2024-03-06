@@ -98,6 +98,8 @@ def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLi
             data_type = np.ushort  # Set data type to unsigned short
         elif bit_depth == "MET_UCHAR":
             data_type = np.ubyte  # Set data type to unsigned byte
+        elif bit_depth == "MET_FLOAT":
+            data_type = np.float32  # Set data type to float32
         else:
             raise ValueError(
                 "Bit depth not supported"
