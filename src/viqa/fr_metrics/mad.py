@@ -88,8 +88,10 @@ class MAD(FullReferenceMetricsInterface):
 
     Notes
     -----
-    MAD [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict the
-    perceived quality of an image.
+    The parameter `data_range` for image loading is also used for the MAD calculation if the image type is integer and
+    therefore must be set. The parameter is set through the constructor of the class and is passed to the `score`
+    method. MAD [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict
+    the perceived quality of an image.
 
     References
     ----------
@@ -99,6 +101,8 @@ class MAD(FullReferenceMetricsInterface):
 
     def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method."""
+        if data_range is None:
+            raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
@@ -168,15 +172,21 @@ class MAD(FullReferenceMetricsInterface):
                 match dim:
                     case 0:
                         score_val = most_apparent_distortion(
-                            img_r[im_slice, :, :], img_m[im_slice, :, :], **kwargs
+                            img_r[im_slice, :, :], img_m[im_slice, :, :],
+                            data_range=self._parameters['data_range'],
+                            **kwargs
                         )
                     case 1:
                         score_val = most_apparent_distortion(
-                            img_r[:, im_slice, :], img_m[:, im_slice, :], **kwargs
+                            img_r[:, im_slice, :], img_m[:, im_slice, :],
+                            data_range=self._parameters['data_range'],
+                            **kwargs
                         )
                     case 2:
                         score_val = most_apparent_distortion(
-                            img_r[:, :, im_slice], img_m[:, :, im_slice], **kwargs
+                            img_r[:, :, im_slice], img_m[:, :, im_slice],
+                            data_range=self._parameters['data_range'],
+                            **kwargs
                         )
                     case _:
                         raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
@@ -184,7 +194,13 @@ class MAD(FullReferenceMetricsInterface):
                 dim is not None and im_slice is None
             ):  # if dim is given, but im_slice is not, calculate MAD for full volume
                 warn("im_slice is not given. Calculating MAD for full volume.", RuntimeWarning)
-                score_val = most_apparent_distortion_3d(img_r, img_m, dim=dim, **kwargs)
+                score_val = most_apparent_distortion_3d(
+                    img_r,
+                    img_m,
+                    data_range=self._parameters['data_range'],
+                    dim=dim,
+                    **kwargs
+                )
             elif (
                 dim is not None and type(im_slice) is not (int or None)
             ):
@@ -197,7 +213,12 @@ class MAD(FullReferenceMetricsInterface):
             if dim or im_slice:
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
-            score_val = most_apparent_distortion(img_r, img_m, **kwargs)
+            score_val = most_apparent_distortion(
+                img_r,
+                img_m,
+                data_range=self._parameters['data_range'],
+                **kwargs
+            )
         else:
             raise ValueError("Images must be 2D or 3D.")
 
@@ -498,8 +519,9 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     # Convert to perceived lightness
     luminance_function = kwargs.pop("luminance_function", {"k": 0.02874, "gamma": 2.2})
 
-    lum_r = _pixel_to_lightness(img_r, **luminance_function)
-    lum_m = _pixel_to_lightness(img_m, **luminance_function)
+    data_range = kwargs.pop("data_range", 255)
+    lum_r = _pixel_to_lightness(img_r, data_range=data_range, **luminance_function)
+    lum_m = _pixel_to_lightness(img_m, data_range=data_range, **luminance_function)
 
     # Fourier transform
     lum_r_fft = _fft(lum_r)
@@ -668,7 +690,7 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
 
 def _pixel_to_lightness(
-    img: np.ndarray, b: int = 0, k: float = 0.02874, gamma: float = 2.2
+    img: np.ndarray, b: int = 0, k: float = 0.02874, gamma: float = 2.2, data_range: int = 255,
 ) -> np.ndarray:
     """Convert an image to perceived lightness."""
     # Authors
@@ -691,7 +713,7 @@ def _pixel_to_lightness(
 
     if issubclass(img.dtype.type, np.integer):  # if image is integer
         # Create LUT
-        lut = np.arange(0, 256, dtype=np.float64)
+        lut = np.arange(0, data_range+1, dtype=np.float64)
         lut = b + k * lut ** (gamma / 3)
         img_lum = lut[img]  # apply LUT
     else:  # if image is float
