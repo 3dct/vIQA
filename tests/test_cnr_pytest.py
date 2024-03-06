@@ -29,7 +29,7 @@ class TestScoring2D:
     def test_cnr_with_modified_image_2d(self, modified_image_2d_255):
         img = modified_image_2d_255
         cnr = viqa.CNR()
-        score = cnr.score(img, background_center=(16, 16), signal_center=(128, 128), radius=8)
+        score = cnr.score(img, background_center=(150, 170), signal_center=(300, 300), radius=20)
         assert score != 0, 'CNR of identical images should not be 0'
 
     def test_cnr_with_image_consisting_of_zeros_2d(self):
@@ -42,17 +42,17 @@ class TestScoring2D:
         img_r = reference_image_2d_255
         img_m = modified_image_2d_255
         cnr = viqa.CNR()
-        score1 = cnr.score(img_r, background_center=(16, 16), signal_center=(400, 400), radius=8)
+        score1 = cnr.score(img_r, background_center=(150, 170), signal_center=(300, 300), radius=20)
         cnr = viqa.CNR()
-        score2 = cnr.score(img_m, background_center=(16, 16), signal_center=(400, 400), radius=8)
+        score2 = cnr.score(img_m, background_center=(150, 170), signal_center=(300, 300), radius=20)
         assert score1 != score2, 'CNR should be different for different images'
 
     def test_cnr_with_different_regions_2d(self, reference_image_2d_255):
         img = reference_image_2d_255
         cnr = viqa.CNR()
-        score1 = cnr.score(img, background_center=(16, 16), signal_center=(400, 400), radius=8)
+        score1 = cnr.score(img, background_center=(150, 170), signal_center=(300, 300), radius=20)
         cnr = viqa.CNR()
-        score2 = cnr.score(img, background_center=(300, 300), signal_center=(400, 400), radius=8)
+        score2 = cnr.score(img, background_center=(300, 300), signal_center=(300, 300), radius=20)
         assert score1 != score2, 'CNR should be different for different images'
 
 
@@ -60,7 +60,7 @@ class TestScoring3D:
     def test_cnr_with_modified_image_3d(self, modified_image_3d_255):
         img = modified_image_3d_255
         cnr = viqa.CNR()
-        score = cnr.score(img, background_center=(16, 16, 16), signal_center=(500, 500, 400), radius=8)
+        score = cnr.score(img, background_center=(150, 170, 170), signal_center=(300, 300, 290), radius=20)
         assert score != 0, 'CNR of identical images should not be 0'
 
     def test_cnr_with_image_consisting_of_zeros_3d(self):
@@ -73,17 +73,17 @@ class TestScoring3D:
         img_r = reference_image_3d_255
         img_m = modified_image_3d_255
         cnr = viqa.CNR()
-        score1 = cnr.score(img_r, background_center=(16, 16, 16), signal_center=(500, 500, 400), radius=8)
+        score1 = cnr.score(img_r, background_center=(150, 170, 170), signal_center=(300, 300, 290), radius=20)
         cnr = viqa.CNR()
-        score2 = cnr.score(img_m, background_center=(16, 16, 16), signal_center=(500, 500, 400), radius=8)
+        score2 = cnr.score(img_m, background_center=(150, 170, 170), signal_center=(300, 300, 290), radius=20)
         assert score1 != score2, 'CNR should be different for different images'
 
     def test_cnr_with_different_regions_3d(self, reference_image_3d_255):
         img = reference_image_3d_255
         cnr = viqa.CNR()
-        score1 = cnr.score(img, background_center=(16, 16, 16), signal_center=(500, 500, 400), radius=8)
+        score1 = cnr.score(img, background_center=(150, 170, 170), signal_center=(300, 300, 290), radius=20)
         cnr = viqa.CNR()
-        score2 = cnr.score(img, background_center=(300, 300, 300), signal_center=(500, 500, 400), radius=8)
+        score2 = cnr.score(img, background_center=(300, 300, 300), signal_center=(300, 300, 290), radius=20)
         assert score1 != score2, 'CNR should be different for different images'
 
 
@@ -106,7 +106,7 @@ class TestPrinting:
     def test_cnr_print_score_with_different_decimals(self, capsys, modified_image_2d_255):
         img = modified_image_2d_255
         cnr = viqa.CNR()
-        cnr.score(img, background_center=(16, 16), signal_center=(400, 400), radius=8)
+        cnr.score(img, background_center=(150, 170), signal_center=(300, 300), radius=20)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             cnr.print_score(decimals=2)
