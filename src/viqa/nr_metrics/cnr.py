@@ -152,6 +152,7 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     ValueError
         If the input image is not 2D or 3D.
         If the input center is not a tuple of integers.
+        If the input center is too close to the border.
         If the input radius is not an integer.
 
     Notes
@@ -175,17 +176,17 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     """
 
     # check if signal_center and background_center are tuples of integers and radius is an integer
-    match signal_center:
-        case Tuple(int(), int()) | Tuple(int(), int(), int()):
-            pass
-        case _:
-            raise ValueError("Center has to be a tuple of integers.")
+    for center in signal_center:
+        if not isinstance(center, int):
+            raise ValueError("Signal center has to be a tuple of integers.")
+        if center - radius < 0:  # check if center is too close to the border
+            raise ValueError("Signal center has to be at least the radius away from the border.")
 
-    match background_center:
-        case Tuple(int(), int()) | Tuple(int(), int(), int()):
-            pass
-        case _:
-            raise ValueError("Center has to be a tuple of integers.")
+    for center in background_center:
+        if not isinstance(center, int):
+            raise ValueError("Background center has to be a tuple of integers.")
+        if center - radius < 0:
+            raise ValueError("Background center has to be at least the radius away from the border.")
 
     if not isinstance(radius, int):
         raise ValueError("Radius has to be an integer.")
