@@ -19,10 +19,8 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-// #include <Python.h>
-#include "C:\Users\p42938\.conda\envs\IQA_Library\include\Python.h"
-// #include <numpy/arrayobject.h>
-#include "C:\Users\p42938\.conda\envs\IQA_Library\Lib\site-packages\numpy\core\include\numpy\arrayobject.h"
+#include <Python.h>
+#include <numpy/arrayobject.h>
 #include "statisticsmodule.h"
 
 // Method Table

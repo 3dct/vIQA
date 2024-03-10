@@ -30,4 +30,3 @@ py = py_mod.find_installation(pure: false)
 py_dep = py.dependency()
 
 subdir('src/viqa/fr_metrics/stat_utils')
-subdir('src/viqa/nr_metrics/stat_utils')
