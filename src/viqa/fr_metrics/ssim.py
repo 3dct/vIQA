@@ -20,7 +20,9 @@ class SSIM(FullReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
         """Constructor method"""
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m, **kwargs):
         """

@@ -14,7 +14,9 @@ class FSIM(FullReferenceMetricsInterface):
         """Constructor method"""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m, **kwargs):
         img_r, img_m = _check_imgs(

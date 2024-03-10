@@ -36,7 +36,6 @@ import numpy as np
 from scipy.ndimage import convolve
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.fr_metrics import statistics
 from viqa.utils import (
     _check_imgs,
     _extract_blocks,
@@ -102,7 +101,9 @@ class MAD(FullReferenceMetricsInterface):
         """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the MAD between two images.
@@ -166,43 +167,51 @@ class MAD(FullReferenceMetricsInterface):
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:
-            if dim is not None and type(im_slice) is int:  # if dim and im_slice are given
+            if (
+                dim is not None and type(im_slice) is int
+            ):  # if dim and im_slice are given
                 # Calculate MAD for given slice of given dimension
                 match dim:
                     case 0:
                         score_val = most_apparent_distortion(
-                            img_r[im_slice, :, :], img_m[im_slice, :, :],
-                            data_range=self._parameters['data_range'],
-                            **kwargs
+                            img_r[im_slice, :, :],
+                            img_m[im_slice, :, :],
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
                         )
                     case 1:
                         score_val = most_apparent_distortion(
-                            img_r[:, im_slice, :], img_m[:, im_slice, :],
-                            data_range=self._parameters['data_range'],
-                            **kwargs
+                            img_r[:, im_slice, :],
+                            img_m[:, im_slice, :],
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
                         )
                     case 2:
                         score_val = most_apparent_distortion(
-                            img_r[:, :, im_slice], img_m[:, :, im_slice],
-                            data_range=self._parameters['data_range'],
-                            **kwargs
+                            img_r[:, :, im_slice],
+                            img_m[:, :, im_slice],
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
                         )
                     case _:
-                        raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
+                        raise ValueError(
+                            "Invalid dim value. Must be integer of 0, 1 or 2."
+                        )
             elif (
                 dim is not None and im_slice is None
             ):  # if dim is given, but im_slice is not, calculate MAD for full volume
-                warn("im_slice is not given. Calculating MAD for full volume.", RuntimeWarning)
+                warn(
+                    "im_slice is not given. Calculating MAD for full volume.",
+                    RuntimeWarning,
+                )
                 score_val = most_apparent_distortion_3d(
                     img_r,
                     img_m,
-                    data_range=self._parameters['data_range'],
+                    data_range=self._parameters["data_range"],
                     dim=dim,
-                    **kwargs
+                    **kwargs,
                 )
-            elif (
-                dim is not None and type(im_slice) is not (int or None)
-            ):
+            elif dim is not None and type(im_slice) is not (int or None):
                 raise ValueError("im_slice must be an integer or None.")
             else:
                 raise ValueError(
@@ -213,10 +222,7 @@ class MAD(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
             score_val = most_apparent_distortion(
-                img_r,
-                img_m,
-                data_range=self._parameters['data_range'],
-                **kwargs
+                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")
@@ -442,12 +448,18 @@ def most_apparent_distortion(
 
     # Parameters for single metrics combination
     if (thresh_1 or thresh_2) and not (thresh_1 and thresh_2):
-        warn("thresh_1 and thresh_2 must be given together. Using default values for beta_1 and beta_2.", RuntimeWarning)
+        warn(
+            "thresh_1 and thresh_2 must be given together. Using default values for beta_1 and beta_2.",
+            RuntimeWarning,
+        )
     elif thresh_1 and thresh_2:
         beta_1 = np.exp(-thresh_1 / thresh_2)
         beta_2 = 1 / (np.log(10) * thresh_2)
         if beta_1 or beta_2:
-            warn("thresh_1 and thresh_2 are given. Ignoring beta_1 and beta_2.", RuntimeWarning)
+            warn(
+                "thresh_1 and thresh_2 are given. Ignoring beta_1 and beta_2.",
+                RuntimeWarning,
+            )
 
     # Hiqh quality index
     d_detect = _high_quality(img_r, img_m, **kwargs)
@@ -689,7 +701,11 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
 
 def _pixel_to_lightness(
-    img: np.ndarray, b: int = 0, k: float = 0.02874, gamma: float = 2.2, data_range: int = 255,
+    img: np.ndarray,
+    b: int = 0,
+    k: float = 0.02874,
+    gamma: float = 2.2,
+    data_range: int = 255,
 ) -> np.ndarray:
     """Convert an image to perceived lightness."""
     # Authors
@@ -712,7 +728,7 @@ def _pixel_to_lightness(
 
     if issubclass(img.dtype.type, np.integer):  # if image is integer
         # Create LUT
-        lut = np.arange(0, data_range+1, dtype=np.float64)
+        lut = np.arange(0, data_range + 1, dtype=np.float64)
         lut = b + k * lut ** (gamma / 3)
         img_lum = lut[img]  # apply LUT
     else:  # if image is float
@@ -770,7 +786,11 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
     f_peak = kwargs.pop("f_peak", 7.8909)
     # Calculate contrast sensitivity function
     cond = rad_freq < f_peak
-    csf = 2.6 * (0.0192 + lambda_csf * rad_freq) * np.exp(-((lambda_csf * rad_freq) ** 1.1))
+    csf = (
+        2.6
+        * (0.0192 + lambda_csf * rad_freq)
+        * np.exp(-((lambda_csf * rad_freq) ** 1.1))
+    )
     csf[cond] = 0.9809
     return csf
 

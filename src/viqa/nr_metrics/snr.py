@@ -32,7 +32,6 @@ Examples
 # BSD-3-Clause License
 
 from warnings import warn
-from typing import Tuple
 
 import numpy as np
 
@@ -76,8 +75,9 @@ class SNR(NoReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
-
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img, **kwargs):
         """Calculate the signal-to-noise ratio (SNR) between two images.
@@ -95,7 +95,6 @@ class SNR(NoReferenceMetricsInterface):
         score_val : float
             SNR score value.
         """
-
         # Check images
         img = load_data(
             img,
@@ -121,7 +120,6 @@ class SNR(NoReferenceMetricsInterface):
         RuntimeWarning
             If no score value is available. Run score() first.
         """
-
         if self.score_val is not None:
             print("SNR: {}".format(round(self.score_val, decimals)))
         else:
@@ -162,25 +160,30 @@ def signal_to_noise_ratio(img, signal_center, radius):
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
-
     # check if signal_center is a tuple of integers and radius is an integer
     for center in signal_center:
         if not isinstance(center, int):
             raise ValueError("Center has to be a tuple of integers.")
         if center - radius < 0:  # check if center is too close to the border
-            raise ValueError("Center has to be at least the radius away from the border.")
+            raise ValueError(
+                "Center has to be at least the radius away from the border."
+            )
 
     if not isinstance(radius, int):
         raise ValueError("Radius has to be an integer.")
 
     # Define regions
     if img.ndim == 2:  # 2D image
-        signal = img[signal_center[0] - radius:signal_center[0] + radius,
-                     signal_center[1] - radius:signal_center[1] + radius]
+        signal = img[
+            signal_center[0] - radius : signal_center[0] + radius,
+            signal_center[1] - radius : signal_center[1] + radius,
+        ]
     elif img.ndim == 3:  # 3D image
-        signal = img[signal_center[0] - radius:signal_center[0] + radius,
-                     signal_center[1] - radius:signal_center[1] + radius,
-                     signal_center[2] - radius:signal_center[2] + radius]
+        signal = img[
+            signal_center[0] - radius : signal_center[0] + radius,
+            signal_center[1] - radius : signal_center[1] + radius,
+            signal_center[2] - radius : signal_center[2] + radius,
+        ]
     else:
         raise ValueError("Image has to be either 2D or 3D.")
 
