@@ -29,21 +29,20 @@ Examples
 # -------
 # TODO: add license
 
-import os
-from warnings import warn
 from typing import Any
+from warnings import warn
 
 import numpy as np
 from scipy.ndimage import convolve
-from torch import Tensor
 
 from viqa._metrics import FullReferenceMetricsInterface
+from viqa.fr_metrics import statistics
 from viqa.utils import (
     _check_imgs,
-    _to_float,
     _extract_blocks,
-    _ifft,
     _fft,
+    _ifft,
+    _to_float,
     gabor_convolve,
 )
 
@@ -317,7 +316,7 @@ def most_apparent_distortion(
     thresh_2: float | None = None,
     **kwargs,
 ) -> float:
-    """Calculate the most apparent distortion (MAD) between two images.
+    r"""Calculate the most apparent distortion (MAD) between two images.
 
     Parameters
     ----------
