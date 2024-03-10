@@ -13,7 +13,7 @@ python_sources = [
 
 py.install_sources(
     python_sources,
-    pure: False,
+    pure: false,
     subdir: 'viqa/fr_metrics',
 )
 
