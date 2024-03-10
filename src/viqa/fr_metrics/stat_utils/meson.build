@@ -5,4 +5,5 @@ py.extension_module(
     'statisticsmodule.c',
     install: true,
     include_directories: inc_dir,
+    subdir: 'viqa/fr_metrics',
 )
