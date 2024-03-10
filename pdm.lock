@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs", "lint", "tests"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:a785457633a22a22d85298a9b5ccd8aae76bf019eb3f12f608550efc87da3ac4"
+content_hash = "sha256:68a32ebc50234a939af38b7157152c3f7ba87987617942a8ea3430b48aa41470"
 
 [[package]]
 name = "alabaster"
@@ -1037,6 +1037,22 @@ files = [
 ]
 
 [[package]]
+name = "pytest-doctestplus"
+version = "1.2.1"
+requires_python = ">=3.8"
+summary = "Pytest plugin with advanced doctest features."
+groups = ["dev", "tests"]
+dependencies = [
+    "packaging>=17.0",
+    "pytest>=4.6",
+    "setuptools>=30.3.0",
+]
+files = [
+    {file = "pytest-doctestplus-1.2.1.tar.gz", hash = "sha256:2472a8a2c8cea34d2f65f6499543faeb748eecb59c597852fd98839b47307679"},
+    {file = "pytest_doctestplus-1.2.1-py3-none-any.whl", hash = "sha256:103705daee8d4468eb59d444c29b0d71eb85b8f6d582295c8bc3d68ee1d88911"},
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.1"
 requires_python = ">=3.8"
@@ -1214,7 +1230,7 @@ name = "setuptools"
 version = "69.1.1"
 requires_python = ">=3.8"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
-groups = ["dev", "lint"]
+groups = ["dev", "lint", "tests"]
 files = [
     {file = "setuptools-69.1.1-py3-none-any.whl", hash = "sha256:02fa291a0471b3a18b2b2481ed902af520c69e8ae0919c13da936542754b4c56"},
     {file = "setuptools-69.1.1.tar.gz", hash = "sha256:5c0806c7d9af348e6dd3777b4f4dbb42c7ad85b190104837488eab9a7c945cf8"},
