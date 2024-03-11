@@ -57,13 +57,18 @@ KERNELS_2D = [
 class GSM(FullReferenceMetricsInterface):
     """Calculate the gradient similarity (GSM) between two images.
 
+    Attributes
+    ----------
+    score_val : float
+        GSM score value of the last calculation.
+
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when `normalize` is True and for the
-        GSM calculation.
+        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True and for
+        the GSM calculation.
     normalize : bool, default=False
-        If True, the input images are normalized to the `data_range` argument.
+        If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default=False
         If True, the input images are expected to be given as path to a folder containing the images.
 
@@ -71,20 +76,7 @@ class GSM(FullReferenceMetricsInterface):
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-
-        .. seealso::
-            [`load_data`]
-
-    Attributes
-    ----------
-    score_val : float
-        GSM score value of the last calculation.
-
-    Raises
-    ------
-    ValueError
-        If the parameter `data_range` is not set.
+        Additional parameters for data loading. The keyword arguments are passed to :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -97,14 +89,14 @@ class GSM(FullReferenceMetricsInterface):
     Raises
     ------
     ValueError
-        If `data_range` is not set.
+        If ``data_range`` is not set.
 
     Notes
     -----
     GSM is a full reference IQA metric based on gradient similarity. It combines luminosity information and
     contrast-structural information. For further details, see [1].
-    The parameter `data_range` for image loading is also used for the GSM calculation and therefore must be set.
-    The parameter is set through the constructor of the class and is passed to the `score` method.
+    ``data_range`` for image loading is also used for the GSM calculation and therefore must be set.
+    The parameter is set through the constructor of the class and is passed to the :py:meth:`score` method.
 
     References
     ----------
@@ -119,11 +111,11 @@ class GSM(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
-        """Calculate the gradient similarity (GSM) between two images.
+        r"""Calculate the gradient similarity (GSM) between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
-        full volume or for a given slice of the image by setting the parameter `dim` to the desired dimension and
-        `im_slice` to the desired slice number.
+        full volume or for a given slice of the image by setting ``dim`` to the desired dimension and
+        ``im_slice`` to the desired slice number.
 
         Parameters
         ----------
@@ -137,10 +129,8 @@ class GSM(FullReferenceMetricsInterface):
             If given, GSM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for GSM calculation. The keyword arguments are passed to
-            `viqa.gsm.gradient_similarity_3d()` or `viqa.gsm.gradient_similarity()`.
-
-            .. seealso::
-                [`gradient_similarity_3d()`], [`gradient_similarity()`]
+            :py:func:`.viqa.fr_metrics.gsm.gradient_similarity_3d` or
+            :py:func:`.viqa.fr_metrics.gsm.gradient_similarity`.
 
         Returns
         -------
@@ -150,29 +140,34 @@ class GSM(FullReferenceMetricsInterface):
         Raises
         ------
         ValueError
-            If invalid dimension given in parameter dim.
+            If invalid dimension given in ``dim``.
             If images are neither 2D nor 3D.
             If images are 3D, but dim is not given.
-            If im_slice is given, but not an integer.
+            If ``im_slice`` is given, but not an integer.
 
         Warns
         -----
         RuntimeWarning
-            If dim or im_slice is given for 2D images.
-            If im_slice is not given, but dim is given for 3D images, GSM is calculated for the full volume.
+            If ``dim`` or ``im_slice`` is given for 2D images.
+            If ``im_slice`` is not given, but ``dim`` is given for 3D images, GSM is calculated for the full volume.
 
         Notes
         -----
-        For 3D images if dim is given, but im_slice is not, the GSM is calculated for the full volume of the 3D image.
-        This is implemented as :math:`mean` of the GSM values of all slices of the given dimension. If dim is given and
-        im_slice is given, the GSM is calculated for the given slice of the given dimension (represents a 2D metric of
-        the given slice).
-        This implementation is adapted for 3D images if parameter `experimental=True`. Therefore, 12 kernels are used
+        For 3D images if ``dim`` is given, but ``im_slice`` is not, the GSM is calculated for the full volume of the 3D
+        image. This is implemented as `mean` of the GSM values of all slices of the given dimension. If ``dim`` is given
+        and ``im_slice`` is given, the GSM is calculated for the given slice of the given dimension (represents a 2D
+        metric of the given slice).
+        This implementation is adapted for 3D images if ``experimental=True``. Therefore, 12 kernels are used
         instead of the original 4.
         The gradient is calculated by
 
         .. math::
-            max{convolve(img, kernel)} instead of max{mean2(abs(x * kernel))}.
+
+            \max_{n=1,2,...,N} \lbrace \pmb{I} * \mathcal{K}_{n} \rbrace \text{ instead of } \max_{n=1,2,...,N}
+            \lbrace \operatorname{mean2}(\lvert \pmb{X} \cdot \mathcal{K}_{n} \rvert) \rbrace
+
+        with :math:`\pmb{I}` denoting the Image, :math:`\mathcal{K}_{n}` denoting the Kernel `n` and
+        :math:`\pmb{X}` denoting an image block.
         """
         img_r, img_m = _check_imgs(
             img_r,
@@ -235,7 +230,7 @@ class GSM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If no score value is available. Run :py:meth:`score()` first.
         """
 
         if self.score_val is not None:
@@ -264,10 +259,7 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
 
     **kwargs : optional
             Additional parameters for GSM calculation. The keyword arguments are passed to
-            `viqa.gsm.gradient_similarity()`.
-
-            .. seealso::
-                [`gradient_similarity`]
+            :py:func:`viqa.fr_metrics.gsm.gradient_similarity`.
 
     Returns
     -------
@@ -277,7 +269,11 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     Raises
     ------
     ValueError
-        If the parameter `dim` is not an integer of 0, 1 or 2.
+        If the ``dim`` is not an integer of 0, 1 or 2.
+
+    See Also
+    --------
+    gradient_similarity : Calculate the gradient similarity between two images.
 
     References
     ----------
@@ -329,15 +325,19 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     data_range : {1, 255, 65535}
         Data range of the input images
     c : int, default=200
-        Constant as masking parameter. Typically, `200 <= c <= 1000`. See [1] for details.
+        Constant as masking parameter. Typically, :math:`200 \leq c \leq 1000`. See [1] for details.
     p : float, default=0.1
-        Constant for weighting between luminance and structure similarity. `0 <= p <= 1`. Higher `p` means more
-        accentuation of luminance. Should be significantly smaller than 0.5. See [1] for details.
+        Constant for weighting between luminance and structure similarity. Can be :math:`0 \leq p \leq 1`. Higher ``p``
+        means more accentuation of luminance. Should be :math:`p \ll 0.5`. See [1] for details.
 
     Returns
     -------
     gsm_score : float
         GSM score value.
+
+    See Also
+    --------
+    gradient_similarity_3d : Calculate the gradient similarity between two 3D images.
 
     References
     ----------
