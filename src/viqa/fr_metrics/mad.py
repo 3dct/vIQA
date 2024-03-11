@@ -89,6 +89,11 @@ class MAD(FullReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    Raises
+    ------
+    ValueError
+        If `data_range` is None.
+
     Notes
     -----
     The parameter `data_range` for image loading is also used for the MAD calculation if the image type is integer and
@@ -104,6 +109,7 @@ class MAD(FullReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method."""
+
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)

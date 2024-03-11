@@ -92,6 +92,11 @@ class PSNR(FullReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    Raises
+    ------
+    ValueError
+        If `data_range` is not set.
+
     Notes
     -----
     The parameter `data_range` for image loading is also used for the PSNR calculation and therefore must be set.

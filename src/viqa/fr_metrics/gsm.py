@@ -94,6 +94,11 @@ class GSM(FullReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    Raises
+    ------
+    ValueError
+        If `data_range` is not set.
+
     Notes
     -----
     GSM is a full reference IQA metric based on gradient similarity. It combines luminosity information and

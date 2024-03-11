@@ -96,6 +96,11 @@ class SSIM(FullReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    Raises
+    ------
+    ValueError
+        If `data_range` is not set.
+
     Notes
     -----
     The parameter `data_range` for image loading is also used for the SSIM calculation if the image type is integer and
@@ -112,6 +117,9 @@ class SSIM(FullReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
         """Constructor method"""
+
+        if data_range is None:
+            raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m, **kwargs):
