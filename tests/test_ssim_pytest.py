@@ -59,6 +59,7 @@ class TestScoring2D:
         score2 = ssim.score(img_r, img_m)
         assert score1 != score2, 'SSIM should be different for different data ranges'
 
+
 class TestScoring3D:
     def test_ssim_with_identical_images_3d(self):
         img_r = np.random.rand(256, 256, 256)
@@ -116,4 +117,4 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             ssim.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert len(captured.out) == 12, 'Printed score should have 11 characters'
+            assert len(captured.out) == 11, 'Printed score should have 11 characters'
