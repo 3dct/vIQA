@@ -94,6 +94,7 @@ class GSM(FullReferenceMetricsInterface):
     Warnings
     --------
     This metric is not yet tested. The metric should be only used for experimental purposes.
+
     .. todo:: test
 
     Notes
@@ -279,6 +280,7 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     Warnings
     --------
     This metric is not yet tested. The metric should be only used for experimental purposes.
+
     .. todo:: test
 
     See Also
@@ -353,6 +355,7 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     Warnings
     --------
     This metric is not yet tested. The metric should be only used for experimental purposes.
+
     .. todo:: test
 
     See Also

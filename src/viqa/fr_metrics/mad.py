@@ -94,6 +94,7 @@ class MAD(FullReferenceMetricsInterface):
     Warnings
     --------
     The metric is not yet validated. Use with caution.
+
     .. todo:: validate
 
     Notes
@@ -282,6 +283,7 @@ def most_apparent_distortion_3d(
     Warnings
     --------
     The metric is not yet validated. Use with caution.
+
     .. todo:: validate
 
     See Also
@@ -417,6 +419,7 @@ def most_apparent_distortion(
     Warnings
     --------
     The metric is not yet validated. Use with caution.
+
     .. todo:: validate
 
     See Also
