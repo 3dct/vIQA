@@ -37,7 +37,7 @@ The metrics used are:
   > The metric is tested, but not yet validated.
 - Gradient Similarity Measure (GSM) [^7]
   > [!CAUTION]
-  > This metric is not yet tested. The metric should be only used for testing purposes.
+  > This metric is not yet tested. The metric should be only used for experimental purposes.
 - Contrast to Noise Ratio (CNR) [^8]
 - Signal to Noise Ratio (SNR)
 
@@ -198,7 +198,7 @@ psnr.print_score(decimals=2)
 - [ ] Add tests
     - [x] Add tests for RMSE
     - [x] Add tests for PSNR
-    - [ ] Add tests for SSIM
+    - [x] Add tests for SSIM
     - [ ] Add tests for MSSSIM
     - [ ] Add tests for FSIM
     - [ ] Add tests for VSI
