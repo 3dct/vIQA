@@ -91,12 +91,17 @@ class GSM(FullReferenceMetricsInterface):
     ValueError
         If ``data_range`` is not set.
 
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental purposes.
+    .. todo:: test
+
     Notes
     -----
     GSM is a full reference IQA metric based on gradient similarity. It combines luminosity information and
     contrast-structural information. For further details, see [1].
     ``data_range`` for image loading is also used for the GSM calculation and therefore must be set.
-    The parameter is set through the constructor of the class and is passed to the :py:meth:`score` method.
+    The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
 
     References
     ----------
@@ -230,7 +235,7 @@ class GSM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run :py:meth:`score()` first.
+            If :py:attr:`score_val` is not available.
         """
 
         if self.score_val is not None:
@@ -270,6 +275,11 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     ------
     ValueError
         If the ``dim`` is not an integer of 0, 1 or 2.
+
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental purposes.
+    .. todo:: test
 
     See Also
     --------
@@ -334,6 +344,16 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     -------
     gsm_score : float
         GSM score value.
+
+    Raises
+    ------
+    ValueError
+        If the images are neither 2D nor 3D.
+
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental purposes.
+    .. todo:: test
 
     See Also
     --------

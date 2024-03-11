@@ -72,9 +72,9 @@ class SSIM(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
-        Data range of the returned data in data loading. Can be omitted if `normalize` is False.
+        Data range of the returned data in data loading. Can be omitted if ``normalize`` is False.
     normalize : bool, default False
-        If True, the input images are normalized to the `data_range` argument.
+        If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
@@ -82,11 +82,7 @@ class SSIM(FullReferenceMetricsInterface):
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
-
-        .. seealso::
-            [`viqa.utils.load_data`]
+        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -99,14 +95,14 @@ class SSIM(FullReferenceMetricsInterface):
     Raises
     ------
     ValueError
-        If `data_range` is not set.
+        If ``data_range`` is not set.
 
     Notes
     -----
-    The parameter `data_range` for image loading is also used for the SSIM calculation if the image type is integer and
-    therefore must be set. The parameter is set through the constructor of the class and is passed to the `score`
-    method. SSIM [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict
-    the perceived quality of an image.
+    ``data_range`` for image loading is also used for the SSIM calculation if the image type is integer and
+    therefore must be set. The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
+    SSIM [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict the
+    perceived quality of an image.
 
     References
     ----------
@@ -132,10 +128,8 @@ class SSIM(FullReferenceMetricsInterface):
         img_m : np.ndarray
             Modified image to calculate score of.
         **kwargs : optional
-            Additional parameters for the SSIM calculation. The keyword arguments are passed to `structural_similarity`.
-
-            .. seealso::
-                [`structural_similarity`]
+            Additional parameters for the SSIM calculation. The keyword arguments are passed to
+            :py:func:`structural_similarity`.
 
         Returns
         -------
@@ -144,8 +138,7 @@ class SSIM(FullReferenceMetricsInterface):
 
         Notes
         -----
-        .. note::
-            The metric is currently not usable for color images.
+        The metric is currently not usable for color images.
         """
         img_r, img_m = _check_imgs(
             img_r,
@@ -171,12 +164,12 @@ class SSIM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
             print("SSIM: {}".format(round(self.score_val, decimals)))
         else:
-            print("No score value for SSIM. Run score() first.")
+            warn("No score value for SSIM. Run score() first.", RuntimeWarning)
 
 
 def structural_similarity(
@@ -200,8 +193,8 @@ def structural_similarity(
         Modified image to calculate score of.
     win_size : int or None, optional
         The side-length of the sliding window used in comparison. Must be an
-        odd value. If `gaussian_weights` is True, this is ignored and the
-        window size will depend on `sigma`.
+        odd value. If ``gaussian_weights`` is True, this is ignored and the
+        window size will depend on ``sigma``.
     data_range : int, default=255
         Data range of the input images.
     gaussian_weights : bool, optional
@@ -217,16 +210,19 @@ def structural_similarity(
     Other Parameters
     ----------------
     K1 : float, default=0.01
-        Algorithm parameter, K1 (small constant, see [1]_).
+        Algorithm parameter, K1 (small constant, see [1]).
     K2 : float, default=0.03
-        Algorithm parameter, K2 (small constant, see [1]_).
+        Algorithm parameter, K2 (small constant, see [1]).
     sigma : float, default=1.5
-        Standard deviation for the Gaussian when `gaussian_weights` is True.
+        Standard deviation for the Gaussian when ``gaussian_weights`` is True.
     mode : {'constant', 'edge', 'symmetric', 'reflect', 'wrap'}, optional
-        The mode parameter determines how the array borders are handled. See
-        Numpy documentation for detail.
+        Determines how the array borders are handled.
+
+        .. seealso::
+            See Numpy documentation for detail.
+
     cval : float, optional
-        Value to fill past edges of input if `mode` is 'constant'. Default is 0.
+        Value to fill past edges of input if ``mode`` is 'constant'. Default is 0.
 
     Returns
     -------
@@ -236,18 +232,18 @@ def structural_similarity(
     Raises
     ------
     ValueError
-        If `K1`, `K2` or `sigma` are negative.
-        If `win_size` exceeds image or is not an odd number.
+        If ``K1``, ``K2`` or ``sigma`` are negative. \n
+        If ``win_size`` exceeds image or is not an odd number.
 
     Warns
     -----
     RuntimeWarning
-        If `alpha`, `beta` or `gamma` are not integers.
+        If ``alpha``, ``beta`` or ``gamma`` are not integers.
 
     Notes
     -----
-    To match the implementation in [1], set `gaussian_weights` to True and `sigma` to 1.5.
-    This code is adapted from skimage.metrics.structural_similarity available under [2].
+    To match the implementation in [1], set ``gaussian_weights`` to True and ``sigma`` to 1.5.
+    This code is adapted from ``skimage.metrics.structural_similarity`` available under [2].
 
     References
     ----------

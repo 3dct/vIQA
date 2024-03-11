@@ -55,13 +55,18 @@ from viqa.utils import _check_imgs
 class PSNR(FullReferenceMetricsInterface):
     """Class to calculate the peak signal-to-noise ratio (PSNR) between two images.
 
+    Attributes
+    ----------
+    score_val : float
+        PSNR score value of the last calculation.
+
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when `normalize` is True and for the
+        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True and for the
         PSNR calculation.
     normalize : bool, default False
-        If True, the input images are normalized to the `data_range` argument.
+        If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
@@ -69,20 +74,12 @@ class PSNR(FullReferenceMetricsInterface):
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-
-        .. seealso::
-            [`load_data`]
-
-    Attributes
-    ----------
-    score_val : float
-        PSNR score value of the last calculation.
+        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
 
     Raises
     ------
     ValueError
-        If the parameter `data_range` is not set.
+        If ``data_range`` is not set.
 
     Other Parameters
     ----------------
@@ -95,12 +92,12 @@ class PSNR(FullReferenceMetricsInterface):
     Raises
     ------
     ValueError
-        If `data_range` is not set.
+        If ``data_range`` is not set.
 
     Notes
     -----
-    The parameter `data_range` for image loading is also used for the PSNR calculation and therefore must be set.
-    The parameter is set through the constructor of the class and is passed to the `score` method.
+    ``data_range`` for image loading is also used for the PSNR calculation and therefore must be set.
+    The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
@@ -155,7 +152,7 @@ class PSNR(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
 
         if self.score_val is not None:
