@@ -78,6 +78,9 @@ class MAD(FullReferenceMetricsInterface):
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
         See below for details.
 
+        .. seealso::
+            [`load_data`]
+
     Other Parameters
     ----------------
     chromatic : bool, default False
@@ -126,6 +129,9 @@ class MAD(FullReferenceMetricsInterface):
             Additional parameters for MAD calculation. The keyword arguments are passed to
             `viqa.mad.most_apparent_distortion()`.
 
+            .. seealso::
+                [`most_apparent_distortion`]
+
         Returns
         -------
         score_val : float
@@ -135,11 +141,8 @@ class MAD(FullReferenceMetricsInterface):
         ------
         ValueError
             If invalid dimension given in parameter dim.
-        ValueError
             If images are neither 2D nor 3D.
-        ValueError
             If images are 3D, but dim is not given.
-        ValueError
             If im_slice is given, but not an integer.
 
         Warns
@@ -261,6 +264,9 @@ def most_apparent_distortion_3d(
             Additional parameters for MAD calculation. The keyword arguments are passed to
             `viqa.mad.most_apparent_distortion()`.
 
+            .. seealso::
+                [`most_apparent_distortion`]
+
     Returns
     -------
     score_val : float
@@ -309,6 +315,7 @@ def most_apparent_distortion_3d(
 def most_apparent_distortion(
     img_r: np.ndarray,
     img_m: np.ndarray,
+    data_range: int = 255,
     block_size: int = 16,
     block_overlap: float = 0.75,
     beta_1: float = 0.467,
@@ -322,9 +329,11 @@ def most_apparent_distortion(
     Parameters
     ----------
     img_r : np.ndarray
-        Reference image to calculate score against
+        Reference image to calculate score against.
     img_m : np.ndarray
-        Distorted image to calculate score of
+        Distorted image to calculate score of.
+    data_range : int, default=255
+        Data range of the input images.
     block_size : int, default=16
         Size of the blocks in the MAD calculation. Must be positive.
     block_overlap : float, default=0.75
@@ -352,7 +361,7 @@ def most_apparent_distortion(
     display_function : dict, optional
         Parameters of the display function of the monitor. Must be given if `account_monitor` is True.
 
-        .. admonition:: Dictionary layout
+        .. admonition:: Dictionary layout for `display_function`
 
             disp_res : float, Display resolution. \n
             view_dis : float, Viewing distance. Same unit as `disp_res`.
@@ -360,7 +369,7 @@ def most_apparent_distortion(
     luminance_function : dict, optional
         Parameters of the luminance function. If not given, default values for sRGB displays are used.
 
-        .. admonition:: Dictionary layout
+        .. admonition:: Dictionary layout for `luminance_function`
 
             b : float, default=0.0 \n
             k : float, default=0.02874 \n
@@ -377,7 +386,7 @@ def most_apparent_distortion(
     csf_function : dict, optional
         Parameters for the contrast sensitivity function. If not given, default values for sRGB displays are used.
 
-        .. admonition:: Dictionary layout
+        .. admonition:: Dictionary layout for `csf_function`
 
             lambda_csf : float, default=0.114 \n
             f_peak : float, default=7.8909
@@ -386,14 +395,12 @@ def most_apparent_distortion(
     ------
     ValueError
         If `block_size` is not positive.
-    ValueError
         If `weights` is not of length `scales_num`.
 
     Warns
     -----
     RuntimeWarning
         If either `thresh_1` or `thresh_2` and not both are given.
-    RuntimeWarning
         If `thresh_1` and `thresh_2` and `beta_1` or `beta_2` are given.
 
     Notes
@@ -451,7 +458,7 @@ def most_apparent_distortion(
             warn("thresh_1 and thresh_2 are given. Ignoring beta_1 and beta_2.", RuntimeWarning)
 
     # Hiqh quality index
-    d_detect = _high_quality(img_r, img_m, **kwargs)
+    d_detect = _high_quality(img_r, img_m, data_range=data_range, **kwargs)
     # Low quality index
     d_appear = _low_quality(img_r, img_m, **kwargs)
 
@@ -462,7 +469,7 @@ def most_apparent_distortion(
 
 
 def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
-    """Calculate the high quality index of MAD.
+    """Calculate the high-quality index of MAD.
 
     Notes
     -----
