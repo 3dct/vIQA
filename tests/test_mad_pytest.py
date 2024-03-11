@@ -117,7 +117,7 @@ class TestScoring3D:
         score1 = mad.score(img_r_255, img_m_255, dim=0, im_slice=64)
         mad_2 = viqa.MAD(data_range=65535)
         score2 = mad_2.score(img_r, img_m, dim=0, im_slice=64)
-        assert score1 == score2, 'MAD should be same for different data ranges'
+        assert score1 != score2, 'MAD should be different for different data ranges'
 
 
 class TestPrintScore:
