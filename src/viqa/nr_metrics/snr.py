@@ -57,7 +57,9 @@ class SNR(NoReferenceMetricsInterface):
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
+
+        .. seealso::
+            [`load_data`]
 
     Attributes
     ----------
@@ -89,6 +91,9 @@ class SNR(NoReferenceMetricsInterface):
         **kwargs : optional
             Additional parameters for SNR calculation. The keyword arguments are passed to
             `viqa.snr.signal_to_noise_ratio()`.
+
+            .. seealso::
+                [`signal_to_noise_ratio`]
 
         Returns
         -------

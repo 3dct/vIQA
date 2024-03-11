@@ -72,7 +72,9 @@ class GSM(FullReferenceMetricsInterface):
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
+
+        .. seealso::
+            [`load_data`]
 
     Attributes
     ----------
@@ -132,6 +134,9 @@ class GSM(FullReferenceMetricsInterface):
             Additional parameters for GSM calculation. The keyword arguments are passed to
             `viqa.gsm.gradient_similarity_3d()` or `viqa.gsm.gradient_similarity()`.
 
+            .. seealso::
+                [`gradient_similarity_3d()`], [`gradient_similarity()`]
+
         Returns
         -------
         score_val : float
@@ -141,18 +146,14 @@ class GSM(FullReferenceMetricsInterface):
         ------
         ValueError
             If invalid dimension given in parameter dim.
-        ValueError
             If images are neither 2D nor 3D.
-        ValueError
             If images are 3D, but dim is not given.
-        ValueError
             If im_slice is given, but not an integer.
 
         Warns
         -----
         RuntimeWarning
             If dim or im_slice is given for 2D images.
-        RuntimeWarning
             If im_slice is not given, but dim is given for 3D images, GSM is calculated for the full volume.
 
         Notes
@@ -259,6 +260,9 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     **kwargs : optional
             Additional parameters for GSM calculation. The keyword arguments are passed to
             `viqa.gsm.gradient_similarity()`.
+
+            .. seealso::
+                [`gradient_similarity`]
 
     Returns
     -------

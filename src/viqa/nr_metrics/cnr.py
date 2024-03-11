@@ -57,7 +57,9 @@ class CNR(NoReferenceMetricsInterface):
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
+
+        .. seealso::
+            [`load_data`]
 
     Attributes
     ----------
@@ -89,6 +91,9 @@ class CNR(NoReferenceMetricsInterface):
         **kwargs : optional
             Additional parameters for CNR calculation. The keyword arguments are passed to
             `viqa.cnr.contrast_to_noise_ratio()`.
+
+            .. seealso::
+                [`contrast_to_noise_ratio`]
 
         Returns
         -------

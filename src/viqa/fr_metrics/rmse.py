@@ -69,7 +69,9 @@ class RMSE(FullReferenceMetricsInterface):
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
+
+        .. seealso::
+            [`load_data`]
 
     Attributes
     ----------

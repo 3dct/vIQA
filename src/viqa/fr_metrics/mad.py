@@ -127,10 +127,10 @@ class MAD(FullReferenceMetricsInterface):
             If given, MAD is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `viqa.mad.most_apparent_distortion()`.
+            `viqa.mad.most_apparent_distortion_3d()` or `viqa.mad.most_apparent_distortion()`.
 
             .. seealso::
-                [`most_apparent_distortion`]
+                [most_apparent_distortion_3d], [`most_apparent_distortion`]
 
         Returns
         -------
@@ -149,7 +149,6 @@ class MAD(FullReferenceMetricsInterface):
         -----
         RuntimeWarning
             If dim or im_slice is given for 2D images.
-        RuntimeWarning
             If im_slice is not given, but dim is given for 3D images, MAD is calculated for the full volume.
 
         Notes
