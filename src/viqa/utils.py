@@ -53,11 +53,8 @@ def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLi
     ------
     ValueError
         If the file extension is not supported
-    ValueError
         If the bit depth is not supported
-    ValueError
         If no bit depth was found
-    ValueError
         If no dimension was found
     """
 
@@ -194,7 +191,6 @@ def load_data(
     ------
     ValueError
         If input type is not supported
-    ValueError
         If data_range is None if normalize is True
 
     Warns
@@ -334,7 +330,6 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     ------
     ValueError
         If data type is not supported
-    ValueError
         If data range is not supported
 
     Examples
@@ -411,7 +406,6 @@ def correlate_convolve_abs(
     ------
     ValueError
         If border mode is not supported
-    ValueError
         If number of dimensions is not supported
 
     Examples
