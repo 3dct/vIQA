@@ -22,6 +22,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
     'sphinx_copybutton',
     'pytest_doctestplus.sphinx.doctestplus',
 ]
