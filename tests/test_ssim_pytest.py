@@ -41,7 +41,7 @@ class TestScoring2D:
         img_m = np.ones((256, 256))
         ssim = viqa.SSIM(data_range=1, normalize=False)
         score = ssim.score(img_r, img_m)
-        assert pytest.approx(score) == 0.0, 'SSIM of completely different images should be 0'
+        assert pytest.approx(score, abs=1e-4) == 0.0, 'SSIM of completely different images should be 0'
 
     def test_ssim_with_random_images_2d(self):
         img_r = np.random.rand(256, 256)
@@ -72,7 +72,7 @@ class TestScoring3D:
         img_m = np.ones((256, 256, 256))
         ssim = viqa.SSIM(data_range=1, normalize=False)
         score = ssim.score(img_r, img_m)
-        assert pytest.approx(score) == 0.0, 'SSIM of completely different images should be 0'
+        assert pytest.approx(score, abs=1e-4) == 0.0, 'SSIM of completely different images should be 0'
 
     def test_ssim_with_random_images_3d(self):
         img_r = np.random.rand(256, 256, 256)

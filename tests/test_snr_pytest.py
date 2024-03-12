@@ -112,3 +112,36 @@ class TestPrinting:
             snr.print_score(decimals=2)
             captured = capsys.readouterr()
             assert len(captured.out) == 10, 'Printed score should have 11 characters'
+
+
+class TestCenterAndRadius:
+    def test_snr_signal_center_float(self):
+        img = np.zeros((256, 256))
+        snr = viqa.SNR()
+        with pytest.raises(TypeError, match='Center has to be a tuple of integers.'):
+            snr.score(img, signal_center=(128.5, 128.5), radius=8)
+
+    def test_snr_signal_center_list(self):
+        img = np.zeros((256, 256))
+        snr = viqa.SNR()
+        with pytest.raises(TypeError, match='Center has to be a tuple of integers.'):
+            snr.score(img, signal_center=[128, 128], radius=8)
+
+    def test_snr_signal_center_close_to_border(self):
+        img = np.zeros((256, 256))
+        snr = viqa.SNR()
+        with pytest.raises(ValueError, match='Center has to be at least the radius away from the border.'):
+            snr.score(img, signal_center=(8, 8), radius=8)
+
+    def test_snr_radius_float(self):
+        img = np.zeros((256, 256))
+        snr = viqa.SNR()
+        with pytest.raises(TypeError, match='Radius has to be an integer.'):
+            snr.score(img, signal_center=(128, 128), radius=8.5)
+
+
+def test_snr_not_2d_or_3d():
+    img = np.zeros((256, 256, 256, 256))
+    snr = viqa.SNR()
+    with pytest.raises(ValueError, match='Image has to be 2D or 3D.'):
+        snr.score(img, signal_center=(128, 128), radius=8)
