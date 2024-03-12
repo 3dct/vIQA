@@ -87,9 +87,9 @@ class VSI(FullReferenceMetricsInterface):
 
     References
     ----------
-    [1]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for
-    perceptual image quality assessment. IEEE Transactions on Image Processing, 23(10),
-    4270–4281. https://doi.org/10.1109/TIP.2014.2346028
+    .. [1] Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced
+        index for perceptual image quality assessment. IEEE Transactions on Image
+        Processing, 23(10), 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -178,12 +178,12 @@ class VSI(FullReferenceMetricsInterface):
 
         References
         ----------
-        [1]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index
-        for perceptual image quality assessment. IEEE Transactions on Image
-        Processing, 23(10), 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
-        [2]: Zhang, L., Gu, Z., & Li, H. (2013). SDSP: A novel saliency detection method
-        by combining simple priors. 2013 IEEE International Conference on Image
-        Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
+        .. [1] Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced
+            index for perceptual image quality assessment. IEEE Transactions on Image
+            Processing, 23(10), 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
+        .. [2] Zhang, L., Gu, Z., & Li, H. (2013). SDSP: A novel saliency detection
+            method by combining simple priors. 2013 IEEE International Conference on
+            Image Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
         """
         img_r, img_m = _check_imgs(
             img_r,
