@@ -294,7 +294,7 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
         False, calculate GSM for all slices of the given dimension and calculate mean
         over all single slice values.
 
-        .. warning::
+        .. attention::
             This is experimental and the resulting values are not validated.
 
     **kwargs : optional
