@@ -58,11 +58,11 @@ class FSIM(FullReferenceMetricsInterface):
     Other Parameters
     ----------------
     chromatic : bool, default False
-        If True, the input images are expected to be RGB images.
-
-        .. todo::
-            Add pass to (... needs tensors with permutated channels, _check_chromatic
-            performs this task)
+        If True, the input images are expected to be RGB images and FSIMc is
+        calculated. See [1]. Passed to
+        ``piq.fsim``. See the documentation under
+        `piq.fsim
+        <https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
 
     Raises
     ------
@@ -116,17 +116,38 @@ class FSIM(FullReferenceMetricsInterface):
             If given, FSIM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for FSIM calculation. The keyword arguments are passed
-            to ``piq.fsim``.
-
-            .. seealso::
-                For more information on the parameters, see the documentation of
-                `piq.fsim
-                <https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
+            to ``piq.fsim``. See the documentation under
+            `piq.fsim
+            <https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
 
         Other Parameters
         ----------------
+        reduction : str, default='mean'
+            Specifies the reduction type: 'none', 'mean' or 'sum'.
+        scales : int, default=4
+            Number of wavelets used for computation of phase congruency maps.
+        orientations : int, default=4
+            Number of filter orientations used for computation of phase congruency maps.
+        min_length : int, default=6
+            Wavelength of smallest scale filter.
+        mult : int, default=2
+            Scaling factor between successive filters.
+        sigma_f : float, default=0.55
+            Ratio of the standard deviation of the Gaussian describing the log Gabor
+            filter’s transfer function in the frequency domain to the filter center
+            frequency.
+        delta_theta : float, default=1.2
+            Ratio of angular interval between filter orientations and the standard
+            deviation of the angular Gaussian function used to construct filters in the
+            frequency plane.
+        k : float, default=2.0
+            No of standard deviations of the noise energy beyond the mean at which we
+            set the noise threshold point, below which phase congruency values get
+            penalized.
 
-            .. todo:: Add other parameters
+        .. seealso::
+            See :py:func:`~.viqa.fr_metrics.mad.most_apparent_distortion` and
+            :py:func:`.viqa.utils.gabor_convolve`.
 
         Returns
         -------

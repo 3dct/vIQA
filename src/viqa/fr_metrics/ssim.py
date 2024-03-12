@@ -221,8 +221,9 @@ def structural_similarity(
         Algorithm parameter, K2 (small constant, see [1]).
     sigma : float, default=1.5
         Standard deviation for the Gaussian when ``gaussian_weights`` is True.
-    mode : {'constant', 'edge', 'symmetric', 'reflect', 'wrap'}, optional
-        Determines how the array borders are handled.
+    mode : str, default='reflect'
+        Determines how the array borders are handled. 'constant', 'edge', 'symmetric',
+        'reflect' or 'wrap'.
 
         .. seealso::
             See Numpy documentation for detail.

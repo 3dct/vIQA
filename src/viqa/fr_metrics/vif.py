@@ -63,11 +63,10 @@ class VIFp(FullReferenceMetricsInterface):
         If True, the input images are expected to be RGB images.
         
         .. note::
-            Currently not supported.
-
-        .. todo::
-            Add pass to (... needs tensors with permutated channels, _check_chromatic
-            performs this task)
+            Color images can be used, but it is unclear how the called implementation
+            `piq.vif_p
+            <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_
+            handles the color channels.
 
     Raises
     ------
@@ -118,17 +117,16 @@ class VIFp(FullReferenceMetricsInterface):
             If given, VIFp is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for VIFp calculation. The keyword arguments are passed
-            to ``piq.vif_p``.
-
-            .. seealso::
-                For more information on the parameters, see the documentation of
-                `piq.vif_p
-                <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
+            to ``piq.vif_p``. See the documentation under
+            `piq.vif_p
+            <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
 
         Other Parameters
         ----------------
-        
-            .. todo:: Add other parameters
+        sigma_n_sq : float, default=2.0
+            HVS model parameter (variance of the visual noise).
+        reduction : str, default='mean'
+            Specifies the reduction type: 'none', 'mean' or 'sum'.
 
         Returns
         -------
