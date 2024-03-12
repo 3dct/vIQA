@@ -288,5 +288,5 @@ assessment. IEEE Transactions on Image Processing, 23(10), 4270–4281. https://
 role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
 [^7]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE Transactions 
 on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
-[^8] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image quality in computed radiographic 
+[^8]: Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image quality in computed radiographic 
 (CR) imaging systems. Medical Imaging 2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
