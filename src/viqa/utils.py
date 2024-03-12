@@ -388,7 +388,7 @@ def correlate_convolve_abs(
     img, kernel, mode="correlate", border_mode="constant", value=0
 ):
     """Correlates or convolves a numpy array with a kernel in the form
-    :math:`operatorname{mean}(\\lvert \\pmb(I) \\cdot \\mathcal{K} \\rvert)` with :math:`\\pmb(I)` denoting the image
+    :math:`\\operatorname{mean}(\\lvert \\pmb{I} \\cdot \\mathcal{K} \\rvert)` with :math:`\\pmb{I}` denoting the image
     and :math:`\\mathcal{K}` denoting the Kernel. Works in 2D and 3D.
 
     Parameters
@@ -400,13 +400,13 @@ def correlate_convolve_abs(
     mode : str, optional
         'correlate' or 'convolve', default 'correlate'
 
-        ..seealso::
+        .. seealso::
             Scipy documentation
 
     border_mode : str, optional
         'constant', 'reflect', 'nearest', 'mirror' or 'wrap', default 'constant'
 
-        ..seealso::
+        .. seealso::
             Scipy documentation
 
     value : int, optional
@@ -425,8 +425,8 @@ def correlate_convolve_abs(
 
     See Also
     --------
-    - `scipy.signal.correlate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.correlate.html>`_
-     - `scipy.signal.convolve <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve.html>`_
+    `scipy.signal.correlate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.correlate.html>`_ and
+    `scipy.signal.convolve <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve.html>`_
 
     Examples
     --------
