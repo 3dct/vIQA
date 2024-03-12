@@ -673,7 +673,7 @@ def gabor_convolve(
 
     # compute radial component
     radial_components = []
-    for scale_n, scale in enumerate(scales):  # for each scale
+    for scale_n, _scale in enumerate(scales):  # for each scale
         center_freq = 1.0 / wavelengths[scale_n]  # center frequency of filter
         normalised_center_freq = center_freq / 0.5
         # log Gabor response for each frequency band (scale)
@@ -688,7 +688,7 @@ def gabor_convolve(
     res = np.empty(
         (scales_num, orientations_num), dtype=object
     )  # precompute result array
-    for orientation_n, orientation in enumerate(orientations):  # for each orientation
+    for orientation_n, _orientation in enumerate(orientations):  # for each orientation
         # compute angular component
         # Pre-compute filter data specific to this orientation
         # For each point in the filter matrix calculate the angular distance from the specified filter orientation.
@@ -709,7 +709,7 @@ def gabor_convolve(
         )  # angular filter component
 
         # filtering
-        for scale_n, scale in enumerate(scales):  # for each scale
+        for scale_n, _scale in enumerate(scales):  # for each scale
             # compute final filter
             filter_ = fft.fftshift(radial_components[scale_n] * spread)
             filter_[0, 0] = 0

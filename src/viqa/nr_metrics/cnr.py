@@ -73,7 +73,7 @@ class CNR(NoReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
-        """Constructor method"""
+        """Constructor method."""
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
@@ -126,7 +126,7 @@ class CNR(NoReferenceMetricsInterface):
 
 
 def contrast_to_noise_ratio(img, background_center, signal_center, radius):
-    r"""Calculate the contrast-to-noise ratio (CNR) between two images.
+    """Calculate the contrast-to-noise ratio (CNR) between two images.
 
     Parameters
     ----------

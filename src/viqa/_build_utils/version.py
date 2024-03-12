@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Extract version number from __init__.py"""
+"""Extract version number from __init__.py."""
 
 import os
 

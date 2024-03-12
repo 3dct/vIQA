@@ -73,7 +73,7 @@ class SNR(NoReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
-        """Constructor method"""
+        """Constructor method."""
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
@@ -126,7 +126,7 @@ class SNR(NoReferenceMetricsInterface):
 
 
 def signal_to_noise_ratio(img, signal_center, radius):
-    r"""Calculate the signal-to-noise ratio (SNR) between two images.
+    """Calculate the signal-to-noise ratio (SNR) between two images.
 
     Parameters
     ----------

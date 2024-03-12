@@ -112,7 +112,7 @@ class GSM(FullReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
-        """Constructor method"""
+        """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(

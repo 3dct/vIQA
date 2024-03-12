@@ -112,7 +112,7 @@ class SSIM(FullReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
-        """Constructor method"""
+        """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
@@ -356,9 +356,8 @@ def structural_similarity(
     C2 = (K2 * R) ** 2
     C3 = C2 / 2
 
-    A1, A2, B1, B2 = (
+    A1, B1, B2 = (
         2 * ux * uy + C1,
-        2 * vxy + C2,
         ux**2 + uy**2 + C1,
         vx + vy + C2,
     )
