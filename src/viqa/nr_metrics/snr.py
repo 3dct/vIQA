@@ -42,12 +42,17 @@ from viqa.utils import load_data
 class SNR(NoReferenceMetricsInterface):
     """Class to calculate the signal-to-noise ratio (SNR) between two images.
 
+    Attributes
+    ----------
+    score_val : float
+        SNR score value of the last calculation.
+
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when `normalize` is True.
+        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True.
     normalize : bool, default False
-        If True, the input images are normalized to the `data_range` argument.
+        If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
@@ -55,13 +60,7 @@ class SNR(NoReferenceMetricsInterface):
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
-
-    Attributes
-    ----------
-    score_val : float
-        SNR score value of the last calculation.
+        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -88,7 +87,7 @@ class SNR(NoReferenceMetricsInterface):
             Image to calculate score of.
         **kwargs : optional
             Additional parameters for SNR calculation. The keyword arguments are passed to
-            `viqa.snr.signal_to_noise_ratio()`.
+            :py:func:`viqa.nr_metrics.snr.signal_to_noise_ratio`.
 
         Returns
         -------
@@ -118,7 +117,7 @@ class SNR(NoReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
             print("SNR: {}".format(round(self.score_val, decimals)))
@@ -127,14 +126,14 @@ class SNR(NoReferenceMetricsInterface):
 
 
 def signal_to_noise_ratio(img, signal_center, radius):
-    """Calculate the signal-to-noise ratio (SNR) between two images.
+    r"""Calculate the signal-to-noise ratio (SNR) between two images.
 
     Parameters
     ----------
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     signal_center : Tuple(int)
-        Center of the signal. Order is (y, x) for 2D images and (z, y, x) for 3D images.
+        Center of the signal. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
     radius : int
         Width of the regions.
 
@@ -146,9 +145,9 @@ def signal_to_noise_ratio(img, signal_center, radius):
     Raises
     ------
     ValueError
-        If the center is not a tuple of integers.
-        If center is too close to the border.
-        If the radius is not an integer.
+        If the center is not a tuple of integers. \n
+        If center is too close to the border. \n
+        If the radius is not an integer. \n
         If the image is not 2D or 3D.
 
     Notes
@@ -156,7 +155,7 @@ def signal_to_noise_ratio(img, signal_center, radius):
     This implementation uses a cubic region to calculate the SNR. The calculation is based on the following formula:
 
     .. math::
-        SNR = \\frac{\\mu}{\\sigma}
+        snr = \\frac{\\mu}{\\sigma}
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
@@ -165,11 +164,10 @@ def signal_to_noise_ratio(img, signal_center, radius):
         if not isinstance(center, int):
             raise ValueError("Center has to be a tuple of integers.")
         if center - radius < 0:  # check if center is too close to the border
-            raise ValueError(
-                "Center has to be at least the radius away from the border."
-            )
+            raise ValueError("Center has to be at least the radius away from the border.")
+        # todo: check center out of bounds
 
-    if not isinstance(radius, int):
+    if not isinstance(radius, int):  # todo: check for negative radius
         raise ValueError("Radius has to be an integer.")
 
     # Define regions

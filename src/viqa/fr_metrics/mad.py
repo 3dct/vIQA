@@ -63,9 +63,9 @@ class MAD(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
-        Data range of the returned data in data loading. Can be omitted if `normalize` is False.
+        Data range of the returned data in data loading. Can be omitted if ``normalize`` is False.
     normalize : bool, default False
-        If True, the input images are normalized to the `data_range` argument.
+        If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
@@ -73,8 +73,8 @@ class MAD(FullReferenceMetricsInterface):
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
+        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
+
 
     Other Parameters
     ----------------
@@ -84,11 +84,22 @@ class MAD(FullReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    Raises
+    ------
+    ValueError
+        If ``data_range`` is None.
+
+    Warnings
+    --------
+    The metric is not yet validated. Use with caution.
+
+    .. todo:: validate
+
     Notes
     -----
-    The parameter `data_range` for image loading is also used for the MAD calculation if the image type is integer and
-    therefore must be set. The parameter is set through the constructor of the class and is passed to the `score`
-    method. MAD [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict
+    ``data_range`` for image loading is also used for the MAD calculation if the image type is integer and
+    therefore must be set. The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
+    MAD [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict
     the perceived quality of an image.
 
     References
@@ -97,8 +108,9 @@ class MAD(FullReferenceMetricsInterface):
            and the role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
     """
 
-    def __init__(self, data_range=None, normalize=False, batch=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method."""
+
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
@@ -109,8 +121,8 @@ class MAD(FullReferenceMetricsInterface):
         """Calculate the MAD between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
-        full volume or for a given slice of the image by setting the parameter `dim` to the desired dimension and
-        `im_slice` to the desired slice number.
+        full volume or for a given slice of the image by setting ``dim`` to the desired dimension and
+        ``im_slice`` to the desired slice number.
 
         Parameters
         ----------
@@ -124,7 +136,8 @@ class MAD(FullReferenceMetricsInterface):
             If given, MAD is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `viqa.mad.most_apparent_distortion()`.
+            :py:func:`viqa.fr_metrics.mad.most_apparent_distortion_3d` or
+            :py:func:`viqa.fr_metrics.mad.most_apparent_distortion`.
 
         Returns
         -------
@@ -134,27 +147,23 @@ class MAD(FullReferenceMetricsInterface):
         Raises
         ------
         ValueError
-            If invalid dimension given in parameter dim.
-        ValueError
-            If images are neither 2D nor 3D.
-        ValueError
-            If images are 3D, but dim is not given.
-        ValueError
-            If im_slice is given, but not an integer.
+            If invalid dimension given in ``dim``. \n
+            If images are neither 2D nor 3D. \n
+            If images are 3D, but ``dim`` is not given. \n
+            If ``im_slice`` is given, but not an integer.
 
         Warns
         -----
         RuntimeWarning
-            If dim or im_slice is given for 2D images.
-        RuntimeWarning
+            If dim or im_slice is given for 2D images. \n
             If im_slice is not given, but dim is given for 3D images, MAD is calculated for the full volume.
 
         Notes
         -----
-        For 3D images if dim is given, but im_slice is not, the MAD is calculated for the full volume of the 3D image.
-        This is implemented as :math:`mean` of the MAD values of all slices of the given dimension. If dim is given and
-        im_slice is given, the MAD is calculated for the given slice of the given dimension (represents a 2D metric of
-        the given slice).
+        For 3D images if ``dim`` is given, but ``im_slice`` is not, the MAD is calculated for the full volume of the 3D
+        image. This is implemented as `mean` of the MAD values of all slices of the given dimension. If ``dim`` is given
+        and ``im_slice`` is given, the MAD is calculated for the given slice of the given dimension (represents a 2D
+        metric of the given slice).
         """
         # Check images
         img_r, img_m = _check_imgs(
@@ -241,7 +250,7 @@ class MAD(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
             print("MAD: {}".format(round(self.score_val, decimals)))
@@ -264,7 +273,7 @@ def most_apparent_distortion_3d(
         Dimension on which the slices are iterated.
     **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed to
-            `viqa.mad.most_apparent_distortion()`.
+            :py:func:`viqa.fr_metrics.mad.most_apparent_distortion`.
 
     Returns
     -------
@@ -274,7 +283,17 @@ def most_apparent_distortion_3d(
     Raises
     ------
     ValueError
-        If invalid dimension given in parameter dim.
+        If invalid dimension given in ``dim``.
+
+    Warnings
+    --------
+    The metric is not yet validated. Use with caution.
+
+    .. todo:: validate
+
+    See Also
+    --------
+    most_apparent_distortion : Calculate the MAD between two images.
 
     References
     ----------
@@ -314,6 +333,7 @@ def most_apparent_distortion_3d(
 def most_apparent_distortion(
     img_r: np.ndarray,
     img_m: np.ndarray,
+    data_range: int = 255,
     block_size: int = 16,
     block_overlap: float = 0.75,
     beta_1: float = 0.467,
@@ -327,13 +347,15 @@ def most_apparent_distortion(
     Parameters
     ----------
     img_r : np.ndarray
-        Reference image to calculate score against
+        Reference image to calculate score against.
     img_m : np.ndarray
-        Distorted image to calculate score of
+        Distorted image to calculate score of.
+    data_range : int, default=255
+        Data range of the input images.
     block_size : int, default=16
         Size of the blocks in the MAD calculation. Must be positive.
     block_overlap : float, default=0.75
-        Overlap of the blocks in the MAD calculation. Given as a fraction of the block size.
+        Overlap of the blocks in the MAD calculation. Given as a fraction of ``block_size``.
     beta_1 : float, default=0.467
         Parameter for single metrics combination.
     beta_2 : float, default=0.130
@@ -353,36 +375,36 @@ def most_apparent_distortion(
     Other Parameters
     ----------------
     account_monitor : bool, default False
-        If True, the `display_function` of the monitor is taken into account.
+        If True, the ``display_function`` of the monitor is taken into account.
     display_function : dict, optional
-        Parameters of the display function of the monitor. Must be given if `account_monitor` is True.
+        Parameters of the display function of the monitor. Must be given if ``account_monitor`` is True.
 
-        .. admonition:: Dictionary layout
+        .. admonition:: Dictionary layout for ``display_function``
 
             disp_res : float, Display resolution. \n
-            view_dis : float, Viewing distance. Same unit as `disp_res`.
+            view_dis : float, Viewing distance. Same unit as ``disp_res``.
 
     luminance_function : dict, optional
         Parameters of the luminance function. If not given, default values for sRGB displays are used.
 
-        .. admonition:: Dictionary layout
+        .. admonition:: Dictionary layout for ``luminance_function``
 
             b : float, default=0.0 \n
             k : float, default=0.02874 \n
             gamma : float, default=2.2
 
     ms_scale : float, default=1
-        Additional normalization parameter for the high quality index.
+        Additional normalization parameter for the high-quality index.
     orientations_num : int, default 4
         Number of orientations for the log-Gabor filters.
     scales_num : int, default 5
         Number of scales for the log-Gabor filters.
     weights : list, default [0.5, 0.75, 1, 5, 6]
-        Weights for the different scales of the log-Gabor filters. Must be of length `scales_num`.
+        Weights for the different scales of the log-Gabor filters. Must be of length ``scales_num``.
     csf_function : dict, optional
         Parameters for the contrast sensitivity function. If not given, default values for sRGB displays are used.
 
-        .. admonition:: Dictionary layout
+        .. admonition:: Dictionary layout for ``csf_function``
 
             lambda_csf : float, default=0.114 \n
             f_peak : float, default=7.8909
@@ -390,26 +412,35 @@ def most_apparent_distortion(
     Raises
     ------
     ValueError
-        If `block_size` is not positive.
-    ValueError
-        If `weights` is not of length `scales_num`.
+        If ``block_size`` is not positive.
+        If ``weights`` is not of length ``scales_num``.
 
     Warns
     -----
     RuntimeWarning
-        If either `thresh_1` or `thresh_2` and not both are given.
-    RuntimeWarning
-        If `thresh_1` and `thresh_2` and `beta_1` or `beta_2` are given.
+        If either ``thresh_1`` or ``thresh_2`` and not both are given.
+        If ``thresh_1`` and ``thresh_2`` and ``beta_1`` or ``beta_2`` are given.
+
+    Warnings
+    --------
+    The metric is not yet validated. Use with caution.
+
+    .. todo:: validate
+
+    See Also
+    --------
+    most_apparent_distortion_3d : Calculate the MAD for a 3D image.
 
     Notes
     -----
     The metric is calculated as combination of two single metrics. One for high quality and one for low quality of the
-    image. The parameters `beta_1`, `beta_2`, `thresh_1` and `thresh_2` determine the weighting of the two combined
-    single metrics. If `thresh_1` and `thresh_2` are given, `beta_1` and `beta_2` are calculated from them, else
-    `beta_1` and `beta_2` or their default values are used. The values to be set for `thresh_1` and `thresh_2` that lead
-    to the default values `beta_1=0.467` and `beta_2=0.130` are `thresh_1=2.55` and `thresh_2=3.35`. These need not to
-    be set, since automatic values for `beta_1` and `beta_2` are used when they are not given as parameter. For more
-    information see [1]. The code is adapted from the original MATLAB code available under [2].
+    image. The parameters ``beta_1``, ``beta_2``, ``thresh_1`` and ``thresh_2`` determine the weighting of the two
+    combined single metrics. If ``thresh_1`` and ``thresh_2`` are given, ``beta_1`` and ``beta_2`` are calculated from
+    them, else ``beta_1`` and ``beta_2`` or their default values are used. The values to be set for ``thresh_1`` and
+    ``thresh_2`` that lead to the default values ``beta_1=0.467`` and ``beta_2=0.130`` are ``thresh_1=2.55`` and
+    ``thresh_2=3.35``. These need not to be set, since automatic values for ``beta_1`` and ``beta_2`` are used when they
+    are not given as parameter. For more information see [1]. The code is adapted from the original MATLAB code
+    available under [2].
 
     References
     ----------
@@ -462,7 +493,7 @@ def most_apparent_distortion(
             )
 
     # Hiqh quality index
-    d_detect = _high_quality(img_r, img_m, **kwargs)
+    d_detect = _high_quality(img_r, img_m, data_range=data_range, **kwargs)
     # Low quality index
     d_appear = _low_quality(img_r, img_m, **kwargs)
 
@@ -473,7 +504,7 @@ def most_apparent_distortion(
 
 
 def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
-    """Calculate the high quality index of MAD.
+    """Calculate the high-quality index of MAD.
 
     Notes
     -----
@@ -616,7 +647,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
 
 def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
-    """Calculate the low quality index of MAD.
+    """Calculate the low-quality index of MAD.
 
     Notes
     -----

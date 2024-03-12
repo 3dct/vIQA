@@ -1,3 +1,4 @@
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 # vIQA &mdash; volumetric Image Quality Assessment
 
 [[_TOC_]]
@@ -36,25 +37,25 @@ The metrics used are:
   > The metric is tested, but not yet validated.
 - Gradient Similarity Measure (GSM) [^7]
   > [!CAUTION]
-  > This metric is not yet tested. The metric should be only used for testing purposes.
-- Contrast to Noise Ratio (CNR)
+  > This metric is not yet tested. The metric should be only used for experimental purposes.
+- Contrast to Noise Ratio (CNR) [^8]
 - Signal to Noise Ratio (SNR)
 
 Overview
 --------
-| Metric  | Name                                          | Type | Dimensional behaviour | Range          | Tested             | Validated | Reference |
-|---------|-----------------------------------------------|------|-----------------------|----------------|--------------------|-----------|-----------|
-| PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             | $[0, \infty)$  | :heavy_check_mark: | :x:       | &mdash    |
-| RMSE    | Root Mean Square Error                        | FR   | 3D native             | $[0, 1)$       | :heavy_check_mark: | :x:       | &mdash    |
-| SSIM    | Structured Similarity                         | FR   | 3D native             |                | :x:                | :x:       | [^1]      |
-| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 2D                    |                | :x:                | :x:       | [^2]      |
-| FSIM    | Feature Similarity Index                      | FR   | 2D                    |                | :x:                | :x:       | [^3]      |
-| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 2D                    |                | :x:                | :x:       | [^4]      |
-| VSI     | Visual Saliency Index                         | FR   | 2D                    |                | :x:                | :x:       | [^5]      |
-| MAD     | Most Apparent Distortion                      | FR   | 3D slicing            | $[0, \infty)$  | :heavy_check_mark: | :x:       | [^6]      |
-| GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                | :x:                | :x:       | [^7]      |
-| CNR     | Contrast to Noise Ratio                       | FR   | 3D native             |                | :heavy_check_mark: | :x:       |           |
-| SNR     | Signal to Noise Ratio                         | FR   | 3D native             |                | :heavy_check_mark: | :x:       | &mdash    |
+| Metric  | Name                                          | Type | Dimensional behaviour | Range         | Tested             | Validated | Reference |
+|---------|-----------------------------------------------|------|-----------------------|---------------|--------------------|-----------|-----------|
+| PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             | $[0, \infty)$ | :heavy_check_mark: | :x:       | &mdash;   |
+| RMSE    | Root Mean Square Error                        | FR   | 3D native             | $[0, 1]$      | :heavy_check_mark: | :x:       | &mdash;   |
+| SSIM    | Structured Similarity                         | FR   | 3D native             | $[0, 1]$      | :x:                | :x:       | [^1]      |
+| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 2D                    |               | :x:                | :x:       | [^2]      |
+| FSIM    | Feature Similarity Index                      | FR   | 2D                    |               | :x:                | :x:       | [^3]      |
+| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 2D                    |               | :x:                | :x:       | [^4]      |
+| VSI     | Visual Saliency Index                         | FR   | 2D                    |               | :x:                | :x:       | [^5]      |
+| MAD     | Most Apparent Distortion                      | FR   | 3D slicing            | $[0, \infty)$ | :heavy_check_mark: | :x:       | [^6]      |
+| GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |               | :x:                | :x:       | [^7]      |
+| CNR     | Contrast to Noise Ratio                       | FR   | 3D native             |               | :heavy_check_mark: | :x:       | [^8]      |
+| SNR     | Signal to Noise Ratio                         | FR   | 3D native             |               | :heavy_check_mark: | :x:       | &mdash;   |
 
 
 
@@ -96,10 +97,14 @@ from viqa import load_data
 from viqa.utils import normalize_data
 
 ## load images
-file_path_img_r = 'path/to/reference_image_8bit.raw'
-file_path_img_m = 'path/to/modified_image_8bit.raw'
-img_r = load_data(file_path_img_r, data_range=1, normalize=False,
-                  batch=False)  # data_range ignored due to normalize=False
+file_path_img_r = 'path/to/reference_image_8bit_512x512x512.raw'
+file_path_img_m = 'path/to/modified_image_8bit_512x512x512.raw'
+img_r = load_data(
+  file_path_img_r, 
+  data_range=1, 
+  normalize=False,
+  batch=False,
+)  # data_range ignored due to normalize=False
 img_m = load_data(file_path_img_m)  # per default: batch=False, normalize=False
 # --> both images are loaded as 8-bit images
 
@@ -131,7 +136,7 @@ calc_parameters = {
 }
 
 # calculate and print MAD score
-mad = viqa.MAD()
+mad = viqa.MAD(data_range=65535)  # MAD needs data_range to calculate the score
 score_mad = mad.score(img_r, img_m, dim=2, **calc_parameters)
 mad.print_score(decimals=2)
 ```
@@ -140,8 +145,8 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 ```python
 import viqa
 
-file_path_img_r = 'path/to/reference_image_16bit.raw'
-file_path_img_m = 'path/to/modified_image_16bit.raw'
+file_path_img_r = 'path/to/reference_image_512x512x512_16bit.raw'
+file_path_img_m = 'path/to/modified_image_512x512x512_16bit.raw'
 
 load_parameters = {'data_range': 1, 'normalize': True}
 # data_range is set to 1 to normalize the images 
@@ -166,7 +171,7 @@ psnr.print_score(decimals=2)
 > single metric.
 
 > [!IMPORTANT]
-> The current recommended usage file is: [`.Image_Comparison.ipynb`](Image_Comparison.ipynb).
+> The current recommended usage file is: [`Image_Comparison.ipynb`](Image_Comparison.ipynb).
 
 <!-- ## Metric List TODO: add list of metrics -->
 
@@ -193,7 +198,7 @@ psnr.print_score(decimals=2)
 - [ ] Add tests
     - [x] Add tests for RMSE
     - [x] Add tests for PSNR
-    - [ ] Add tests for SSIM
+    - [x] Add tests for SSIM
     - [ ] Add tests for MSSSIM
     - [ ] Add tests for FSIM
     - [ ] Add tests for VSI
@@ -210,22 +215,28 @@ psnr.print_score(decimals=2)
 - [ ] Add documentation
     - [x] Add documentation for rmse.py
     - [x] Add documentation for psnr.py
-    - [ ] Add documentation for ssim.py
+    - [x] Add documentation for ssim.py
     - [ ] Add documentation for msssim.py
     - [ ] Add documentation for fsim.py
     - [ ] Add documentation for vsi.py
     - [ ] Add documentation for vif.py
     - [x] Add documentation for mad.py
     - [x] Add documentation for gsm.py
+    - [ ] Add documentation for sff.py
     - [x] Add documentation for cnr.py
     - [x] Add documentation for snr.py
+    - [ ] Add documentation for ma.py
+    - [ ] Add documentation for pi.py
+    - [ ] Add documentation for niqe.py
+    - [ ] Add documentation for qfactor.py
     - [x] Add documentation for utils.py
 - [ ] Adapt to 3D
-    - [ ] SSIM
+    - [x] SSIM
     - [ ] MSSSIM
     - [ ] FSIM
     - [ ] VSI
     - [ ] VIF
+- [ ] Validate metrics
 
 <!-- ## Citation TODO: add citation instructions -->
 
@@ -277,3 +288,5 @@ assessment. IEEE Transactions on Image Processing, 23(10), 4270–4281. https://
 role of strategy. Journal of Electronic Imaging, 19(1), 011006. https://doi.org/10.1117/1.3267105
 [^7]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE Transactions 
 on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
+[^8] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image quality in computed radiographic 
+(CR) imaging systems. Medical Imaging 2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640

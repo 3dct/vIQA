@@ -54,12 +54,9 @@ def _load_data_from_disk(
     Raises
     ------
     ValueError
-        If the file extension is not supported
-    ValueError
-        If the bit depth is not supported
-    ValueError
-        If no bit depth was found
-    ValueError
+        If the file extension is not supported \n
+        If the bit depth is not supported \n
+        If no bit depth was found \n
         If no dimension was found
     """
     # Create file path components
@@ -181,7 +178,7 @@ def load_data(
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
-        .. note::
+        .. caution::
             Currently not tested.
 
     Returns
@@ -192,17 +189,21 @@ def load_data(
     Raises
     ------
     ValueError
-        If input type is not supported
-    ValueError
-        If data_range is None if normalize is True
+        If input type is not supported \n
+        If ``data_range=None`` and ``normalize=True``
 
     Warns
     -----
     RuntimeWarning
-        If data_range is set but normalize is False. Parameter data_range will be ignored.
+        If ``data_range`` is set but ``normalize=False``. ``data_range`` will be ignored.
+
+    Warnings
+    --------
+    ``batch`` is currently not tested.
 
     Examples
     --------
+
         .. doctest-skip::
 
             >>> from viqa import load_data
@@ -332,9 +333,8 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     Raises
     ------
     ValueError
-        If data type is not supported
-    ValueError
-        If data range is not supported
+        If data type is not supported \n
+        If ``data_range`` is not supported
 
     Examples
     --------
@@ -386,7 +386,9 @@ def _to_float(img):
 def correlate_convolve_abs(
     img, kernel, mode="correlate", border_mode="constant", value=0
 ):
-    """Correlates or convolves a numpy array with a kernel in the form mean(abs(img * kernel)). Works in 2D and 3D.
+    """Correlates or convolves a numpy array with a kernel in the form
+    :math:`\\operatorname{mean}(\\lvert \\pmb{I} \\cdot \\mathcal{K} \\rvert)` with :math:`\\pmb{I}` denoting the image
+    and :math:`\\mathcal{K}` denoting the Kernel. Works in 2D and 3D.
 
     Parameters
     ----------
@@ -396,8 +398,16 @@ def correlate_convolve_abs(
         Kernel
     mode : str, optional
         'correlate' or 'convolve', default 'correlate'
+
+        .. seealso::
+            Scipy documentation
+
     border_mode : str, optional
         'constant', 'reflect', 'nearest', 'mirror' or 'wrap', default 'constant'
+
+        .. seealso::
+            Scipy documentation
+
     value : int, optional
         Value for constant border mode, default 0
 
@@ -409,9 +419,13 @@ def correlate_convolve_abs(
     Raises
     ------
     ValueError
-        If border mode is not supported
-    ValueError
+        If ``border_mode`` is not supported \n
         If number of dimensions is not supported
+
+    See Also
+    --------
+    `scipy.signal.correlate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.correlate.html>`_ and
+    `scipy.signal.convolve <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve.html>`_
 
     Examples
     --------

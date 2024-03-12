@@ -42,12 +42,17 @@ from viqa.utils import load_data
 class CNR(NoReferenceMetricsInterface):
     """Class to calculate the contrast-to-noise ratio (CNR) between two images.
 
+    Attributes
+    ----------
+    score_val : float
+        CNR score value of the last calculation.
+
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when `normalize` is True.
+        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True.
     normalize : bool, default False
-        If True, the input images are normalized to the `data_range` argument.
+        If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
         If True, the input images are expected to be given as path to a folder containing the images.
 
@@ -55,13 +60,7 @@ class CNR(NoReferenceMetricsInterface):
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to `viqa.utils.load_data`.
-        See below for details.
-
-    Attributes
-    ----------
-    score_val : float
-        CNR score value of the last calculation.
+        Additional parameters for data loading. The keyword arguments are passed to :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -88,7 +87,7 @@ class CNR(NoReferenceMetricsInterface):
             Image to calculate score of.
         **kwargs : optional
             Additional parameters for CNR calculation. The keyword arguments are passed to
-            `viqa.cnr.contrast_to_noise_ratio()`.
+            :py:func:`.viqa.nr_metrics.cnr.contrast_to_noise_ratio`.
 
         Returns
         -------
@@ -118,7 +117,7 @@ class CNR(NoReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
             print("CNR: {}".format(round(self.score_val, decimals)))
@@ -127,16 +126,16 @@ class CNR(NoReferenceMetricsInterface):
 
 
 def contrast_to_noise_ratio(img, background_center, signal_center, radius):
-    """Calculate the contrast-to-noise ratio (CNR) between two images.
+    r"""Calculate the contrast-to-noise ratio (CNR) between two images.
 
     Parameters
     ----------
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     background_center : Tuple(int)
-        Center of the background. Order is (y, x) for 2D images and (z, y, x) for 3D images.
+        Center of the background. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
     signal_center : Tuple(int)
-        Center of the signal. Order is (y, x) for 2D images and (z, y, x) for 3D images.
+        Center of the signal. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
     radius : int
         Width of the regions.
 
@@ -148,9 +147,9 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     Raises
     ------
     ValueError
-        If the input image is not 2D or 3D.
-        If the input center is not a tuple of integers.
-        If the input center is too close to the border.
+        If the input image is not 2D or 3D. \n
+        If the input center is not a tuple of integers. \n
+        If the input center is too close to the border. \n
         If the input radius is not an integer.
 
     Notes
@@ -158,7 +157,7 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     This implementation uses cubic regions to calculate the CNR. The calculation is based on the following formula:
 
     .. math::
-        CNR = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
+        cnr = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
 
@@ -177,19 +176,17 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         if not isinstance(center, int):
             raise ValueError("Signal center has to be a tuple of integers.")
         if center - radius < 0:  # check if center is too close to the border
-            raise ValueError(
-                "Signal center has to be at least the radius away from the border."
-            )
+            raise ValueError("Signal center has to be at least the radius away from the border.")
+        # todo: check center out of bounds
 
     for center in background_center:
         if not isinstance(center, int):
             raise ValueError("Background center has to be a tuple of integers.")
         if center - radius < 0:
-            raise ValueError(
-                "Background center has to be at least the radius away from the border."
-            )
+            raise ValueError("Background center has to be at least the radius away from the border.")
+        # todo: check center out of bounds
 
-    if not isinstance(radius, int):
+    if not isinstance(radius, int):   # todo: check for negative radius
         raise ValueError("Radius has to be an integer.")
 
     # Define regions
