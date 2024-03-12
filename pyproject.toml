@@ -1,6 +1,6 @@
 [project]
 name = "vIQA"
-version = "0.7.0"
+dynamic = ["version"]
 description = "A Python package for volumetric image quality assessment"
 authors = [
     { name = "Lukas Behammer", email = "lukas.behammer@fh-wels.at" },

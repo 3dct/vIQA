@@ -12,7 +12,16 @@ sys.path.insert(0, os.path.abspath('../../src'))
 project = 'vIQA'
 copyright = '2024, Lukas Behammer'
 author = 'Lukas Behammer'
-release = '0.7.0'
+
+with open("../../viqa/__init__.py") as f:
+    setup_lines = f.readlines()
+version = "vUndefined"
+for line in setup_lines:
+    if line.startswith("__version__"):
+        version = line.split("'")[1]
+        break
+
+release = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
