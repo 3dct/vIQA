@@ -20,8 +20,6 @@ The metrics used are:
   > [!NOTE]
   > can only be used for 2D images currently
 - Feature Similarity Index (FSIM) [^3]
-  > [!NOTE]
-  > can only be used for 2D images currently
 - Visual Information Fidelity in *pixel* domain (VIFp) [^4]
   > [!NOTE]
   > can only be used for 2D images currently
@@ -47,9 +45,9 @@ Overview
 |---------|-----------------------------------------------|------|-----------------------|---------------|--------------------|-----------|-----------|
 | PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             | $[0, \infty)$ | :heavy_check_mark: | :x:       | &mdash;   |
 | RMSE    | Root Mean Square Error                        | FR   | 3D native             | $[0, 1]$      | :heavy_check_mark: | :x:       | &mdash;   |
-| SSIM    | Structured Similarity                         | FR   | 3D native             | $[0, 1]$      | :x:                | :x:       | [^1]      |
+| SSIM    | Structured Similarity                         | FR   | 3D native             | $[0, 1]$      | :heavy_check_mark: | :x:       | [^1]      |
 | MS-SSIM | Multi-Scale Structural Similarity             | FR   | 2D                    |               | :x:                | :x:       | [^2]      |
-| FSIM    | Feature Similarity Index                      | FR   | 2D                    |               | :x:                | :x:       | [^3]      |
+| FSIM    | Feature Similarity Index                      | FR   | 3D native or slicing  |               | :x:                | :x:       | [^3]      |
 | VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 2D                    |               | :x:                | :x:       | [^4]      |
 | VSI     | Visual Saliency Index                         | FR   | 2D                    |               | :x:                | :x:       | [^5]      |
 | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            | $[0, \infty)$ | :heavy_check_mark: | :x:       | [^6]      |
@@ -217,7 +215,7 @@ psnr.print_score(decimals=2)
     - [x] Add documentation for psnr.py
     - [x] Add documentation for ssim.py
     - [ ] Add documentation for msssim.py
-    - [ ] Add documentation for fsim.py
+    - [x] Add documentation for fsim.py
     - [ ] Add documentation for vsi.py
     - [ ] Add documentation for vif.py
     - [x] Add documentation for mad.py
@@ -233,7 +231,7 @@ psnr.print_score(decimals=2)
 - [ ] Adapt to 3D
     - [x] SSIM
     - [ ] MSSSIM
-    - [ ] FSIM
+    - [x] FSIM
     - [ ] VSI
     - [ ] VIF
 - [ ] Validate metrics
