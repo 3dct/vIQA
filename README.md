@@ -17,20 +17,12 @@ The metrics used are:
 - Root Mean Square Error (RMSE)
 - Structured Similarity (SSIM) [^1]
 - Multi-Scale Structural Similarity (MS-SSIM) [^2]
-  > [!NOTE]
-  > can only be used for 2D images currently
 - Feature Similarity Index (FSIM) [^3]
 - Visual Information Fidelity in *pixel* domain (VIFp) [^4]
-  > [!NOTE]
-  > can only be used for 2D images currently
-  
   > [!CAUTION]
   > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
   > caution as further testing is required.
 - Visual Saliency Index (VSI) [^5]
-  > [!NOTE]
-  > can only be used for 2D images currently
-
   > [!WARNING]
   > The original metric supports RGB images only. This implementation can work with 
   > grayscale images by copying the luminance channel 3 times. 
