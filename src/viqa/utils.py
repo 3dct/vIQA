@@ -28,6 +28,7 @@ import re
 from typing import Tuple
 from warnings import warn
 
+import torch
 import numpy as np
 import scipy.fft as fft
 from torch import Tensor
@@ -744,3 +745,20 @@ def gabor_convolve(
             res[scale_n, orientation_n] = fft.ifftn(im_fft * filter_)
 
     return res
+
+def _check_chromatic(img_r, img_m, chromatic):
+    """Permute image based on dimensions and chromaticity."""
+    # check if chromatic
+    if chromatic is False:
+        if img_r.ndim == 3:
+            # 3D images
+            img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2)
+            img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2)
+        else:
+            # 2D images
+            img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0)
+            img_m_tensor = torch.tensor(img_m).unsqueeze(0).unsqueeze(0)
+    else:
+        img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
+        img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
+    return img_r_tensor, img_m_tensor
