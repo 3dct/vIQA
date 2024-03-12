@@ -44,6 +44,7 @@ from viqa.utils import (
     _to_float,
     gabor_convolve,
 )
+from . import statistics
 
 # Global preinitialized variables
 M = 0
@@ -582,7 +583,8 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     mu_org_p = np.mean(i_org_blocks, axis=(1, 2))
     std_err_p = np.std(i_err_blocks, axis=(1, 2), ddof=1)
 
-    std_org = _min_std(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
+    # std_org = _min_std(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
+    std_org = statistics.minstd(i_org, BLOCK_SIZE, STRIDE)
 
     mu_org = np.zeros(i_org.shape)
     std_err = np.zeros(i_err.shape)
@@ -706,15 +708,26 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     stats = np.zeros((M, N))
     for scale_n in range(scales_num):
         for orientation_n in range(orientations_num):
-            std_ref, skw_ref, krt_ref = _get_statistics(
+            # std_ref, skw_ref, krt_ref = _get_statistics(
+            #     np.abs(gabor_org[scale_n, orientation_n]),
+            #     block_size=BLOCK_SIZE,
+            #     stride=STRIDE,
+            # )
+            # std_dst, skw_dst, krt_dst = _get_statistics(
+            #     np.abs(gabor_dst[scale_n, orientation_n]),
+            #     block_size=BLOCK_SIZE,
+            #     stride=STRIDE,
+            # )
+
+            std_ref, skw_ref, krt_ref = statistics.getstatistics(
                 np.abs(gabor_org[scale_n, orientation_n]),
-                block_size=BLOCK_SIZE,
-                stride=STRIDE,
+                BLOCK_SIZE,
+                STRIDE,
             )
-            std_dst, skw_dst, krt_dst = _get_statistics(
+            std_dst, skw_dst, krt_dst = statistics.getstatistics(
                 np.abs(gabor_dst[scale_n, orientation_n]),
-                block_size=BLOCK_SIZE,
-                stride=STRIDE,
+                BLOCK_SIZE,
+                STRIDE,
             )
             # Combine statistics
             stats += weights[scale_n] * (
