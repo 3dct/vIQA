@@ -24,15 +24,17 @@ The metrics used are:
   > [!NOTE]
   > can only be used for 2D images currently
   
-  > [!WARNING]
+  > [!CAUTION]
   > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
   > caution as further testing is required.
 - Visual Saliency Index (VSI) [^5]
   > [!NOTE]
   > can only be used for 2D images currently
+
+  > [!WARNING]
+  > The original metric supports RGB images only. This implementation can work with 
+  > grayscale images by copying the luminance channel 3 times. 
 - Most Apparent Distortion (MAD) [^6]
-  > [!ATTENTION]
-  > The metric is tested, but not yet validated.
 - Gradient Similarity Measure (GSM) [^7]
   > [!CAUTION]
   > This metric is not yet tested. The metric should be only used for experimental purposes.
@@ -218,7 +220,7 @@ psnr.print_score(decimals=2)
     - [ ] Add documentation for msssim.py
     - [x] Add documentation for fsim.py
     - [ ] Add documentation for vsi.py
-    - [ ] Add documentation for vif.py
+    - [x] Add documentation for vif.py
     - [x] Add documentation for mad.py
     - [x] Add documentation for gsm.py
     - [ ] Add documentation for sff.py
@@ -234,8 +236,11 @@ psnr.print_score(decimals=2)
     - [ ] MSSSIM
     - [x] FSIM
     - [ ] VSI
-    - [ ] VIF
+    - [x] VIF
+- [ ] Add support for different data ranges
 - [ ] Validate metrics
+- [ ] Add color image support
+- [ ] Add batch support 
 
 <!-- ## Citation TODO: add citation instructions -->
 
