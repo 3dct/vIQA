@@ -50,17 +50,20 @@ class CNR(NoReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True.
+        Data range of the returned data in data loading. Is used for image loading when
+        ``normalize`` is True.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
-        If True, the input images are expected to be given as path to a folder containing the images.
+        If True, the input images are expected to be given as path to a folder
+        containing the images.
 
         .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to :py:func:`.viqa.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -86,8 +89,8 @@ class CNR(NoReferenceMetricsInterface):
         img : np.ndarray or Tensor or str or os.PathLike
             Image to calculate score of.
         **kwargs : optional
-            Additional parameters for CNR calculation. The keyword arguments are passed to
-            :py:func:`.viqa.nr_metrics.cnr.contrast_to_noise_ratio`.
+            Additional parameters for CNR calculation. The keyword arguments are passed
+            to :py:func:`.viqa.nr_metrics.cnr.contrast_to_noise_ratio`.
 
         Returns
         -------
@@ -133,9 +136,11 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     background_center : Tuple(int)
-        Center of the background. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+        Center of the background. Order is ``(y, x)`` for 2D images and ``(z, y, x)``
+        for 3D images.
     signal_center : Tuple(int)
-        Center of the signal. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+        Center of the signal. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for
+        3D images.
     radius : int
         Width of the regions.
 
@@ -154,7 +159,8 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
 
     Notes
     -----
-    This implementation uses cubic regions to calculate the CNR. The calculation is based on the following formula:
+    This implementation uses cubic regions to calculate the CNR. The calculation is
+    based on the following formula:
 
     .. math::
         cnr = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
@@ -162,16 +168,17 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
 
     .. important::
-        The background region should be chosen in a homogeneous area, while the signal region should be chosen in an
-        area with a high contrast.
+        The background region should be chosen in a homogeneous area, while the signal
+        region should be chosen in an area with a high contrast.
 
     References
     ----------
-    .. [1] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image quality in computed
-           radiographic (CR) imaging systems. Medical Imaging 2010: Physics of Medical Imaging, 7622, 76224Q.
-           https://doi.org/10.1117/12.844640
+    .. [1] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of
+        image quality in computed radiographic (CR) imaging systems. Medical Imaging
+        2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
     """
-    # check if signal_center and background_center are tuples of integers and radius is an integer
+    # check if signal_center and background_center are tuples of integers and radius is
+    # an integer
     for center in signal_center:
         if not isinstance(center, int):
             raise ValueError("Signal center has to be a tuple of integers.")

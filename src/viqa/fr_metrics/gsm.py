@@ -66,18 +66,20 @@ class GSM(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True and for
-        the GSM calculation.
+        Data range of the returned data in data loading. Is used for image loading when
+        ``normalize`` is True and for the GSM calculation.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default=False
-        If True, the input images are expected to be given as path to a folder containing the images.
+        If True, the input images are expected to be given as path to a folder
+        containing the images.
 
         .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to :py:func:`.viqa.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -94,21 +96,24 @@ class GSM(FullReferenceMetricsInterface):
 
     Warnings
     --------
-    This metric is not yet tested. The metric should be only used for experimental purposes.
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
 
     .. todo:: test
 
     Notes
     -----
-    GSM is a full reference IQA metric based on gradient similarity. It combines luminosity information and
-    contrast-structural information. For further details, see [1].
-    ``data_range`` for image loading is also used for the GSM calculation and therefore must be set.
-    The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
+    GSM is a full reference IQA metric based on gradient similarity. It combines
+    luminosity information and contrast-structural information. For further details,
+    see [1]. ``data_range`` for image loading is also used for the GSM calculation and
+    therefore must be set. The parameter is set through the constructor of the class and
+    is passed to :py:meth:`score`.
 
     References
     ----------
-    .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE
-           Transactions on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
+    .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on
+        gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512.
+        https://doi.org/10.1109/TIP.2011.2175935
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -122,9 +127,10 @@ class GSM(FullReferenceMetricsInterface):
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the gradient similarity (GSM) between two images.
 
-        The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
-        full volume or for a given slice of the image by setting ``dim`` to the desired dimension and
-        ``im_slice`` to the desired slice number.
+        The metric can be calculated for 2D and 3D images. If the images are 3D, the
+        metric can be calculated for the full volume or for a given slice of the image
+        by setting ``dim`` to the desired dimension and ``im_slice`` to the desired
+        slice number.
 
         Parameters
         ----------
@@ -133,12 +139,13 @@ class GSM(FullReferenceMetricsInterface):
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
         dim : {0, 1, 2}, optional
-            GSM for 3D images is calculated as mean over all slices of the given dimension.
+            GSM for 3D images is calculated as mean over all slices of the given
+            dimension.
         im_slice : int, optional
             If given, GSM is calculated only for the given slice of the 3D image.
         **kwargs : optional
-            Additional parameters for GSM calculation. The keyword arguments are passed to
-            :py:func:`.viqa.fr_metrics.gsm.gradient_similarity_3d` or
+            Additional parameters for GSM calculation. The keyword arguments are passed
+            to :py:func:`.viqa.fr_metrics.gsm.gradient_similarity_3d` or
             :py:func:`.viqa.fr_metrics.gsm.gradient_similarity`.
 
         Returns
@@ -157,26 +164,28 @@ class GSM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If ``dim`` or ``im_slice`` is given for 2D images.
-            If ``im_slice`` is not given, but ``dim`` is given for 3D images, GSM is calculated for the full volume.
+            If ``dim`` or ``im_slice`` is given for 2D images. \n
+            If ``im_slice`` is not given, but ``dim`` is given for 3D images, GSM is
+            calculated for the full volume.
 
         Notes
         -----
-        For 3D images if ``dim`` is given, but ``im_slice`` is not, the GSM is calculated for the full volume of the 3D
-        image. This is implemented as `mean` of the GSM values of all slices of the given dimension. If ``dim`` is given
-        and ``im_slice`` is given, the GSM is calculated for the given slice of the given dimension (represents a 2D
-        metric of the given slice).
-        This implementation is adapted for 3D images if ``experimental=True``. Therefore, 12 kernels are used
-        instead of the original 4.
-        The gradient is calculated by
+        For 3D images if ``dim`` is given, but ``im_slice`` is not, the GSM is
+        calculated for the full volume of the 3D image. This is implemented as `mean` of
+        the GSM values of all slices of the given dimension. If ``dim`` is given and
+        ``im_slice`` is given,  the GSM is calculated for the given slice of the given
+        dimension (represents a 2D metric of the given slice). This implementation is
+        adapted for 3D images if ``experimental=True``. Therefore, 12 kernels are used
+        instead of the original 4. The gradient is calculated by
 
         .. math::
 
-            \\max_{n=1,2,...,N} \\lbrace \\pmb{I} * \\mathcal{K}_{n} \\rbrace \\text{ instead of } \\max_{n=1,2,...,N}
-            \\lbrace \\operatorname{mean2}(\\lvert \\pmb{X} \\cdot \\mathcal{K}_{n} \\rvert) \\rbrace
+            \\max_{n=1,2,...,N} \\lbrace \\pmb{I} * \\mathcal{K}_{n} \\rbrace
+            \\text{ instead of } \\max_{n=1,2,...,N} \\lbrace \\operatorname{mean2}
+            (\\lvert \\pmb{X} \\cdot \\mathcal{K}_{n} \\rvert) \\rbrace
 
-        with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the Kernel `n` and
-        :math:`\\pmb{X}` denoting an image block.
+        with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the
+        Kernel `n` and :math:`\\pmb{X}` denoting an image block.
         """
         img_r, img_m = _check_imgs(
             img_r,
@@ -281,15 +290,16 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     dim : {0, 1, 2}, default=2
         Dimension on which the slices are iterated.
     experimental : bool, default=False
-        If True, calculate GSM for the full volume with experimental 3D kernels. If False, calculate GSM for all slices
-        of the given dimension and calculate mean over all single slice values.
+        If True, calculate GSM for the full volume with experimental 3D kernels. If
+        False, calculate GSM for all slices of the given dimension and calculate mean
+        over all single slice values.
 
         .. warning::
             This is experimental and the resulting values are not validated.
 
     **kwargs : optional
-            Additional parameters for GSM calculation. The keyword arguments are passed to
-            :py:func:`viqa.fr_metrics.gsm.gradient_similarity`.
+            Additional parameters for GSM calculation. The keyword arguments are passed
+            to :py:func:`viqa.fr_metrics.gsm.gradient_similarity`.
 
     Returns
     -------
@@ -303,7 +313,8 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
 
     Warnings
     --------
-    This metric is not yet tested. The metric should be only used for experimental purposes.
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
 
     .. todo:: test
 
@@ -313,8 +324,9 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
 
     References
     ----------
-    .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE
-           Transactions on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
+    .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on
+        gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512.
+        https://doi.org/10.1109/TIP.2011.2175935
     """
     if not experimental:
         x, y, z = img_r.shape  # get image dimensions
@@ -361,10 +373,12 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     data_range : {1, 255, 65535}
         Data range of the input images
     c : int, default=200
-        Constant as masking parameter. Typically, :math:`200 \\leq c \\leq 1000`. See [1] for details.
+        Constant as masking parameter. Typically, :math:`200 \\leq c \\leq 1000`. See
+        [1] for details.
     p : float, default=0.1
-        Constant for weighting between luminance and structure similarity. Can be :math:`0 \\leq p \\leq 1`. Higher `p`
-        means more accentuation of luminance. Should be :math:`p \\ll 0.5`. See [1] for details.
+        Constant for weighting between luminance and structure similarity. Can be
+        :math:`0 \\leq p \\leq 1`. Higher `p` means more accentuation of luminance.
+        Should be :math:`p \\ll 0.5`. See [1] for details.
 
     Returns
     -------
@@ -378,7 +392,8 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
 
     Warnings
     --------
-    This metric is not yet tested. The metric should be only used for experimental purposes.
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
 
     .. todo:: test
 
@@ -388,8 +403,9 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
 
     References
     ----------
-    .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE
-           Transactions on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
+    .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on
+        gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512.
+        https://doi.org/10.1109/TIP.2011.2175935
     """
     gradients_r = []
     gradients_m = []

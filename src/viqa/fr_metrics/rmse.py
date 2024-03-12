@@ -63,17 +63,20 @@ class RMSE(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
-        Data range of the returned data in data loading. Can be omitted if ``normalize`` is False.
+        Data range of the returned data in data loading. Can be omitted if ``normalize``
+        is False.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
-        If True, the input images are expected to be given as path to a folder containing the images.
+        If True, the input images are expected to be given as path to a folder
+        containing the images.
 
         .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
