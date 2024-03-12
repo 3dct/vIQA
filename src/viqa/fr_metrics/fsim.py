@@ -23,7 +23,6 @@ Examples
 
 from warnings import warn
 
-import torch
 from piq import fsim
 
 from viqa._metrics import FullReferenceMetricsInterface
@@ -86,6 +85,61 @@ class FSIM(FullReferenceMetricsInterface):
         )
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
+        """Calculate the FSIM score between two images.
+
+        The metric can be calculated for 2D and 3D images. If the images are 3D, the
+        metric can be calculated for the full volume or for a given slice of the image
+        by setting ``dim`` to the desired dimension and ``im_slice`` to the desired
+        slice number.
+
+        Parameters
+        ----------
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
+        img_m : np.ndarray or Tensor or str or os.PathLike
+            Distorted image to calculate score of.
+        dim : {0, 1, 2}, optional
+            FSIM for 3D images is calculated as mean over all slices of the given
+            dimension.
+        im_slice : int, optional
+            If given, FSIM is calculated only for the given slice of the 3D image.
+        **kwargs : optional
+            Additional parameters for FSIM calculation. The keyword arguments are passed
+            to :py:func:`piq.fsim`.
+
+            .. seealso::
+                For more information on the parameters, see the documentation of
+                `piq.fsim<https://piq.readthedocs.io/en/latest/functions.html#feature
+                -similarity-index-measure-fsim>`_.
+
+        Returns
+        -------
+        score_val : float
+            FSIM score value.
+
+        Raises
+        ------
+        ValueError
+            If invalid dimension given in ``dim``. \n
+            If images are neither 2D nor 3D. \n
+            If images are 3D, but dim is not given. \n
+            If ``im_slice`` is given, but not an integer.
+
+        Warns
+        -----
+        RuntimeWarning
+            If ``dim`` or ``im_slice`` is given for 2D images. \n
+            If ``im_slice`` is not given, but ``dim`` is given for 3D images, FSIM is
+            calculated for the full volume.
+
+        Notes
+        -----
+        For 3D images if ``dim`` is given, but ``im_slice`` is not, the FSIM is
+        calculated for the full volume of the 3D image. This is implemented as `mean` of
+        the FSIM values of all slices of the given dimension. If ``dim`` is given and
+        ``im_slice`` is given,  the FSIM is calculated for the given slice of the given
+        dimension (represents a 2D metric of the given slice).
+        """
         img_r, img_m = _check_imgs(
             img_r,
             img_m,
