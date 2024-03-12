@@ -147,9 +147,9 @@ def signal_to_noise_ratio(img, signal_center, radius):
     Raises
     ------
     ValueError
-        If the center is not a tuple of integers.
-        If center is too close to the border.
-        If the radius is not an integer.
+        If the center is not a tuple of integers. \n
+        If center is too close to the border. \n
+        If the radius is not an integer. \n
         If the image is not 2D or 3D.
 
     Notes
@@ -157,9 +157,9 @@ def signal_to_noise_ratio(img, signal_center, radius):
     This implementation uses a cubic region to calculate the SNR. The calculation is based on the following formula:
 
     .. math::
-        snr = \frac{\mu}{\sigma}
+        snr = \\frac{\\mu}{\\sigma}
 
-    where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.
+    where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
 
     # check if signal_center is a tuple of integers and radius is an integer
@@ -168,8 +168,9 @@ def signal_to_noise_ratio(img, signal_center, radius):
             raise ValueError("Center has to be a tuple of integers.")
         if center - radius < 0:  # check if center is too close to the border
             raise ValueError("Center has to be at least the radius away from the border.")
+        # todo: check center out of bounds
 
-    if not isinstance(radius, int):
+    if not isinstance(radius, int):  # todo: check for negative radius
         raise ValueError("Radius has to be an integer.")
 
     # Define regions

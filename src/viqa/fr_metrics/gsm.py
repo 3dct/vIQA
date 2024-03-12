@@ -117,7 +117,7 @@ class GSM(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
-        r"""Calculate the gradient similarity (GSM) between two images.
+        """Calculate the gradient similarity (GSM) between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the metric can be calculated for the
         full volume or for a given slice of the image by setting ``dim`` to the desired dimension and
@@ -146,9 +146,9 @@ class GSM(FullReferenceMetricsInterface):
         Raises
         ------
         ValueError
-            If invalid dimension given in ``dim``.
-            If images are neither 2D nor 3D.
-            If images are 3D, but dim is not given.
+            If invalid dimension given in ``dim``. \n
+            If images are neither 2D nor 3D. \n
+            If images are 3D, but dim is not given. \n
             If ``im_slice`` is given, but not an integer.
 
         Warns
@@ -169,11 +169,11 @@ class GSM(FullReferenceMetricsInterface):
 
         .. math::
 
-            \max_{n=1,2,...,N} \lbrace \pmb{I} * \mathcal{K}_{n} \rbrace \text{ instead of } \max_{n=1,2,...,N}
-            \lbrace \operatorname{mean2}(\lvert \pmb{X} \cdot \mathcal{K}_{n} \rvert) \rbrace
+            \\max_{n=1,2,...,N} \\lbrace \\pmb{I} * \\mathcal{K}_{n} \\rbrace \\text{ instead of } \\max_{n=1,2,...,N}
+            \\lbrace \\operatorname{mean2}(\\lvert \\pmb{X} \\cdot \\mathcal{K}_{n} \\rvert) \\rbrace
 
-        with :math:`\pmb{I}` denoting the Image, :math:`\mathcal{K}_{n}` denoting the Kernel `n` and
-        :math:`\pmb{X}` denoting an image block.
+        with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the Kernel `n` and
+        :math:`\\pmb{X}` denoting an image block.
         """
         img_r, img_m = _check_imgs(
             img_r,
@@ -337,10 +337,10 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     data_range : {1, 255, 65535}
         Data range of the input images
     c : int, default=200
-        Constant as masking parameter. Typically, :math:`200 \leq c \leq 1000`. See [1] for details.
+        Constant as masking parameter. Typically, :math:`200 \\leq c \\leq 1000`. See [1] for details.
     p : float, default=0.1
-        Constant for weighting between luminance and structure similarity. Can be :math:`0 \leq p \leq 1`. Higher ``p``
-        means more accentuation of luminance. Should be :math:`p \ll 0.5`. See [1] for details.
+        Constant for weighting between luminance and structure similarity. Can be :math:`0 \\leq p \\leq 1`. Higher `p`
+        means more accentuation of luminance. Should be :math:`p \\ll 0.5`. See [1] for details.
 
     Returns
     -------

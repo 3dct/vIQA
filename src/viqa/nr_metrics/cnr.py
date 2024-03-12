@@ -148,9 +148,9 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     Raises
     ------
     ValueError
-        If the input image is not 2D or 3D.
-        If the input center is not a tuple of integers.
-        If the input center is too close to the border.
+        If the input image is not 2D or 3D. \n
+        If the input center is not a tuple of integers. \n
+        If the input center is too close to the border. \n
         If the input radius is not an integer.
 
     Notes
@@ -158,9 +158,9 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     This implementation uses cubic regions to calculate the CNR. The calculation is based on the following formula:
 
     .. math::
-        cnr = \frac{\mu_{signal} - \mu_{background}}{\sigma_{background}}
+        cnr = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
 
-    where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.
+    where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
 
     .. important::
         The background region should be chosen in a homogeneous area, while the signal region should be chosen in an
@@ -179,14 +179,16 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
             raise ValueError("Signal center has to be a tuple of integers.")
         if center - radius < 0:  # check if center is too close to the border
             raise ValueError("Signal center has to be at least the radius away from the border.")
+        # todo: check center out of bounds
 
     for center in background_center:
         if not isinstance(center, int):
             raise ValueError("Background center has to be a tuple of integers.")
         if center - radius < 0:
             raise ValueError("Background center has to be at least the radius away from the border.")
+        # todo: check center out of bounds
 
-    if not isinstance(radius, int):
+    if not isinstance(radius, int):   # todo: check for negative radius
         raise ValueError("Radius has to be an integer.")
 
     # Define regions
