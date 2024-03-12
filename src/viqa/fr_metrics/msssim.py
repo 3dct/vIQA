@@ -1,29 +1,154 @@
-import torch
+"""Module for calculating the multiscale structural similarity index (MS-SSIM) between
+two images.
+
+Examples
+--------
+    .. todo:: Add examples
+
+"""
+
+# Authors
+# -------
+# Author: Lukas Behammer
+# Research Center Wels
+# University of Applied Sciences Upper Austria, 2023
+# CT Research Group
+#
+# Modifications
+# -------------
+# Original code, 2024, Lukas Behammer
+#
+# License
+# -------
+# BSD-3-Clause License
+
+from warnings import warn
+
 from piq import multi_scale_ssim
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs
+from viqa.utils import _check_imgs, _check_chromatic
 
 
 class MSSSIM(FullReferenceMetricsInterface):
-    """
-    Calculates the multiscale structural similarity index (MS-SSIM) between two images.
+    """Calculate the multiscale structural similarity index (MS-SSIM) between two
+    images.
+
+    Attributes
+    ----------
+    score_val : float
+        MS-SSIM score value of the last calculation.
+
+    Parameters
+    ----------
+    data_range : {1, 255, 65535}, default=255
+        Data range of the returned data in data loading. Is used for image loading when
+        ``normalize`` is True and for the MS-SSIM calculation.
+    normalize : bool, default=False
+        If True, the input images are normalized to the ``data_range`` argument.
+    batch : bool, default=False
+        If True, the input images are expected to be given as path to a folder
+        containing the images.
+
+        .. note::
+            Currently not supported. Added for later implementation.
+
+    **kwargs : optional
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`.viqa.utils.load_data`.
+
+    Other Parameters
+    ----------------
+    chromatic : bool, default False
+        If True, the input images are expected to be RGB images.
+
+        .. note::
+            Currently not supported.
+
+        .. todo::
+            Add pass to (... needs tensors with permutated channels, _check_chromatic
+            performs this task)
+
+    Raises
+    ------
+    ValueError
+        If ``data_range`` is not set.
+
+    Notes
+    -----
+    For more information on the MS-SSIM metric, see [1].
+
+    References
+    ----------
+    [1]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
+    similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on
+    Signals, Systems & Computers, 1298–1402. https://doi.org/10.1109/ACSSC.2003.1292216
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
-        """Constructor method"""
+        """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
 
-    def score(self, img_r, img_m, **kwargs):
+    def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """
-        Calculates the multiscale structural similarity index (MS-SSIM) between two images.
-        :param img_r: Reference image
-        :param img_m: Modified image
-        :return: Score value
+        Calculate the multiscale structural similarity index (MS-SSIM) between two
+        images.
+
+        Parameters
+        ----------
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
+        img_m : np.ndarray or Tensor or str or os.PathLike
+            Distorted image to calculate score of.
+        dim : {0, 1, 2}, optional
+            MS-SSIM for 3D images is calculated as mean over all slices of the given
+            dimension.
+        im_slice : int, optional
+            If given, MS-SSIM is calculated only for the given slice of the 3D image.
+        **kwargs : optional
+            Additional parameters for MS-SSIM calculation. The keyword arguments are passed
+            to :py:func:`piq.multi_scale_ssim`.
+
+            .. seealso::
+                For more information on the parameters, see the documentation of
+                `piq.multi_scale_ssim<https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_.
+
+        Other Parameters
+        ----------------
+
+        .. todo:: Add other parameters
+
+        Returns
+        -------
+        score_val : float
+            MS-SSIM score value.
+
+        Raises
+        ------
+        ValueError
+            If invalid dimension given in ``dim``. \n
+            If images are neither 2D nor 3D. \n
+            If images are 3D, but dim is not given. \n
+            If ``im_slice`` is given, but not an integer.
+
+        Warns
+        -----
+        RuntimeWarning
+            If ``dim`` or ``im_slice`` is given for 2D images. \n
+            If ``im_slice`` is not given, but ``dim`` is given for 3D images, MS-SSIM is
+            calculated for the full volume.
+
+        Notes
+        -----
+        For 3D images if ``dim`` is given, but ``im_slice`` is not, the MS-SSIM is
+        calculated for the full volume of the 3D image. This is implemented as `mean` of
+        the MS-SSIM values of all slices of the given dimension. If ``dim`` is given and
+        ``im_slice`` is given,  the MS-SSIM is calculated for the given slice of the given
+        dimension (represents a 2D metric of the given slice).
         """
         img_r, img_m = _check_imgs(
             img_r,
@@ -32,24 +157,95 @@ class MSSSIM(FullReferenceMetricsInterface):
             normalize=self._parameters["normalize"],
             batch=self._parameters["batch"],
         )
-        # check if chromatic
-        if self._parameters["chromatic"] is False:
-            # 3D images
-            # img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2)
-            # img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2)
-            # 2D images
-            img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0)
-            img_m_tensor = torch.tensor(img_m).unsqueeze(0).unsqueeze(0)
+        
+        if img_r.ndim == 3:
+            if (
+                    dim is not None and type(im_slice) is int
+            ):  # if dim and im_slice are given
+                # Calculate MS-SSIM for given slice of given dimension
+                match dim:
+                    case 0:
+                        img_r_tensor, img_m_tensor = _check_chromatic(
+                            img_r[im_slice, :, :],
+                            img_m[im_slice, :, :],
+                            self._parameters["chromatic"],
+                        )
+                        score_val = multi_scale_ssim(
+                            img_r_tensor,
+                            img_m_tensor,
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
+                        )
+                    case 1:
+                        img_r_tensor, img_m_tensor = _check_chromatic(
+                            img_r[:, im_slice, :],
+                            img_m[:, im_slice, :],
+                            self._parameters["chromatic"],
+                        )
+                        score_val = multi_scale_ssim(
+                            img_r_tensor,
+                            img_m_tensor,
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
+                        )
+                    case 2:
+                        img_r_tensor, img_m_tensor = _check_chromatic(
+                            img_r[:, :, im_slice],
+                            img_m[:, :, im_slice],
+                            self._parameters["chromatic"],
+                        )
+                        score_val = multi_scale_ssim(
+                            img_r_tensor,
+                            img_m_tensor,
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
+                        )
+                    case _:
+                        raise ValueError(
+                            "Invalid dim value. Must be integer of 0, 1 or 2."
+                        )
+            elif (
+                    dim is not None and im_slice is None
+            ):  # if dim is given, but im_slice is not, calculate MS-SSIM for full volume
+                warn(
+                    "im_slice is not given. Calculating MS-SSIM for full volume.",
+                    RuntimeWarning,
+                )
+                img_r_tensor, img_m_tensor = _check_chromatic(
+                    img_r,
+                    img_m,
+                    self._parameters["chromatic"],
+                )
+                score_val = multi_scale_ssim(
+                    img_r_tensor,
+                    img_m_tensor,
+                    data_range=self._parameters["data_range"],
+                    **kwargs,
+                )
+            else:
+                if type(im_slice) is not int or None:
+                    raise ValueError("im_slice must be an integer.")
+                raise ValueError(
+                    "If images are 3D, dim and im_slice (optional) must be given."
+                )
+        elif img_r.ndim == 2:
+            if dim or im_slice:
+                warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
+            # Calculate MS-SSIM for 2D images
+            img_r_tensor, img_m_tensor = _check_chromatic(
+                img_r,
+                img_m,
+                self._parameters["chromatic"],
+            )
+            score_val = multi_scale_ssim(
+                img_r_tensor,
+                img_m_tensor,
+                data_range=self._parameters["data_range"],
+                **kwargs,
+            )
         else:
-            img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
-            img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
+            raise ValueError("Images must be 2D or 3D.")
 
-        score_val = multi_scale_ssim(
-            img_r_tensor,
-            img_m_tensor,
-            data_range=self._parameters["data_range"],
-            **kwargs,
-        )
         self.score_val = float(score_val)
         return score_val
 
