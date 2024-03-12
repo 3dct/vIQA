@@ -48,9 +48,9 @@ Overview
 | PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | &mdash;   |
 | RMSE    | Root Mean Square Error                        | FR   | 3D native             |                         | $[0, 1]$           | :heavy_check_mark: | :x:       | &mdash;   |
 | SSIM    | Structured Similarity                         | FR   | 3D native             |                         | $[0, 1]$           | :heavy_check_mark: | :x:       | [^1]      |
-| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 2D                    |                         | $[0, 1]$           | :x:                | :x:       | [^2]      |
+| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D                    | :question:              | $[0, 1]$           | :x:                | :x:       | [^2]      |
 | FSIM    | Feature Similarity Index                      | FR   | 3D                    | :heavy_check_mark:      | $[0, 1]$           | :x:                | :x:       | [^3]      |
-| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D                    |                         | $[0, \infty)$ [^a] | :x:                | :x:       | [^4]      |
+| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D                    | :question:              | $[0, \infty)$ [^a] | :x:                | :x:       | [^4]      |
 | VSI     | Visual Saliency Index                         | FR   | 3D                    | :heavy_check_mark: [^b] | $[0, 1]$           | :x:                | :x:       | [^5]      |
 | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | [^6]      |
 | GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$           | :x:                | :x:       | [^7]      |
@@ -219,9 +219,9 @@ psnr.print_score(decimals=2)
     - [x] Add documentation for rmse.py
     - [x] Add documentation for psnr.py
     - [x] Add documentation for ssim.py
-    - [ ] Add documentation for msssim.py
+    - [x] Add documentation for msssim.py
     - [x] Add documentation for fsim.py
-    - [ ] Add documentation for vsi.py
+    - [x] Add documentation for vsi.py
     - [x] Add documentation for vif.py
     - [x] Add documentation for mad.py
     - [x] Add documentation for gsm.py
@@ -235,9 +235,9 @@ psnr.print_score(decimals=2)
     - [x] Add documentation for utils.py
 - [ ] Adapt to 3D
     - [x] SSIM
-    - [ ] MSSSIM
+    - [x] MSSSIM
     - [x] FSIM
-    - [ ] VSI
+    - [x] VSI
     - [x] VIF
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
