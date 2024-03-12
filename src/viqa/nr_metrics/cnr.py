@@ -163,7 +163,7 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     based on the following formula:
 
     .. math::
-        cnr = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
+        CNR = \\frac{\\mu_{signal} - \\mu_{background}}{\\sigma_{background}}
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
 

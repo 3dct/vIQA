@@ -69,6 +69,13 @@ class FSIM(FullReferenceMetricsInterface):
     ValueError
         If ``data_range`` is not set.
 
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
+
+    .. todo:: test
+
     Notes
     -----
     For more information on the FSIM metric, see [1].
@@ -109,16 +116,17 @@ class FSIM(FullReferenceMetricsInterface):
             If given, FSIM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for FSIM calculation. The keyword arguments are passed
-            to :py:func:`piq.fsim`.
+            to ``piq.fsim``.
 
             .. seealso::
                 For more information on the parameters, see the documentation of
-                `piq.fsim<https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
+                `piq.fsim
+                <https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
 
         Other Parameters
         ----------------
 
-        .. todo:: Add other parameters
+            .. todo:: Add other parameters
 
         Returns
         -------

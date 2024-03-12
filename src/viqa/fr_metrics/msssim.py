@@ -74,6 +74,13 @@ class MSSSIM(FullReferenceMetricsInterface):
     ValueError
         If ``data_range`` is not set.
 
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
+
+    .. todo:: test
+
     Notes
     -----
     For more information on the MS-SSIM metric, see [1].
@@ -111,16 +118,17 @@ class MSSSIM(FullReferenceMetricsInterface):
             If given, MS-SSIM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MS-SSIM calculation. The keyword arguments are passed
-            to :py:func:`piq.multi_scale_ssim`.
+            to ``piq.multi_scale_ssim``.
 
             .. seealso::
                 For more information on the parameters, see the documentation of
-                `piq.multi_scale_ssim<https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_.
+                `piq.multi_scale_ssim
+                <https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_.
 
         Other Parameters
         ----------------
 
-        .. todo:: Add other parameters
+            .. todo:: Add other parameters
 
         Returns
         -------

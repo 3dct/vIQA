@@ -69,13 +69,20 @@ class VSI(FullReferenceMetricsInterface):
     ValueError
         If ``data_range`` is not set.
 
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
+
+    .. todo:: test
+
     Notes
     -----
     For more information on the VSI metric, see [1].
 
-        .. note::
-            The original metric supports RGB images only. This implementation can
-            work with grayscale images by copying the luminance channel 3 times.
+    .. note::
+        The original metric supports RGB images only. This implementation can
+        work with grayscale images by copying the luminance channel 3 times.
 
 
     References
@@ -114,16 +121,17 @@ class VSI(FullReferenceMetricsInterface):
             If given, VSI is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for VSI calculation. The keyword arguments are passed
-            to :py:func:`piq.vsi`.
+            to ``piq.vsi``.
 
             .. seealso::
                 For more information on the parameters, see the documentation of
-                `piq.vsi<https://piq.readthedocs.io/en/latest/functions.html#visual-saliency-induced-index-vsi>`_.
+                `piq.vsi
+                <https://piq.readthedocs.io/en/latest/functions.html#visual-saliency-induced-index-vsi>`_.
 
         Other Parameters
         ----------------
 
-        .. todo:: Add other parameters
+            .. todo:: Add other parameters
 
         Returns
         -------

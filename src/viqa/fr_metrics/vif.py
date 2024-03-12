@@ -74,6 +74,13 @@ class VIFp(FullReferenceMetricsInterface):
     ValueError
         If ``data_range`` is not set.
 
+    Warnings
+    --------
+    This metric is not yet tested. The metric should be only used for experimental
+    purposes.
+
+    .. todo:: test
+
     Notes
     -----
     For more information on the VIFp metric, see [1].
@@ -111,16 +118,17 @@ class VIFp(FullReferenceMetricsInterface):
             If given, VIFp is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for VIFp calculation. The keyword arguments are passed
-            to :py:func:`piq.vif_p`.
+            to ``piq.vif_p``.
 
             .. seealso::
                 For more information on the parameters, see the documentation of
-                `piq.vif_p<https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
+                `piq.vif_p
+                <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
 
         Other Parameters
         ----------------
         
-        .. todo:: Add other parameters
+            .. todo:: Add other parameters
 
         Returns
         -------

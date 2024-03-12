@@ -160,7 +160,7 @@ def signal_to_noise_ratio(img, signal_center, radius):
     based on the following formula:
 
     .. math::
-        snr = \\frac{\\mu}{\\sigma}
+       SNR = \\frac{\\mu}{\\sigma}
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
