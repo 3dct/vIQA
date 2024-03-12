@@ -13,12 +13,12 @@ project = 'vIQA'
 copyright = '2024, Lukas Behammer'
 author = 'Lukas Behammer'
 
-with open("../../viqa/__init__.py") as f:
+with open("../../src/viqa/__init__.py") as f:
     setup_lines = f.readlines()
 version = "vUndefined"
 for line in setup_lines:
     if line.startswith("__version__"):
-        version = line.split("'")[1]
+        version = line.split('"')[1]
         break
 
 release = version

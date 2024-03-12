@@ -75,7 +75,7 @@ dev = [
 ]
 
 [tool.pdm.scripts]
-pre-commit = "pre-commit run --all-files"
+#pre-commit = "pre-commit run --all-files"
 #docs = "sphinx-apidoc -f -o docs/source src/viqa"
 #docs = "sphinx-build -M html docs/source docs/build"
 
