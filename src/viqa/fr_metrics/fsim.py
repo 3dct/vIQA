@@ -113,8 +113,7 @@ class FSIM(FullReferenceMetricsInterface):
 
             .. seealso::
                 For more information on the parameters, see the documentation of
-                `piq.fsim<https://piq.readthedocs.io/en/latest/functions.html#feature
-                -similarity-index-measure-fsim>`_.
+                `piq.fsim<https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
 
         Other Parameters
         ----------------

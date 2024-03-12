@@ -118,8 +118,7 @@ class VSI(FullReferenceMetricsInterface):
 
             .. seealso::
                 For more information on the parameters, see the documentation of
-                `piq.vsi<https://piq.readthedocs.io/en/latest/functions.html#visual-
-                saliency-induced-index-vsi>`_.
+                `piq.vsi<https://piq.readthedocs.io/en/latest/functions.html#visual-saliency-induced-index-vsi>`_.
 
         Other Parameters
         ----------------
