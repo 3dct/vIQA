@@ -102,10 +102,11 @@ class PSNR(FullReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
-
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m):
         """Calculate the peak signal-to-noise ratio (PSNR) between two images.
@@ -122,7 +123,6 @@ class PSNR(FullReferenceMetricsInterface):
         score_val : float
             PSNR score value.
         """
-
         # Check images
         img_r, img_m = _check_imgs(
             img_r,
@@ -154,7 +154,6 @@ class PSNR(FullReferenceMetricsInterface):
         RuntimeWarning
             If :py:attr:`score_val` is not available.
         """
-
         if self.score_val is not None:
             print("PSNR: {}".format(round(self.score_val, decimals)))
         else:

@@ -8,5 +8,4 @@ __author__ = "Lukas Behammer"
 
 from .fr_metrics import *
 from .nr_metrics import *
-from ._kernels import *
 from .utils import load_data, normalize_data

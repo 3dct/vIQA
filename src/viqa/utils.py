@@ -21,19 +21,21 @@ Examples
 # -------
 # TODO: add license
 
+import glob
 import math
 import os
 import re
-import glob
-from warnings import warn
 from typing import Tuple
+from warnings import warn
 
-from torch import Tensor
 import numpy as np
 import scipy.fft as fft
+from torch import Tensor
 
 
-def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.ndarray:
+def _load_data_from_disk(
+    file_dir: str | os.PathLike, file_name: str | os.PathLike
+) -> np.ndarray:
     """
     Load data from a .mhd file and its corresponding .raw file or a .raw file only and normalize it.
 
@@ -57,7 +59,6 @@ def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLi
         If no bit depth was found \n
         If no dimension was found
     """
-
     # Create file path components
     file_name_split = os.path.splitext(file_name)  # Split file name and extension
     file_name_head = file_name_split[0]  # File name without extension
@@ -153,9 +154,7 @@ def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str | os.PathLi
         )  # Read data file into numpy array according to data type
 
     # Reshape numpy array according to DimSize
-    img_arr = img_arr_orig.reshape(
-        *dim_size[::-1]
-    )
+    img_arr = img_arr_orig.reshape(*dim_size[::-1])
     return img_arr
 
 
@@ -217,7 +216,6 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
-
     img_arr: list[np.ndarray] | np.ndarray
     # Check input type
     match img:
@@ -258,7 +256,7 @@ def load_data(
     if not normalize and data_range is not None:
         warn(
             "Parameter data_range is set but normalize is False. Parameter data_range will be ignored.",
-            RuntimeWarning
+            RuntimeWarning,
         )
 
     # Normalize data
@@ -280,7 +278,6 @@ def _check_imgs(
     **kwargs,
 ) -> Tuple[list | np.ndarray, list | np.ndarray]:
     """Checks if two images are of the same type and shape."""
-
     # load images
     img_r_loaded = load_data(img_r, **kwargs)
     img_m_loaded = load_data(img_m, **kwargs)
@@ -298,14 +295,16 @@ def _check_imgs(
             "Image types do not match. img_r is of type {type(img_r_loaded)} and img_m is of type {type("
             "img_m_loaded)}"
         )
-    elif isinstance(img_r, list) and isinstance(img_m, list):  # If both images are lists or else
+    elif isinstance(img_r, list) and isinstance(
+        img_m, list
+    ):  # If both images are lists or else
         if len(img_r_loaded) != len(img_m_loaded):  # If number of images do not match
             raise ValueError(
                 "Number of images do not match. img_r has {len(img_r_loaded)} images and img_m has {len("
                 "img_m_loaded)} images"
             )
         for img_a, img_b in zip(
-            img_r_loaded, img_m_loaded
+            img_r_loaded, img_m_loaded, strict=False
         ):  # For each image in the list
             if img_a.dtype != img_b.dtype:  # If image types do not match
                 raise ValueError("Image types do not match")
@@ -468,15 +467,15 @@ def correlate_convolve_abs(
                         abs(
                             kernel
                             * origin[
-                                k:k + kernel_size,
-                                m:m + kernel_size,
-                                n:n + kernel_size,
+                                k : k + kernel_size,
+                                m : m + kernel_size,
+                                n : n + kernel_size,
                             ]
                         )
                     )
             elif ndim == 2:
                 res[k, m] = np.mean(
-                    abs(kernel * origin[k:k + kernel_size, m:m + kernel_size])
+                    abs(kernel * origin[k : k + kernel_size, m : m + kernel_size])
                 )
             else:
                 raise ValueError("Number of dimensions not supported")
@@ -506,7 +505,7 @@ def _extract_blocks(img, block_size, stride):
     m, n = img.shape
     for i in range(0, m - (block_size - 1), stride):
         for j in range(0, n - (block_size - 1), stride):
-            boxes.append(img[i:i + block_size, j:j + block_size])
+            boxes.append(img[i : i + block_size, j : j + block_size])
     return np.array(boxes)
 
 

@@ -23,34 +23,35 @@ Examples
 
 from warnings import warn
 
+import numpy as np
 import scipy.ndimage as ndi
 
+from viqa._kernels import *
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.utils import _check_imgs, _to_float
-from viqa._kernels import *
 
 # Load the kernels as constants
 KERNELS_3D = [
-            gsm_kernel_x(),
-            gsm_kernel_y(),
-            gsm_kernel_z(),
-            gsm_kernel_xy1(),
-            gsm_kernel_xy2(),
-            gsm_kernel_yz1(),
-            gsm_kernel_yz2(),
-            gsm_kernel_xz1(),
-            gsm_kernel_xz2(),
-            gsm_kernel_xyz1(),
-            gsm_kernel_xyz2(),
-            gsm_kernel_xyz3(),
-            gsm_kernel_xyz4(),
-        ]
+    gsm_kernel_x(),
+    gsm_kernel_y(),
+    gsm_kernel_z(),
+    gsm_kernel_xy1(),
+    gsm_kernel_xy2(),
+    gsm_kernel_yz1(),
+    gsm_kernel_yz2(),
+    gsm_kernel_xz1(),
+    gsm_kernel_xz2(),
+    gsm_kernel_xyz1(),
+    gsm_kernel_xyz2(),
+    gsm_kernel_xyz3(),
+    gsm_kernel_xyz4(),
+]
 
 KERNELS_2D = [
-            gsm_kernel_2d_x(),
-            gsm_kernel_2d_y(),
-            gsm_kernel_2d_xy(),
-            gsm_kernel_2d_yx(),
+    gsm_kernel_2d_x(),
+    gsm_kernel_2d_y(),
+    gsm_kernel_2d_xy(),
+    gsm_kernel_2d_yx(),
 ]
 
 
@@ -114,7 +115,9 @@ class GSM(FullReferenceMetricsInterface):
         """Constructor method"""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the gradient similarity (GSM) between two images.
@@ -184,41 +187,63 @@ class GSM(FullReferenceMetricsInterface):
         )
 
         if img_r.ndim == 3:
-            if dim is not None and type(im_slice) is int:  # if dim and im_slice are given
+            if (
+                dim is not None and type(im_slice) is int
+            ):  # if dim and im_slice are given
                 # Calculate GSM for given slice of given dimension
                 match dim:
                     case 0:
                         score_val = gradient_similarity(
-                            img_r[im_slice, :, :], img_m[im_slice, :, :],
-                            data_range=self._parameters["data_range"], **kwargs
+                            img_r[im_slice, :, :],
+                            img_m[im_slice, :, :],
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
                         )
                     case 1:
                         score_val = gradient_similarity(
-                            img_r[:, im_slice, :], img_m[:, im_slice, :],
-                            data_range=self._parameters["data_range"], **kwargs
+                            img_r[:, im_slice, :],
+                            img_m[:, im_slice, :],
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
                         )
                     case 2:
                         score_val = gradient_similarity(
-                            img_r[:, :, im_slice], img_m[:, :, im_slice],
-                            data_range=self._parameters["data_range"], **kwargs
+                            img_r[:, :, im_slice],
+                            img_m[:, :, im_slice],
+                            data_range=self._parameters["data_range"],
+                            **kwargs,
                         )
                     case _:
-                        raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
+                        raise ValueError(
+                            "Invalid dim value. Must be integer of 0, 1 or 2."
+                        )
             elif (
-                    dim is not None and im_slice is None
+                dim is not None and im_slice is None
             ):  # if dim is given, but im_slice is not, calculate GSM for full volume
-                warn("im_slice is not given. Calculating GSM for full volume.", RuntimeWarning)
-                score_val = gradient_similarity_3d(img_r, img_m, data_range=self._parameters["data_range"],
-                                                   dim=dim, **kwargs)
+                warn(
+                    "im_slice is not given. Calculating GSM for full volume.",
+                    RuntimeWarning,
+                )
+                score_val = gradient_similarity_3d(
+                    img_r,
+                    img_m,
+                    data_range=self._parameters["data_range"],
+                    dim=dim,
+                    **kwargs,
+                )
             else:
                 if type(im_slice) is not int or None:
                     raise ValueError("im_slice must be an integer.")
-                raise ValueError("If images are 3D, dim and im_slice (optional) must be given.")
+                raise ValueError(
+                    "If images are 3D, dim and im_slice (optional) must be given."
+                )
         elif img_r.ndim == 2:
             if dim or im_slice:
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate GSM for 2D images
-            score_val = gradient_similarity(img_r, img_m, data_range=self._parameters["data_range"], **kwargs)
+            score_val = gradient_similarity(
+                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+            )
         else:
             raise ValueError("Images must be 2D or 3D.")
 
@@ -238,7 +263,6 @@ class GSM(FullReferenceMetricsInterface):
         RuntimeWarning
             If :py:attr:`score_val` is not available.
         """
-
         if self.score_val is not None:
             print("GSM: {}".format(round(self.score_val, decimals)))
         else:
@@ -367,7 +391,6 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     .. [1] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on gradient similarity. IEEE
            Transactions on Image Processing, 21(4), 1500–1512. https://doi.org/10.1109/TIP.2011.2175935
     """
-
     gradients_r = []
     gradients_m = []
 

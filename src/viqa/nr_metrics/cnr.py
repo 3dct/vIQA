@@ -3,7 +3,7 @@
 Examples
 --------
     .. doctest-requires:: numpy
-        
+
         >>> import numpy as np
         >>> from viqa import CNR
         >>> img = np.random.rand(256, 256)
@@ -74,8 +74,9 @@ class CNR(NoReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
         """Constructor method"""
-
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img, **kwargs):
         """Calculate the contrast-to-noise ratio (CNR) between two images.
@@ -93,7 +94,6 @@ class CNR(NoReferenceMetricsInterface):
         score_val : float
             CNR score value.
         """
-
         # Check images
         img = load_data(
             img,
@@ -119,7 +119,6 @@ class CNR(NoReferenceMetricsInterface):
         RuntimeWarning
             If :py:attr:`score_val` is not available.
         """
-
         if self.score_val is not None:
             print("CNR: {}".format(round(self.score_val, decimals)))
         else:
@@ -172,7 +171,6 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
            radiographic (CR) imaging systems. Medical Imaging 2010: Physics of Medical Imaging, 7622, 76224Q.
            https://doi.org/10.1117/12.844640
     """
-
     # check if signal_center and background_center are tuples of integers and radius is an integer
     for center in signal_center:
         if not isinstance(center, int):
@@ -193,17 +191,25 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
 
     # Define regions
     if img.ndim == 2:  # 2D image
-        background = img[background_center[0] - radius:background_center[0] + radius,
-                         background_center[1] - radius:background_center[1] + radius]
-        signal = img[signal_center[0] - radius:signal_center[0] + radius,
-                     signal_center[1] - radius:signal_center[1] + radius]
+        background = img[
+            background_center[0] - radius : background_center[0] + radius,
+            background_center[1] - radius : background_center[1] + radius,
+        ]
+        signal = img[
+            signal_center[0] - radius : signal_center[0] + radius,
+            signal_center[1] - radius : signal_center[1] + radius,
+        ]
     elif img.ndim == 3:  # 3D image
-        background = img[background_center[0] - radius:background_center[0] + radius,
-                         background_center[1] - radius:background_center[1] + radius,
-                         background_center[2] - radius:background_center[2] + radius]
-        signal = img[signal_center[0] - radius:signal_center[0] + radius,
-                     signal_center[1] - radius:signal_center[1] + radius,
-                     signal_center[2] - radius:signal_center[2] + radius]
+        background = img[
+            background_center[0] - radius : background_center[0] + radius,
+            background_center[1] - radius : background_center[1] + radius,
+            background_center[2] - radius : background_center[2] + radius,
+        ]
+        signal = img[
+            signal_center[0] - radius : signal_center[0] + radius,
+            signal_center[1] - radius : signal_center[1] + radius,
+            signal_center[2] - radius : signal_center[2] + radius,
+        ]
     else:
         raise ValueError("Image has to be either 2D or 3D.")
 
