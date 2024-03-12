@@ -164,7 +164,9 @@ def signal_to_noise_ratio(img, signal_center, radius):
         if not isinstance(center, int):
             raise ValueError("Center has to be a tuple of integers.")
         if center - radius < 0:  # check if center is too close to the border
-            raise ValueError("Center has to be at least the radius away from the border.")
+            raise ValueError(
+                "Center has to be at least the radius away from the border."
+            )
         # todo: check center out of bounds
 
     if not isinstance(radius, int):  # todo: check for negative radius

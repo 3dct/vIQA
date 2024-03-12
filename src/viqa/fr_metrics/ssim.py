@@ -54,7 +54,7 @@ Examples
 from warnings import warn
 
 import numpy as np
-from scipy.ndimage import uniform_filter, gaussian_filter
+from scipy.ndimage import gaussian_filter, uniform_filter
 from skimage.util.arraycrop import crop
 
 from viqa._metrics import FullReferenceMetricsInterface
@@ -113,10 +113,11 @@ class SSIM(FullReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
         """Constructor method"""
-
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m, **kwargs):
         """Calculates the structural similarity index (SSIM) between two images.
@@ -315,10 +316,10 @@ def structural_similarity(
 
     if gaussian_weights:
         filter_func = gaussian_filter
-        filter_args = {'sigma': sigma, 'truncate': truncate, 'mode': mode, 'cval': cval}
+        filter_args = {"sigma": sigma, "truncate": truncate, "mode": mode, "cval": cval}
     else:
         filter_func = uniform_filter
-        filter_args = {'size': win_size, 'mode': mode, 'cval': cval}
+        filter_args = {"size": win_size, "mode": mode, "cval": cval}
 
     if not isinstance(alpha, int):
         alpha = int(alpha)
