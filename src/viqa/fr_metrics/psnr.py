@@ -63,18 +63,21 @@ class PSNR(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
-        Data range of the returned data in data loading. Is used for image loading when ``normalize`` is True and for the
+        Data range of the returned data in data loading. Is used for image loading when
+        ``normalize`` is True and for the
         PSNR calculation.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
-        If True, the input images are expected to be given as path to a folder containing the images.
+        If True, the input images are expected to be given as path to a folder
+        containing the images.
 
         .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`viqa.utils.load_data`.
 
     Raises
     ------
@@ -96,12 +99,13 @@ class PSNR(FullReferenceMetricsInterface):
 
     Notes
     -----
-    ``data_range`` for image loading is also used for the PSNR calculation and therefore must be set.
-    The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
+    ``data_range`` for image loading is also used for the PSNR calculation and therefore
+    must be set. The parameter is set through the constructor of the class and is passed
+    to :py:meth:`score`.
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
-        """Constructor method"""
+        """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
