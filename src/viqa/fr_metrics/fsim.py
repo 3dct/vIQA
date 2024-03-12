@@ -60,6 +60,10 @@ class FSIM(FullReferenceMetricsInterface):
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
 
+        .. todo::
+            Add pass to (... needs tensors with permutated channels, _check_chromatic
+            performs this task)
+
     Raises
     ------
     ValueError
@@ -111,6 +115,11 @@ class FSIM(FullReferenceMetricsInterface):
                 For more information on the parameters, see the documentation of
                 `piq.fsim<https://piq.readthedocs.io/en/latest/functions.html#feature
                 -similarity-index-measure-fsim>`_.
+
+        Other Parameters
+        ----------------
+
+        .. todo:: Add other parameters
 
         Returns
         -------
