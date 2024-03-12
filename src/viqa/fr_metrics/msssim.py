@@ -90,9 +90,10 @@ class MSSSIM(FullReferenceMetricsInterface):
 
     References
     ----------
-    [1]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
-    similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on
-    Signals, Systems & Computers, 1298–1402. https://doi.org/10.1109/ACSSC.2003.1292216
+    .. [1] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
+        similarity for image quality assessment. The Thirty-Seventh Asilomar Conference
+        on Signals, Systems & Computers, 1298–1402.
+        https://doi.org/10.1109/ACSSC.2003.1292216
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -127,7 +128,6 @@ class MSSSIM(FullReferenceMetricsInterface):
 
         Other Parameters
         ----------------
-
             kernel_size : int, default=11
                 The side-length of the sliding window used in comparison. Must be an odd
                 value.
@@ -145,7 +145,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                 results.
 
         .. seealso::
-            See :py:func:`~.viqa.fr_metrics.ssim.structural_similarity` for more
+            See :py:func:`.viqa.fr_metrics.ssim.structural_similarity` for more
             information
 
         Returns
@@ -178,10 +178,10 @@ class MSSSIM(FullReferenceMetricsInterface):
 
         References
         ----------
-        [1]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
-        similarity for image quality assessment. The Thirty-Seventh Asilomar Conference
-        on Signals, Systems & Computers, 1298–1402.
-        https://doi.org/10.1109/ACSSC.2003.1292216
+        .. [1] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale
+            structural similarity for image quality assessment. The Thirty-Seventh
+            Asilomar Conference on Signals, Systems & Computers, 1298–1402.
+            https://doi.org/10.1109/ACSSC.2003.1292216
         """
         img_r, img_m = _check_imgs(
             img_r,

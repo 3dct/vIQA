@@ -86,9 +86,9 @@ class VIFp(FullReferenceMetricsInterface):
 
     References
     ----------
-    [1]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality.
-    IEEE Transactions on Image Processing, 15(2), 430–444.
-    https://doi.org/10.1109/TIP.2005.859378
+    .. [1] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality.
+        IEEE Transactions on Image Processing, 15(2), 430–444.
+        https://doi.org/10.1109/TIP.2005.859378
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -124,7 +124,7 @@ class VIFp(FullReferenceMetricsInterface):
         Other Parameters
         ----------------
         sigma_n_sq : float, default=2.0
-            HVS model parameter (variance of the visual noise).
+            HVS model parameter (variance of the visual noise). See [1].
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
 
@@ -153,8 +153,14 @@ class VIFp(FullReferenceMetricsInterface):
         For 3D images if ``dim`` is given, but ``im_slice`` is not, the VIFp is
         calculated for the full volume of the 3D image. This is implemented as `mean` of
         the VIFp values of all slices of the given dimension. If ``dim`` is given and
-        ``im_slice`` is given,  the VIFp is calculated for the given slice of the given
+        ``im_slice`` is given, the VIFp is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
+
+        References
+        ----------
+        .. [1] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
+            quality. IEEE Transactions on Image Processing, 15(2), 430–444.
+            https://doi.org/10.1109/TIP.2005.859378
         """
         img_r, img_m = _check_imgs(
             img_r,

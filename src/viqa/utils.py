@@ -173,8 +173,8 @@ def load_data(
     ----------
     img : np.ndarray, torch.Tensor, str or os.PathLike
         Numpy array, tensor or file path
-    data_range : int, optional
-        Maximum value of the returned data, default None
+    data_range : int, optional, default=None
+        Maximum value of the returned data. Passed to :py:func:`normalize_data`.
     normalize : bool, default False
         If True, the input images are expected to be given as path to a folder
         containing the images.
@@ -399,20 +399,20 @@ def correlate_convolve_abs(
         Input image
     kernel : np.ndarray
         Kernel
-    mode : str, optional
-        'correlate' or 'convolve', default 'correlate'
+    mode : str, default='correlate'
+        'correlate' or 'convolve'
 
         .. seealso::
             Scipy documentation
 
-    border_mode : str, optional
-        'constant', 'reflect', 'nearest', 'mirror' or 'wrap', default 'constant'
+    border_mode : str, default='constant'
+        'constant', 'reflect', 'nearest', 'mirror' or 'wrap'
 
         .. seealso::
             Scipy documentation
 
-    value : int, optional
-        Value for constant border mode, default 0
+    value : int, optional, default=0
+        Value for constant border mode
 
     Returns
     -------

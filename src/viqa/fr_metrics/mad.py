@@ -408,9 +408,11 @@ def most_apparent_distortion(
     ms_scale : float, default=1
         Additional normalization parameter for the high-quality index.
     orientations_num : int, default 4
-        Number of orientations for the log-Gabor filters.
+        Number of orientations for the log-Gabor filters. Passed to
+        `.viqa.utils.gabor_convolve`.
     scales_num : int, default 5
-        Number of scales for the log-Gabor filters.
+        Number of scales for the log-Gabor filters. Passed to
+        `.viqa.utils.gabor_convolve`.
     weights : list, default [0.5, 0.75, 1, 5, 6]
         Weights for the different scales of the log-Gabor filters. Must be of length
         ``scales_num``.

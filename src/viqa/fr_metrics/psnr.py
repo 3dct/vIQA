@@ -79,11 +79,6 @@ class PSNR(FullReferenceMetricsInterface):
         Additional parameters for data loading. The keyword arguments are passed to
         :py:func:`viqa.utils.load_data`.
 
-    Raises
-    ------
-    ValueError
-        If ``data_range`` is not set.
-
     Other Parameters
     ----------------
     chromatic : bool, default False

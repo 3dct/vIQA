@@ -82,9 +82,9 @@ class FSIM(FullReferenceMetricsInterface):
 
     References
     ----------
-    [1]: Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity
-    index for image quality assessment. IEEE Transactions on Image Processing, 20(8).
-    https://doi.org/10.1109/TIP.2011.2109730
+    .. [1] Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature
+        similarity index for image quality assessment. IEEE Transactions on Image
+        Processing, 20(8). https://doi.org/10.1109/TIP.2011.2109730
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -122,31 +122,32 @@ class FSIM(FullReferenceMetricsInterface):
 
         Other Parameters
         ----------------
-        reduction : str, default='mean'
-            Specifies the reduction type: 'none', 'mean' or 'sum'.
-        scales : int, default=4
-            Number of wavelets used for computation of phase congruency maps.
-        orientations : int, default=4
-            Number of filter orientations used for computation of phase congruency maps.
-        min_length : int, default=6
-            Wavelength of smallest scale filter.
-        mult : int, default=2
-            Scaling factor between successive filters.
-        sigma_f : float, default=0.55
-            Ratio of the standard deviation of the Gaussian describing the log Gabor
-            filter’s transfer function in the frequency domain to the filter center
-            frequency.
-        delta_theta : float, default=1.2
-            Ratio of angular interval between filter orientations and the standard
-            deviation of the angular Gaussian function used to construct filters in the
-            frequency plane.
-        k : float, default=2.0
-            No of standard deviations of the noise energy beyond the mean at which we
-            set the noise threshold point, below which phase congruency values get
-            penalized.
+            reduction : str, default='mean'
+                Specifies the reduction type: 'none', 'mean' or 'sum'.
+            scales : int, default=4
+                Number of wavelets used for computation of phase congruency maps.
+            orientations : int, default=4
+                Number of filter orientations used for computation of phase congruency
+                maps.
+            min_length : int, default=6
+                Wavelength of smallest scale filter.
+            mult : int, default=2
+                Scaling factor between successive filters.
+            sigma_f : float, default=0.55
+                Ratio of the standard deviation of the Gaussian describing the log Gabor
+                filter’s transfer function in the frequency domain to the filter center
+                frequency.
+            delta_theta : float, default=1.2
+                Ratio of angular interval between filter orientations and the standard
+                deviation of the angular Gaussian function used to construct filters in
+                the frequency plane.
+            k : float, default=2.0
+                No of standard deviations of the noise energy beyond the mean at which
+                we set the noise threshold point, below which phase congruency values
+                get penalized.
 
         .. seealso::
-            See :py:func:`~.viqa.fr_metrics.mad.most_apparent_distortion` and
+            See :py:func:`.viqa.fr_metrics.mad.most_apparent_distortion` and
             :py:func:`.viqa.utils.gabor_convolve`.
 
         Returns
