@@ -6,7 +6,7 @@ It provides a set of metrics to assess the quality of volumetric images. The pac
 be used for 2D and 3D images.
 """
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 __author__ = "Lukas Behammer"
 
 from .fr_metrics import *

@@ -233,7 +233,7 @@ psnr.print_score(decimals=2)
     - [ ] Add documentation for niqe.py
     - [ ] Add documentation for qfactor.py
     - [x] Add documentation for utils.py
-- [ ] Adapt to 3D
+- [x] Adapt to 3D
     - [x] SSIM
     - [x] MSSSIM
     - [x] FSIM
