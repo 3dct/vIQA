@@ -203,7 +203,7 @@ def structural_similarity(
         window size will depend on ``sigma``.
     data_range : int, default=255
         Data range of the input images.
-    gaussian_weights : bool, optional
+    gaussian_weights : bool, default=True
         If True, each patch has its mean and variance spatially weighted by a
         normalized Gaussian kernel of width sigma=1.5.
     alpha : float, default=1
@@ -315,7 +315,7 @@ def structural_similarity(
         )
 
     if not (win_size % 2 == 1):
-        raise ValueError("Window size must be odd.")
+        raise ValueError("win_size must be odd.")
 
     ndim = img_r.ndim
 
