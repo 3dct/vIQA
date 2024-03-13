@@ -192,7 +192,7 @@ If you have any questions, please contact the author at: `<lukas.behammer@fh-wel
 References
 ==========
 
-.. [1]  Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality
+.. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality
     assessment: From error visibility to structural similarity. IEEE Transactions on
     Image Processing, 13(4), 600–612. https://doi.org/10.1109/TIP.2003.819861
 .. [2] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
