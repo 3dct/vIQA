@@ -78,7 +78,7 @@ class FSIM(FullReferenceMetricsInterface):
 
     Notes
     -----
-    For more information on the FSIM metric, see [1].
+    For more information on the FSIM metric, see [1]_.
 
     References
     ----------
