@@ -105,7 +105,7 @@ class GSM(FullReferenceMetricsInterface):
     -----
     GSM is a full reference IQA metric based on gradient similarity. It combines
     luminosity information and contrast-structural information. For further details,
-    see [1]. ``data_range`` for image loading is also used for the GSM calculation and
+    see [1]_. ``data_range`` for image loading is also used for the GSM calculation and
     therefore must be set. The parameter is set through the constructor of the class and
     is passed to :py:meth:`score`.
 
@@ -320,7 +320,8 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
 
     See Also
     --------
-    gradient_similarity : Calculate the gradient similarity between two images.
+    viqa.fr_metrics.gsm.gradient_similarity : Calculate the gradient similarity between
+                                              two images.
 
     References
     ----------
@@ -378,7 +379,7 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     p : float, default=0.1
         Constant for weighting between luminance and structure similarity. Can be
         :math:`0 \\leq p \\leq 1`. Higher `p` means more accentuation of luminance.
-        Should be :math:`p \\ll 0.5`. See [1] for details.
+        Should be :math:`p \\ll 0.5`. See [1]_ for details.
 
     Returns
     -------
@@ -399,7 +400,8 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
 
     See Also
     --------
-    gradient_similarity_3d : Calculate the gradient similarity between two 3D images.
+    viqa.fr_metrics.gsm.gradient_similarity_3d : Calculate the gradient similarity between
+                                                 two 3D images.
 
     References
     ----------

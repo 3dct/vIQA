@@ -2,7 +2,7 @@
 
 Notes
 -----
-This code is adapted from skimage.metrics.structural_similarity available under [1].
+This code is adapted from skimage.metrics.structural_similarity available under [1]_.
 
 References
 ----------
@@ -104,9 +104,13 @@ class SSIM(FullReferenceMetricsInterface):
     -----
     ``data_range`` for image loading is also used for the SSIM calculation if the image
     type is integer and therefore must be set. The parameter is set through the
-    constructor of the class and is passed to :py:meth:`score`. SSIM [1] is a
+    constructor of the class and is passed to :py:meth:`score`. SSIM [1]_ is a
     full-reference IQA metric. It is based on the human visual system and is designed to
     predict the perceived quality of an image.
+
+    See Also
+    --------
+    viqa.fr_metrics.msssim.MSSSIM : Multi-scale structural similarity index.
 
     References
     ----------
@@ -135,7 +139,7 @@ class SSIM(FullReferenceMetricsInterface):
             Modified image to calculate score of.
         **kwargs : optional
             Additional parameters for the SSIM calculation. The keyword arguments are
-            passed to :py:func:`structural_similarity`.
+            passed to :py:func:`.viqa.fr_metrics.ssim.structural_similarity`.
 
         Returns
         -------
@@ -216,9 +220,9 @@ def structural_similarity(
     Other Parameters
     ----------------
     K1 : float, default=0.01
-        Algorithm parameter, K1 (small constant, see [1]).
+        Algorithm parameter, K1 (small constant, see [1]_).
     K2 : float, default=0.03
-        Algorithm parameter, K2 (small constant, see [1]).
+        Algorithm parameter, K2 (small constant, see [1]_).
     sigma : float, default=1.5
         Standard deviation for the Gaussian when ``gaussian_weights`` is True.
     mode : str, default='reflect'
@@ -249,9 +253,9 @@ def structural_similarity(
 
     Notes
     -----
-    To match the implementation in [1], set ``gaussian_weights`` to True and ``sigma``
+    To match the implementation in [1]_, set ``gaussian_weights`` to True and ``sigma``
     to 1.5. This code is adapted from ``skimage.metrics.structural_similarity``
-    available under [2].
+    available under [2]_.
 
     References
     ----------

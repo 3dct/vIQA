@@ -82,7 +82,7 @@ class MSSSIM(FullReferenceMetricsInterface):
 
     Notes
     -----
-    For more information on the MS-SSIM metric, see [1].
+    For more information on the MS-SSIM metric, see [1]_.
 
     See Also
     --------
@@ -138,9 +138,9 @@ class MSSSIM(FullReferenceMetricsInterface):
             scale_weights : list, default=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333]
                 Weights for different scales.
             k1 : float, default=0.01
-                Algorithm parameter, K1 (small constant, see [1]).
+                Algorithm parameter, K1 (small constant, see [1]_).
             k2 : float, default=0.03
-                Algorithm parameter, K2 (small constant, see [1]).
+                Algorithm parameter, K2 (small constant, see [1]_).
                 Try a larger K2 constant (e.g. 0.4) if you get a negative or NaN
                 results.
 

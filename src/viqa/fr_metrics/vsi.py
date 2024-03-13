@@ -78,7 +78,7 @@ class VSI(FullReferenceMetricsInterface):
 
     Notes
     -----
-    For more information on the VSI metric, see [1].
+    For more information on the VSI metric, see [1]_.
 
     .. note::
         The original metric supports RGB images only. This implementation can
@@ -130,23 +130,23 @@ class VSI(FullReferenceMetricsInterface):
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
         c1 : float, default=1.27
-            Coefficient to calculate saliency component. See [1].
+            Coefficient to calculate saliency component. See [1]_.
         c2 : float, default=386.0
-            Coefficient to calculate gradient component. See [1].
+            Coefficient to calculate gradient component. See [1]_.
         c3 : float, default=130.0
-            Coefficient to calculate color component. See [1].
+            Coefficient to calculate color component. See [1]_.
         alpha : float, default=0.4
             Power for gradient component.
         beta : float, default=0.02
             Power for color component.
         omega_0 : float, default=0.021
-            Coefficient to get log Gabor filter with SDSP. See [2].
+            Coefficient to get log Gabor filter with SDSP. See [2]_.
         sigma_f : float, default=1.34
-            Coefficient to get log Gabor filter with SDSP. See [2].
+            Coefficient to get log Gabor filter with SDSP. See [2]_.
         sigma_d : float, default=145.0
-            Coefficient to get SDSP. See [2].
+            Coefficient to get SDSP. See [2]_.
         sigma_c : float, default=0.001
-            Coefficient to get SDSP. See [2].
+            Coefficient to get SDSP. See [2]_.
 
         Returns
         -------
