@@ -46,8 +46,8 @@ Overview
 | VSI     | Visual Saliency Index                         | FR   | 3D                    | :heavy_check_mark: [^b] | $[0, 1]$           | :x:                | :x:       | [^5]      |
 | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | [^6]      |
 | GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$           | :x:                | :x:       | [^7]      |
-| CNR     | Contrast to Noise Ratio                       | FR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | [^8]      |
-| SNR     | Signal to Noise Ratio                         | FR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | &mdash;   |
+| CNR     | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | [^8]      |
+| SNR     | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | &mdash;   |
 
 [^a]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
 contrast than reference images.
