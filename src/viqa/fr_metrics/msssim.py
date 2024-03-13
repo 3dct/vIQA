@@ -63,11 +63,10 @@ class MSSSIM(FullReferenceMetricsInterface):
         If True, the input images are expected to be RGB images.
 
         .. note::
-            Currently not supported.
-
-        .. todo::
-            Add pass to (... needs tensors with permutated channels, _check_chromatic
-            performs this task)
+            Color images can be used, but it is unclear how the called implementation
+            `piq.multi_scale_ssim
+            <https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_
+            handles the color channels.
 
     Raises
     ------
@@ -83,13 +82,18 @@ class MSSSIM(FullReferenceMetricsInterface):
 
     Notes
     -----
-    For more information on the MS-SSIM metric, see [1].
+    For more information on the MS-SSIM metric, see [1]_.
+
+    See Also
+    --------
+    viqa.fr_metrics.ssim.SSIM : Structural similarity index (SSIM) between two images.
 
     References
     ----------
-    [1]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
-    similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on
-    Signals, Systems & Computers, 1298–1402. https://doi.org/10.1109/ACSSC.2003.1292216
+    .. [1] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
+        similarity for image quality assessment. The Thirty-Seventh Asilomar Conference
+        on Signals, Systems & Computers, 1298–1402.
+        https://doi.org/10.1109/ACSSC.2003.1292216
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -117,18 +121,32 @@ class MSSSIM(FullReferenceMetricsInterface):
         im_slice : int, optional
             If given, MS-SSIM is calculated only for the given slice of the 3D image.
         **kwargs : optional
-            Additional parameters for MS-SSIM calculation. The keyword arguments are passed
-            to ``piq.multi_scale_ssim``.
-
-            .. seealso::
-                For more information on the parameters, see the documentation of
-                `piq.multi_scale_ssim
-                <https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_.
+            Additional parameters for MS-SSIM calculation. The keyword arguments are
+            passed to ``piq.multi_scale_ssim``. See the documentation under
+            `piq.multi_scale_ssim
+            <https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_.
 
         Other Parameters
         ----------------
+            kernel_size : int, default=11
+                The side-length of the sliding window used in comparison. Must be an odd
+                value.
+            kernel_sigma : float, default=1.5
+                Sigma of normal distribution.
+            reduction : str, default='mean'
+                Specifies the reduction type: 'none', 'mean' or 'sum'.
+            scale_weights : list, default=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333]
+                Weights for different scales.
+            k1 : float, default=0.01
+                Algorithm parameter, K1 (small constant, see [1]_).
+            k2 : float, default=0.03
+                Algorithm parameter, K2 (small constant, see [1]_).
+                Try a larger K2 constant (e.g. 0.4) if you get a negative or NaN
+                results.
 
-            .. todo:: Add other parameters
+        .. seealso::
+            See :py:func:`.viqa.fr_metrics.ssim.structural_similarity` for more
+            information
 
         Returns
         -------
@@ -155,8 +173,15 @@ class MSSSIM(FullReferenceMetricsInterface):
         For 3D images if ``dim`` is given, but ``im_slice`` is not, the MS-SSIM is
         calculated for the full volume of the 3D image. This is implemented as `mean` of
         the MS-SSIM values of all slices of the given dimension. If ``dim`` is given and
-        ``im_slice`` is given,  the MS-SSIM is calculated for the given slice of the given
-        dimension (represents a 2D metric of the given slice).
+        ``im_slice`` is given,  the MS-SSIM is calculated for the given slice of the
+        given dimension (represents a 2D metric of the given slice).
+
+        References
+        ----------
+        .. [1] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale
+            structural similarity for image quality assessment. The Thirty-Seventh
+            Asilomar Conference on Signals, Systems & Computers, 1298–1402.
+            https://doi.org/10.1109/ACSSC.2003.1292216
         """
         img_r, img_m = _check_imgs(
             img_r,

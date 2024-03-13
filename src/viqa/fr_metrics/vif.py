@@ -63,11 +63,10 @@ class VIFp(FullReferenceMetricsInterface):
         If True, the input images are expected to be RGB images.
         
         .. note::
-            Currently not supported.
-
-        .. todo::
-            Add pass to (... needs tensors with permutated channels, _check_chromatic
-            performs this task)
+            Color images can be used, but it is unclear how the called implementation
+            `piq.vif_p
+            <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_
+            handles the color channels.
 
     Raises
     ------
@@ -83,13 +82,13 @@ class VIFp(FullReferenceMetricsInterface):
 
     Notes
     -----
-    For more information on the VIFp metric, see [1].
+    For more information on the VIFp metric, see [1]_.
 
     References
     ----------
-    [1]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality.
-    IEEE Transactions on Image Processing, 15(2), 430–444.
-    https://doi.org/10.1109/TIP.2005.859378
+    .. [1] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality.
+        IEEE Transactions on Image Processing, 15(2), 430–444.
+        https://doi.org/10.1109/TIP.2005.859378
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
@@ -118,17 +117,16 @@ class VIFp(FullReferenceMetricsInterface):
             If given, VIFp is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for VIFp calculation. The keyword arguments are passed
-            to ``piq.vif_p``.
-
-            .. seealso::
-                For more information on the parameters, see the documentation of
-                `piq.vif_p
-                <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
+            to ``piq.vif_p``. See the documentation under
+            `piq.vif_p
+            <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
 
         Other Parameters
         ----------------
-        
-            .. todo:: Add other parameters
+        sigma_n_sq : float, default=2.0
+            HVS model parameter (variance of the visual noise). See [1]_.
+        reduction : str, default='mean'
+            Specifies the reduction type: 'none', 'mean' or 'sum'.
 
         Returns
         -------
@@ -155,8 +153,14 @@ class VIFp(FullReferenceMetricsInterface):
         For 3D images if ``dim`` is given, but ``im_slice`` is not, the VIFp is
         calculated for the full volume of the 3D image. This is implemented as `mean` of
         the VIFp values of all slices of the given dimension. If ``dim`` is given and
-        ``im_slice`` is given,  the VIFp is calculated for the given slice of the given
+        ``im_slice`` is given, the VIFp is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
+
+        References
+        ----------
+        .. [1] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
+            quality. IEEE Transactions on Image Processing, 15(2), 430–444.
+            https://doi.org/10.1109/TIP.2005.859378
         """
         img_r, img_m = _check_imgs(
             img_r,

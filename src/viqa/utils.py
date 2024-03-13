@@ -173,8 +173,9 @@ def load_data(
     ----------
     img : np.ndarray, torch.Tensor, str or os.PathLike
         Numpy array, tensor or file path
-    data_range : int, optional
-        Maximum value of the returned data, default None
+    data_range : int, optional, default=None
+        Maximum value of the returned data. Passed to
+        :py:func:`.viqa.utils.normalize_data`.
     normalize : bool, default False
         If True, the input images are expected to be given as path to a folder
         containing the images.
@@ -399,20 +400,20 @@ def correlate_convolve_abs(
         Input image
     kernel : np.ndarray
         Kernel
-    mode : str, optional
-        'correlate' or 'convolve', default 'correlate'
+    mode : str, default='correlate'
+        'correlate' or 'convolve'
 
         .. seealso::
             Scipy documentation
 
-    border_mode : str, optional
-        'constant', 'reflect', 'nearest', 'mirror' or 'wrap', default 'constant'
+    border_mode : str, default='constant'
+        'constant', 'reflect', 'nearest', 'mirror' or 'wrap'
 
         .. seealso::
             Scipy documentation
 
-    value : int, optional
-        Value for constant border mode, default 0
+    value : int, optional, default=0
+        Value for constant border mode
 
     Returns
     -------
@@ -451,7 +452,7 @@ def correlate_convolve_abs(
     ...         mode="correlate",
     ...         border_mode="constant",
     ...         value=0
-    ...)
+    ... )
     """
     if mode == "convolve":  # If mode is convolve
         kernel = np.flip(kernel)  # Flip kernel
@@ -593,9 +594,9 @@ def gabor_convolve(
     Additionally d_theta_on_sigma should be set to 1.5 for approximately the minimum
     overlap needed to get even spectral coverage.
 
-    For more information see [1]. This code was originally written in Matlab by Peter
+    For more information see [1]_. This code was originally written in Matlab by Peter
     Kovesi and adapted by Eric Larson. The adaption by Eric Larson is available under
-    [2].
+    [2]_.
 
     References
     ----------

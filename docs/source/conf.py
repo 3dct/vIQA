@@ -32,6 +32,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.mathjax',
+    'sphinx.ext.autosummary',
     'sphinx_copybutton',
     'pytest_doctestplus.sphinx.doctestplus',
 ]
@@ -46,3 +47,12 @@ exclude_patterns = []
 
 html_theme = 'furo'
 html_static_path = ['_static']
+
+
+# -- Options for Autodoc -----------------------------------------------------
+
+autodoc_default_options = {
+    'members': None,
+    'member-order': 'bysource',
+    'exclude-members': '__init__',
+}

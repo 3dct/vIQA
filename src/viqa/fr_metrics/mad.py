@@ -2,7 +2,7 @@
 
 Notes
 -----
-The code is adapted from the original MATLAB code available under [1].
+The code is adapted from the original MATLAB code available under [1]_.
 
 References
 ----------
@@ -102,7 +102,7 @@ class MAD(FullReferenceMetricsInterface):
     -----
     ``data_range`` for image loading is also used for the MAD calculation if the image
     type is integer and therefore must be set. The parameter is set through the
-    constructor of the class and is passed to :py:meth:`score`. MAD [1] is a
+    constructor of the class and is passed to :py:meth:`score`. MAD [1]_ is a
     full-reference IQA metric. It is based on the human visual system and is designed to
     predict the perceived quality of an image.
 
@@ -301,7 +301,7 @@ def most_apparent_distortion_3d(
 
     See Also
     --------
-    most_apparent_distortion : Calculate the MAD between two images.
+    viqa.fr_metrics.mad.most_apparent_distortion : Calculate the MAD between two images.
 
     References
     ----------
@@ -351,7 +351,7 @@ def most_apparent_distortion(
     thresh_2: float | None = None,
     **kwargs,
 ) -> float:
-    r"""Calculate the most apparent distortion (MAD) between two images.
+    """Calculate the most apparent distortion (MAD) between two images.
 
     Parameters
     ----------
@@ -408,9 +408,11 @@ def most_apparent_distortion(
     ms_scale : float, default=1
         Additional normalization parameter for the high-quality index.
     orientations_num : int, default 4
-        Number of orientations for the log-Gabor filters.
+        Number of orientations for the log-Gabor filters. Passed to
+        `.viqa.utils.gabor_convolve`.
     scales_num : int, default 5
-        Number of scales for the log-Gabor filters.
+        Number of scales for the log-Gabor filters. Passed to
+        `.viqa.utils.gabor_convolve`.
     weights : list, default [0.5, 0.75, 1, 5, 6]
         Weights for the different scales of the log-Gabor filters. Must be of length
         ``scales_num``.
@@ -426,13 +428,13 @@ def most_apparent_distortion(
     Raises
     ------
     ValueError
-        If ``block_size`` is not positive.
+        If ``block_size`` is not positive. \n
         If ``weights`` is not of length ``scales_num``.
 
     Warns
     -----
     RuntimeWarning
-        If either ``thresh_1`` or ``thresh_2`` and not both are given.
+        If either ``thresh_1`` or ``thresh_2`` and not both are given. \n
         If ``thresh_1`` and ``thresh_2`` and ``beta_1`` or ``beta_2`` are given.
 
     Warnings
@@ -443,7 +445,7 @@ def most_apparent_distortion(
 
     See Also
     --------
-    most_apparent_distortion_3d : Calculate the MAD for a 3D image.
+    viqa.fr_metrics.mad.most_apparent_distortion_3d : Calculate the MAD for a 3D image.
 
     Notes
     -----
@@ -456,7 +458,7 @@ def most_apparent_distortion(
     default values ``beta_1=0.467`` and ``beta_2=0.130`` are ``thresh_1=2.55`` and
     ``thresh_2=3.35``. These need not to be set, since automatic values for ``beta_1``
     and ``beta_2`` are used when they are not given as parameter. For more information
-    see [1]. The code is adapted from the original MATLAB code available under [2].
+    see [1]_. The code is adapted from the original MATLAB code available under [2]_.
 
     References
     ----------
@@ -527,7 +529,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
     Notes
     -----
-    The code is adapted from the original MATLAB code available under [1].
+    The code is adapted from the original MATLAB code available under [1]_.
 
     References
     ----------
@@ -671,7 +673,7 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
 
     Notes
     -----
-    The code is adapted from the original MATLAB code available under [1].
+    The code is adapted from the original MATLAB code available under [1]_.
 
     References
     ----------
@@ -794,7 +796,7 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
 
     Notes
     -----
-    The code is adapted from the original MATLAB code available under [1].
+    The code is adapted from the original MATLAB code available under [1]_.
 
     References
     ----------
