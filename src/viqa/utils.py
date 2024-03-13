@@ -451,7 +451,7 @@ def correlate_convolve_abs(
     ...         mode="correlate",
     ...         border_mode="constant",
     ...         value=0
-    ...)
+    ... )
     """
     if mode == "convolve":  # If mode is convolve
         kernel = np.flip(kernel)  # Flip kernel
