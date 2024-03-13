@@ -2,7 +2,7 @@
 
 Notes
 -----
-This code is adapted from skimage.metrics.structural_similarity available under [1].
+This code is adapted from skimage.metrics.structural_similarity available under [1]_.
 
 References
 ----------
@@ -54,7 +54,7 @@ Examples
 from warnings import warn
 
 import numpy as np
-from scipy.ndimage import uniform_filter, gaussian_filter
+from scipy.ndimage import gaussian_filter, uniform_filter
 from skimage.util.arraycrop import crop
 
 from viqa._metrics import FullReferenceMetricsInterface
@@ -72,17 +72,20 @@ class SSIM(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
-        Data range of the returned data in data loading. Can be omitted if ``normalize`` is False.
+        Data range of the returned data in data loading. Can be omitted if ``normalize``
+        is False.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
-        If True, the input images are expected to be given as path to a folder containing the images.
+        If True, the input images are expected to be given as path to a folder
+        containing the images.
 
         .. note::
             Currently not supported. Added for later implementation.
 
     **kwargs : optional
-        Additional parameters for data loading. The keyword arguments are passed to :py:func:`viqa.utils.load_data`.
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -99,27 +102,34 @@ class SSIM(FullReferenceMetricsInterface):
 
     Notes
     -----
-    ``data_range`` for image loading is also used for the SSIM calculation if the image type is integer and
-    therefore must be set. The parameter is set through the constructor of the class and is passed to :py:meth:`score`.
-    SSIM [1] is a full-reference IQA metric. It is based on the human visual system and is designed to predict the
-    perceived quality of an image.
+    ``data_range`` for image loading is also used for the SSIM calculation if the image
+    type is integer and therefore must be set. The parameter is set through the
+    constructor of the class and is passed to :py:meth:`score`. SSIM [1]_ is a
+    full-reference IQA metric. It is based on the human visual system and is designed to
+    predict the perceived quality of an image.
+
+    See Also
+    --------
+    viqa.fr_metrics.msssim.MSSSIM : Multi-scale structural similarity index.
 
     References
     ----------
-    .. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality assessment: From error
-           visibility to structural similarity. IEEE Transactions on Image Processing, 13(4), 600–612.
-           https://doi.org/10.1109/TIP.2003.819861
+    .. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image
+        quality assessment: From error visibility to structural similarity. IEEE
+        Transactions on Image Processing, 13(4), 600–612.
+        https://doi.org/10.1109/TIP.2003.819861
     """
 
     def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
-        """Constructor method"""
-
+        """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(data_range=data_range, normalize=normalize, batch=batch, **kwargs)
+        super().__init__(
+            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+        )
 
     def score(self, img_r, img_m, **kwargs):
-        """Calculates the structural similarity index (SSIM) between two images.
+        """Calculate the structural similarity index (SSIM) between two images.
 
         Parameters
         ----------
@@ -128,8 +138,8 @@ class SSIM(FullReferenceMetricsInterface):
         img_m : np.ndarray
             Modified image to calculate score of.
         **kwargs : optional
-            Additional parameters for the SSIM calculation. The keyword arguments are passed to
-            :py:func:`structural_similarity`.
+            Additional parameters for the SSIM calculation. The keyword arguments are
+            passed to :py:func:`.viqa.fr_metrics.ssim.structural_similarity`.
 
         Returns
         -------
@@ -197,7 +207,7 @@ def structural_similarity(
         window size will depend on ``sigma``.
     data_range : int, default=255
         Data range of the input images.
-    gaussian_weights : bool, optional
+    gaussian_weights : bool, default=True
         If True, each patch has its mean and variance spatially weighted by a
         normalized Gaussian kernel of width sigma=1.5.
     alpha : float, default=1
@@ -210,13 +220,14 @@ def structural_similarity(
     Other Parameters
     ----------------
     K1 : float, default=0.01
-        Algorithm parameter, K1 (small constant, see [1]).
+        Algorithm parameter, K1 (small constant, see [1]_).
     K2 : float, default=0.03
-        Algorithm parameter, K2 (small constant, see [1]).
+        Algorithm parameter, K2 (small constant, see [1]_).
     sigma : float, default=1.5
         Standard deviation for the Gaussian when ``gaussian_weights`` is True.
-    mode : {'constant', 'edge', 'symmetric', 'reflect', 'wrap'}, optional
-        Determines how the array borders are handled.
+    mode : str, default='reflect'
+        Determines how the array borders are handled. 'constant', 'edge', 'symmetric',
+        'reflect' or 'wrap'.
 
         .. seealso::
             See Numpy documentation for detail.
@@ -242,14 +253,16 @@ def structural_similarity(
 
     Notes
     -----
-    To match the implementation in [1], set ``gaussian_weights`` to True and ``sigma`` to 1.5.
-    This code is adapted from ``skimage.metrics.structural_similarity`` available under [2].
+    To match the implementation in [1]_, set ``gaussian_weights`` to True and ``sigma``
+    to 1.5. This code is adapted from ``skimage.metrics.structural_similarity``
+    available under [2]_.
 
     References
     ----------
-    .. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality assessment: From error
-           visibility to structural similarity. IEEE Transactions on Image Processing, 13(4), 600–612.
-           https://doi.org/10.1109/TIP.2003.819861
+    .. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image
+        quality assessment: From error visibility to structural similarity. IEEE
+        Transactions on Image Processing, 13(4), 600–612.
+        https://doi.org/10.1109/TIP.2003.819861
     .. [2] scikit-image team (2023). https://github.com/scikit-image/scikit-image
 
     """
@@ -271,12 +284,12 @@ def structural_similarity(
     # -------
     # BSD-3-Clause
 
-    K1 = kwargs.pop("K1", 0.01)
-    K2 = kwargs.pop("K2", 0.03)
+    k_1 = kwargs.pop("K1", 0.01)
+    k_2 = kwargs.pop("K2", 0.03)
     sigma = kwargs.pop("sigma", 1.5)
-    if K1 < 0:
+    if k_1 < 0:
         raise ValueError("K1 must be positive")
-    if K2 < 0:
+    if k_2 < 0:
         raise ValueError("K2 must be positive")
     if sigma < 0:
         raise ValueError("sigma must be positive")
@@ -306,7 +319,7 @@ def structural_similarity(
         )
 
     if not (win_size % 2 == 1):
-        raise ValueError("Window size must be odd.")
+        raise ValueError("win_size must be odd.")
 
     ndim = img_r.ndim
 
@@ -315,10 +328,10 @@ def structural_similarity(
 
     if gaussian_weights:
         filter_func = gaussian_filter
-        filter_args = {'sigma': sigma, 'truncate': truncate, 'mode': mode, 'cval': cval}
+        filter_args = {"sigma": sigma, "truncate": truncate, "mode": mode, "cval": cval}
     else:
         filter_func = uniform_filter
-        filter_args = {'size': win_size, 'mode': mode, 'cval': cval}
+        filter_args = {"size": win_size, "mode": mode, "cval": cval}
 
     if not isinstance(alpha, int):
         alpha = int(alpha)
@@ -334,9 +347,9 @@ def structural_similarity(
     img_r = img_r.astype(np.float64, copy=False)
     img_m = img_m.astype(np.float64, copy=False)
 
-    NP = win_size**ndim
+    n = win_size**ndim
     if not cov_norm:
-        cov_norm = NP / (NP - 1)  # sample covariance
+        cov_norm = n / (n - 1)  # sample covariance
 
     # compute (weighted) means
     ux = filter_func(img_r, **filter_args)
@@ -350,28 +363,26 @@ def structural_similarity(
     vy = cov_norm * (uyy - uy * uy)
     vxy = cov_norm * (uxy - ux * uy)
 
-    R = data_range
-    C1 = (K1 * R) ** 2
-    C2 = (K2 * R) ** 2
-    C3 = C2 / 2
+    c_1 = (k_1 * data_range) ** 2
+    c_2 = (k_2 * data_range) ** 2
+    c_3 = c_2 / 2
 
-    A1, A2, B1, B2 = (
-        2 * ux * uy + C1,
-        2 * vxy + C2,
-        ux**2 + uy**2 + C1,
-        vx + vy + C2,
+    a_1, b_1, b_2 = (
+        2 * ux * uy + c_1,
+        ux**2 + uy**2 + c_1,
+        vx + vy + c_2,
     )
 
-    lum = A1 / B1
-    con = (2 * np.sqrt(vx) * np.sqrt(vy) + C2) / B2
-    stru = (vxy + C3) / (np.sqrt(vx) * np.sqrt(vy) + C3)
+    lum = a_1 / b_1
+    con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / b_2
+    stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
 
-    S = (lum**alpha) * (con**beta) * (stru**gamma)
+    score = (lum**alpha) * (con**beta) * (stru**gamma)
 
     # to avoid edge effects will ignore filter radius strip around edges
     pad = (win_size - 1) // 2
 
     # compute (weighted) mean of ssim. Use float64 for accuracy.
-    ssim = crop(S, pad).mean(dtype=np.float64)
+    ssim = crop(score, pad).mean(dtype=np.float64)
 
     return ssim
