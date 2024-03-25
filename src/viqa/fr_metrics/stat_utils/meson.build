@@ -1,4 +1,4 @@
-inc_dir = include_directories('C:/Users/lukas/anaconda3/Lib/site-packages/numpy/core/include')
+inc_dir = include_directories('C:\Users\p42938\.conda\envs\IQA_Library\Lib\site-packages\numpy\core\include')
 
 py.extension_module(
     'statistics',
