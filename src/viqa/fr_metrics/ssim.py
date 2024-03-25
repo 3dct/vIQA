@@ -377,27 +377,23 @@ def structural_similarity(
     c_3 = c_2 / 2
 
     print("Computing SSIM ...")
-    a_1, b_1, b_2 = (
-        2 * ux * uy + c_1,
-        ux**2 + uy**2 + c_1,
-        vx + vy + c_2,
-    )
+    stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
+    del vxy
+
+    con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / (vx + vy + c_2)
+    del vx, vy
+
+    lum = (2 * ux * uy + c_1) / (ux**2 + uy**2 + c_1)
     del ux, uy
 
-    print("Computing SSIM parts ...")
-    lum = a_1 / b_1
-    con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / b_2
-    stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
-    del vx, vy, vxy
-
     print("Computing SSIM score ...")
-    score = (lum**alpha) * (con**beta) * (stru**gamma)
+    ssim = (lum**alpha) * (con**beta) * (stru**gamma)
     del lum, con, stru
 
     # to avoid edge effects will ignore filter radius strip around edges
     pad = (win_size - 1) // 2
 
     # compute (weighted) mean of ssim. Use float64 for accuracy.
-    ssim = crop(score, pad).mean(dtype=np.float64)
+    ssim = crop(ssim, pad).mean(dtype=np.float64)
 
     return ssim
