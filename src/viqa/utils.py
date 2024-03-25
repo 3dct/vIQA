@@ -107,7 +107,7 @@ def _load_data_from_disk(
     elif file_ext == ".raw":  # If file is a .raw file
         # Check dimension
         dim_search_result = re.search(
-            r"(\d+([x_])\d+([x_])\d+)", file_name_head
+            r"(\d+([x])\d+([x])\d+)", file_name_head
         )  # Search for dimension in file name
         if dim_search_result is not None:  # If dimension was found
             dim = dim_search_result.group(1)  # Get dimension from file name
@@ -117,7 +117,7 @@ def _load_data_from_disk(
             )  # Raise exception if no dimension was found
 
         # Extract dimension
-        dim_size = re.split("[x_]", dim)  # Split dimension string into list
+        dim_size = re.split("[x]", dim)  # Split dimension string into list
         dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
 
         # Check bit depth
@@ -244,7 +244,10 @@ def load_data(
                     file_dir, file_name
                 )  # Load data from disk
         case np.ndarray():  # If input is a numpy array
-            img_arr = img  # Use input as numpy array
+            if not normalize:
+                return img
+            else:
+                img_arr = img  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
         # case list():  # If input is a list
