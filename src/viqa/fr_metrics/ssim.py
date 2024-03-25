@@ -344,13 +344,14 @@ def structural_similarity(
         warn("gamma is not an integer. Cast to int.", RuntimeWarning)
 
     # ndimage filters need floating point data
-    img_r = img_r.astype(np.float64, copy=False)
-    img_m = img_m.astype(np.float64, copy=False)
+    img_r = img_r.astype(np.float32, copy=False)
+    img_m = img_m.astype(np.float32, copy=False)
 
     n = win_size**ndim
     if not cov_norm:
         cov_norm = n / (n - 1)  # sample covariance
 
+    print("Filtering ...")
     # compute (weighted) means
     ux = filter_func(img_r, **filter_args)
     uy = filter_func(img_m, **filter_args)
@@ -359,25 +360,39 @@ def structural_similarity(
     uxx = filter_func(img_r * img_r, **filter_args)
     uyy = filter_func(img_m * img_m, **filter_args)
     uxy = filter_func(img_r * img_m, **filter_args)
+
+    del img_r, img_m
+
     vx = cov_norm * (uxx - ux * ux)
+    del uxx
+
     vy = cov_norm * (uyy - uy * uy)
+    del uyy
+
     vxy = cov_norm * (uxy - ux * uy)
+    del uxy
 
     c_1 = (k_1 * data_range) ** 2
     c_2 = (k_2 * data_range) ** 2
     c_3 = c_2 / 2
 
+    print("Computing SSIM ...")
     a_1, b_1, b_2 = (
         2 * ux * uy + c_1,
         ux**2 + uy**2 + c_1,
         vx + vy + c_2,
     )
+    del ux, uy
 
+    print("Computing SSIM parts ...")
     lum = a_1 / b_1
     con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / b_2
     stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
+    del vx, vy, vxy
 
+    print("Computing SSIM score ...")
     score = (lum**alpha) * (con**beta) * (stru**gamma)
+    del lum, con, stru
 
     # to avoid edge effects will ignore filter radius strip around edges
     pad = (win_size - 1) // 2
