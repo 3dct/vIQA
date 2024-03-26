@@ -1,7 +1,4 @@
-incdir_numpy = run_command(py,
-  ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
-  check : true
-).stdout().strip()
+incdir_numpy = run_command('src/viqa/_build_utils/get_numpy_path.py', check: true).stdout().strip()
 
 py.extension_module(
     'statistics',
