@@ -72,8 +72,9 @@ class SSIM(FullReferenceMetricsInterface):
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
-        Data range of the returned data in data loading. Can be omitted if ``normalize``
-        is False.
+        Data range of the returned data in data loading. Is used for image loading when
+        ``normalize`` is True and for the SSIM calculation. Passed to
+        :py:func:`viqa.utils.load_data` and :py:func:`structural_similarity`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False
@@ -284,6 +285,7 @@ def structural_similarity(
     # -------
     # BSD-3-Clause
 
+    cov_norm = None
     k_1 = kwargs.pop("K1", 0.01)
     k_2 = kwargs.pop("K2", 0.03)
     sigma = kwargs.pop("sigma", 1.5)
@@ -344,8 +346,8 @@ def structural_similarity(
         warn("gamma is not an integer. Cast to int.", RuntimeWarning)
 
     # ndimage filters need floating point data
-    img_r = img_r.astype(np.float64, copy=False)
-    img_m = img_m.astype(np.float64, copy=False)
+    img_r = img_r.astype(np.float32, copy=False)
+    img_m = img_m.astype(np.float32, copy=False)
 
     n = win_size**ndim
     if not cov_norm:
@@ -359,30 +361,38 @@ def structural_similarity(
     uxx = filter_func(img_r * img_r, **filter_args)
     uyy = filter_func(img_m * img_m, **filter_args)
     uxy = filter_func(img_r * img_m, **filter_args)
+
+    del img_r, img_m
+
     vx = cov_norm * (uxx - ux * ux)
+    del uxx
+
     vy = cov_norm * (uyy - uy * uy)
+    del uyy
+
     vxy = cov_norm * (uxy - ux * uy)
+    del uxy
 
     c_1 = (k_1 * data_range) ** 2
     c_2 = (k_2 * data_range) ** 2
     c_3 = c_2 / 2
 
-    a_1, b_1, b_2 = (
-        2 * ux * uy + c_1,
-        ux**2 + uy**2 + c_1,
-        vx + vy + c_2,
-    )
-
-    lum = a_1 / b_1
-    con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / b_2
     stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
+    del vxy
 
-    score = (lum**alpha) * (con**beta) * (stru**gamma)
+    con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / (vx + vy + c_2)
+    del vx, vy
+
+    lum = (2 * ux * uy + c_1) / (ux**2 + uy**2 + c_1)
+    del ux, uy
+
+    ssim = (lum**alpha) * (con**beta) * (stru**gamma)
+    del lum, con, stru
 
     # to avoid edge effects will ignore filter radius strip around edges
     pad = (win_size - 1) // 2
 
     # compute (weighted) mean of ssim. Use float64 for accuracy.
-    ssim = crop(score, pad).mean(dtype=np.float64)
+    ssim = crop(ssim, pad).mean(dtype=np.float64)
 
     return ssim

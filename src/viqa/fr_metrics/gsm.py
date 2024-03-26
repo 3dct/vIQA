@@ -67,7 +67,8 @@ class GSM(FullReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
-        ``normalize`` is True and for the GSM calculation.
+        ``normalize`` is True and for the GSM calculation. Passed to
+        :py:func:`viqa.utils.load_data` and :py:func:`gradient_similarity`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default=False

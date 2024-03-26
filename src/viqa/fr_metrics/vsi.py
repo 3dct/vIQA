@@ -41,7 +41,8 @@ class VSI(FullReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
-        ``normalize`` is True and for the VSI calculation.
+        ``normalize`` is True and for the VSI calculation. Passed to
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default=False
@@ -130,23 +131,23 @@ class VSI(FullReferenceMetricsInterface):
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
         c1 : float, default=1.27
-            Coefficient to calculate saliency component. See [1]_.
+            Coefficient to calculate saliency component. See [2]_.
         c2 : float, default=386.0
-            Coefficient to calculate gradient component. See [1]_.
+            Coefficient to calculate gradient component. See [2]_.
         c3 : float, default=130.0
-            Coefficient to calculate color component. See [1]_.
+            Coefficient to calculate color component. See [2]_.
         alpha : float, default=0.4
             Power for gradient component.
         beta : float, default=0.02
             Power for color component.
         omega_0 : float, default=0.021
-            Coefficient to get log Gabor filter with SDSP. See [2]_.
+            Coefficient to get log Gabor filter with SDSP. See [3]_.
         sigma_f : float, default=1.34
-            Coefficient to get log Gabor filter with SDSP. See [2]_.
+            Coefficient to get log Gabor filter with SDSP. See [3]_.
         sigma_d : float, default=145.0
-            Coefficient to get SDSP. See [2]_.
+            Coefficient to get SDSP. See [3]_.
         sigma_c : float, default=0.001
-            Coefficient to get SDSP. See [2]_.
+            Coefficient to get SDSP. See [3]_.
 
         Returns
         -------
@@ -178,10 +179,10 @@ class VSI(FullReferenceMetricsInterface):
 
         References
         ----------
-        .. [1] Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced
+        .. [2] Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced
             index for perceptual image quality assessment. IEEE Transactions on Image
             Processing, 23(10), 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
-        .. [2] Zhang, L., Gu, Z., & Li, H. (2013). SDSP: A novel saliency detection
+        .. [3] Zhang, L., Gu, Z., & Li, H. (2013). SDSP: A novel saliency detection
             method by combining simple priors. 2013 IEEE International Conference on
             Image Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
         """

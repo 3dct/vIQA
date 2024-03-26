@@ -43,7 +43,8 @@ class VIFp(FullReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
-        ``normalize`` is True and for the VIFp calculation.
+        ``normalize`` is True and for the VIFp calculation. Passed to
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default=False
@@ -124,7 +125,7 @@ class VIFp(FullReferenceMetricsInterface):
         Other Parameters
         ----------------
         sigma_n_sq : float, default=2.0
-            HVS model parameter (variance of the visual noise). See [1]_.
+            HVS model parameter (variance of the visual noise). See [2]_.
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
 
@@ -158,7 +159,7 @@ class VIFp(FullReferenceMetricsInterface):
 
         References
         ----------
-        .. [1] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
+        .. [2] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
             quality. IEEE Transactions on Image Processing, 15(2), 430–444.
             https://doi.org/10.1109/TIP.2005.859378
         """

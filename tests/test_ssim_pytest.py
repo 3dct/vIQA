@@ -4,7 +4,8 @@ import warnings
 import pytest
 import numpy as np
 
-from .context import viqa
+# from .context import viqa
+import viqa
 
 
 class TestInit:
@@ -144,26 +145,26 @@ class TestPrinting:
 def test_ssim_invalid_k1():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
-    with pytest.raises(ValueError, match=re.escape('K1 must be positive.')):
-        viqa.SSIM(K1=-1).score(img_r, img_m)
+    with pytest.raises(ValueError, match=re.escape('K1 must be positive')):
+        viqa.SSIM().score(img_r, img_m, K1=-1)
 
 
 def test_ssim_invalid_k2():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
-    with pytest.raises(ValueError, match=re.escape('K2 must be positive.')):
-        viqa.SSIM(K2=-1).score(img_r, img_m)
+    with pytest.raises(ValueError, match=re.escape('K2 must be positive')):
+        viqa.SSIM().score(img_r, img_m, K2=-1)
 
 
 def test_ssim_invalid_sigma():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
-    with pytest.raises(ValueError, match=re.escape('sigma must be positive.')):
-        viqa.SSIM(sigma=-1).score(img_r, img_m)
+    with pytest.raises(ValueError, match=re.escape('sigma must be positive')):
+        viqa.SSIM().score(img_r, img_m, sigma=-1)
 
 
 def test_ssim_even_win_size():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
     with pytest.raises(ValueError, match=re.escape('win_size must be odd.')):
-        viqa.SSIM(win_size=2).score(img_r, img_m)
+        viqa.SSIM().score(img_r, img_m, win_size=2)

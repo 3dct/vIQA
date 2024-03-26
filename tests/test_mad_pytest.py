@@ -4,8 +4,8 @@ import warnings
 import pytest
 import numpy as np
 
-from .context import viqa
-
+# from .context import viqa
+import viqa
 
 class TestInit:
     def test_init_with_default_parameters(self):
