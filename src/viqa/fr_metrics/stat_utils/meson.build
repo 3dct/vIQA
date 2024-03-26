@@ -1,9 +1,12 @@
-inc_dir = include_directories('C:\Users\p42938\.conda\envs\IQA_Library\Lib\site-packages\numpy\core\include')
+incdir_numpy = run_command(py,
+  ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
+  check : true
+).stdout().strip()
 
 py.extension_module(
     'statistics',
     'statisticsmodule.c',
     install: true,
-    include_directories: inc_dir,
+    include_directories: incdir_numpy,
     subdir: 'viqa/fr_metrics',
 )
