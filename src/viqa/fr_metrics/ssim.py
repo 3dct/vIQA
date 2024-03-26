@@ -352,7 +352,6 @@ def structural_similarity(
     if not cov_norm:
         cov_norm = n / (n - 1)  # sample covariance
 
-    print("Filtering ...")
     # compute (weighted) means
     ux = filter_func(img_r, **filter_args)
     uy = filter_func(img_m, **filter_args)
@@ -377,7 +376,6 @@ def structural_similarity(
     c_2 = (k_2 * data_range) ** 2
     c_3 = c_2 / 2
 
-    print("Computing SSIM ...")
     stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
     del vxy
 
@@ -387,7 +385,6 @@ def structural_similarity(
     lum = (2 * ux * uy + c_1) / (ux**2 + uy**2 + c_1)
     del ux, uy
 
-    print("Computing SSIM score ...")
     ssim = (lum**alpha) * (con**beta) * (stru**gamma)
     del lum, con, stru
 
