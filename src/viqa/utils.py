@@ -383,13 +383,13 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     return img_arr
 
 
-def _to_float(img):
+def _to_float(img, dtype=np.float64):
     """Convert a numpy array to float."""
     match img.dtype:
         case np.float32 | np.float64:
             return img
         case _:
-            return img.astype(np.float64)
+            return img.astype(dtype)
 
 
 def correlate_convolve_abs(
@@ -750,8 +750,11 @@ def gabor_convolve(
 
     return res
 
+
 def _check_chromatic(img_r, img_m, chromatic):
     """Permute image based on dimensions and chromaticity."""
+    img_r = _to_float(img_r, np.float32)
+    img_m = _to_float(img_m, np.float32)
     # check if chromatic
     if chromatic is False:
         if img_r.ndim == 3:
