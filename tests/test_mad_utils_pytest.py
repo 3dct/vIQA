@@ -3,7 +3,8 @@ import re
 import pytest
 import numpy as np
 
-from .context import viqa
+# from .context import viqa
+import viqa
 
 
 def test_most_apparent_distortion_negative_block_size():
