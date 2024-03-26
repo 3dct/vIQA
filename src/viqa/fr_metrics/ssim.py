@@ -284,6 +284,7 @@ def structural_similarity(
     # -------
     # BSD-3-Clause
 
+    cov_norm = None
     k_1 = kwargs.pop("K1", 0.01)
     k_2 = kwargs.pop("K2", 0.03)
     sigma = kwargs.pop("sigma", 1.5)
