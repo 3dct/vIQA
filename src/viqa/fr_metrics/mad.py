@@ -44,6 +44,7 @@ from viqa.utils import (
     _to_float,
     gabor_convolve,
 )
+from viqa.deprecation import RemovedInNextVersionWarning
 
 # Global preinitialized variables
 M = 0
@@ -852,7 +853,15 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
 
 
 def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
-    """Calculate the minimum standard deviation of blocks of a given image."""
+    """Calculate the minimum standard deviation of blocks of a given image.
+
+    .. deprecated::
+        Will be removed in 1.0.0. Use :py:func:`viqa.fr_metrics.statistics.minstd` instead.
+
+    """
+    warn("This function will be deprecated in 1.0.0. "
+         "Use viqa.fr_metrics.statistics.minstd instead.", RemovedInNextVersionWarning)
+
     # Preallocate arrays
     tmp = np.empty(image.shape)
     stdout = np.empty(image.shape)
@@ -896,7 +905,16 @@ def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
 
 
 def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
-    """Calculate the statistics of blocks of a given image."""
+    """Calculate the statistics of blocks of a given image.
+
+    .. deprecated::
+        Will be removed in 1.0.0. Use :py:func:`viqa.fr_metrics.statistics.getstatistics` instead.
+
+    """
+    warn("This function will be deprecated in 1.0.0. "
+         "Use viqa.fr_metrics.statistics.getstatistics instead.",
+         RemovedInNextVersionWarning)
+
     # Preallocate arrays
     stdout = np.empty(image.shape)
     skwout = np.empty(image.shape)
