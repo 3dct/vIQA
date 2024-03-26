@@ -138,9 +138,9 @@ class MSSSIM(FullReferenceMetricsInterface):
             scale_weights : list, default=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333]
                 Weights for different scales.
             k1 : float, default=0.01
-                Algorithm parameter, K1 (small constant, see [1]_).
+                Algorithm parameter, K1 (small constant, see [2]_).
             k2 : float, default=0.03
-                Algorithm parameter, K2 (small constant, see [1]_).
+                Algorithm parameter, K2 (small constant, see [2]_).
                 Try a larger K2 constant (e.g. 0.4) if you get a negative or NaN
                 results.
 
@@ -178,7 +178,7 @@ class MSSSIM(FullReferenceMetricsInterface):
 
         References
         ----------
-        .. [1] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale
+        .. [2] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale
             structural similarity for image quality assessment. The Thirty-Seventh
             Asilomar Conference on Signals, Systems & Computers, 1298–1402.
             https://doi.org/10.1109/ACSSC.2003.1292216

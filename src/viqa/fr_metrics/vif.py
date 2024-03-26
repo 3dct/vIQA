@@ -124,7 +124,7 @@ class VIFp(FullReferenceMetricsInterface):
         Other Parameters
         ----------------
         sigma_n_sq : float, default=2.0
-            HVS model parameter (variance of the visual noise). See [1]_.
+            HVS model parameter (variance of the visual noise). See [2]_.
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
 
@@ -158,7 +158,7 @@ class VIFp(FullReferenceMetricsInterface):
 
         References
         ----------
-        .. [1] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
+        .. [2] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
             quality. IEEE Transactions on Image Processing, 15(2), 430–444.
             https://doi.org/10.1109/TIP.2005.859378
         """
