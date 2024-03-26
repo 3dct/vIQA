@@ -64,7 +64,7 @@ class RMSE(FullReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Can be omitted if ``normalize``
-        is False.
+        is False. Passed to :py:func:`viqa.utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default False

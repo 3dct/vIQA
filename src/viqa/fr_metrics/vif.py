@@ -43,7 +43,8 @@ class VIFp(FullReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
-        ``normalize`` is True and for the VIFp calculation.
+        ``normalize`` is True and for the VIFp calculation. Passed to
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
     batch : bool, default=False
