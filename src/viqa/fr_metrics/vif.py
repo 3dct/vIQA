@@ -99,6 +99,7 @@ class VIFp(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "VIFp"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """

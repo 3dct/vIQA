@@ -11,6 +11,7 @@ class FullReferenceMetricsInterface(ABC):
             **kwargs,
         }
         self.score_val = None
+        self._name = None
         if self._parameters["normalize"] and not self._parameters["data_range"]:
             raise ValueError("If normalize is True, data_range must be specified")
 
@@ -54,6 +55,7 @@ class NoReferenceMetricsInterface(ABC):
             **kwargs,
         }
         self.score_val = None
+        self._name = None
         if self._parameters["normalize"] and not self._parameters["data_range"]:
             raise ValueError("If normalize is True, data_range must be specified")
 

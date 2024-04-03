@@ -80,6 +80,7 @@ class CNR(NoReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "CNR"
 
     def score(self, img, **kwargs):
         """Calculate the contrast-to-noise ratio (CNR) between two images.

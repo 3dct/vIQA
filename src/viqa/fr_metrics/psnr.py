@@ -106,6 +106,7 @@ class PSNR(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "PSNR"
 
     def score(self, img_r, img_m):
         """Calculate the peak signal-to-noise ratio (PSNR) between two images.

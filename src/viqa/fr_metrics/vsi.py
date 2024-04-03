@@ -100,6 +100,7 @@ class VSI(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "VSI"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the visual saliency index (VSI) between two images.

@@ -122,6 +122,7 @@ class MAD(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "MAD"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the MAD between two images.

@@ -80,6 +80,7 @@ class SNR(NoReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "SNR"
 
     def score(self, img, **kwargs):
         """Calculate the signal-to-noise ratio (SNR) between two images.
