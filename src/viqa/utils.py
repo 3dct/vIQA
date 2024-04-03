@@ -25,6 +25,7 @@ import glob
 import math
 import os
 import re
+import csv
 from typing import Tuple
 from warnings import warn
 
@@ -770,3 +771,13 @@ def _check_chromatic(img_r, img_m, chromatic):
         img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
         img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
     return img_r_tensor, img_m_tensor
+
+
+def export_csv(metrics, output_path, filename):
+    """Export data to a csv file."""
+    file_path = os.path.join(output_path, filename)
+    with open(file_path, mode="w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Metric", "Value"])
+        for metric in metrics:
+            writer.writerow([metric, metric.score_val])
