@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from viqa.utils import export_csv
 
 
 class FullReferenceMetricsInterface(ABC):
@@ -22,6 +23,9 @@ class FullReferenceMetricsInterface(ABC):
     @abstractmethod
     def print_score(self):
         pass
+
+    def export_csv(self, path, filename):
+        export_csv([self], path, filename)
 
     def __eq__(self, other):
         return self.score_val == other.score_val
@@ -66,6 +70,9 @@ class NoReferenceMetricsInterface(ABC):
     @abstractmethod
     def print_score(self):
         pass
+
+    def export_csv(self, path, filename):
+        export_csv([self], path, filename)
 
     def __eq__(self, other):
         return self.score_val == other.score_val
