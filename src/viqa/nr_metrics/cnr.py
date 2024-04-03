@@ -182,22 +182,20 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     for center in signal_center:
         if not isinstance(center, int):
             raise TypeError("Signal center has to be a tuple of integers.")
-        if center - radius < 0:  # check if center is too close to the border
+        if abs(center) - radius < 0:  # check if center is too close to the border
             raise ValueError(
                 "Signal center has to be at least the radius away from the border."
             )
-        # todo: check center out of bounds
 
     for center in background_center:
         if not isinstance(center, int):
             raise TypeError("Background center has to be a tuple of integers.")
-        if center - radius < 0:
+        if abs(center) - radius < 0:
             raise ValueError(
                 "Background center has to be at least the radius away from the border."
             )
-        # todo: check center out of bounds
 
-    if not isinstance(radius, int):  # todo: check for negative radius
+    if not isinstance(radius, int) or radius <= 0:
         raise TypeError("Radius has to be an integer.")
 
     # Define regions
