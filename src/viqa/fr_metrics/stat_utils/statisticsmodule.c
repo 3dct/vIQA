@@ -81,17 +81,17 @@ static PyObject
         for (j = 0; j < n-(iblocksize-1); j += istride) {
             // Calculate the mean for each block
             mean = 0;
-            for (u = i; u < i+(iblocksize/2); u++) {
-                for (v = j; v < j+(iblocksize/2); v++) {
+            for (u = i; u < i+iblocksize; u++) {
+                for (v = j; v < j+iblocksize; v++) {
                     mean += cin[u][v];
                 }
             }
-            mean /= pow((iblocksize/2), 2);
+            mean /= pow(iblocksize, 2);
 
             // Calculate the standard deviation for each block
             stdev = 0;
-            for (u = i; u < i+(iblocksize/2); u++) {
-                for (v = j; v < j+(iblocksize/2); v++) {
+            for (u = i; u < i+iblocksize; u++) {
+                for (v = j; v < j+iblocksize; v++) {
                     stdev += pow((cin[u][v]-mean), 2);
                 }
             }
