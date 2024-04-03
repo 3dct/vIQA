@@ -220,6 +220,16 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
+    # exceptions and warning for data_range and normalize
+    if normalize and data_range is None:
+        raise ValueError("Parameter data_range must be set if normalize is True.")
+    if not normalize and data_range is not None:
+        warn(
+            "Parameter data_range is set but normalize is False. Parameter "
+            "data_range will be ignored.",
+            RuntimeWarning,
+        )
+
     img_arr: list[np.ndarray] | np.ndarray
     # Check input type
     match img:
@@ -250,22 +260,13 @@ def load_data(
                 img_arr = img  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
-        # case list():  # If input is a list
-        #     # todo: add support for list of numpy arrays
+        case [np.ndarray()]:  # If input is a list
+            img_arr = img  # Use input as list of numpy arrays
+            batch = True  # Set batch to True to normalize list of numpy arrays
         case _:
             raise ValueError(
                 "Input type not supported"
             )  # Raise exception if input type is not supported
-
-    # exceptions and warning for data_range and normalize
-    if normalize and data_range is None:
-        raise ValueError("Parameter data_range must be set if normalize is True.")
-    if not normalize and data_range is not None:
-        warn(
-            "Parameter data_range is set but normalize is False. Parameter "
-            "data_range will be ignored.",
-            RuntimeWarning,
-        )
 
     # Normalize data
     if normalize:
