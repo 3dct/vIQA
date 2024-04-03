@@ -605,6 +605,25 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     i_err = i_dst - i_org  # error image
 
     # Contrast masking
+    # TODO: change to generator
+    # i_org_blocks = np.fromiter(
+    #     _extract_blocks(
+    #         i_org,
+    #         block_size=BLOCK_SIZE,
+    #         stride=STRIDE
+    #     ),
+    #     dtype=np.float32,
+    #     count=-1
+    # )
+    # i_err_blocks = np.fromiter(
+    #     _extract_blocks(
+    #         i_err,
+    #         block_size=BLOCK_SIZE,
+    #         stride=STRIDE
+    #     ),
+    #     dtype=np.float32,
+    #     count=-1
+    # )
     i_org_blocks = _extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
     i_err_blocks = _extract_blocks(i_err, block_size=BLOCK_SIZE, stride=STRIDE)
 

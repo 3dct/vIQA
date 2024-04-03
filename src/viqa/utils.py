@@ -523,12 +523,12 @@ def _extract_blocks(img, block_size, stride):
     np.ndarray
         Numpy array of blocks
     """
-    # TODO: change to generator
     boxes = []
     m, n = img.shape
     for i in range(0, m - (block_size - 1), stride):
         for j in range(0, n - (block_size - 1), stride):
             boxes.append(img[i : i + block_size, j : j + block_size])
+            # yield(img[i:i+block_size, j:j+block_size])  # TODO: change to generator
     return np.array(boxes)
 
 
