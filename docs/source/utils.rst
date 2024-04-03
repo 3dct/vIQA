@@ -10,3 +10,4 @@ Utilities module
     normalize_data
     correlate_convolve_abs
     gabor_convolve
+    export_csv

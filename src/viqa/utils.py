@@ -774,10 +774,17 @@ def _check_chromatic(img_r, img_m, chromatic):
 
 
 def export_csv(metrics, output_path, filename):
-    """Export data to a csv file."""
+    """Export data to a csv file.
+
+        .. TODO:
+            add documentation
+
+    """
+    # todo: add check for .csv in filename
     file_path = os.path.join(output_path, filename)
     with open(file_path, mode="w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Metric", "Value"])
         for metric in metrics:
+            # todo: add n/a if metric has no value
             writer.writerow([metric._name, metric.score_val])

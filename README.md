@@ -235,9 +235,9 @@ psnr.print_score(decimals=2)
 - [ ] Validate metrics
 - [ ] Add color image support
 - [ ] Add batch support 
-- [ ] Add support for printing values
+- [x] Add support for printing values
   - [ ] Add support for .txt files
-  - [ ] Add support for .csv files
+  - [x] Add support for .csv files
 - [ ] Add support for decision fusions
 
 <!-- ## Citation TODO: add citation instructions -->
