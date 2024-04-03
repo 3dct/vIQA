@@ -128,6 +128,7 @@ class SSIM(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "SSIM"
 
     def score(self, img_r, img_m, **kwargs):
         """Calculate the structural similarity index (SSIM) between two images.

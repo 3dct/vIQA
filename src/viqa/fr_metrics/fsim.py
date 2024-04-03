@@ -95,6 +95,7 @@ class FSIM(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "FSIM"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the FSIM score between two images.

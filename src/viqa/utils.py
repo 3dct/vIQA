@@ -25,6 +25,7 @@ import glob
 import math
 import os
 import re
+import csv
 from typing import Tuple
 from warnings import warn
 
@@ -220,6 +221,16 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
+    # exceptions and warning for data_range and normalize
+    if normalize and data_range is None:
+        raise ValueError("Parameter data_range must be set if normalize is True.")
+    if not normalize and data_range is not None:
+        warn(
+            "Parameter data_range is set but normalize is False. Parameter "
+            "data_range will be ignored.",
+            RuntimeWarning,
+        )
+
     img_arr: list[np.ndarray] | np.ndarray
     # Check input type
     match img:
@@ -250,22 +261,13 @@ def load_data(
                 img_arr = img  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
-        # case list():  # If input is a list
-        #     # todo: add support for list of numpy arrays
+        case [np.ndarray()]:  # If input is a list
+            img_arr = img  # Use input as list of numpy arrays
+            batch = True  # Set batch to True to normalize list of numpy arrays
         case _:
             raise ValueError(
                 "Input type not supported"
             )  # Raise exception if input type is not supported
-
-    # exceptions and warning for data_range and normalize
-    if normalize and data_range is None:
-        raise ValueError("Parameter data_range must be set if normalize is True.")
-    if not normalize and data_range is not None:
-        warn(
-            "Parameter data_range is set but normalize is False. Parameter "
-            "data_range will be ignored.",
-            RuntimeWarning,
-        )
 
     # Normalize data
     if normalize:
@@ -522,12 +524,12 @@ def _extract_blocks(img, block_size, stride):
     np.ndarray
         Numpy array of blocks
     """
-    # TODO: change to generator
     boxes = []
     m, n = img.shape
     for i in range(0, m - (block_size - 1), stride):
         for j in range(0, n - (block_size - 1), stride):
             boxes.append(img[i : i + block_size, j : j + block_size])
+            # yield(img[i:i+block_size, j:j+block_size])  # TODO: change to generator
     return np.array(boxes)
 
 
@@ -769,3 +771,20 @@ def _check_chromatic(img_r, img_m, chromatic):
         img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
         img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
     return img_r_tensor, img_m_tensor
+
+
+def export_csv(metrics, output_path, filename):
+    """Export data to a csv file.
+
+        .. TODO:
+            add documentation
+
+    """
+    # todo: add check for .csv in filename
+    file_path = os.path.join(output_path, filename)
+    with open(file_path, mode="w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Metric", "Value"])
+        for metric in metrics:
+            # todo: add n/a if metric has no value
+            writer.writerow([metric._name, metric.score_val])

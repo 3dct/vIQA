@@ -122,6 +122,7 @@ class MAD(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, batch=batch, **kwargs
         )
+        self._name = "MAD"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the MAD between two images.
@@ -364,7 +365,8 @@ def most_apparent_distortion(
     data_range : int, default=255
         Data range of the input images.
     block_size : int, default=16
-        Size of the blocks in the MAD calculation. Must be positive.
+        Size of the blocks in the MAD calculation. Must be positive. Use 1 for no
+        blocks.
     block_overlap : float, default=0.75
         Overlap of the blocks in the MAD calculation. Given as a fraction of
         ``block_size``.
@@ -430,6 +432,8 @@ def most_apparent_distortion(
     Raises
     ------
     ValueError
+        If ``block_size`` is larger than the image dimensions. \n
+        If ``block_overlap`` is not between 0 and smaller than 1. \n
         If ``block_size`` is not positive. \n
         If ``weights`` is not of length ``scales_num``.
 
@@ -488,16 +492,19 @@ def most_apparent_distortion(
     # Original code, 2008, Eric Larson
     # Translated to Python and Adapted, 2024, Lukas Behammer
 
-    # TODO: add option for block_size = 0
     # Set global variables
-    global BLOCK_SIZE, STRIDE
-    if block_size > 0:
-        BLOCK_SIZE = block_size
-    else:
-        raise ValueError("block_size must be positive.")
-    STRIDE = BLOCK_SIZE - int(block_overlap * BLOCK_SIZE)
     global M, N
     M, N = img_r.shape
+    global BLOCK_SIZE, STRIDE
+    if block_size > M or block_size > N:
+        raise ValueError("block_size must be smaller than the image dimensions.")
+    elif block_size > 0:
+        BLOCK_SIZE = block_size
+        if block_overlap >= 1 or block_overlap < 0:
+            raise ValueError("block_overlap must be between 0 and smaller than 1.")
+        STRIDE = BLOCK_SIZE - int(block_overlap * BLOCK_SIZE)
+    else:
+        raise ValueError("block_size must be positive.")
 
     # Parameters for single metrics combination
     if (thresh_1 or thresh_2) and not (thresh_1 and thresh_2):
@@ -599,6 +606,25 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     i_err = i_dst - i_org  # error image
 
     # Contrast masking
+    # TODO: change to generator
+    # i_org_blocks = np.fromiter(
+    #     _extract_blocks(
+    #         i_org,
+    #         block_size=BLOCK_SIZE,
+    #         stride=STRIDE
+    #     ),
+    #     dtype=np.float32,
+    #     count=-1
+    # )
+    # i_err_blocks = np.fromiter(
+    #     _extract_blocks(
+    #         i_err,
+    #         block_size=BLOCK_SIZE,
+    #         stride=STRIDE
+    #     ),
+    #     dtype=np.float32,
+    #     count=-1
+    # )
     i_org_blocks = _extract_blocks(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
     i_err_blocks = _extract_blocks(i_err, block_size=BLOCK_SIZE, stride=STRIDE)
 
@@ -606,7 +632,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     mu_org_p = np.mean(i_org_blocks, axis=(1, 2))
     std_err_p = np.std(i_err_blocks, axis=(1, 2), ddof=1)
 
-    # std_org = _min_std(i_org, block_size=BLOCK_SIZE, stride=STRIDE)
+    # std_org = _min_std(i_org, block_size=BLOCK_SIZE, stride=STRIDE)  # Legacy function
     std_org = statistics.minstd(i_org, BLOCK_SIZE, STRIDE)
 
     mu_org = np.zeros(i_org.shape)
@@ -655,13 +681,12 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     )  # contrast of low distortion - threshold
     msk /= ms_scale
 
-    # Use lmse and weight by distortion mask
+    # Use lum_mse and weight by distortion mask
     win = np.ones((BLOCK_SIZE, BLOCK_SIZE)) / BLOCK_SIZE**2
-    # TODO: test for other datatypes than uint8
-    lmse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode="reflect")
+    lum_mse = convolve((_to_float(img_r) - _to_float(img_m)) ** 2, win, mode="reflect")
 
     # Kill the edges
-    mp = msk * lmse
+    mp = msk * lum_mse
     mp2 = mp[BLOCK_SIZE:-BLOCK_SIZE, BLOCK_SIZE:-BLOCK_SIZE]
 
     # Calculate high quality index by using the 2-norm
@@ -732,6 +757,7 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     stats = np.zeros((M, N))
     for scale_n in range(scales_num):
         for orientation_n in range(orientations_num):
+            # Legacy function
             # std_ref, skw_ref, krt_ref = _get_statistics(
             #     np.abs(gabor_org[scale_n, orientation_n]),
             #     block_size=BLOCK_SIZE,
