@@ -780,4 +780,4 @@ def export_csv(metrics, output_path, filename):
         writer = csv.writer(f)
         writer.writerow(["Metric", "Value"])
         for metric in metrics:
-            writer.writerow([metric, metric.score_val])
+            writer.writerow([metric._name, metric.score_val])
