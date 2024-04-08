@@ -238,7 +238,9 @@ psnr.print_score(decimals=2)
 - [x] Add support for printing values
   - [ ] Add support for .txt files
   - [x] Add support for .csv files
-- [ ] Add support for decision fusions
+- [x] Add support for fusions
+  - [x] Add support for linear combination
+  - [ ] Add support for decision fusion
 
 <!-- ## Citation TODO: add citation instructions -->
 
