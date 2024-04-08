@@ -195,7 +195,7 @@ psnr.print_score(decimals=2)
     - [x] Add tests for PSNR
     - [x] Add tests for SSIM
     - [ ] Add tests for MSSSIM
-    - [ ] Add tests for FSIM
+    - [x] Add tests for FSIM
     - [ ] Add tests for VSI
     - [ ] Add tests for VIF
     - [x] Add tests for MAD
