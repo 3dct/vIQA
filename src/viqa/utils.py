@@ -786,5 +786,7 @@ def export_csv(metrics, output_path, filename):
         writer = csv.writer(f)
         writer.writerow(["Metric", "Value"])
         for metric in metrics:
-            # todo: add n/a if metric has no value
-            writer.writerow([metric._name, metric.score_val])
+            if metric.score_val is None:
+                metric.score_val = "n/a"
+            else:
+                writer.writerow([metric._name, metric.score_val])
