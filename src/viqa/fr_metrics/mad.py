@@ -44,7 +44,7 @@ from viqa.utils import (
     _to_float,
     gabor_convolve,
 )
-from viqa.fr_metrics import statistics
+from viqa.fr_metrics.stat_utils import statistics
 from viqa.deprecation import RemovedInNextVersionWarning
 
 # Global preinitialized variables
