@@ -776,15 +776,32 @@ def _check_chromatic(img_r, img_m, chromatic):
 def export_csv(metrics, output_path, filename):
     """Export data to a csv file.
 
-        .. TODO:
-            add documentation
+    Parameters
+    ----------
+    metrics : list
+        List of metrics
+    output_path : str or os.PathLike
+        Output path
+    filename : str or os.PathLike
+        Name of the file
 
+    Examples
+    --------
+    >>> from viqa import export_csv, FSIM  # doctest: +SKIP
+    >>> metric1 = FSIM()  # doctest: +SKIP
+    >>> metrics = [metric1]  # doctest: +SKIP
+    >>> export_csv(metrics, "path/to/output", "filename.csv")  # doctest: +SKIP
     """
-    # todo: add check for .csv in filename
+    # Check if filename has the correct extension
+    if not filename.lower().endswith(".csv"):
+        filename += ".csv"
+    # Create file path
     file_path = os.path.join(output_path, filename)
-    with open(file_path, mode="w", newline="") as f:
+    with open(file_path, mode="w", newline="") as f:  # Open file
         writer = csv.writer(f)
         writer.writerow(["Metric", "Value"])
         for metric in metrics:
-            # todo: add n/a if metric has no value
-            writer.writerow([metric._name, metric.score_val])
+            if metric.score_val is None:
+                metric.score_val = "n/a"
+            else:
+                writer.writerow([metric._name, metric.score_val])

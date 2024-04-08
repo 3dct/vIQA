@@ -177,7 +177,7 @@ class FSIM(FullReferenceMetricsInterface):
         For 3D images if ``dim`` is given, but ``im_slice`` is not, the FSIM is
         calculated for the full volume of the 3D image. This is implemented as `mean` of
         the FSIM values of all slices of the given dimension. If ``dim`` is given and
-        ``im_slice`` is given,  the FSIM is calculated for the given slice of the given
+        ``im_slice`` is given, the FSIM is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
         """
         img_r, img_m = _check_imgs(
@@ -257,7 +257,7 @@ class FSIM(FullReferenceMetricsInterface):
                     **kwargs,
                 )
             else:
-                if type(im_slice) is not int or None:
+                if type(im_slice) is not int and im_slice is not None:
                     raise ValueError("im_slice must be an integer.")
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
@@ -288,4 +288,4 @@ class FSIM(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("FSIM: {}".format(round(self.score_val, decimals)))
         else:
-            print("No score value for FSIM. Run score() first.")
+            warn("No score value for FSIM. Run score() first.", RuntimeWarning)

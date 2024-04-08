@@ -239,6 +239,11 @@ This is the API reference for vIQA, a package for volumetric Image Quality Asses
 
    utils
 
+.. toctree::
+   :maxdepth: 2
+
+   fusion
+
 
 ******************
 Indices and tables

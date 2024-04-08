@@ -136,7 +136,7 @@ class TestCenterAndRadius:
     def test_snr_radius_float(self):
         img = np.zeros((256, 256))
         snr = viqa.SNR()
-        with pytest.raises(TypeError, match=re.escape('Radius has to be an integer.')):
+        with pytest.raises(TypeError, match=re.escape('Radius has to be a positive integer.')):
             snr.score(img, signal_center=(128, 128), radius=8.5)
 
 
