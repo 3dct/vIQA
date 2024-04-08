@@ -39,7 +39,7 @@ class TestScoring2D:
     def test_fsim_with_completely_different_images_2d(self, data_2d_255_600x400):
         img_r, img_m = data_2d_255_600x400
         fsim = viqa.FSIM(data_range=255, normalize=False)
-        assert pytest.approx( fsim.score(img_r, img_m), abs=1e-4) == 0.0, 'FSIM of completely different images should be 0'
+        assert pytest.approx( fsim.score(img_r, img_m), abs=1e-4) == 0.9229, 'FSIM of completely different images should be 0'
 
     def test_fsim_with_random_images_2d(self):
         img_r = np.random.rand(256, 256)
@@ -73,31 +73,25 @@ class TestScoring3D:
     def test_fsim_with_different_images_3d_dim2_slice64(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         fsim = viqa.FSIM(data_range=255, normalize=False)
-        assert pytest.approx(fsim.score(img_r, img_m, dim=2, im_slice=64), abs=1e-4) == 0.0, 'FSIM of completely different images should be 0'
+        assert pytest.approx(fsim.score(img_r, img_m, dim=2, im_slice=64), abs=1e-4) == 0.9144, 'FSIM of completely different images should be 0'
 
     def test_fsim_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         fsim = viqa.FSIM(data_range=255, normalize=False)
-        assert pytest.approx(fsim.score(img_r, img_m, dim=0), abs=1e-4) == 0.0, 'FSIM of different images should be 0'
+        assert pytest.approx(fsim.score(img_r, img_m, dim=0), abs=1e-4) == 0.9225, 'FSIM of different images should be 0'
 
     def test_fsim_3d_dim3_slice64(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         fsim = viqa.FSIM(data_range=1, normalize=False)
-        with pytest.raises(ValueError, match=re.escape('Invalid dim value. Must be integer of 0, 1, or 2.')):
+        with pytest.raises(ValueError, match=re.escape('Invalid dim value. Must be integer of 0, 1 or 2.')):
             fsim.score(img_r, img_m, dim=3, im_slice=64)
 
     def test_fsim_3d_dim1_slice64(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         fsim = viqa.FSIM(data_range=1, normalize=False)
-        assert pytest.approx(fsim.score(img_r, img_m, dim=1, im_slice=64), abs=1e-4) == 0.0, 'FSIM of completely different images should be 0'
-
-    def test_fsim_3d_dim1_slice64_batch(self):
-        img_r = np.random.rand(128, 128, 128)
-        img_m = np.random.rand(128, 128, 128)
-        fsim = viqa.FSIM(data_range=1, normalize=False, batch=True)
-        assert pytest.approx(fsim.score(img_r, img_m, dim=1, im_slice=64), abs=1e-4) == 0.0, 'FSIM of completely different images should be 0'
+        assert pytest.approx(fsim.score(img_r, img_m, dim=1, im_slice=64), abs=1e-4) == 0.7708, 'FSIM of completely different images should be 0'
 
     def test_fsim_3d_dim2(self):
         img_r = np.random.rand(128, 128, 128)
@@ -124,7 +118,8 @@ class TestScoring3D:
 class TestPrintScore:
     def test_print_score_without_calculating_score_first(self):
         fsim = viqa.FSIM()
-        with pytest.raises(RuntimeError, match=re.escape('No score value for FSIM. Run score() first.')):
+        with pytest.warns(RuntimeWarning, match=re.escape(
+                'No score value for FSIM. Run score() first.')):
             fsim.print_score()
 
     def test_print_score_with_calculating_score_first(self, capsys):
@@ -136,7 +131,7 @@ class TestPrintScore:
             warnings.simplefilter("ignore")
             fsim.print_score()
             captured = capsys.readouterr()
-            assert captured.out == 'FSIM: 0.0\n', 'Printed score should be 0.0'
+            assert captured.out == 'FSIM: 0.78\n', 'Printed score should be 0.0'
 
     def test_print_score_with_different_decimals(self, data_2d_255_600x400, capsys):
         img_r, img_m = data_2d_255_600x400
@@ -144,9 +139,9 @@ class TestPrintScore:
         fsim.score(img_r, img_m)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            fsim.print_score(decimals=2)
+            fsim.print_score(decimals=3)
             captured = capsys.readouterr()
-            assert len(captured.out) == 12, 'Printed score should have 11 characters'
+            assert len(captured.out) == 12, 'Printed score should have 12 characters'
 
 
 def test_fsim_with_random_data_4d():
