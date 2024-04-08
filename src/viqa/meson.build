@@ -4,6 +4,7 @@ python_sources = [
     '_metrics.py',
     'deprecation.py',
     'utils.py',
+    'fusion.py',
 ]
 
 py.install_sources(
