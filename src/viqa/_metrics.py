@@ -25,7 +25,19 @@ class FullReferenceMetricsInterface(ABC):
         pass
 
     def export_csv(self, path, filename):
-        # todo: add documentation
+        """Export the score to a csv file.
+
+        Parameters
+        ----------
+        path : str
+            The path where the csv file should be saved.
+        filename : str
+            The name of the csv file.
+
+        Notes
+        -----
+        The arguments get passed to :py:func:`.viqa.utils.export_csv`.
+        """
         export_csv([self], path, filename)
 
     def __eq__(self, other):
