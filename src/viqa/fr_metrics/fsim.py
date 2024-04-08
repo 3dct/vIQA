@@ -177,7 +177,7 @@ class FSIM(FullReferenceMetricsInterface):
         For 3D images if ``dim`` is given, but ``im_slice`` is not, the FSIM is
         calculated for the full volume of the 3D image. This is implemented as `mean` of
         the FSIM values of all slices of the given dimension. If ``dim`` is given and
-        ``im_slice`` is given,  the FSIM is calculated for the given slice of the given
+        ``im_slice`` is given, the FSIM is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
         """
         img_r, img_m = _check_imgs(

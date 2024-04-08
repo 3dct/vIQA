@@ -791,7 +791,6 @@ def export_csv(metrics, output_path, filename):
     >>> metric1 = FSIM()  # doctest: +SKIP
     >>> metrics = [metric1]  # doctest: +SKIP
     >>> export_csv(metrics, "path/to/output", "filename.csv")  # doctest: +SKIP
-
     """
     # Check if filename has the correct extension
     if not filename.lower().endswith(".csv"):
