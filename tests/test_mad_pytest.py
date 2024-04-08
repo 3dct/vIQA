@@ -7,6 +7,7 @@ import numpy as np
 # from .context import viqa
 import viqa
 
+
 class TestInit:
     def test_init_with_default_parameters(self):
         mad = viqa.MAD()
@@ -38,7 +39,7 @@ class TestScoring2D:
 
     def test_mad_score_with_different_images_2d(self, data_2d_255_600x400):
         img_r, img_m = data_2d_255_600x400
-        mad = viqa.MAD()
+        mad = viqa.MAD(data_range=255, normalize=False)
         assert mad.score(img_r, img_m) != 0.0, 'MAD of completely different images should not be 0'
 
     def test_mad_score_with_random_images_2d(self):
@@ -112,8 +113,7 @@ class TestScoring3D:
                                                                   data_3d_native_400x400x200):
         img_r_255, img_m_255 = data_3d_255_400x400x200
         img_r, img_m = data_3d_native_400x400x200
-        print(img_r.ndim)
-        mad = viqa.MAD()
+        mad = viqa.MAD(data_range=255)
         score1 = mad.score(img_r_255, img_m_255, dim=0, im_slice=64)
         mad_2 = viqa.MAD(data_range=65535)
         score2 = mad_2.score(img_r, img_m, dim=0, im_slice=64)
@@ -148,7 +148,7 @@ class TestPrintScore:
             assert len(captured.out) == 12, 'Printed score should have 11 characters'
 
 
-def test_mad_score_with_random_data_ranges_4d():
+def test_mad_score_with_random_data_4d():
     img_r = np.random.rand(128, 128, 128, 128)
     img_m = np.random.rand(128, 128, 128, 128)
     mad = viqa.MAD(data_range=1)
