@@ -63,28 +63,19 @@ static PyObject
         return NULL;
     }
     if (NULL == matin) return NULL;
-    printf("Arguments parsed.\n");
     // Get dimensions of input array
     n = dims[0] = matin->dimensions[0];
     m = dims[1] = matin->dimensions[1];
 
-    printf("Dimensions: %d x %d\n", n, m);
     // Create output arrays
     matout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
     tmp=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
-    if (tmp == NULL || matout == NULL) {
-        printf("Error creating output arrays.\n");
-        return 0;
-    }
-
-    printf("Output arrays created.\n");
 
     // Convert input and output arrays to C pointers
     tmp_data=pymatrix_to_Carrayptrs(tmp);
     cin=pymatrix_to_Carrayptrs(matin);
     cout=pymatrix_to_Carrayptrs(matout);
 
-    printf("Calculating standard deviation.\n");
     // For each area of size istride x istride, calculate the standard deviation
     for (i = 0; i < m-(iblocksize-1); i += istride) {
         for (j = 0; j < n-(iblocksize-1); j += istride) {
@@ -116,7 +107,6 @@ static PyObject
         }
     }
 
-    printf("Calculating Minimum.\n");
     // Calculate minimum standard deviation for each area
     for (i = 0; i < m-(iblocksize-1); i += istride) {
         for (j = 0; j < n-(iblocksize-1); j += istride) {
@@ -127,29 +117,24 @@ static PyObject
                     if (tmp_data[u][v] < val)
                     {
                         val = tmp_data[u][v];
-                        printf("New minimum: %f\n", val);
                     }
                 }
             }
 
-            printf("Minimum found: %f\n", val);
             // Assign minimum standard deviation to output array
             for (u = i; u < (i+istride); u++) {
                 for (v = j; v < (j + istride); v++) {
                     cout[u][v] = val;
-                    printf("Assigned minimum to output array.\n");
                 }
             }
         }
     }
 
-    printf("Standard deviation calculated.\n");
     // Free memory
     free_Carrayptrs(cin);
     free_Carrayptrs(cout);
     free_Carrayptrs(tmp_data);
 
-    printf("Memory freed.\n");
     // Return output array
     return PyArray_Return(matout);
 }
