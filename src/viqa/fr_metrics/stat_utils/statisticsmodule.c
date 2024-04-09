@@ -45,7 +45,7 @@ static struct PyModuleDef statisticsModule = {
 
 // Module Initialization
 PyMODINIT_FUNC PyInit_statistics(void) {
-    import_array();
+    _import_array();
     return PyModule_Create(&statisticsModule);
 }
 
@@ -55,27 +55,36 @@ static PyObject
     // Declare variables
     PyArrayObject *matin, *matout, *tmp;
     double **cin, **cout, **tmp_data, mean, stdev, val;
-    int iblocksize, istride, i, j, u, v, n, m, dims[2];
+    int iblocksize, istride, i, j, u, v, n, m;
+    npy_intp dims[2];
 
     // Parse input arguments
     if (!PyArg_ParseTuple(args, "O!ii", &PyArray_Type, &matin, &iblocksize, &istride)) {
         return NULL;
     }
     if (NULL == matin) return NULL;
-
+    printf("Arguments parsed.\n");
     // Get dimensions of input array
     n = dims[0] = matin->dimensions[0];
     m = dims[1] = matin->dimensions[1];
 
+    printf("Dimensions: %d x %d\n", n, m);
     // Create output arrays
-    matout=(PyArrayObject *) PyArray_FromDims(2, dims, NPY_DOUBLE);
-    tmp=(PyArrayObject *) PyArray_FromDims(2, dims, NPY_DOUBLE);
+    matout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    tmp=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    if (tmp == NULL || matout == NULL) {
+        printf("Error creating output arrays.\n");
+        return 0;
+    }
+
+    printf("Output arrays created.\n");
 
     // Convert input and output arrays to C pointers
     tmp_data=pymatrix_to_Carrayptrs(tmp);
     cin=pymatrix_to_Carrayptrs(matin);
     cout=pymatrix_to_Carrayptrs(matout);
 
+    printf("Calculating standard deviation.\n");
     // For each area of size istride x istride, calculate the standard deviation
     for (i = 0; i < m-(iblocksize-1); i += istride) {
         for (j = 0; j < n-(iblocksize-1); j += istride) {
@@ -107,34 +116,40 @@ static PyObject
         }
     }
 
+    printf("Calculating Minimum.\n");
     // Calculate minimum standard deviation for each area
     for (i = 0; i < m-(iblocksize-1); i += istride) {
         for (j = 0; j < n-(iblocksize-1); j += istride) {
             // Look for minimum standard deviation in blocks of size istride x istride
             val = tmp_data[i][j];
-            for (u = i; i < (iblocksize/2); u += (istride+1)) {
-                for (v = j; j < (iblocksize/2); v += (istride+1)) {
+            for (u = i; u < (iblocksize/2); u += (istride+1)) {
+                for (v = j; v < (iblocksize/2); v += (istride+1)) {
                     if (tmp_data[u][v] < val)
                     {
                         val = tmp_data[u][v];
+                        printf("New minimum: %f\n", val);
                     }
                 }
             }
 
+            printf("Minimum found: %f\n", val);
             // Assign minimum standard deviation to output array
-            for (u = i; i < (i+istride); u++) {
-                for (v = j; j < (j + istride); v++) {
+            for (u = i; u < (i+istride); u++) {
+                for (v = j; v < (j + istride); v++) {
                     cout[u][v] = val;
+                    printf("Assigned minimum to output array.\n");
                 }
             }
         }
     }
 
+    printf("Standard deviation calculated.\n");
     // Free memory
     free_Carrayptrs(cin);
     free_Carrayptrs(cout);
     free_Carrayptrs(tmp_data);
 
+    printf("Memory freed.\n");
     // Return output array
     return PyArray_Return(matout);
 }
@@ -145,7 +160,8 @@ static PyObject
     // Declare variables
     PyArrayObject *matin, *stdevout, *skwout, *krtout;
     double **cin, **stdev_data, **skw_data, **krt_data, tmp, stmp, mean, stdev, krt, skw;
-    int iblocksize, istride, i, j, u, v, n, m, dims[2];
+    int iblocksize, istride, i, j, u, v, n, m;
+    npy_intp dims[2];
 
     // Parse input arguments
     if (!PyArg_ParseTuple(args, "O!ii", &PyArray_Type, &matin, &iblocksize, &istride)) {
@@ -158,9 +174,9 @@ static PyObject
     m = dims[1] = matin->dimensions[1];
 
     // Create output arrays
-    stdevout=(PyArrayObject *) PyArray_FromDims(2, dims, NPY_DOUBLE);
-    skwout=(PyArrayObject *) PyArray_FromDims(2, dims, NPY_DOUBLE);
-    krtout=(PyArrayObject *) PyArray_FromDims(2, dims, NPY_DOUBLE);
+    stdevout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    skwout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    krtout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
 
     // Convert input and output arrays to C pointers
     cin=pymatrix_to_Carrayptrs(matin);
