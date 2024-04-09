@@ -1,7 +1,5 @@
 import pytest
 
-from .context import viqa
-
 REFERENCE = "../data/Catec_Two_PlateIQI_20um_1620proj_220kV_Rayscan-SimCT_800x800x1000_16bit.raw"
 MODIFIED = "../data/Catec_Two_PlateIQI_20um_810proj_220kV_Rayscan-SimCT_800x800x1000_16bit.raw"
 

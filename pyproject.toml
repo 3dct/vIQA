@@ -146,7 +146,7 @@ ignore_missing_imports = true
 ######################################################################
 # PyTest
 [tool.pytest.ini_options]
-addopts = "--doctest-plus --doctest-continue-on-failure --cov=viqa --cov-append --cov-report html --import-mode=append"
+addopts = "--doctest-plus --doctest-continue-on-failure --cov=viqa --cov-append --cov-report html --import-mode=importlib"
 
 ######################################################################
 # Coverage
