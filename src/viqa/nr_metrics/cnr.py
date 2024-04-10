@@ -128,6 +128,8 @@ class CNR(NoReferenceMetricsInterface):
         else:
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 
+    # Add visualization method here
+
 
 def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     """Calculate the contrast-to-noise ratio (CNR) between two images.

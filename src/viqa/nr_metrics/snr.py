@@ -128,6 +128,8 @@ class SNR(NoReferenceMetricsInterface):
         else:
             warn("No score value for SNR. Run score() first.", RuntimeWarning)
 
+    # Add visualization method here
+
 
 def signal_to_noise_ratio(img, signal_center, radius):
     """Calculate the signal-to-noise ratio (SNR) between two images.
