@@ -30,6 +30,7 @@ from typing import Tuple
 from warnings import warn
 
 import torch
+import nibabel as nib
 import numpy as np
 import scipy.fft as fft
 from torch import Tensor
@@ -39,8 +40,8 @@ def _load_data_from_disk(
     file_dir: str | os.PathLike, file_name: str | os.PathLike
 ) -> np.ndarray:
     """
-    Load data from a .mhd file and its corresponding .raw file or a .raw file only
-    and normalize it.
+    Load data from a .mhd file and its corresponding .raw file, a .raw file only or a
+    NIfTI file.
 
     Parameters
     ----------
@@ -145,6 +146,17 @@ def _load_data_from_disk(
             )  # Raise exception if the bit depth is not supported
 
         data_file_path = os.path.join(file_dir, file_name)  # Get data file path
+    elif file_ext == ".nii":
+        img_arr = load_nifti(file_path)
+        return img_arr
+    elif file_ext == ".gz":
+        if re.search('.nii', file_name):
+            img_arr = load_nifti(file_path)
+            return img_arr
+        else:
+            raise ValueError(
+                "File extension not supported"
+            )
     else:
         raise ValueError(
             "File extension not supported"
@@ -158,6 +170,35 @@ def _load_data_from_disk(
 
     # Reshape numpy array according to DimSize
     img_arr = img_arr_orig.reshape(*dim_size[::-1])
+    return img_arr
+
+
+def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
+    """
+    Load data from a .nii file.
+
+    Parameters
+    ----------
+    file_path : str or os.PathLike
+        File path
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Numpy array containing the data
+
+    Examples
+    --------
+    >>> from viqa.utils import load_nifti  # doctest: +SKIP
+    >>> img = load_nifti("path/to/image.nii.gz")  # doctest: +SKIP
+
+    Notes
+    -----
+    This function wraps the nibabel function ``nib.load``.
+    """
+
+    img = nib.load(file_path)
+    img_arr = img.get_fdata()
     return img_arr
 
 

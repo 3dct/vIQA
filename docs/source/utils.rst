@@ -7,6 +7,7 @@ Utilities module
    :toctree: generated
 
     load_data
+    load_nifti
     normalize_data
     correlate_convolve_abs
     gabor_convolve

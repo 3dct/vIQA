@@ -58,6 +58,7 @@ with grayscale images by copying the luminance channel 3 times.
 
 ## Requirements
 The following packages have to be installed:
+- nibabel
 - numpy
 - scipy
 - pytorch
