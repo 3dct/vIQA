@@ -26,7 +26,7 @@ from warnings import warn
 import numpy as np
 import scipy.ndimage as ndi
 
-from viqa._kernels import *
+from viqa.kernels import *
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.utils import _check_imgs, _to_float
 
