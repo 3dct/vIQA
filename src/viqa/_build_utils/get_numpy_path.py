@@ -2,6 +2,7 @@
 """Get numpy include path."""
 
 import os
+
 import numpy
 
 os.chdir("..")
