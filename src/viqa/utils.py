@@ -2,8 +2,27 @@
 
 Examples
 --------
-.. todo::
-    add examples
+    .. doctest-skip::
+
+        >>> from viqa import load_data
+        >>> img_path = "path/to/image.mhd"
+        >>> img = load_data(img_path)
+
+        >>> import numpy as np
+        >>> from viqa import normalize_data
+        >>> img = np.random.rand(128, 128)
+        >>> img.dtype
+        dtype('float64')
+        >>> img = normalize_data(img, data_range=255)
+        >>> img.dtype
+        dtype('uint8')
+
+        >>> from viqa import export_csv, PSNR, RMSE
+        >>> metrics = [PSNR, RMSE]
+        >>> output_path = "path/to/output"
+        >>> filename = "metrics.csv"
+        >>> export_csv(metrics, output_path, filename)
+
 """
 
 # Authors
@@ -19,20 +38,20 @@ Examples
 #
 # License
 # -------
-# TODO: add license
+# BSD-3-Clause License
 
+import csv
 import glob
 import math
 import os
 import re
-import csv
 from typing import Tuple
 from warnings import warn
 
-import torch
 import nibabel as nib
 import numpy as np
 import scipy.fft as fft
+import torch
 from torch import Tensor
 
 
@@ -109,7 +128,7 @@ def _load_data_from_disk(
     elif file_ext == ".raw":  # If file is a .raw file
         # Check dimension
         dim_search_result = re.search(
-            r"(\d+([x])\d+([x])\d+)", file_name_head
+            r"(\d+(x)\d+(x)\d+)", file_name_head
         )  # Search for dimension in file name
         if dim_search_result is not None:  # If dimension was found
             dim = dim_search_result.group(1)  # Get dimension from file name
@@ -119,7 +138,7 @@ def _load_data_from_disk(
             )  # Raise exception if no dimension was found
 
         # Extract dimension
-        dim_size = re.split("[x]", dim)  # Split dimension string into list
+        dim_size = re.split("x", dim)  # Split dimension string into list
         dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
 
         # Check bit depth
@@ -196,7 +215,6 @@ def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
     -----
     This function wraps the nibabel function ``nib.load``.
     """
-
     img = nib.load(file_path)
     img_arr = img.get_fdata()
     return img_arr
@@ -489,7 +507,7 @@ def correlate_convolve_abs(
     Examples
     --------
     >>> import numpy as np
-    >>> from viqa import _kernels
+    >>> from viqa import kernels
     >>> img = np.random.rand(128, 128)
     >>> kernel = kernels.sobel_kernel_2d_x()
     >>> res = correlate_convolve_abs(
@@ -575,12 +593,12 @@ def _extract_blocks(img, block_size, stride):
 
 
 def _fft(img):
-    """Wrapper for scipy fft."""
+    """Wrap scipy fft."""
     return fft.fftshift(fft.fftn(img))
 
 
 def _ifft(fourier_img):
-    """Wrapper for scipy ifft."""
+    """Wrap scipy ifft."""
     return fft.ifftn(fft.ifftshift(fourier_img))
 
 
@@ -716,7 +734,7 @@ def gabor_convolve(
     # convert image to frequency domain
     im_fft = fft.fftn(img)
 
-    # compute matrices of same site as im with values ranging from -0.5 to 0.5 (-1.0 to
+    # compute matrices of same size as im with values ranging from -0.5 to 0.5 (-1.0 to
     # 1.0) for horizontal and vertical
     #   directions each
     if _is_even(cols):
@@ -828,10 +846,13 @@ def export_csv(metrics, output_path, filename):
 
     Examples
     --------
-    >>> from viqa import export_csv, FSIM  # doctest: +SKIP
-    >>> metric1 = FSIM()  # doctest: +SKIP
-    >>> metrics = [metric1]  # doctest: +SKIP
-    >>> export_csv(metrics, "path/to/output", "filename.csv")  # doctest: +SKIP
+        .. doctest-skip::
+
+            >>> from viqa import export_csv, FSIM, PSNR
+            >>> metric1 = FSIM()
+            >>> metric2 = PSNR()
+            >>> metrics = [metric1, metric2]
+            >>> export_csv(metrics, "path/to/output", "filename.csv")
     """
     # Check if filename has the correct extension
     if not filename.lower().endswith(".csv"):
