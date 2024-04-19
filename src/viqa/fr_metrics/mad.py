@@ -27,7 +27,7 @@ Examples
 #
 # License
 # -------
-# TODO: add license
+# BSD-3-Clause License
 
 from typing import Any
 from warnings import warn
@@ -36,6 +36,8 @@ import numpy as np
 from scipy.ndimage import convolve
 
 from viqa._metrics import FullReferenceMetricsInterface
+from viqa.deprecation import RemovedInNextVersionWarning
+from viqa.fr_metrics.stat_utils import statistics
 from viqa.utils import (
     _check_imgs,
     _extract_blocks,
@@ -44,8 +46,6 @@ from viqa.utils import (
     _to_float,
     gabor_convolve,
 )
-from viqa.fr_metrics.stat_utils import statistics
-from viqa.deprecation import RemovedInNextVersionWarning
 
 # Global preinitialized variables
 M = 0
@@ -492,6 +492,11 @@ def most_apparent_distortion(
     # -------------
     # Original code, 2008, Eric Larson
     # Translated to Python and Adapted, 2024, Lukas Behammer
+    #
+    # License
+    # -------
+    # No License attached to the original code.
+    # Permission to use the code was granted by Eric Larson.
 
     # Set global variables
     global M, N
@@ -563,6 +568,11 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     # -------------
     # Original code, 2008, Eric Larson
     # Translated to Python and Adapted, 2024, Lukas Behammer
+    #
+    # License
+    # -------
+    # No License attached to the original code.
+    # Permission to use the code was granted by Eric Larson.
 
     account_monitor = kwargs.pop("account_monitor", False)
     # Account for display function of monitor
@@ -726,6 +736,11 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     # -------------
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
+    #
+    # License
+    # -------
+    # No License attached to the original code.
+    # Permission to use the code was granted by Eric Larson.
 
     orientations_num = kwargs.pop("orientations_num", 4)
     scales_num = kwargs.pop("scales_num", 5)
@@ -820,6 +835,11 @@ def _pixel_to_lightness(
     # -------------
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
+    #
+    # License
+    # -------
+    # No License attached to the original code.
+    # Permission to use the code was granted by Eric Larson.
 
     if issubclass(img.dtype.type, np.integer):  # if image is integer
         # Create LUT
@@ -861,6 +881,11 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
     # -------------
     # Original code, 2008, Eric Larson
     # Translated to Python, 2024, Lukas Behammer
+    #
+    # License
+    # -------
+    # No License attached to the original code.
+    # Permission to use the code was granted by Eric Larson.
 
     # Create a meshgrid that represents the spatial domain of the image.
     x_plane, y_plane = np.meshgrid(
@@ -895,7 +920,8 @@ def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
     """Calculate the minimum standard deviation of blocks of a given image.
 
     .. deprecated::
-        Will be removed in 1.0.0. Use :py:func:`viqa.fr_metrics.statistics.minstd` instead.
+        Will be removed in 1.0.0. Use :py:func:`viqa.fr_metrics.statistics.minstd`
+        instead.
 
     """
     warn("This function will be deprecated in 1.0.0. "
@@ -947,7 +973,8 @@ def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
     """Calculate the statistics of blocks of a given image.
 
     .. deprecated::
-        Will be removed in 1.0.0. Use :py:func:`viqa.fr_metrics.statistics.getstatistics` instead.
+        Will be removed in 1.0.0. Use
+        :py:func:`viqa.fr_metrics.statistics.getstatistics` instead.
 
     """
     warn("This function will be deprecated in 1.0.0. "
