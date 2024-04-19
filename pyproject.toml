@@ -111,6 +111,9 @@ select = [
     "W",
     "C901",
 ]
+exclude = [
+    "D301",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"  # Accepts: "google", "numpy", or "pep257".
