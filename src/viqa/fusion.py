@@ -28,4 +28,4 @@ def fuse_metrics_linear_combination(metrics, weights):
     >>> fuse_metrics_linear_combination(metrics, weights)
     10.25
     """
-    return sum([m.score_val * w for m, w in zip(metrics, weights)])
+    return sum([m.score_val * w for m, w in zip(metrics, weights, strict=True)])
