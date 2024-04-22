@@ -199,7 +199,7 @@ class MSSSIM(FullReferenceMetricsInterface):
             normalize=self._parameters["normalize"],
             batch=self._parameters["batch"],
         )
-        
+
         if img_r.ndim == 3:
             if (
                     dim is not None and type(im_slice) is int
@@ -248,7 +248,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                         )
             elif (
                     dim is not None and im_slice is None
-            ):  # if dim is given, but im_slice is not, calculate MS-SSIM for full volume
+            ):  # if dim is given, but im_slice is not, calculate MS-SSIM for full
+                # volume
                 warn(
                     "im_slice is not given. Calculating MS-SSIM for full volume.",
                     RuntimeWarning,
@@ -292,6 +293,18 @@ class MSSSIM(FullReferenceMetricsInterface):
         return score_val
 
     def print_score(self, decimals=2):
+        """Print the MSSSIM score value of the last calculation.
+
+        Parameters
+        ----------
+        decimals : int, default=2
+            Number of decimal places to print the score value.
+
+        Warns
+        -----
+        RuntimeWarning
+            If :py:attr:`score_val` is not available.
+        """
         if self.score_val is not None:
             print("MS-SSIM: {}".format(round(self.score_val, decimals)))
         else:
