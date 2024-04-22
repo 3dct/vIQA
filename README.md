@@ -41,7 +41,7 @@ Overview
 | RMSE    | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :x:       | &mdash;   |
 | SSIM    | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^a]                           | :heavy_check_mark: | :x:       | [^1]      |
 | MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:       | [^2]      |
-| FSIM    | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :x:                | :x:       | [^3]      |
+| FSIM    | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :heavy_check_mark: | :x:       | [^3]      |
 | VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^b]                       | :x:                | :x: [^c]  | [^4]      |
 | VSI     | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^d] | $[0, 1]$                                 | :x:                | :x:       | [^5]      |
 | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^6]      |
