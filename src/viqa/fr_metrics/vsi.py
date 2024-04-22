@@ -2,7 +2,14 @@
 
 Examples
 --------
-    .. todo:: Add examples
+    .. doctest-skip::
+
+        >>> import numpy as np
+        >>> from viqa import VSI
+        >>> img_r = np.random.rand(256, 256)
+        >>> img_m = np.random.rand(256, 256)
+        >>> vsi = VSI()
+        >>> vsi.score(img_r, img_m, data_range=1)
 
 """
 
@@ -26,7 +33,7 @@ from warnings import warn
 from piq import vsi
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs, _check_chromatic
+from viqa.utils import _check_chromatic, _check_imgs
 
 
 class VSI(FullReferenceMetricsInterface):
@@ -194,7 +201,7 @@ class VSI(FullReferenceMetricsInterface):
             normalize=self._parameters["normalize"],
             batch=self._parameters["batch"],
         )
-        
+
         if img_r.ndim == 3:
             if (
                     dim is not None and type(im_slice) is int
@@ -287,6 +294,18 @@ class VSI(FullReferenceMetricsInterface):
         return score_val
 
     def print_score(self, decimals=2):
+        """Print the VSI score value of the last calculation.
+
+        Parameters
+        ----------
+        decimals : int, default=2
+            Number of decimal places to print the score value.
+
+        Warns
+        -----
+        RuntimeWarning
+            If :py:attr:`score_val` is not available.
+        """
         if self.score_val is not None:
             print("VSI: {}".format(round(self.score_val, decimals)))
         else:
