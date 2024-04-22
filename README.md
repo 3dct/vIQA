@@ -39,19 +39,22 @@ Overview
 |---------|-----------------------------------------------|------|-----------------------|-------------------------|------------------------------------------|--------------------|-----------|-----------|
 | PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
 | RMSE    | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :x:       | &mdash;   |
-| SSIM    | Structured Similarity                         | FR   | 3D native             |                         | $[0, 1]$                                 | :heavy_check_mark: | :x:       | [^1]      |
+| SSIM    | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^a]                           | :heavy_check_mark: | :x:       | [^1]      |
 | MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:       | [^2]      |
 | FSIM    | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :x:                | :x:       | [^3]      |
-| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^a]                       | :x:                | :x:       | [^4]      |
-| VSI     | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^b] | $[0, 1]$                                 | :x:                | :x:       | [^5]      |
+| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^b]                       | :x:                | :x: [^c]  | [^4]      |
+| VSI     | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^d] | $[0, 1]$                                 | :x:                | :x:       | [^5]      |
 | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^6]      |
 | GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:       | [^7]      |
 | CNR     | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^8]      |
 | SNR     | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
 
-[^a]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
+[^a]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
+[^b]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
 contrast than reference images.
-[^b]: The original metric supports RGB images only. This implementation can work 
+[^c]: The calculated values for VIFp are probably not correct in this implementation.
+Those values should be treated with caution as further testing is required.
+[^d]: The original metric supports RGB images only. This implementation can work 
 with grayscale images by copying the luminance channel 3 times.
 
 <!-- ## Installation TODO: add installation instructions -->
