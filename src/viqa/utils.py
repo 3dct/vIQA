@@ -836,9 +836,10 @@ def _check_chromatic(img_r, img_m, chromatic):
 
 def _visualize_cnr_2d(img, signal_center, background_center, radius):
     fig, axs = plt.subplots(2, 1, figsize=(6, 12), dpi=300)
-    fig.suptitle("Background (Upper) and Signal Area (Lower) for CNR Calculation",
+    fig.suptitle("Regions for CNR Calculation",
                  y=0.92)
     axs[0].imshow(img, cmap="gray")
+    axs[0].set_title("Background")
     axs[0].set_xlabel("y")
     axs[0].set_ylabel("x")
     rect_1 = patches.Rectangle(
@@ -855,6 +856,7 @@ def _visualize_cnr_2d(img, signal_center, background_center, radius):
     axs[0].add_patch(rect_1)
 
     axs[1].imshow(img, cmap="gray")
+    axs[1].set_title("Signal")
     axs[1].set_xlabel("y")
     axs[1].set_ylabel("x")
     rect_1 = patches.Rectangle(
@@ -874,7 +876,7 @@ def _visualize_cnr_2d(img, signal_center, background_center, radius):
 
 def _visualize_cnr_3d(img, signal_center, background_center, radius):
     fig, axs = plt.subplots(2, 3, figsize=(14, 10), dpi=300)
-    fig.suptitle("Background (Upper) and Signal Area (Lower) for CNR Calculation",
+    fig.suptitle("Background (Upper) and Signal Region (Lower) for CNR Calculation",
                  y=0.92)
     axs[0][0].imshow(img[background_center[0], ::-1, :],
                      cmap="gray")
@@ -1015,7 +1017,7 @@ def _visualize_cnr_3d(img, signal_center, background_center, radius):
 
 def _visualize_snr_2d(img, signal_center, radius):
     fig, ax = plt.subplots(1, 1, figsize=(6, 6), dpi=300)
-    fig.suptitle("Signal Area for SNR Calculation", y=0.92)
+    fig.suptitle("Signal Region for SNR Calculation", y=0.92)
 
     ax.imshow(img, cmap="gray")
     ax.set_xlabel("y")
@@ -1037,7 +1039,7 @@ def _visualize_snr_2d(img, signal_center, radius):
 
 def _visualize_snr_3d(img, signal_center, radius):
     fig, axs = plt.subplots(1, 3, figsize=(14, 6), dpi=300)
-    fig.suptitle("Signal Area for SNR Calculation", y=0.92)
+    fig.suptitle("Signal Region for SNR Calculation", y=0.92)
 
     axs[0].imshow(img[signal_center[0], ::-1, :],
                   cmap="gray")
