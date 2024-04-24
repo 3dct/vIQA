@@ -33,8 +33,6 @@ Examples
 
 from warnings import warn
 
-import matplotlib.patches as patches
-import matplotlib.pyplot as plt
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
@@ -134,15 +132,29 @@ class SNR(NoReferenceMetricsInterface):
             warn("No score value for SNR. Run score() first.", RuntimeWarning)
 
     def visualize_center(self, img, signal_center=None, radius=None):
-        """Visualize the center of the signal region for SNR calculation."""
+        """Visualize the centers for SNR calculation.
+
+        The visualization shows the signal region in a matplotlib plot.
+
+        Parameters
+        ----------
+        img : np.ndarray or Tensor or str or os.PathLike
+            Image to visualize.
+        signal_center : Tuple(int), optional
+            Center of the signal.
+            Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+        radius : int, optional
+            Width of the regions.
+        """
+        # todo: check if tuple are of length img.ndim
         if not signal_center or not radius:
             signal_center = self._parameters["signal_center"]
             radius = self._parameters["radius"]
 
         if img.ndim == 2:
-            _visualize_snr_2d(img, signal_center, radius)
+            _visualize_snr_2d(img=img, signal_center=signal_center, radius=radius)
         elif img.ndim == 3:
-            _visualize_snr_3d(img, signal_center, radius)
+            _visualize_snr_3d(img=img, signal_center=signal_center, radius=radius)
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
@@ -184,6 +196,7 @@ def signal_to_noise_ratio(img, signal_center, radius):
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
     # check if signal_center is a tuple of integers and radius is an integer
+    # todo: check if tuple are of length img.ndim
     for center in signal_center:
         if not isinstance(center, int):
             raise TypeError("Center has to be a tuple of integers.")

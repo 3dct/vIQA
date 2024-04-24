@@ -129,18 +129,35 @@ class CNR(NoReferenceMetricsInterface):
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 
     def visualize_centers(self, img, signal_center=None, background_center=None, radius=None):
-        """Visualize the center of the signal region and background_region for SNR
-        calculation.
+        """Visualize the centers for CNR calculation.
+
+        The visualization shows the signal and background regions in a matplotlib plot.
+
+        Parameters
+        ----------
+        img : np.ndarray or Tensor or str or os.PathLike
+            Image to visualize.
+        signal_center : Tuple(int), optional
+            Center of the signal.
+            Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+        background_center : Tuple(int), optional
+            Center of the background. Order is ``(y, x)`` for 2D images and
+            ``(z, y, x)`` for 3D images.
+        radius : int, optional
+            Width of the regions.
         """
+        # todo: check if tuple are of length img.ndim
         if not signal_center or not background_center or not radius:
             signal_center = self._parameters["signal_center"]
             background_center = self._parameters["background_center"]
             radius = self._parameters["radius"]
 
         if img.ndim == 2:
-            _visualize_cnr_2d(img, signal_center, background_center, radius)
+            _visualize_cnr_2d(img=img, signal_center=signal_center,
+                              background_center=background_center, radius=radius)
         elif img.ndim == 3:
-            _visualize_cnr_3d(img, signal_center, background_center, radius)
+            _visualize_cnr_3d(img=img, signal_center=signal_center,
+                              background_center=background_center, radius=radius)
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
@@ -196,6 +213,7 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     """
     # check if signal_center and background_center are tuples of integers and radius is
     # an integer
+    # todo: check if tuple are of length img.ndim
     for center in signal_center:
         if not isinstance(center, int):
             raise TypeError("Signal center has to be a tuple of integers.")
