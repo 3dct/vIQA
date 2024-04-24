@@ -98,6 +98,9 @@ class CNR(NoReferenceMetricsInterface):
         score_val : float
             CNR score value.
         """
+        # write kwargs to ._parameters attribute
+        self._parameters.update(kwargs)
+
         # Check images
         img = load_data(
             img,
