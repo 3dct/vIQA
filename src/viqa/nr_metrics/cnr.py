@@ -36,7 +36,7 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.utils import load_data
+from viqa.utils import _visualize_cnr_2d, _visualize_cnr_3d, load_data
 
 
 class CNR(NoReferenceMetricsInterface):
@@ -128,7 +128,21 @@ class CNR(NoReferenceMetricsInterface):
         else:
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 
-    # Add visualization method here
+    def visualize_centers(self, img, signal_center=None, background_center=None, radius=None):
+        """Visualize the center of the signal region and background_region for SNR
+        calculation.
+        """
+        if not signal_center or not background_center or not radius:
+            signal_center = self._parameters["signal_center"]
+            background_center = self._parameters["background_center"]
+            radius = self._parameters["radius"]
+
+        if img.ndim == 2:
+            _visualize_cnr_2d(img, signal_center, background_center, radius)
+        elif img.ndim == 3:
+            _visualize_cnr_3d(img, signal_center, background_center, radius)
+        else:
+            raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
 def contrast_to_noise_ratio(img, background_center, signal_center, radius):

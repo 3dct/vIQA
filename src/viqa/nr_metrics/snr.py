@@ -33,10 +33,12 @@ Examples
 
 from warnings import warn
 
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.utils import load_data
+from viqa.utils import _visualize_snr_2d, _visualize_snr_3d, load_data
 
 
 class SNR(NoReferenceMetricsInterface):
@@ -98,6 +100,9 @@ class SNR(NoReferenceMetricsInterface):
         score_val : float
             SNR score value.
         """
+        # write kwargs to ._parameters attribute
+        self._parameters.update(kwargs)
+
         # Check images
         img = load_data(
             img,
@@ -128,7 +133,18 @@ class SNR(NoReferenceMetricsInterface):
         else:
             warn("No score value for SNR. Run score() first.", RuntimeWarning)
 
-    # Add visualization method here
+    def visualize_center(self, img, signal_center=None, radius=None):
+        """Visualize the center of the signal region for SNR calculation."""
+        if not signal_center or not radius:
+            signal_center = self._parameters["signal_center"]
+            radius = self._parameters["radius"]
+
+        if img.ndim == 2:
+            _visualize_snr_2d(img, signal_center, radius)
+        elif img.ndim == 3:
+            _visualize_snr_3d(img, signal_center, radius)
+        else:
+            raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
 def signal_to_noise_ratio(img, signal_center, radius):
