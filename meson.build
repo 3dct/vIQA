@@ -1,5 +1,7 @@
-project('viqa', 'c', 'cpp',
-    # version: run_command('src/viqa/_build_utils/version.py', check: true).stdout().strip(),
+project(
+    'viqa',
+    'c', 'cpp',
+    version: run_command('src/viqa/_build_utils/version.py', check: true).stdout().strip(),
     license: 'BSD-3',
     default_options: [
         'buildtype=release',

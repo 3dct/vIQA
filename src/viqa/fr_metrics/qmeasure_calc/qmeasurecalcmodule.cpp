@@ -12,8 +12,7 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-// #include <Python.h>
-#include "C:\Users\p42938\.conda\envs\IQA_Library\include\Python.h"
+#include <Python.h>
 #include <numpy/arrayobject.h>
 #include "qmeasurecalcmodule.h"
 #include "iAQMeasureCalculation.h"
@@ -36,7 +35,7 @@ static struct PyModuleDef qmeasureModule = {
 };
 
 // Module Initialization
-PyMODINIT_FUNC PyInit_qmeasure(void) {
+PyMODINIT_FUNC PyInit_qmeasurecalc(void) {
     _import_array();
     return PyModule_Create(&qmeasureModule);
 }
