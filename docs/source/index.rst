@@ -65,6 +65,7 @@ Requirements
 
 The package is written in Python 3.11 and requires the following packages:
 
+* nibabel
 * numpy
 * scipy
 * pytorch
