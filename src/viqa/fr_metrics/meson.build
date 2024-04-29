@@ -9,6 +9,7 @@ python_sources = [
     'ssim.py',
     'vif.py',
     'vsi.py',
+    'uqi.py',
 ]
 
 py.install_sources(
