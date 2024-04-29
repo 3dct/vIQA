@@ -62,7 +62,7 @@ from viqa.utils import _check_imgs
 
 
 class SSIM(FullReferenceMetricsInterface):
-    """Calculates the structural similarity index (SSIM) between two images.
+    """Calculate the structural similarity index (SSIM) between two images.
 
     Attributes
     ----------
