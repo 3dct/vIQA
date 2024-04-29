@@ -201,7 +201,6 @@ def signal_to_noise_ratio(img, signal_center, radius):
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
     """
     # check if signal_center is a tuple of integers and radius is an integer
-    # todo: check if tuple are of length img.ndim
     for center in signal_center:
         if not isinstance(center, int):
             raise TypeError("Center has to be a tuple of integers.")
@@ -212,6 +211,10 @@ def signal_to_noise_ratio(img, signal_center, radius):
 
     if not isinstance(radius, int) or radius <= 0:
         raise TypeError("Radius has to be a positive integer.")
+
+    # Check if img and signal_center have the same dimension
+    if img.ndim != len(signal_center):
+        raise ValueError("Center has to be in the same dimension as img.")
 
     # Define regions
     if img.ndim == 2:  # 2D image

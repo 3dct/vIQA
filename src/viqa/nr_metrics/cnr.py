@@ -229,7 +229,6 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     """
     # check if signal_center and background_center are tuples of integers and radius is
     # an integer
-    # todo: check if tuple are of length img.ndim
     for center in signal_center:
         if not isinstance(center, int):
             raise TypeError("Signal center has to be a tuple of integers.")
@@ -248,6 +247,10 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
 
     if not isinstance(radius, int) or radius <= 0:
         raise TypeError("Radius has to be an integer.")
+
+    # Check if img and centers have the same dimension
+    if img.ndim != len(signal_center) or img.ndim != len(background_center):
+        raise ValueError("Centers have to be in the same dimension as img.")
 
     # Define regions
     if img.ndim == 2:  # 2D image
