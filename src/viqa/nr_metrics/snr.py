@@ -131,7 +131,7 @@ class SNR(NoReferenceMetricsInterface):
         else:
             warn("No score value for SNR. Run score() first.", RuntimeWarning)
 
-    def visualize_center(self, img, signal_center=None, radius=None):
+    def visualize_centers(self, img, signal_center=None, radius=None):
         """Visualize the centers for SNR calculation.
 
         The visualization shows the signal region in a matplotlib plot.
@@ -146,10 +146,15 @@ class SNR(NoReferenceMetricsInterface):
         radius : int, optional
             Width of the regions.
         """
-        # todo: check if tuple are of length img.ndim
         if not signal_center or not radius:
+            if not self._parameters["signal_center"] or not self._parameters["radius"]:
+                raise ValueError("No center or radius provided.")
+
             signal_center = self._parameters["signal_center"]
             radius = self._parameters["radius"]
+
+        if img.ndim != len(signal_center):
+            raise ValueError("Center has to be in the same dimension as img.")
 
         if img.ndim == 2:
             _visualize_snr_2d(img=img, signal_center=signal_center, radius=radius)

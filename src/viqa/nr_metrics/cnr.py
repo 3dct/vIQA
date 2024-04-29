@@ -131,7 +131,13 @@ class CNR(NoReferenceMetricsInterface):
         else:
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 
-    def visualize_centers(self, img, signal_center=None, background_center=None, radius=None):
+    def visualize_centers(
+            self,
+            img,
+            signal_center=None,
+            background_center=None,
+            radius=None
+    ):
         """Visualize the centers for CNR calculation.
 
         The visualization shows the signal and background regions in a matplotlib plot.
@@ -149,11 +155,18 @@ class CNR(NoReferenceMetricsInterface):
         radius : int, optional
             Width of the regions.
         """
-        # todo: check if tuple are of length img.ndim
         if not signal_center or not background_center or not radius:
+            if (not self._parameters["signal_center"]
+                    or not self._parameters["background_center"]
+                    or not self._parameters["radius"]):
+                raise ValueError("No center or radius provided.")
+
             signal_center = self._parameters["signal_center"]
             background_center = self._parameters["background_center"]
             radius = self._parameters["radius"]
+
+        if img.ndim != len(signal_center) or img.ndim != len(background_center):
+            raise ValueError("Centers have to be in the same dimension as img.")
 
         if img.ndim == 2:
             _visualize_cnr_2d(img=img, signal_center=signal_center,
