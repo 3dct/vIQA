@@ -15,22 +15,23 @@ metrics are implemented that can be used to evaluate a single image or volume.
 The metrics used are:
 - Peak Signal to Noise Ratio (PSNR)
 - Root Mean Square Error (RMSE)
-- Structured Similarity (SSIM) [^1]
-- Multi-Scale Structural Similarity (MS-SSIM) [^2]
-- Feature Similarity Index (FSIM) [^3]
-- Visual Information Fidelity in *pixel* domain (VIFp) [^4]
+- Universal Quality Index (UQI) [^1]
+- Structured Similarity (SSIM) [^2]
+- Multi-Scale Structural Similarity (MS-SSIM) [^3]
+- Feature Similarity Index (FSIM) [^4]
+- Visual Information Fidelity in *pixel* domain (VIFp) [^5]
   > [!CAUTION]
   > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
   > caution as further testing is required.
-- Visual Saliency Index (VSI) [^5]
+- Visual Saliency Index (VSI) [^6]
   > [!WARNING]
   > The original metric supports RGB images only. This implementation can work with 
   > grayscale images by copying the luminance channel 3 times. 
-- Most Apparent Distortion (MAD) [^6]
-- Gradient Similarity Measure (GSM) [^7]
+- Most Apparent Distortion (MAD) [^7]
+- Gradient Similarity Measure (GSM) [^8]
   > [!CAUTION]
   > This metric is not yet tested. The metric should be only used for experimental purposes.
-- Contrast to Noise Ratio (CNR) [^8]
+- Contrast to Noise Ratio (CNR) [^9]
 - Signal to Noise Ratio (SNR)
 
 Overview
