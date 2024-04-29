@@ -3,9 +3,9 @@ incdir_numpy = 'C:/Users/p42938/.conda/envs/IQA_Library/Lib/site-packages/numpy/
 # incdir_numpy = '/opt/conda/lib/python3.11/site-packages/numpy/core/include'
 
 py.extension_module(
-    'statistics',
-    'statisticsmodule.c',
+    'qmeasurecalc',
+    'qmeasurecalcmodule.cpp',
     install: true,
     include_directories: incdir_numpy,
-    subdir: 'viqa/fr_metrics/stat_utils',
+    subdir: 'viqa/fr_metrics/qmeasure_calc',
 )

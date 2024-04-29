@@ -33,33 +33,36 @@ The metrics used are:
   > This metric is not yet tested. The metric should be only used for experimental purposes.
 - Contrast to Noise Ratio (CNR) [^9]
 - Signal to Noise Ratio (SNR)
+- Q-Measure [^10]
 
 Overview
 --------
-| Metric  | Name                                          | Type | Dimensional behaviour | Colour Behaviour        | Range (different/worst - identical/best) | Tested             | Validated | Reference |
-|---------|-----------------------------------------------|------|-----------------------|-------------------------|------------------------------------------|--------------------|-----------|-----------|
-| PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
-| RMSE    | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :x:       | &mdash;   |
-| UQI     | Universal Quality Index                       | FR   | 3D slicing            |                         | $[-1, 1]$                                | :x:                | :x:       | [^1]      |
-| SSIM    | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^a]                           | :heavy_check_mark: | :x:       | [^2]      |
-| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:       | [^3]      |
-| FSIM    | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :heavy_check_mark: | :x:       | [^4]      |
-| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^b]                       | :x:                | :x: [^c]  | [^5]      |
-| VSI     | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^d] | $[0, 1]$                                 | :x:                | :x:       | [^6]      |
-| MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^7]      |
-| GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:       | [^8]      |
-| CNR     | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^9]      |
-| SNR     | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
+| Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour        | Range (different/worst - identical/best) | Tested             | Validated | Reference |
+|-----------|-----------------------------------------------|------|-----------------------|-------------------------|------------------------------------------|--------------------|-----------|-----------|
+| PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
+| RMSE      | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :x:       | &mdash;   |
+| UQI [^a]  | Universal Quality Index                       | FR   | 3D native             |                         | $[-1, 1]$                                | :x:                | :x:       | [^1]      |
+| SSIM      | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^b]                           | :heavy_check_mark: | :x:       | [^2]      |
+| MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:       | [^3]      |
+| FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :heavy_check_mark: | :x:       | [^4]      |
+| VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^c]                       | :x:                | :x: [^d]  | [^5]      |
+| VSI       | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^e] | $[0, 1]$                                 | :x:                | :x:       | [^6]      |
+| MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^7]      |
+| GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:       | [^8]      |
+| CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^9]      |
+| SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
+| Q-Measure | Q-Measure                                     | NR   | 3D native             | :x:                     | $[0, \infty)$                            | :x:                | :x:       | [^10]     |
 
-[^a]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
-[^b]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
+[^a]: UQI is a special case of SSIM. Also see [^2].
+[^b]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
+[^c]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
 contrast than reference images.
-[^c]: The calculated values for VIFp are probably not correct in this implementation.
+[^d]: The calculated values for VIFp are probably not correct in this implementation.
 Those values should be treated with caution as further testing is required.
-[^d]: The original metric supports RGB images only. This implementation can work 
+[^e]: The original metric supports RGB images only. This implementation can work 
 with grayscale images by copying the luminance channel 3 times.
 
-<!-- ## Installation TODO: add installation instructions -->
+<!-- ## Documentation TODO: add link to documentation -->
 
 ## Requirements
 The following packages have to be installed:
@@ -72,7 +75,15 @@ The following packages have to be installed:
 - matplotlib
 - jupyter
 
-<!-- ## Documentation TODO: add link to documentation -->
+## Installation
+Use either `pip`
+```
+pip install viqa
+```
+or `conda`
+```
+conda install -c conda-forge scikit-image
+```
 
 ## Usage
 
@@ -195,13 +206,13 @@ psnr.print_score(decimals=2)
     - [ ] Add Ma
     - [ ] Add PI
     - [ ] Add NIQE
-    - [ ] Add Q-Factor
+    - [x] Add Q-Measure
 - [ ] Add tests
     - [x] Add tests for RMSE
     - [x] Add tests for PSNR
     - [x] Add tests for SSIM
     - [ ] Add tests for MSSSIM
-    - [ ] Add tests for FSIM
+    - [x] Add tests for FSIM
     - [ ] Add tests for VSI
     - [ ] Add tests for VIF
     - [x] Add tests for MAD
@@ -212,31 +223,7 @@ psnr.print_score(decimals=2)
     - [ ] Add tests for Ma
     - [ ] Add tests for PI
     - [ ] Add tests for NIQE
-    - [ ] Add tests for Q-Factor
-- [ ] Add documentation
-    - [x] Add documentation for rmse.py
-    - [x] Add documentation for psnr.py
-    - [x] Add documentation for ssim.py
-    - [x] Add documentation for msssim.py
-    - [x] Add documentation for fsim.py
-    - [x] Add documentation for vsi.py
-    - [x] Add documentation for vif.py
-    - [x] Add documentation for mad.py
-    - [x] Add documentation for gsm.py
-    - [ ] Add documentation for sff.py
-    - [x] Add documentation for cnr.py
-    - [x] Add documentation for snr.py
-    - [ ] Add documentation for ma.py
-    - [ ] Add documentation for pi.py
-    - [ ] Add documentation for niqe.py
-    - [ ] Add documentation for qfactor.py
-    - [x] Add documentation for utils.py
-- [x] Adapt to 3D
-    - [x] SSIM
-    - [x] MSSSIM
-    - [x] FSIM
-    - [x] VSI
-    - [x] VIF
+    - [ ] Add tests for Q-Measure
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
 - [ ] Add color image support
@@ -308,3 +295,8 @@ https://doi.org/10.1109/TIP.2011.2175935
 [^9]: Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image 
 quality in computed radiographic (CR) imaging systems. Medical Imaging 2010: Physics 
 of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
+[^10]: Reiter, M., Weiß, D., Gusenbauer, C., Erler, M., Kuhn, C., Kasperl, S., & 
+Kastner, J. (2014). Evaluation of a Histogram-based Image Quality Measure for X-ray 
+computed Tomography. 5th Conference on Industrial Computed Tomography (iCT) 2014, 25-28 
+February 2014, Wels, Austria. e-Journal of Nondestructive Testing Vol. 19(6). 
+https://www.ndt.net/?id=15715

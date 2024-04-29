@@ -10,6 +10,7 @@ python_sources = [
     'vif.py',
     'vsi.py',
     'uqi.py',
+    'qmeasure.py',
 ]
 
 py.install_sources(
@@ -19,3 +20,4 @@ py.install_sources(
 )
 
 subdir('stat_utils')
+subdir('qmeasure_calc')
