@@ -15,49 +15,58 @@ metrics are implemented that can be used to evaluate a single image or volume.
 The metrics used are:
 - Peak Signal to Noise Ratio (PSNR)
 - Root Mean Square Error (RMSE)
-- Structured Similarity (SSIM) [^1]
-- Multi-Scale Structural Similarity (MS-SSIM) [^2]
-- Feature Similarity Index (FSIM) [^3]
-- Visual Information Fidelity in *pixel* domain (VIFp) [^4]
+- Universal Quality Index (UQI) [^1]
+- Structured Similarity (SSIM) [^2]
+- Multi-Scale Structural Similarity (MS-SSIM) [^3]
+- Feature Similarity Index (FSIM) [^4]
+- Visual Information Fidelity in *pixel* domain (VIFp) [^5]
   > [!CAUTION]
   > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
   > caution as further testing is required.
-- Visual Saliency Index (VSI) [^5]
+- Visual Saliency Index (VSI) [^6]
   > [!WARNING]
   > The original metric supports RGB images only. This implementation can work with 
   > grayscale images by copying the luminance channel 3 times. 
-- Most Apparent Distortion (MAD) [^6]
-- Gradient Similarity Measure (GSM) [^7]
+- Most Apparent Distortion (MAD) [^7]
+- Gradient Similarity Measure (GSM) [^8]
   > [!CAUTION]
   > This metric is not yet tested. The metric should be only used for experimental purposes.
-- Contrast to Noise Ratio (CNR) [^8]
+- Contrast to Noise Ratio (CNR) [^9]
 - Signal to Noise Ratio (SNR)
+- Q-Measure [^10]
 
 Overview
 --------
-| Metric  | Name                                          | Type | Dimensional behaviour | Colour Behaviour        | Range              | Tested             | Validated | Reference |
-|---------|-----------------------------------------------|------|-----------------------|-------------------------|--------------------|--------------------|-----------|-----------|
-| PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | &mdash;   |
-| RMSE    | Root Mean Square Error                        | FR   | 3D native             |                         | $[0, 1]$           | :heavy_check_mark: | :x:       | &mdash;   |
-| SSIM    | Structured Similarity                         | FR   | 3D native             |                         | $[0, 1]$           | :heavy_check_mark: | :x:       | [^1]      |
-| MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$           | :x:                | :x:       | [^2]      |
-| FSIM    | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$           | :x:                | :x:       | [^3]      |
-| VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^a] | :x:                | :x:       | [^4]      |
-| VSI     | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^b] | $[0, 1]$           | :x:                | :x:       | [^5]      |
-| MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | [^6]      |
-| GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$           | :x:                | :x:       | [^7]      |
-| CNR     | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | [^8]      |
-| SNR     | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$      | :heavy_check_mark: | :x:       | &mdash;   |
+| Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour        | Range (different/worst - identical/best) | Tested             | Validated | Reference |
+|-----------|-----------------------------------------------|------|-----------------------|-------------------------|------------------------------------------|--------------------|-----------|-----------|
+| PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
+| RMSE      | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :x:       | &mdash;   |
+| UQI [^a]  | Universal Quality Index                       | FR   | 3D native             |                         | $[-1, 1]$                                | :x:                | :x:       | [^1]      |
+| SSIM      | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^b]                           | :heavy_check_mark: | :x:       | [^2]      |
+| MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:       | [^3]      |
+| FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :heavy_check_mark: | :x:       | [^4]      |
+| VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^c]                       | :x:                | :x: [^d]  | [^5]      |
+| VSI       | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^e] | $[0, 1]$                                 | :x:                | :x:       | [^6]      |
+| MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^7]      |
+| GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:       | [^8]      |
+| CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^9]      |
+| SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
+| Q-Measure | Q-Measure                                     | NR   | 3D native             | :x:                     | $[0, \infty)$                            | :x:                | :x:       | [^10]     |
 
-[^a]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
+[^a]: UQI is a special case of SSIM. Also see [^2].
+[^b]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
+[^c]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
 contrast than reference images.
-[^b]: The original metric supports RGB images only. This implementation can work 
+[^d]: The calculated values for VIFp are probably not correct in this implementation.
+Those values should be treated with caution as further testing is required.
+[^e]: The original metric supports RGB images only. This implementation can work 
 with grayscale images by copying the luminance channel 3 times.
 
-<!-- ## Installation TODO: add installation instructions -->
+<!-- ## Documentation TODO: add link to documentation -->
 
 ## Requirements
 The following packages have to be installed:
+- nibabel
 - numpy
 - scipy
 - pytorch
@@ -66,7 +75,15 @@ The following packages have to be installed:
 - matplotlib
 - jupyter
 
-<!-- ## Documentation TODO: add link to documentation -->
+## Installation
+Use either `pip`
+```
+pip install viqa
+```
+or `conda`
+```
+conda install -c conda-forge scikit-image
+```
 
 ## Usage
 
@@ -189,7 +206,7 @@ psnr.print_score(decimals=2)
     - [ ] Add Ma
     - [ ] Add PI
     - [ ] Add NIQE
-    - [ ] Add Q-Factor
+    - [x] Add Q-Measure
 - [ ] Add tests
     - [x] Add tests for RMSE
     - [x] Add tests for PSNR
@@ -206,31 +223,7 @@ psnr.print_score(decimals=2)
     - [ ] Add tests for Ma
     - [ ] Add tests for PI
     - [ ] Add tests for NIQE
-    - [ ] Add tests for Q-Factor
-- [ ] Add documentation
-    - [x] Add documentation for rmse.py
-    - [x] Add documentation for psnr.py
-    - [x] Add documentation for ssim.py
-    - [x] Add documentation for msssim.py
-    - [x] Add documentation for fsim.py
-    - [x] Add documentation for vsi.py
-    - [x] Add documentation for vif.py
-    - [x] Add documentation for mad.py
-    - [x] Add documentation for gsm.py
-    - [ ] Add documentation for sff.py
-    - [x] Add documentation for cnr.py
-    - [x] Add documentation for snr.py
-    - [ ] Add documentation for ma.py
-    - [ ] Add documentation for pi.py
-    - [ ] Add documentation for niqe.py
-    - [ ] Add documentation for qfactor.py
-    - [x] Add documentation for utils.py
-- [x] Adapt to 3D
-    - [x] SSIM
-    - [x] MSSSIM
-    - [x] FSIM
-    - [x] VSI
-    - [x] VIF
+    - [ ] Add tests for Q-Measure
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
 - [ ] Add color image support
@@ -276,27 +269,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Lukas Behammer, [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
 
 ## References
-[^1]:  Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality 
+[^1]: Wang, Z., & Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL
+        PROCESSING LETTERS, 9(3). https://doi.org/10.1109/97.995823
+[^2]: Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality 
 assessment: From error visibility to structural similarity. IEEE Transactions on 
 Image Processing, 13(4), 600–612. https://doi.org/10.1109/TIP.2003.819861
-[^2]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural 
+[^3]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural 
 similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on 
 Signals, Systems & Computers, 1298–1402. https://doi.org/10.1109/ACSSC.2003.1292216
-[^3]: Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity 
+[^4]: Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity 
 index for image quality assessment. IEEE Transactions on Image Processing, 20(8). 
 https://doi.org/10.1109/TIP.2011.2109730
-[^4]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE 
+[^5]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE 
 Transactions on Image Processing, 15(2), 430–444. 
 https://doi.org/10.1109/TIP.2005.859378
-[^5]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for 
+[^6]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for 
 perceptual image quality assessment. IEEE Transactions on Image Processing, 23(10), 
 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
-[^6]: Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference 
+[^7]: Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference 
 image quality assessment and the role of strategy. Journal of Electronic Imaging, 19
 (1), 011006. https://doi.org/10.1117/1.3267105
-[^7]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on 
+[^8]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on 
 gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512. 
 https://doi.org/10.1109/TIP.2011.2175935
-[^8]: Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image 
+[^9]: Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image 
 quality in computed radiographic (CR) imaging systems. Medical Imaging 2010: Physics 
 of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
+[^10]: Reiter, M., Weiß, D., Gusenbauer, C., Erler, M., Kuhn, C., Kasperl, S., & 
+Kastner, J. (2014). Evaluation of a Histogram-based Image Quality Measure for X-ray 
+computed Tomography. 5th Conference on Industrial Computed Tomography (iCT) 2014, 25-28 
+February 2014, Wels, Austria. e-Journal of Nondestructive Testing Vol. 19(6). 
+https://www.ndt.net/?id=15715

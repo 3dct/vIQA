@@ -2,7 +2,14 @@
 
 Examples
 --------
-    .. todo:: Add examples
+    .. doctest-skip::
+
+        >>> import numpy as np
+        >>> from viqa import GSM
+        >>> img_r = np.random.rand(256, 256)
+        >>> img_m = np.random.rand(256, 256)
+        >>> gsm = GSM()
+        >>> gsm.score(img_r, img_m, data_range=1)
 
 """
 
@@ -26,8 +33,8 @@ from warnings import warn
 import numpy as np
 import scipy.ndimage as ndi
 
-from viqa._kernels import *
 from viqa._metrics import FullReferenceMetricsInterface
+from viqa.kernels import *
 from viqa.utils import _check_imgs, _to_float
 
 # Load the kernels as constants
@@ -402,8 +409,8 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
 
     See Also
     --------
-    viqa.fr_metrics.gsm.gradient_similarity_3d : Calculate the gradient similarity between
-                                                 two 3D images.
+    viqa.fr_metrics.gsm.gradient_similarity_3d : Calculate the gradient similarity
+    between two 3D images.
 
     References
     ----------

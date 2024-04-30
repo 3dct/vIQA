@@ -2,8 +2,27 @@
 
 Examples
 --------
-.. todo::
-    add examples
+    .. doctest-skip::
+
+        >>> from viqa import load_data
+        >>> img_path = "path/to/image.mhd"
+        >>> img = load_data(img_path)
+
+        >>> import numpy as np
+        >>> from viqa import normalize_data
+        >>> img = np.random.rand(128, 128)
+        >>> img.dtype
+        dtype('float64')
+        >>> img = normalize_data(img, data_range=255)
+        >>> img.dtype
+        dtype('uint8')
+
+        >>> from viqa import export_csv, PSNR, RMSE
+        >>> metrics = [PSNR, RMSE]
+        >>> output_path = "path/to/output"
+        >>> filename = "metrics.csv"
+        >>> export_csv(metrics, output_path, filename)
+
 """
 
 # Authors
@@ -19,19 +38,22 @@ Examples
 #
 # License
 # -------
-# TODO: add license
+# BSD-3-Clause License
 
+import csv
 import glob
 import math
 import os
 import re
-import csv
 from typing import Tuple
 from warnings import warn
 
-import torch
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import nibabel as nib
 import numpy as np
 import scipy.fft as fft
+import torch
 from torch import Tensor
 
 
@@ -39,8 +61,8 @@ def _load_data_from_disk(
     file_dir: str | os.PathLike, file_name: str | os.PathLike
 ) -> np.ndarray:
     """
-    Load data from a .mhd file and its corresponding .raw file or a .raw file only
-    and normalize it.
+    Load data from a .mhd file and its corresponding .raw file, a .raw file only or a
+    NIfTI file.
 
     Parameters
     ----------
@@ -108,7 +130,7 @@ def _load_data_from_disk(
     elif file_ext == ".raw":  # If file is a .raw file
         # Check dimension
         dim_search_result = re.search(
-            r"(\d+([x])\d+([x])\d+)", file_name_head
+            r"(\d+(x)\d+(x)\d+)", file_name_head
         )  # Search for dimension in file name
         if dim_search_result is not None:  # If dimension was found
             dim = dim_search_result.group(1)  # Get dimension from file name
@@ -118,7 +140,7 @@ def _load_data_from_disk(
             )  # Raise exception if no dimension was found
 
         # Extract dimension
-        dim_size = re.split("[x]", dim)  # Split dimension string into list
+        dim_size = re.split("x", dim)  # Split dimension string into list
         dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
 
         # Check bit depth
@@ -145,6 +167,17 @@ def _load_data_from_disk(
             )  # Raise exception if the bit depth is not supported
 
         data_file_path = os.path.join(file_dir, file_name)  # Get data file path
+    elif file_ext == ".nii":
+        img_arr = load_nifti(file_path)
+        return img_arr
+    elif file_ext == ".gz":
+        if re.search('.nii', file_name):
+            img_arr = load_nifti(file_path)
+            return img_arr
+        else:
+            raise ValueError(
+                "File extension not supported"
+            )
     else:
         raise ValueError(
             "File extension not supported"
@@ -158,6 +191,34 @@ def _load_data_from_disk(
 
     # Reshape numpy array according to DimSize
     img_arr = img_arr_orig.reshape(*dim_size[::-1])
+    return img_arr
+
+
+def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
+    """
+    Load data from a .nii file.
+
+    Parameters
+    ----------
+    file_path : str or os.PathLike
+        File path
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Numpy array containing the data
+
+    Examples
+    --------
+    >>> from viqa.utils import load_nifti  # doctest: +SKIP
+    >>> img = load_nifti("path/to/image.nii.gz")  # doctest: +SKIP
+
+    Notes
+    -----
+    This function wraps the nibabel function ``nib.load``.
+    """
+    img = nib.load(file_path)
+    img_arr = img.get_fdata()
     return img_arr
 
 
@@ -448,7 +509,7 @@ def correlate_convolve_abs(
     Examples
     --------
     >>> import numpy as np
-    >>> from viqa import _kernels
+    >>> from viqa import kernels
     >>> img = np.random.rand(128, 128)
     >>> kernel = kernels.sobel_kernel_2d_x()
     >>> res = correlate_convolve_abs(
@@ -534,12 +595,12 @@ def _extract_blocks(img, block_size, stride):
 
 
 def _fft(img):
-    """Wrapper for scipy fft."""
+    """Wrap scipy fft."""
     return fft.fftshift(fft.fftn(img))
 
 
 def _ifft(fourier_img):
-    """Wrapper for scipy ifft."""
+    """Wrap scipy ifft."""
     return fft.ifftn(fft.ifftshift(fourier_img))
 
 
@@ -675,7 +736,7 @@ def gabor_convolve(
     # convert image to frequency domain
     im_fft = fft.fftn(img)
 
-    # compute matrices of same site as im with values ranging from -0.5 to 0.5 (-1.0 to
+    # compute matrices of same size as im with values ranging from -0.5 to 0.5 (-1.0 to
     # 1.0) for horizontal and vertical
     #   directions each
     if _is_even(cols):
@@ -773,6 +834,281 @@ def _check_chromatic(img_r, img_m, chromatic):
     return img_r_tensor, img_m_tensor
 
 
+def _visualize_cnr_2d(img, signal_center, background_center, radius):
+    fig, axs = plt.subplots(2, 1, figsize=(6, 12), dpi=300)
+    fig.suptitle("Regions for CNR Calculation",
+                 y=0.92)
+    axs[0].imshow(img, cmap="gray")
+    axs[0].set_title("Background")
+    axs[0].set_xlabel("y")
+    axs[0].set_ylabel("x")
+    rect_1 = patches.Rectangle(
+        (
+            background_center[1] - radius,
+            background_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="r",
+        facecolor="none",
+    )
+    axs[0].add_patch(rect_1)
+
+    axs[1].imshow(img, cmap="gray")
+    axs[1].set_title("Signal")
+    axs[1].set_xlabel("y")
+    axs[1].set_ylabel("x")
+    rect_1 = patches.Rectangle(
+        (
+            signal_center[1] - radius,
+            signal_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[1].add_patch(rect_1)
+    plt.show()
+
+
+def _visualize_cnr_3d(img, signal_center, background_center, radius):
+    fig, axs = plt.subplots(2, 3, figsize=(14, 10), dpi=300)
+    fig.suptitle("Background (Upper) and Signal Region (Lower) for CNR Calculation",
+                 y=0.92)
+    axs[0][0].imshow(img[background_center[0], ::-1, :],
+                     cmap="gray")
+    axs[0][0].set_title(f"z-axis, slice {background_center[0]}")
+    axs[0][0].set_xlabel("y")
+    axs[0][0].set_ylabel("x")
+    rect_1 = patches.Rectangle(
+        (
+            background_center[1] - radius,
+            background_center[2] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="r",
+        facecolor="none",
+    )
+    axs[0][0].axhline(
+        y=background_center[2], color="g", linestyle="--"
+    )
+    axs[0][0].axvline(
+        x=background_center[1], color="g", linestyle="--"
+    )
+    axs[0][0].add_patch(rect_1)
+
+    axs[0][1].imshow(img[::-1, background_center[1], :],
+                     cmap="gray")
+    axs[0][1].set_title(f"y-axis, slice {background_center[1]}")
+    axs[0][1].set_xlabel("x")
+    axs[0][1].set_ylabel("z")
+    rect_2 = patches.Rectangle(
+        (
+            background_center[2] - radius,
+            background_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="r",
+        facecolor="none",
+    )
+    axs[0][1].axhline(
+        y=background_center[0], color="g", linestyle="--"
+    )
+    axs[0][1].axvline(
+        x=background_center[2], color="g", linestyle="--"
+    )
+    axs[0][1].add_patch(rect_2)
+
+    axs[0][2].imshow(img[::-1, :, background_center[2]],
+                     cmap="gray")
+    axs[0][2].set_title(f"x-axis, slice {background_center[2]}")
+    axs[0][2].set_xlabel("y")
+    axs[0][2].set_ylabel("z")
+    rect_3 = patches.Rectangle(
+        (
+            background_center[1] - radius,
+            background_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="r",
+        facecolor="none",
+    )
+    axs[0][2].axhline(
+        y=background_center[0], color="g", linestyle="--"
+    )
+    axs[0][2].axvline(
+        x=background_center[1], color="g", linestyle="--"
+    )
+    axs[0][2].add_patch(rect_3)
+
+    axs[1][0].imshow(img[signal_center[0], ::-1, :], cmap="gray")
+    axs[1][0].set_title(f"z-axis, slice {signal_center[0]}")
+    axs[1][0].set_xlabel("y")
+    axs[1][0].set_ylabel("x")
+    rect_1 = patches.Rectangle(
+        (
+            signal_center[1] - radius,
+            signal_center[2] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[1][0].axhline(y=signal_center[2], color="g",
+                      linestyle="--")
+    axs[1][0].axvline(x=signal_center[1], color="g",
+                      linestyle="--")
+    axs[1][0].add_patch(rect_1)
+
+    axs[1][1].imshow(img[::-1, signal_center[1], :], cmap="gray")
+    axs[1][1].set_title(f"y-axis, slice {signal_center[1]}")
+    axs[1][1].set_xlabel("x")
+    axs[1][1].set_ylabel("z")
+    rect_2 = patches.Rectangle(
+        (
+            signal_center[2] - radius,
+            signal_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[1][1].axhline(y=signal_center[0], color="g",
+                      linestyle="--")
+    axs[1][1].axvline(x=signal_center[2], color="g",
+                      linestyle="--")
+    axs[1][1].add_patch(rect_2)
+
+    axs[1][2].imshow(img[::-1, :, signal_center[2]], cmap="gray")
+    axs[1][2].set_title(f"x-axis, slice {signal_center[2]}")
+    axs[1][2].set_xlabel("y")
+    axs[1][2].set_ylabel("z")
+    rect_3 = patches.Rectangle(
+        (
+            signal_center[1] - radius,
+            signal_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[1][2].axhline(y=signal_center[0], color="g",
+                      linestyle="--")
+    axs[1][2].axvline(x=signal_center[1], color="g",
+                      linestyle="--")
+    axs[1][2].add_patch(rect_3)
+    plt.show()
+
+
+def _visualize_snr_2d(img, signal_center, radius):
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6), dpi=300)
+    fig.suptitle("Signal Region for SNR Calculation", y=0.92)
+
+    ax.imshow(img, cmap="gray")
+    ax.set_xlabel("y")
+    ax.set_ylabel("x")
+    rect_1 = patches.Rectangle(
+        (
+            signal_center[0] - radius,
+            signal_center[1] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    ax.add_patch(rect_1)
+    plt.show()
+
+
+def _visualize_snr_3d(img, signal_center, radius):
+    fig, axs = plt.subplots(1, 3, figsize=(14, 6), dpi=300)
+    fig.suptitle("Signal Region for SNR Calculation", y=0.92)
+
+    axs[0].imshow(img[signal_center[0], ::-1, :],
+                  cmap="gray")
+    axs[0].set_title(f"z-axis, slice {signal_center[0]}")
+    axs[0].set_xlabel("y")
+    axs[0].set_ylabel("x")
+    rect_1 = patches.Rectangle(
+        (
+            signal_center[1] - radius,
+            signal_center[2] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[0].axhline(y=signal_center[2], color="g",
+                   linestyle="--")
+    axs[0].axvline(x=signal_center[1], color="g",
+                   linestyle="--")
+    axs[0].add_patch(rect_1)
+
+    axs[1].imshow(img[::-1, signal_center[1], :],
+                  cmap="gray")
+    axs[1].set_title(f"y-axis, slice {signal_center[1]}")
+    axs[1].set_xlabel("x")
+    axs[1].set_ylabel("z")
+    rect_2 = patches.Rectangle(
+        (
+            signal_center[2] - radius,
+            signal_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[1].axhline(y=signal_center[0], color="g",
+                   linestyle="--")
+    axs[1].axvline(x=signal_center[2], color="g",
+                   linestyle="--")
+    axs[1].add_patch(rect_2)
+
+    axs[2].imshow(img[::-1, :, signal_center[2]],
+                  cmap="gray")
+    axs[2].set_title(f"x-axis, slice {signal_center[2]}")
+    axs[2].set_xlabel("y")
+    axs[2].set_ylabel("z")
+    rect_3 = patches.Rectangle(
+        (
+            signal_center[1] - radius,
+            signal_center[0] - radius,
+        ),
+        radius * 2,
+        radius * 2,
+        linewidth=1,
+        edgecolor="b",
+        facecolor="none",
+    )
+    axs[2].axhline(y=signal_center[0], color="g",
+                   linestyle="--")
+    axs[2].axvline(x=signal_center[1], color="g",
+                   linestyle="--")
+    axs[2].add_patch(rect_3)
+    plt.show()
+
+
 def export_csv(metrics, output_path, filename):
     """Export data to a csv file.
 
@@ -787,10 +1123,13 @@ def export_csv(metrics, output_path, filename):
 
     Examples
     --------
-    >>> from viqa import export_csv, FSIM  # doctest: +SKIP
-    >>> metric1 = FSIM()  # doctest: +SKIP
-    >>> metrics = [metric1]  # doctest: +SKIP
-    >>> export_csv(metrics, "path/to/output", "filename.csv")  # doctest: +SKIP
+        .. doctest-skip::
+
+            >>> from viqa import export_csv, FSIM, PSNR
+            >>> metric1 = FSIM()
+            >>> metric2 = PSNR()
+            >>> metrics = [metric1, metric2]
+            >>> export_csv(metrics, "path/to/output", "filename.csv")
     """
     # Check if filename has the correct extension
     if not filename.lower().endswith(".csv"):

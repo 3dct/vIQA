@@ -4,7 +4,6 @@ import warnings
 import pytest
 import numpy as np
 
-# from .context import viqa
 import viqa
 
 

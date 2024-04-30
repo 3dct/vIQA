@@ -9,6 +9,7 @@ Full reference metrics take two images and compare a modified image to a referen
 
     fr_metrics/psnr
     fr_metrics/rmse
+    fr_metrics/uqi
     fr_metrics/ssim
     fr_metrics/msssim
     fr_metrics/fsim

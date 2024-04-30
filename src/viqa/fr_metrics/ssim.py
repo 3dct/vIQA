@@ -62,7 +62,7 @@ from viqa.utils import _check_imgs
 
 
 class SSIM(FullReferenceMetricsInterface):
-    """Calculates the structural similarity index (SSIM) between two images.
+    """Calculate the structural similarity index (SSIM) between two images.
 
     Attributes
     ----------
@@ -257,7 +257,9 @@ def structural_similarity(
     -----
     To match the implementation in [1]_, set ``gaussian_weights`` to True and ``sigma``
     to 1.5. This code is adapted from ``skimage.metrics.structural_similarity``
-    available under [2]_.
+    available under [2]_. The metric would possibly result in a value of nan in specific
+    cases. To avoid this, the function replaces nan values with 1.0 before computing the
+    final score.
 
     References
     ----------
@@ -380,12 +382,18 @@ def structural_similarity(
 
     stru = (vxy + c_3) / (np.sqrt(vx) * np.sqrt(vy) + c_3)
     del vxy
+    # remove nan
+    stru = np.nan_to_num(stru, nan=1.0)
 
     con = (2 * np.sqrt(vx) * np.sqrt(vy) + c_2) / (vx + vy + c_2)
     del vx, vy
+    # remove nan
+    con = np.nan_to_num(con, nan=1.0)
 
     lum = (2 * ux * uy + c_1) / (ux**2 + uy**2 + c_1)
     del ux, uy
+    # remove nan
+    lum = np.nan_to_num(lum, nan=1.0)
 
     ssim = (lum**alpha) * (con**beta) * (stru**gamma)
     del lum, con, stru

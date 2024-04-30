@@ -3,7 +3,14 @@ two images.
 
 Examples
 --------
-    .. todo:: Add examples
+    .. doctest-skip::
+
+        >>> import numpy as np
+        >>> from viqa import MSSSIM
+        >>> img_r = np.random.rand(256, 256)
+        >>> img_m = np.random.rand(256, 256)
+        >>> msssim = MSSSIM()
+        >>> msssim.score(img_r, img_m, data_range=1)
 
 """
 
@@ -27,7 +34,7 @@ from warnings import warn
 from piq import multi_scale_ssim
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs, _check_chromatic
+from viqa.utils import _check_chromatic, _check_imgs
 
 
 class MSSSIM(FullReferenceMetricsInterface):
@@ -192,7 +199,7 @@ class MSSSIM(FullReferenceMetricsInterface):
             normalize=self._parameters["normalize"],
             batch=self._parameters["batch"],
         )
-        
+
         if img_r.ndim == 3:
             if (
                     dim is not None and type(im_slice) is int
@@ -241,7 +248,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                         )
             elif (
                     dim is not None and im_slice is None
-            ):  # if dim is given, but im_slice is not, calculate MS-SSIM for full volume
+            ):  # if dim is given, but im_slice is not, calculate MS-SSIM for full
+                # volume
                 warn(
                     "im_slice is not given. Calculating MS-SSIM for full volume.",
                     RuntimeWarning,
@@ -285,6 +293,18 @@ class MSSSIM(FullReferenceMetricsInterface):
         return score_val
 
     def print_score(self, decimals=2):
+        """Print the MSSSIM score value of the last calculation.
+
+        Parameters
+        ----------
+        decimals : int, default=2
+            Number of decimal places to print the score value.
+
+        Warns
+        -----
+        RuntimeWarning
+            If :py:attr:`score_val` is not available.
+        """
         if self.score_val is not None:
             print("MS-SSIM: {}".format(round(self.score_val, decimals)))
         else:

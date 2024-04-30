@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from viqa.utils import export_csv
 
 

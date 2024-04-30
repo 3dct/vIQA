@@ -36,7 +36,7 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.utils import load_data
+from viqa.utils import _visualize_cnr_2d, _visualize_cnr_3d, load_data
 
 
 class CNR(NoReferenceMetricsInterface):
@@ -98,6 +98,9 @@ class CNR(NoReferenceMetricsInterface):
         score_val : float
             CNR score value.
         """
+        # write kwargs to ._parameters attribute
+        self._parameters.update(kwargs)
+
         # Check images
         img = load_data(
             img,
@@ -127,6 +130,52 @@ class CNR(NoReferenceMetricsInterface):
             print("CNR: {}".format(round(self.score_val, decimals)))
         else:
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
+
+    def visualize_centers(
+            self,
+            img,
+            signal_center=None,
+            background_center=None,
+            radius=None
+    ):
+        """Visualize the centers for CNR calculation.
+
+        The visualization shows the signal and background regions in a matplotlib plot.
+
+        Parameters
+        ----------
+        img : np.ndarray or Tensor or str or os.PathLike
+            Image to visualize.
+        signal_center : Tuple(int), optional
+            Center of the signal.
+            Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+        background_center : Tuple(int), optional
+            Center of the background. Order is ``(y, x)`` for 2D images and
+            ``(z, y, x)`` for 3D images.
+        radius : int, optional
+            Width of the regions.
+        """
+        if not signal_center or not background_center or not radius:
+            if (not self._parameters["signal_center"]
+                    or not self._parameters["background_center"]
+                    or not self._parameters["radius"]):
+                raise ValueError("No center or radius provided.")
+
+            signal_center = self._parameters["signal_center"]
+            background_center = self._parameters["background_center"]
+            radius = self._parameters["radius"]
+
+        if img.ndim != len(signal_center) or img.ndim != len(background_center):
+            raise ValueError("Centers have to be in the same dimension as img.")
+
+        if img.ndim == 2:
+            _visualize_cnr_2d(img=img, signal_center=signal_center,
+                              background_center=background_center, radius=radius)
+        elif img.ndim == 3:
+            _visualize_cnr_3d(img=img, signal_center=signal_center,
+                              background_center=background_center, radius=radius)
+        else:
+            raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
 def contrast_to_noise_ratio(img, background_center, signal_center, radius):
@@ -198,6 +247,10 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
 
     if not isinstance(radius, int) or radius <= 0:
         raise TypeError("Radius has to be an integer.")
+
+    # Check if img and centers have the same dimension
+    if img.ndim != len(signal_center) or img.ndim != len(background_center):
+        raise ValueError("Centers have to be in the same dimension as img.")
 
     # Define regions
     if img.ndim == 2:  # 2D image

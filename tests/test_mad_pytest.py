@@ -4,7 +4,6 @@ import warnings
 import pytest
 import numpy as np
 
-# from .context import viqa
 import viqa
 
 
@@ -78,10 +77,10 @@ class TestScoring3D:
         assert mad.score(img_r, img_m, dim=2, im_slice=64) != 0.0, 'MAD of completely different images should not be 0'
 
     # takes 7hr 41min
-    # def test_mad_score_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
-    #     img_r, img_m = data_3d_255_400x400x200
-    #     mad = viqa.MAD()
-    #     assert 0 <= mad.score(img_r, img_m, dim=0) <= np.inf, 'MAD should be between 0 and inf'
+    def test_mad_score_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
+        img_r, img_m = data_3d_255_400x400x200
+        mad = viqa.MAD()
+        assert 0 <= mad.score(img_r, img_m, dim=0) <= np.inf, 'MAD should be between 0 and inf'
 
     def test_mad_score_3d_dim3_slice64(self):
         img_r = np.random.rand(128, 128, 128)
@@ -145,7 +144,7 @@ class TestPrintScore:
             warnings.simplefilter('ignore')
             mad.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert len(captured.out) == 12, 'Printed score should have 11 characters'
+            assert len(captured.out) == 10, 'Printed score should have 10 characters'
 
 
 def test_mad_score_with_random_data_4d():

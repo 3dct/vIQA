@@ -1,9 +1,10 @@
 python_sources = [
     '__init__.py',
-    '_kernels.py',
+    'kernels.py',
     '_metrics.py',
     'deprecation.py',
     'utils.py',
+    'fusion.py',
 ]
 
 py.install_sources(

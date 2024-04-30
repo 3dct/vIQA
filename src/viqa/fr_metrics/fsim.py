@@ -2,7 +2,14 @@
 
 Examples
 --------
-    .. todo:: Add examples
+    .. doctest-skip::
+
+        >>> import numpy as np
+        >>> from viqa import FSIM
+        >>> img_r = np.random.rand(256, 256)
+        >>> img_m = np.random.rand(256, 256)
+        >>> fsim = FSIM()
+        >>> fsim.score(img_r, img_m, data_range=1)
 
 """
 
@@ -26,7 +33,7 @@ from warnings import warn
 from piq import fsim
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs, _check_chromatic
+from viqa.utils import _check_chromatic, _check_imgs
 
 
 class FSIM(FullReferenceMetricsInterface):
@@ -75,7 +82,7 @@ class FSIM(FullReferenceMetricsInterface):
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
 
-    .. todo:: test
+    .. todo:: validate
 
     Notes
     -----

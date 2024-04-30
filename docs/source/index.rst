@@ -20,33 +20,36 @@ The following metrics are implemented:
 .. table:: Implemented metrics
     :widths: auto
 
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | Metric  | Name                                          | Type | Dimensional behaviour | Colour Behaviour          | Range                      | Tested             | Validated           | Reference |
-    +=========+===============================================+======+=======================+===========================+============================+====================+=====================+===========+
-    | PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             |                           | :math:`[0, \infty)`        | :math:`\checkmark` | :math:`\times`      | ---       |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | RMSE    | Root Mean Square Error                        | FR   | 3D native             |                           | :math:`[0, 1]`             | :math:`\checkmark` | :math:`\times`      | ---       |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | SSIM    | Structured Similarity                         | FR   | 3D native             |                           | :math:`[0, 1]`             | :math:`\checkmark` | :math:`\times`      | [1]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D slicing            | ?                         | :math:`[0, 1]`             | :math:`\times`     | :math:`\times`      | [2]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | FSIM    | Feature Similarity                            | FR   | 3D slicing            | :math:`\checkmark`        | :math:`[0, 1]`             | :math:`\times`     | :math:`\times`      | [3]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | ?                         | :math:`[0, \infty)` [*]_   | :math:`\times`     | :math:`\times` [*]_ | [4]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | VSI     | Visual Saliency-based Index                   | FR   | 3D slicing            | :math:`\checkmark` [*]_   | :math:`[0, 1]`             | :math:`\times`     | :math:`\times`      | [5]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                           | :math:`[0, \infty)`        | :math:`\checkmark` | :math:`\times`      | [6]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                           | :math:`[0, 1]`             | :math:`\times`     | :math:`\times`      | [7]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | CNR     | Contrast to Noise Ratio                       | NR   | 3D native             |                           | :math:`[0, \infty)`        | :math:`\checkmark` | :math:`\times`      | [8]_      |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
-    | SNR     | Signal to Noise Ratio                         | NR   | 3D native             |                           | :math:`[0, \infty)`        | :math:`\checkmark` | :math:`\times`      | ---       |
-    +---------+-----------------------------------------------+------+-----------------------+---------------------------+----------------------------+--------------------+---------------------+-----------+
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | Metric  | Name                                          | Type | Dimensional behaviour | Colour Behaviour          | Range (different/worst - identical/best) | Tested             | Validated           | Reference |
+    +=========+===============================================+======+=======================+===========================+==========================================+====================+=====================+===========+
+    | PSNR    | Peak Signal to Noise Ratio                    | FR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | RMSE    | Root Mean Square Error                        | FR   | 3D native             |                           | :math:`[1, 0]`                           | :math:`\checkmark` | :math:`\times`      | ---       |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | UQI     | Universal Quality Index                       | FR   | 3D native             |                           | :math:`[-1, 1]`                          | :math:`\times`     | :math:`\times`      | [1]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | SSIM    | Structured Similarity                         | FR   | 3D native             |                           | :math:`[-1, 1]` [*]_                     | :math:`\checkmark` | :math:`\times`      | [2]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | MS-SSIM | Multi-Scale Structural Similarity             | FR   | 3D slicing            | ?                         | :math:`[0, 1]`                           | :math:`\times`     | :math:`\times`      | [3]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | FSIM    | Feature Similarity                            | FR   | 3D slicing            | :math:`\checkmark`        | :math:`[0, 1]`                           | :math:`\checkmark` | :math:`\times`      | [4]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | VIFp    | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | ?                         | :math:`[0, \infty)` [*]_                 | :math:`\times`     | :math:`\times` [*]_ | [5]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | VSI     | Visual Saliency-based Index                   | FR   | 3D slicing            | :math:`\checkmark` [*]_   | :math:`[0, 1]`                           | :math:`\times`     | :math:`\times`      | [6]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | MAD     | Most Apparent Distortion                      | FR   | 3D slicing            |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | [7]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | GSM     | Gradient Similarity                           | FR   | 3D native or slicing  |                           | :math:`[0, 1]`                           | :math:`\times`     | :math:`\times`      | [8]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | CNR     | Contrast to Noise Ratio                       | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | [9]_      |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    | SNR     | Signal to Noise Ratio                         | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
+    +---------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
 
 
+.. [*] The range for SSIM is given as :math:`[-1, 1]`, but is usually :math:`[0, 1]` in practice.
 .. [*] Normally :math:`[0, 1]`, but can be higher than 1 for modified images with higher
     contrast than reference images.
 .. [*] The calculated values for VIFp are probably not correct in this implementation.
@@ -64,6 +67,7 @@ Requirements
 
 The package is written in Python 3.11 and requires the following packages:
 
+* nibabel
 * numpy
 * scipy
 * pytorch
@@ -192,28 +196,30 @@ If you have any questions, please contact the author at: `<lukas.behammer@fh-wel
 References
 ==========
 
-.. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality
+.. [1] Wang, Z., & Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL
+    PROCESSING LETTERS, 9(3). https://doi.org/10.1109/97.995823
+.. [2] Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality
     assessment: From error visibility to structural similarity. IEEE Transactions on
     Image Processing, 13(4), 600–612. https://doi.org/10.1109/TIP.2003.819861
-.. [2] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
+.. [3] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
     similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on
     Signals, Systems & Computers, 1298–1402. https://doi.org/10.1109/ACSSC.2003.1292216
-.. [3] Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity
+.. [4] Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity
     index for image quality assessment. IEEE Transactions on Image Processing, 20(8).
     https://doi.org/10.1109/TIP.2011.2109730
-.. [4] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE
+.. [5] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE
     Transactions on Image Processing, 15(2), 430–444.
     https://doi.org/10.1109/TIP.2005.859378
-.. [5] Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for
+.. [6] Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for
     perceptual image quality assessment. IEEE Transactions on Image Processing, 23(10),
     4270–4281. https://doi.org/10.1109/TIP.2014.2346028
-.. [6] Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference
+.. [7] Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference
     image quality assessment and the role of strategy. Journal of Electronic Imaging, 19
     (1), 011006. https://doi.org/10.1117/1.3267105
-.. [7] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on
+.. [8] Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on
     gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512.
     https://doi.org/10.1109/TIP.2011.2175935
-.. [8] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image
+.. [9] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image
     quality in computed radiographic (CR) imaging systems. Medical Imaging 2010: Physics
     of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
 

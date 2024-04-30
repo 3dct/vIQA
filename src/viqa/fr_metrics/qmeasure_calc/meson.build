@@ -2,10 +2,16 @@
 # incdir_numpy = 'C:/Users/p42938/.conda/envs/IQA_Library/Lib/site-packages/numpy/core/include'
 incdir_numpy = '/opt/conda/lib/python3.11/site-packages/numpy/core/include'
 
+sources = files(
+'ImageHistogram.cpp',
+'iAQMeasureCalculation.cpp',
+'qmeasurecalcmodule.cpp',
+)
+
 py.extension_module(
-    'statistics',
-    'statisticsmodule.c',
+    'qmeasurecalc',
+    sources: sources,
     install: true,
     include_directories: incdir_numpy,
-    subdir: 'viqa/fr_metrics/stat_utils',
+    subdir: 'viqa/fr_metrics/qmeasure_calc',
 )
