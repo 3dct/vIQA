@@ -13,4 +13,4 @@
     :toctree: generated/
     :template: class.rst
 
-    Q-Measure
+    QMeasure

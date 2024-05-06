@@ -99,7 +99,7 @@ class QMeasure(NoReferenceMetricsInterface):
             Image to calculate score of.
         **kwargs : optional
             Additional parameters for Q-Measure calculation. The keyword arguments are
-            passed to :py:func:`viqa.nr_metrics.qmeasure_calc.qmeasurecalc.qmeasure`.
+            passed to :py:func:`viqa.nr_metrics.qmeasure_utils.qmeasurecalc.qmeasure`.
 
         Other Parameters
         ----------------
