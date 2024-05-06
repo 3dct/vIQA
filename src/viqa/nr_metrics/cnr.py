@@ -1,4 +1,4 @@
-"""Module for calculating the contrast-to-noise ratio (CNR) between two images.
+"""Module for calculating the contrast-to-noise ratio (CNR) for an image.
 
 Examples
 --------
@@ -40,7 +40,7 @@ from viqa.utils import _visualize_cnr_2d, _visualize_cnr_3d, load_data
 
 
 class CNR(NoReferenceMetricsInterface):
-    """Class to calculate the contrast-to-noise ratio (CNR) between two images.
+    """Class to calculate the contrast-to-noise ratio (CNR) for an image.
 
     Attributes
     ----------
@@ -83,7 +83,7 @@ class CNR(NoReferenceMetricsInterface):
         self._name = "CNR"
 
     def score(self, img, **kwargs):
-        """Calculate the contrast-to-noise ratio (CNR) between two images.
+        """Calculate the contrast-to-noise ratio (CNR) for an image.
 
         Parameters
         ----------
@@ -101,7 +101,7 @@ class CNR(NoReferenceMetricsInterface):
         # write kwargs to ._parameters attribute
         self._parameters.update(kwargs)
 
-        # Check images
+        # Load image
         img = load_data(
             img,
             data_range=self._parameters["data_range"],
@@ -179,7 +179,7 @@ class CNR(NoReferenceMetricsInterface):
 
 
 def contrast_to_noise_ratio(img, background_center, signal_center, radius):
-    """Calculate the contrast-to-noise ratio (CNR) between two images.
+    """Calculate the contrast-to-noise ratio (CNR) for an image.
 
     Parameters
     ----------
