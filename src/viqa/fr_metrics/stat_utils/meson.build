@@ -1,7 +1,7 @@
 incdir_numpy = run_command('../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
 
 py.extension_module(
-    'statistics',
+    'statisticscalc',
     'statisticsmodule.c',
     install: true,
     include_directories: incdir_numpy,

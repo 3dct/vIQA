@@ -37,14 +37,14 @@ static PyMethodDef statisticsMethods[] = {
 // Module Definition
 static struct PyModuleDef statisticsModule = {
     PyModuleDef_HEAD_INIT,
-    "statistics",
+    "statisticscalc",
     "Calculate image statistics.",
     -1,
     statisticsMethods
 };
 
 // Module Initialization
-PyMODINIT_FUNC PyInit_statistics(void) {
+PyMODINIT_FUNC PyInit_statisticscalc(void) {
     _import_array();
     return PyModule_Create(&statisticsModule);
 }

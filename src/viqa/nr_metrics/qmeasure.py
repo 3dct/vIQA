@@ -43,7 +43,7 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.nr_metrics.qmeasure_calc import qmeasurecalc
+from viqa.nr_metrics.qmeasure_utils import qmeasurecalc
 from viqa.utils import _to_float, load_data
 
 
@@ -99,7 +99,7 @@ class QMeasure(NoReferenceMetricsInterface):
             Image to calculate score of.
         **kwargs : optional
             Additional parameters for Q-Measure calculation. The keyword arguments are
-            passed to :py:func:`viqa.nr_metrics.qmeasure_calc.qmeasurecalc.qmeasure`.
+            passed to :py:func:`viqa.nr_metrics.qmeasure_utils.qmeasurecalc.qmeasure`.
 
         Other Parameters
         ----------------
