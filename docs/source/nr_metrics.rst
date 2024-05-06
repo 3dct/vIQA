@@ -9,3 +9,4 @@ No reference metrics are calculated on one image only. No reference image is nee
 
     nr_metrics/snr
     nr_metrics/cnr
+    nr_metrics/qmeasure
