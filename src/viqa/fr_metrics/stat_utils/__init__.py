@@ -1,3 +1,3 @@
-__all__ = ["statistics"]
+__all__ = ["statisticscalc"]
 
-import statistics
+import statisticscalc

@@ -44,7 +44,7 @@ from scipy.ndimage import convolve
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.deprecation import RemovedInNextVersionWarning
-from viqa.fr_metrics.stat_utils import statistics
+from viqa.fr_metrics.stat_utils import statisticscalc
 from viqa.utils import (
     _check_imgs,
     _extract_blocks,
@@ -651,7 +651,7 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     std_err_p = np.std(i_err_blocks, axis=(1, 2), ddof=1)
 
     # std_org = _min_std(i_org, block_size=BLOCK_SIZE, stride=STRIDE)  # Legacy function
-    std_org = statistics.minstd(i_org, BLOCK_SIZE, STRIDE)
+    std_org = statisticscalc.minstd(i_org, BLOCK_SIZE, STRIDE)
 
     mu_org = np.zeros(i_org.shape)
     std_err = np.zeros(i_err.shape)
@@ -792,12 +792,12 @@ def _low_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
             #     stride=STRIDE,
             # )
 
-            std_ref, skw_ref, krt_ref = statistics.getstatistics(
+            std_ref, skw_ref, krt_ref = statisticscalc.getstatistics(
                 np.abs(gabor_org[scale_n, orientation_n]),
                 BLOCK_SIZE,
                 STRIDE,
             )
-            std_dst, skw_dst, krt_dst = statistics.getstatistics(
+            std_dst, skw_dst, krt_dst = statisticscalc.getstatistics(
                 np.abs(gabor_dst[scale_n, orientation_n]),
                 BLOCK_SIZE,
                 STRIDE,
