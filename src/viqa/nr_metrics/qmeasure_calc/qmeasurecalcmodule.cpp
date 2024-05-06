@@ -12,8 +12,7 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-//#include <Python.h>
-#include "C:\Users\p42938\.conda\envs\IQA_Library\include\Python.h"
+#include <Python.h>
 #include <numpy/arrayobject.h>
 #include "qmeasurecalcmodule.h"
 #include "iAQMeasureCalculation.h"
