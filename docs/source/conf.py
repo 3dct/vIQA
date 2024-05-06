@@ -56,3 +56,5 @@ autodoc_default_options = {
     'member-order': 'bysource',
     'exclude-members': '__init__',
 }
+
+autodoc_mock_imports = ["viqa.fr_metrics.stat_utils.statisticscalc"]

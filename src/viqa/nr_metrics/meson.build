@@ -11,4 +11,4 @@ py.install_sources(
     subdir: 'viqa/nr_metrics',
 )
 
-subdir('qmeasure_calc')
+subdir('qmeasure_utils')
