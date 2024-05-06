@@ -13,5 +13,5 @@ py.extension_module(
     sources: sources,
     install: true,
     include_directories: incdir_numpy,
-    subdir: 'viqa/fr_metrics/qmeasure_calc',
+    subdir: 'viqa/nr_metrics/qmeasure_calc',
 )
