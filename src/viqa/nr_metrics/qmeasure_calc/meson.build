@@ -1,0 +1,15 @@
+incdir_numpy = run_command('../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
+
+sources = files(
+'ImageHistogram.cpp',
+'iAQMeasureCalculation.cpp',
+'qmeasurecalcmodule.cpp',
+)
+
+py.extension_module(
+    'qmeasurecalc',
+    sources: sources,
+    install: true,
+    include_directories: incdir_numpy,
+    subdir: 'viqa/nr_metrics/qmeasure_calc',
+)

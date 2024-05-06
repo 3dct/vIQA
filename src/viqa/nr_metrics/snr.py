@@ -1,4 +1,4 @@
-"""Module for calculating the signal-to-noise ratio (SNR) between two images.
+"""Module for calculating the signal-to-noise ratio (SNR) for an image.
 
 Examples
 --------
@@ -40,7 +40,7 @@ from viqa.utils import _visualize_snr_2d, _visualize_snr_3d, load_data
 
 
 class SNR(NoReferenceMetricsInterface):
-    """Class to calculate the signal-to-noise ratio (SNR) between two images.
+    """Class to calculate the signal-to-noise ratio (SNR) for an image.
 
     Attributes
     ----------
@@ -83,7 +83,7 @@ class SNR(NoReferenceMetricsInterface):
         self._name = "SNR"
 
     def score(self, img, **kwargs):
-        """Calculate the signal-to-noise ratio (SNR) between two images.
+        """Calculate the signal-to-noise ratio (SNR) for an image.
 
         Parameters
         ----------
@@ -101,7 +101,7 @@ class SNR(NoReferenceMetricsInterface):
         # write kwargs to ._parameters attribute
         self._parameters.update(kwargs)
 
-        # Check images
+        # Load image
         img = load_data(
             img,
             data_range=self._parameters["data_range"],
@@ -165,7 +165,7 @@ class SNR(NoReferenceMetricsInterface):
 
 
 def signal_to_noise_ratio(img, signal_center, radius):
-    """Calculate the signal-to-noise ratio (SNR) between two images.
+    """Calculate the signal-to-noise ratio (SNR) for an image.
 
     Parameters
     ----------
