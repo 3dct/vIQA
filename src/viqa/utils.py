@@ -458,7 +458,7 @@ def normalize_data(
             img_min = data_range_input[0]
             img_max = data_range_input[1]
         # Normalize numpy array
-        img = ((img - img_min)(data_range_output[1] - data_range_output[0])
+        img = ((img - img_min) * (data_range_output[1] - data_range_output[0])
                / (img_max - img_min)) + data_range_output[0]
 
         # Change data type
