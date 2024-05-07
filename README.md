@@ -227,7 +227,7 @@ psnr.print_score(decimals=2)
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
 - [ ] Add color image support
-- [ ] Add batch support 
+- [x] Add batch support 
 - [x] Add support for printing values
   - [ ] Add support for .txt files
   - [x] Add support for .csv files
