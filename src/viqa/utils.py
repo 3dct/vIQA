@@ -388,8 +388,8 @@ def _check_imgs(
 
 def normalize_data(
         img: np.ndarray,
-        data_range_input: Tuple[int],
-        data_range_output: Tuple[int],
+        data_range_output: Tuple[int, int],
+        data_range_input: Tuple[int, int] = None,
         automatic_data_range: bool = True,
 ) -> np.ndarray:
     """Normalize a numpy array to a given data range.
@@ -398,13 +398,12 @@ def normalize_data(
     ----------
     img : np.ndarray
         Input image
-    data_range_input : Tuple[int]
-        Data range of the input data
     data_range_output : Tuple[int]
         Data range of the returned data
+    data_range_input : Tuple[int], default=None
+        Data range of the input data
     automatic_data_range : bool, default=True
-        Automatically determine the input data range and set output data range
-        to 0 and 1
+        Automatically determine the input data range
 
     Returns
     -------
