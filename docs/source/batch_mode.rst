@@ -1,5 +1,5 @@
-Batch Mode
-----------
+Batch Module
+------------
 
 .. automodule:: viqa.batch_mode
     :exclude-members: BatchMetrics
