@@ -13,15 +13,13 @@ class TestInit:
         assert snr.score_val is None, 'Score value should be None'
         assert snr._parameters['data_range'] == 255, 'Data range should be 255'
         assert snr._parameters['normalize'] is False, 'Normalize should be False'
-        assert snr._parameters['batch'] is False, 'Batch should be False'
         assert snr._parameters['chromatic'] is False, 'Chromatic should be False'
 
     def test_init_with_custom_parameters(self):
-        snr = viqa.SNR(data_range=1, normalize=True, batch=True, chromatic=True)
+        snr = viqa.SNR(data_range=1, normalize=True, chromatic=True)
         assert snr.score_val is None, 'Score value should be None'
         assert snr._parameters['data_range'] == 1, 'Data range should be 1'
         assert snr._parameters['normalize'] is True, 'Normalize should be True'
-        assert snr._parameters['batch'] is True, 'Batch should be True'
         assert snr._parameters['chromatic'] is True, 'Chromatic should be True'
 
 

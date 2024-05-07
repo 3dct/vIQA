@@ -115,9 +115,8 @@ img_r = load_data(
   file_path_img_r, 
   data_range=1, 
   normalize=False,
-  batch=False,
 )  # data_range ignored due to normalize=False
-img_m = load_data(file_path_img_m)  # per default: batch=False, normalize=False
+img_m = load_data(file_path_img_m)  # per default: normalize=False
 # --> both images are loaded as 8-bit images
 
 # calculate and print RMSE score
@@ -227,7 +226,7 @@ psnr.print_score(decimals=2)
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
 - [ ] Add color image support
-- [ ] Add batch support 
+- [x] Add batch support 
 - [x] Add support for printing values
   - [ ] Add support for .txt files
   - [x] Add support for .csv files

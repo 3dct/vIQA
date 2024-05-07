@@ -1,5 +1,5 @@
 Fusion module
------------------
+-------------
 
 .. currentmodule:: viqa.fusion
 
