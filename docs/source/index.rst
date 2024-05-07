@@ -117,7 +117,6 @@ Better:
       file_path_img_r,
       data_range=1,
       normalize=False,
-      batch=False,
     )  # data_range ignored due to normalize=False
     img_m = load_data(file_path_img_m)  # per default: batch=False, normalize=False
     # --> both images are loaded as 8-bit images
@@ -128,7 +127,7 @@ Better:
     rmse.print_score(decimals=2)
 
     # normalize to 16-bit
-    img_r = normalize_data(img_r, data_range=65535)
+    img_r = normalize_data(img_r, data_range_output=(0, 65535))
     img_m = load_data(img_m, data_range=65535, normalize=True)
     # --> both functions have the same effect
 
@@ -256,6 +255,11 @@ This is the API reference for vIQA, a package for volumetric Image Quality Asses
    :maxdepth: 2
 
    fusion
+
+.. toctree::
+   :maxdepth: 2
+
+   batch_mode
 
 
 ******************

@@ -13,7 +13,7 @@ Examples
         >>> img = np.random.rand(128, 128)
         >>> img.dtype
         dtype('float64')
-        >>> img = normalize_data(img, data_range=255)
+        >>> img = normalize_data(img, data_range_output=(0, 255))
         >>> img.dtype
         dtype('uint8')
 
@@ -48,8 +48,8 @@ import re
 from typing import Tuple
 from warnings import warn
 
-import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
 import scipy.fft as fft
@@ -239,8 +239,7 @@ def load_data(
         Maximum value of the returned data. Passed to
         :py:func:`.viqa.utils.normalize_data`.
     normalize : bool, default False
-        If True, the input images are expected to be given as path to a folder
-        containing the images.
+        If True, data is normalized to (0, ``data_range``) based on min and max of img.
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
@@ -334,11 +333,11 @@ def load_data(
     if normalize:
         if batch:
             img_arr = [
-                normalize_data(img, data_range)  # type: ignore[arg-type]
+                normalize_data(img=img, data_range_output=(0, data_range))  # type: ignore[arg-type]
                 for img in img_arr
             ]
         else:
-            img_arr = normalize_data(img_arr, data_range)  # type: ignore[arg-type]
+            img_arr = normalize_data(img=img_arr, data_range_output=(0, data_range))  # type: ignore[arg-type]
 
     return img_arr
 
@@ -387,15 +386,24 @@ def _check_imgs(
     return img_r_loaded, img_m_loaded
 
 
-def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
+def normalize_data(
+        img: np.ndarray,
+        data_range_output: Tuple[int, int],
+        data_range_input: Tuple[int, int] = None,
+        automatic_data_range: bool = True,
+) -> np.ndarray:
     """Normalize a numpy array to a given data range.
 
     Parameters
     ----------
-    img_arr : np.ndarray
+    img : np.ndarray
         Input image
-    data_range : int
+    data_range_output : Tuple[int]
         Data range of the returned data
+    data_range_input : Tuple[int], default=None
+        Data range of the input data
+    automatic_data_range : bool, default=True
+        Automatically determine the input data range
 
     Returns
     -------
@@ -405,45 +413,70 @@ def normalize_data(img_arr: np.ndarray, data_range: int) -> np.ndarray:
     Raises
     ------
     ValueError
-        If data type is not supported \n
-        If ``data_range`` is not supported
+        If data type is not supported. \n
+        If ``data_range`` is not supported.
+
+    Warns
+    -----
+    RuntimeWarning
+        If data is already normalized.
+
+    Notes
+    -----
+    Currently only 8 bit int (0-255), 16 bit int (0-65535) and 32 bit float (0-1)
+    data ranges are supported.
 
     Examples
     --------
     >>> import numpy as np
     >>> from viqa import normalize_data
     >>> img = np.random.rand(128, 128)
-    >>> img_norm = normalize_data(img, data_range=255)
+    >>> img_norm = normalize_data(
+    >>>             img,
+    >>>             data_range_output=(0, 255),
+    >>>             automatic_data_range=True,
+    >>> )
     >>> np.max(img_norm)
     255
     """
     # Check data type
-    if np.issubdtype(img_arr.dtype, np.integer):  # If data type is integer
-        info = np.iinfo(img_arr.dtype)  # type: ignore[assignment]
-    elif np.issubdtype(img_arr.dtype, np.floating):  # If data type is float
-        info = np.finfo(img_arr.dtype)  # type: ignore[assignment]
+    if np.issubdtype(img.dtype, np.integer):  # If data type is integer
+        info = np.iinfo(img.dtype)  # type: ignore[assignment]
+    elif np.issubdtype(img.dtype, np.floating):  # If data type is float
+        info = np.finfo(img.dtype)  # type: ignore[assignment]
     else:
         raise ValueError("Data type not supported")
 
     # Check if data is already normalized
-    if info.max is not data_range:
+    if info.max is not data_range_output[1] or info.min is not data_range_output[0]:
         # Normalize data
-        img_min = np.min(img_arr)  # Get minimum value of numpy array
-        img_max = np.max(img_arr)  # Get maximum value of numpy array
-        img_arr = (img_arr - img_min) / (img_max - img_min)  # Normalize numpy array
-        img_arr *= data_range  # Scale numpy array to data_range
+        if automatic_data_range:
+            img_min = np.min(img)  # Get minimum value of numpy array
+            img_max = np.max(img)  # Get maximum value of numpy array
+        else:
+            img_min = data_range_input[0]
+            img_max = data_range_input[1]
+        # Normalize numpy array
+        img = ((img - img_min) * (data_range_output[1] - data_range_output[0])
+               / (img_max - img_min)) + data_range_output[0]
 
         # Change data type
-        if data_range == 2**8 - 1:  # If data range is 255 (8 bit)
-            img_arr = img_arr.astype(np.uint8)  # Change data type to unsigned byte
-        elif data_range == 2**16 - 1:  # If data range is 65535 (16 bit)
-            img_arr = img_arr.astype(np.uint16)  # Change data type to unsigned short
-        elif data_range == 1:  # If data range is 1
-            img_arr = img_arr.astype(np.float32)  # Change data type to float32
+        # If data range is 255 (8 bit)
+        if data_range_output[1] == 2**8 - 1 and data_range_output[0] == 0:
+            img = img.astype(np.uint8)  # Change data type to unsigned byte
+        # If data range is 65535 (16 bit)
+        elif data_range_output[1] == 2**16 - 1 and data_range_output[0] == 0:
+            img = img.astype(np.uint16)  # Change data type to unsigned short
+        # If data range is 1
+        elif data_range_output[1] == 1 and data_range_output[0] == 0:
+            img = img.astype(np.float32)  # Change data type to float32
         else:
-            raise ValueError("Data range not supported. Please use 1, 255 or 65535.")
+            raise ValueError("Data range not supported. Please use (0, 1), (0, 255) or "
+                             "(0, 65535) as data_range_output.")
+    else:
+        warn("Data is already normalized.", RuntimeWarning)
 
-    return img_arr
+    return img
 
 
 def _to_float(img, dtype=np.float64):

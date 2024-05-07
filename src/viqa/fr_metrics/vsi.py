@@ -52,12 +52,6 @@ class VSI(FullReferenceMetricsInterface):
         :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
-    batch : bool, default=False
-        If True, the input images are expected to be given as path to a folder
-        containing the images.
-
-        .. note::
-            Currently not supported. Added for later implementation.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
@@ -100,12 +94,12 @@ class VSI(FullReferenceMetricsInterface):
         Processing, 23(10), 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
     """
 
-    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
+    def __init__(self, data_range=255, normalize=False, **kwargs):
         """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
-            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+            data_range=data_range, normalize=normalize, **kwargs
         )
         self._name = "VSI"
 
@@ -199,7 +193,6 @@ class VSI(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
-            batch=self._parameters["batch"],
         )
 
         if img_r.ndim == 3:

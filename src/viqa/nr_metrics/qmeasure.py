@@ -1,4 +1,4 @@
-"""Module for the Q-Measure metric.
+"""Module for the Q-Measure [1]_ metric.
 
 References
 ----------
@@ -48,7 +48,7 @@ from viqa.utils import _to_float, load_data
 
 
 class QMeasure(NoReferenceMetricsInterface):
-    """Class to calculate the Q-Measure for an image.
+    """Class to calculate the Q-Measure [1]_ for an image.
 
     Attributes
     ----------
@@ -62,12 +62,6 @@ class QMeasure(NoReferenceMetricsInterface):
         ``normalize`` is True. Passed to :py:func:`viqa.utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
-    batch : bool, default False
-        If True, the input images are expected to be given as path to a folder
-        containing the images.
-
-        .. note::
-            Currently not supported. Added for later implementation.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
@@ -81,12 +75,19 @@ class QMeasure(NoReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    References
+    ----------
+    .. [1] Reiter, M., Weiß, D., Gusenbauer, C., Erler, M., Kuhn, C., Kasperl, S., &
+        Kastner, J. (2014). Evaluation of a Histogram-based Image Quality Measure for
+        X-ray computed Tomography. 5th Conference on Industrial Computed Tomography
+        (iCT) 2014, 25-28 February 2014, Wels, Austria. e-Journal of Nondestructive
+        Testing Vol. 19(6). https://www.ndt.net/?id=15715
     """
 
-    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
         """Constructor method."""
         super().__init__(
-            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+            data_range=data_range, normalize=normalize, **kwargs
         )
         self._name = "Q-Measure"
 
@@ -118,7 +119,6 @@ class QMeasure(NoReferenceMetricsInterface):
             img,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
-            batch=self._parameters["batch"],
         )
 
         # Convert to float and get min and max values

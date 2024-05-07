@@ -13,20 +13,18 @@ class TestInit:
         assert mad.score_val is None, 'Score value should be None'
         assert mad._parameters['data_range'] is 255, 'Data range should be None'
         assert mad._parameters['normalize'] is False, 'Normalize should be False'
-        assert mad._parameters['batch'] is False, 'Batch should be False'
         assert mad._parameters['chromatic'] is False, 'Chromatic should be False'
 
     def test_init_with_custom_parameters(self):
-        mad = viqa.MAD(data_range=1, normalize=True, batch=True, chromatic=True)
+        mad = viqa.MAD(data_range=1, normalize=True, chromatic=True)
         assert mad.score_val is None, 'Score value should be None'
         assert mad._parameters['data_range'] == 1, 'Data range should be 255'
         assert mad._parameters['normalize'] is True, 'Normalize should be True'
-        assert mad._parameters['batch'] is True, 'Batch should be True'
         assert mad._parameters['chromatic'] is True, 'Chromatic should be True'
 
     def test_init_without_data_range(self):
         with pytest.raises(ValueError, match=re.escape('Parameter data_range must be set.')):
-            viqa.MAD(data_range=None, normalize=True, batch=True, chromatic=True)
+            viqa.MAD(data_range=None, normalize=True, chromatic=True)
 
 
 class TestScoring2D:
