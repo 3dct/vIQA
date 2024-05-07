@@ -54,12 +54,6 @@ class VIFp(FullReferenceMetricsInterface):
         :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
-    batch : bool, default=False
-        If True, the input images are expected to be given as path to a folder
-        containing the images.
-
-        .. note::
-            Currently not supported. Added for later implementation.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to

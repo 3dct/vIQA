@@ -54,12 +54,6 @@ class SNR(NoReferenceMetricsInterface):
         ``normalize`` is True. Passed to :py:func:`viqa.utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
-    batch : bool, default False
-        If True, the input images are expected to be given as path to a folder
-        containing the images.
-
-        .. note::
-            Currently not supported. Added for later implementation.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
@@ -75,10 +69,10 @@ class SNR(NoReferenceMetricsInterface):
 
     """
 
-    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
         """Constructor method."""
         super().__init__(
-            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+            data_range=data_range, normalize=normalize, **kwargs
         )
         self._name = "SNR"
 

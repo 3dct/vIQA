@@ -4,11 +4,10 @@ from viqa.utils import export_csv
 
 
 class FullReferenceMetricsInterface(ABC):
-    def __init__(self, data_range, normalize, batch, **kwargs):
+    def __init__(self, data_range, normalize, **kwargs):
         self._parameters = {
             "data_range": data_range,
             "normalize": normalize,
-            "batch": batch,
             "chromatic": False,
             **kwargs,
         }
@@ -64,11 +63,10 @@ class FullReferenceMetricsInterface(ABC):
 
 
 class NoReferenceMetricsInterface(ABC):
-    def __init__(self, data_range, normalize, batch, **kwargs):
+    def __init__(self, data_range, normalize, **kwargs):
         self._parameters = {
             "data_range": data_range,
             "normalize": normalize,
-            "batch": batch,
             "chromatic": False,
             **kwargs,
         }

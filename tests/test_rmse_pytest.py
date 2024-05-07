@@ -13,15 +13,13 @@ class TestInit:
         assert rmse.score_val is None, 'Score value should be None'
         assert rmse._parameters['data_range'] is None, 'Data range should be None'
         assert rmse._parameters['normalize'] is False, 'Normalize should be False'
-        assert rmse._parameters['batch'] is False, 'Batch should be False'
         assert rmse._parameters['chromatic'] is False, 'Chromatic should be False'
 
     def test_init_with_custom_parameters(self):
-        rmse = viqa.RMSE(data_range=1, normalize=True, batch=True, chromatic=True)
+        rmse = viqa.RMSE(data_range=1, normalize=True, chromatic=True)
         assert rmse.score_val is None, 'Score value should be None'
         assert rmse._parameters['data_range'] == 1, 'Data range should be 1'
         assert rmse._parameters['normalize'] is True, 'Normalize should be True'
-        assert rmse._parameters['batch'] is True, 'Batch should be True'
         assert rmse._parameters['chromatic'] is True, 'Chromatic should be True'
 
 
