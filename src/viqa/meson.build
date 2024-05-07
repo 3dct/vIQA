@@ -5,6 +5,7 @@ python_sources = [
     'deprecation.py',
     'utils.py',
     'fusion.py',
+    'batch_mode.py',
 ]
 
 py.install_sources(
