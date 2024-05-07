@@ -98,12 +98,12 @@ class MSSSIM(FullReferenceMetricsInterface):
         https://doi.org/10.1109/ACSSC.2003.1292216
     """
 
-    def __init__(self, data_range=255, normalize=False, batch=False, **kwargs):
+    def __init__(self, data_range=255, normalize=False, **kwargs):
         """Constructor method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
-            data_range=data_range, normalize=normalize, batch=batch, **kwargs
+            data_range=data_range, normalize=normalize, **kwargs
         )
         self._name = "MS-SSIM"
 
@@ -191,7 +191,6 @@ class MSSSIM(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
-            batch=self._parameters["batch"],
         )
 
         if img_r.ndim == 3:

@@ -100,7 +100,6 @@ class SNR(NoReferenceMetricsInterface):
             img,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
-            batch=self._parameters["batch"],
         )
 
         score_val = signal_to_noise_ratio(img, **kwargs)

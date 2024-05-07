@@ -123,7 +123,6 @@ class PSNR(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
-            batch=self._parameters["batch"],
         )
         # Calculate score
         if np.array_equal(img_r, img_m):

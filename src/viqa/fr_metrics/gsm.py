@@ -195,7 +195,6 @@ class GSM(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
-            batch=self._parameters["batch"],
         )
 
         if img_r.ndim == 3:
