@@ -126,7 +126,7 @@ score_rmse = rmse.score(img_r, img_m)  # RMSE does not need any parameters
 rmse.print_score(decimals=2)
 
 # normalize to 16-bit
-img_r = normalize_data(img_r, data_range=65535)
+img_r = normalize_data(img_r, data_range_output=(0, 65535))
 img_m = load_data(img_m, data_range=65535, normalize=True)
 # --> both functions have the same effect
 
