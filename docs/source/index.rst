@@ -83,11 +83,13 @@ Installation
 ============
 
 The package can be installed via ``pip``:
+
 .. code-block:: bash
 
     pip install viqa
 
 or ``conda``:
+
 .. code-block:: bash
 
     conda install -c conda-forge viqa
