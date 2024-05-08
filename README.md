@@ -66,14 +66,14 @@ with grayscale images by copying the luminance channel 3 times.
 
 ## Requirements
 The following packages have to be installed:
+- matplotlib
 - nibabel
 - numpy
-- scipy
-- pytorch
 - piq
+- pytorch
 - scikit-image
-- matplotlib
-- jupyter
+- scipy
+- (jupyter) if you want to use the provided notebook
 
 ## Installation
 Use either `pip`
