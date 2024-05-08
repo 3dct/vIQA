@@ -75,6 +75,10 @@ class QMeasure(NoReferenceMetricsInterface):
         .. note::
             Currently not supported.
 
+    Notes
+    -----
+    This metric will always be calculated with float32 precision.
+
     References
     ----------
     .. [1] Reiter, M., Weiß, D., Gusenbauer, C., Erler, M., Kuhn, C., Kasperl, S., &
