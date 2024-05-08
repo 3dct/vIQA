@@ -47,7 +47,7 @@ The following metrics are implemented:
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
     | SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | Q-Measure | Q-Measure                                     | NR   | 2D only               | :math:`\times`            | :math:`[0, \infty)`                      | :math:`\times`     | :math:`\times`      | [10]_     |
+    | Q-Measure | Q-Measure                                     | NR   | 3D only               | :math:`\times`            | :math:`[0, \infty)`                      | :math:`\times`     | :math:`\times`      | [10]_     |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
 
 
@@ -70,27 +70,41 @@ Requirements
 
 The package is written in Python 3.11 and requires the following packages:
 
+* matplotlib
 * nibabel
 * numpy
-* scipy
-* pytorch
 * piq
+* pytorch
 * scikit-image
-* matplotlib
-* jupyter
+* scipy
+* (jupyter) if you want to use the notebook on Github
+
+Installation
+============
+
+The package can be installed via ``pip``:
+.. code-block:: bash
+
+    pip install viqa
+
+or ``conda``:
+.. code-block:: bash
+
+    conda install -c conda-forge viqa
 
 
 General Usage Advice
 ====================
 
 You should use the Classes for calculating the metrics. The functions are only intended
-for advanced users who want to use the metrics in a non-standard way.
+for advanced users who want to use the metrics in a non-standard way. A bash mode is
+provided for batch processing of images.
 
 Workflow
 --------
 Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data
 range (if the parameter ``normalize=True`` is set) and then compared. The scores are then calculated and can be printed.
-If using paths file names need to be given with the bit depth denoted as a suffix (e.g. ``_8bit.raw``, ``_16bit.mhd``) and
+If using paths file names need to be given with the bit depth denoted as a suffix (e.g. ``_8bit.raw``, ``_16bit.raw``) and
 the dimensions of the images need to be given in the file name (e.g. ``512x512x512``). The images are assumed to be
 grayscale. Treatment of color images is planned for later versions.
 The metrics are implemented to calculate the scores for an 8-bit data range (0-255) per default. For some metrics the
@@ -186,7 +200,7 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 
 .. important::
 
-    The current recommended usage file is the Jupyter Notebook shipped with the package.
+    The current recommended usage file is the Jupyter Notebook on the Github page.
 
 
 Contacts

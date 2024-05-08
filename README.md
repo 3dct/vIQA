@@ -51,7 +51,7 @@ Overview
 | GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:       | [^8]      |
 | CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^9]      |
 | SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
-| Q-Measure | Q-Measure                                     | NR   | 2D only               | :x:                     | $[0, \infty)$                            | :x:                | :x:       | [^10]     |
+| Q-Measure | Q-Measure                                     | NR   | 3D only               | :x:                     | $[0, \infty)$                            | :x:                | :x:       | [^10]     |
 
 [^a]: UQI is a special case of SSIM. Also see [^2].
 [^b]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
@@ -66,14 +66,14 @@ with grayscale images by copying the luminance channel 3 times.
 
 ## Requirements
 The following packages have to be installed:
+- matplotlib
 - nibabel
 - numpy
-- scipy
-- pytorch
 - piq
+- pytorch
 - scikit-image
-- matplotlib
-- jupyter
+- scipy
+- (jupyter) if you want to use the provided notebook
 
 ## Installation
 Use either `pip`

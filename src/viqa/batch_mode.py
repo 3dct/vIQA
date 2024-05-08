@@ -2,8 +2,19 @@
 
 Examples
 --------
-    .. todo::
-        Add examples
+.. doctest-skip::
+
+    >>> from viqa import BatchMetrics, PSNR, QMeasure
+    >>> metrics = [PSNR(data_range=1), QMeasure(data_range=1)]
+    >>> metrics_parameters = [{}, {'hist_bins': 16, 'num_peaks': 2}]
+    >>> batch = BatchMetrics(
+    ...     file_dir='path/to/images',
+    ...     pairs_csv='path/to/pairs.csv',
+    ...     metrics=metrics,
+    ...     metrics_parameters=metrics_parameters
+    ... )
+    >>> batch.calculate()
+    >>> batch.export_results(file_path='path/to/results', file_name='results.csv')
 
 """
 
@@ -68,13 +79,34 @@ class BatchMetrics:
     metrics_parameters : list
         List of dictionaries containing the parameters for the metrics.
 
+    Raises
+    ------
+    ValueError
+        If the number of metrics and metric parameters is not equal.
+
     Examples
     --------
-    .. todo::
-        Add examples
+    .. doctest-skip::
+
+        >>> from viqa import BatchMetrics, PSNR, QMeasure
+        >>> metrics = [PSNR(data_range=1), QMeasure(data_range=1)]
+        >>> metrics_parameters = [{}, {'hist_bins': 16, 'num_peaks': 2}]
+        >>> batch = BatchMetrics(
+        ...     file_dir='path/to/images',
+        ...     pairs_csv='path/to/pairs.csv',
+        ...     metrics=metrics,
+        ...     metrics_parameters=metrics_parameters
+        ... )
+        >>> batch.calculate()
+        >>> batch.export_results(file_path='path/to/results', file_name='results.csv')
     """
 
     def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
+        """Constructor method."""
+        if len(metrics) == len(metrics_parameters):
+            raise ValueError("The number of metrics and metric parameters must be "
+                             "equal.")
+
         self.results = {}
         self.file_dir = file_dir
         self.metrics = metrics
@@ -84,14 +116,6 @@ class BatchMetrics:
 
     def calculate(self):
         """Calculate the metrics in batch mode."""
-
-        # TODO: Add support for no-reference metrics
-        # if pair['modified_image'] == None:
-        #     img_r = load_data(reference_image)
-
-        # self._type = 'fr'
-        # if metric._type == 'nr':
-
         for pair_num, pair in enumerate(self.pairs):
             reference_path = os.path.join(self.file_dir, pair['reference_image'])
             modified_path = os.path.join(self.file_dir, pair['modified_image'])
@@ -99,12 +123,24 @@ class BatchMetrics:
             img_m = load_data(modified_path)
             metric_results = {}
             for metric_num, metric in enumerate(self.metrics):
-                result = metric.score(
-                    img_r=img_r,
-                    img_m=img_m,
-                    **self.metrics_parameters[metric_num]
-                )
-                metric_results[metric._name] = result
+                if metric._name not in ["CNR", "SNR", "Q-Measure"]:
+                    result = metric.score(
+                        img_r=img_r,
+                        img_m=img_m,
+                        **self.metrics_parameters[metric_num]
+                    )
+                    metric_results[metric._name] = result
+                else:
+                    result_r = metric.score(
+                        img=img_r,
+                        **self.metrics_parameters[metric_num]
+                    )
+                    result_m = metric.score(
+                        img=img_m,
+                        **self.metrics_parameters[metric_num]
+                    )
+                    metric_results[metric._name + '_r'] = result_r
+                    metric_results[metric._name + '_m'] = result_m
             self.results[str(pair_num)] = metric_results
 
     def export_results(self, file_path, file_name='results.csv'):
@@ -116,6 +152,12 @@ class BatchMetrics:
             Path to the directory where the csv file should be saved.
         file_name : str, default='results.csv'
             Name of the csv file. Default is 'results.csv'.
+
+        Notes
+        -----
+            .. attention::
+
+                The csv file will be overwritten if it already exists.
         """
         path = os.path.join(file_path, file_name)
         with open(path, mode='w', newline='') as csvfile:
@@ -125,7 +167,7 @@ class BatchMetrics:
                 ['pair_num']
                 + ['reference_image']
                 + ['modified_image']
-                + [metric._name for metric in self.metrics]
+                + list(self.results[str(0)].keys())
             )
             # Write data
             for pair_num, results in self.results.items():
@@ -133,7 +175,8 @@ class BatchMetrics:
                     [pair_num]
                     + [self.pairs[int(pair_num)]['reference_image']]
                     + [self.pairs[int(pair_num)]['modified_image']]
-                    + list(results.values()))
+                    + list(results.values())
+                )
 
 
 def _read_csv(file_path):
@@ -141,4 +184,8 @@ def _read_csv(file_path):
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
         csvfile.seek(0)
         reader = csv.DictReader(csvfile, dialect=dialect)
+        if ('reference_image' not in reader.fieldnames
+                or 'modified_image' not in reader.fieldnames):
+            raise ValueError("CSV file must contain the columns 'reference_image' and "
+                             "'modified_image'.")
         return list(reader)
