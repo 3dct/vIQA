@@ -36,6 +36,8 @@ Examples
 import csv
 import os
 
+from skimage.color import rgb2gray
+
 from viqa.utils import load_data
 
 
@@ -103,7 +105,7 @@ class BatchMetrics:
 
     def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
         """Constructor method."""
-        if len(metrics) == len(metrics_parameters):
+        if len(metrics) != len(metrics_parameters):
             raise ValueError("The number of metrics and metric parameters must be "
                              "equal.")
 
@@ -121,6 +123,11 @@ class BatchMetrics:
             modified_path = os.path.join(self.file_dir, pair['modified_image'])
             img_r = load_data(reference_path)
             img_m = load_data(modified_path)
+            # convert to grayscale if regular color image
+            if img_r.shape[2] == 3 or img_m.shape[2] == 3:
+                img_r = rgb2gray(img_r)
+                img_m = rgb2gray(img_m)
+
             metric_results = {}
             for metric_num, metric in enumerate(self.metrics):
                 if metric._name not in ["CNR", "SNR", "Q-Measure"]:
