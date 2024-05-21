@@ -62,8 +62,7 @@ def _load_data_from_disk(
     file_dir: str | os.PathLike, file_name: str | os.PathLike
 ) -> np.ndarray:
     """
-    Load data from a .mhd file and its corresponding .raw file, a .raw file only or a
-    NIfTI file.
+    Load data from a file.
 
     Parameters
     ----------
@@ -87,87 +86,16 @@ def _load_data_from_disk(
     """
     # Create file path components
     file_name_split = os.path.splitext(file_name)  # Split file name and extension
-    file_name_head = file_name_split[0]  # File name without extension
     file_ext = file_name_split[-1]
     file_path = os.path.join(file_dir, file_name)  # Complete file path
 
     # Check file extension
     if file_ext == ".mhd":  # If file is a .mhd file
-        f = open(file=file_path, mode="rt")  # Open header file
-
-        file_header_txt = f.read().split("\n")  # Extract header lines
-        # Create dictionary from lines
-        file_header = {
-            key: value
-            for line in file_header_txt[0:-1]
-            for key, value in [line.split(" = ")]
-        }
-
-        data_file_path = os.path.join(
-            file_dir, file_header["ElementDataFile"]
-        )  # Get data file path from header
-
-        # Extract dimension
-        # Change DimSize to type int
-        file_header.update(
-            {"DimSize": [int(val) for val in file_header["DimSize"].split()]}
-        )
-        dim_size = file_header["DimSize"]  # Get DimSize from header
-
-        # Check bit depth
-        bit_depth = file_header["ElementType"]  # Get ElementType from header
-
-        # Set data type according to bit depth
-        if bit_depth == "MET_USHORT":
-            data_type = np.ushort  # Set data type to unsigned short
-        elif bit_depth == "MET_UCHAR":
-            data_type = np.ubyte  # Set data type to unsigned byte
-        elif bit_depth == "MET_FLOAT":
-            data_type = np.float32  # Set data type to float32
-        else:
-            raise ValueError(
-                "Bit depth not supported"
-            )  # Raise exception if the bit depth is not supported
+        img_arr = load_mhd(file_dir, file_name)
+        return img_arr
     elif file_ext == ".raw":  # If file is a .raw file
-        # Check dimension
-        dim_search_result = re.search(
-            r"(\d+(x)\d+(x)\d+)", file_name_head
-        )  # Search for dimension in file name
-        if dim_search_result is not None:  # If dimension was found
-            dim = dim_search_result.group(1)  # Get dimension from file name
-        else:
-            raise ValueError(
-                "No dimension found"
-            )  # Raise exception if no dimension was found
-
-        # Extract dimension
-        dim_size = re.split("x", dim)  # Split dimension string into list
-        dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
-
-        # Check bit depth
-        bit_depth_search_result = re.search(
-            r"(\d{1,2}bit)", file_name_head
-        )  # Search for the bit depth in file name
-        if bit_depth_search_result is not None:  # If the bit depth was found
-            bit_depth = bit_depth_search_result.group(
-                1
-            )  # Get the bit depth from file name
-        else:
-            raise ValueError(
-                "No bit depth found"
-            )  # Raise exception if no bit depth was found
-
-        # Set data type according to bit depth
-        if bit_depth == "16bit":
-            data_type = np.ushort  # Set data type to unsigned short
-        elif bit_depth == "8bit":
-            data_type = np.ubyte  # Set data type to unsigned byte
-        else:
-            raise ValueError(
-                "Bit depth not supported"
-            )  # Raise exception if the bit depth is not supported
-
-        data_file_path = os.path.join(file_dir, file_name)  # Get data file path
+        img_arr = load_raw(file_dir, file_name)
+        return img_arr
     elif file_ext == ".nii":
         img_arr = load_nifti(file_path)
         return img_arr
@@ -187,20 +115,154 @@ def _load_data_from_disk(
             "File extension not supported"
         )  # Raise exception if file extension is not supported
 
-    # Load data
-    with open(file=data_file_path, mode="rb") as f:  # Open data file
-        img_arr_orig = np.fromfile(
-            file=f, dtype=data_type
-        )  # Read data file into numpy array according to data type
 
-    # Reshape numpy array according to DimSize
-    img_arr = img_arr_orig.reshape(*dim_size[::-1])
+def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.ndarray:
+    """
+    Load data from a ``.mhd`` file.
+
+    Parameters
+    ----------
+    file_dir : str or os.PathLike
+        Directory of the file
+    file_name : str or os.PathLike
+        Name of the file with extension
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Numpy array containing the data
+
+    Raises
+    ------
+    ValueError
+        If the bit depth is not supported
+
+    Examples
+    --------
+    >>> from viqa.utils import load_mhd  # doctest: +SKIP
+    >>> img = load_raw("path/to/image.mhd")  # doctest: +SKIP
+    """
+    file_path = os.path.join(file_dir, file_name)  # Complete file path
+
+    f = open(file=file_path, mode="rt")  # Open header file
+
+    file_header_txt = f.read().split("\n")  # Extract header lines
+    # Create dictionary from lines
+    file_header = {
+        key: value
+        for line in file_header_txt[0:-1]
+        for key, value in [line.split(" = ")]
+    }
+
+    data_file_path = os.path.join(
+        file_dir, file_header["ElementDataFile"]
+    )  # Get data file path from header
+
+    # Extract dimension
+    # Change DimSize to type int
+    file_header.update(
+        {"DimSize": [int(val) for val in file_header["DimSize"].split()]}
+    )
+    dim_size = file_header["DimSize"]  # Get DimSize from header
+
+    # Check bit depth
+    bit_depth = file_header["ElementType"]  # Get ElementType from header
+
+    # Set data type according to bit depth
+    if bit_depth == "MET_USHORT":
+        data_type = np.ushort  # Set data type to unsigned short
+    elif bit_depth == "MET_UCHAR":
+        data_type = np.ubyte  # Set data type to unsigned byte
+    elif bit_depth == "MET_FLOAT":
+        data_type = np.float32  # Set data type to float32
+    else:
+        raise ValueError(
+            "Bit depth not supported"
+        )  # Raise exception if the bit depth is not supported
+
+    img_arr = _load_binary(data_file_path, data_type, dim_size)
+    return img_arr
+
+
+def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.ndarray:
+    """
+    Load data from a ``.raw`` file.
+
+    Parameters
+    ----------
+    file_dir : str or os.PathLike
+        Directory of the file
+    file_name : str or os.PathLike
+        Name of the file with extension
+
+    Returns
+    -------
+    img_arr : np.ndarray
+        Numpy array containing the data
+
+    Raises
+    ------
+    ValueError
+        If the bit depth is not supported \n
+        If no bit depth was found \n
+        If no dimension was found
+
+    Examples
+    --------
+    >>> from viqa.utils import load_raw  # doctest: +SKIP
+    >>> img = load_raw("path/to/image.raw")  # doctest: +SKIP
+    """
+    # Create file path components
+    file_name_split = os.path.splitext(file_name)  # Split file name and extension
+    file_name_head = file_name_split[0]  # File name without extension
+
+    # Check dimension
+    dim_search_result = re.search(
+        r"(\d+(x)\d+(x)\d+)", file_name_head
+    )  # Search for dimension in file name
+    if dim_search_result is not None:  # If dimension was found
+        dim = dim_search_result.group(1)  # Get dimension from file name
+    else:
+        raise ValueError(
+            "No dimension found"
+        )  # Raise exception if no dimension was found
+
+    # Extract dimension
+    dim_size = re.split("x", dim)  # Split dimension string into list
+    dim_size = [int(val) for val in dim_size]  # Change DimSize to type int
+
+    # Check bit depth
+    bit_depth_search_result = re.search(
+        r"(\d{1,2}bit)", file_name_head
+    )  # Search for the bit depth in file name
+    if bit_depth_search_result is not None:  # If the bit depth was found
+        bit_depth = bit_depth_search_result.group(
+            1
+        )  # Get the bit depth from file name
+    else:
+        raise ValueError(
+            "No bit depth found"
+        )  # Raise exception if no bit depth was found
+
+    # Set data type according to bit depth
+    if bit_depth == "16bit":
+        data_type = np.ushort  # Set data type to unsigned short
+    elif bit_depth == "8bit":
+        data_type = np.ubyte  # Set data type to unsigned byte
+    else:
+        raise ValueError(
+            "Bit depth not supported"
+        )  # Raise exception if the bit depth is not supported
+
+    data_file_path = os.path.join(file_dir, file_name)  # Get data file path
+
+    img_arr = _load_binary(data_file_path, data_type, dim_size)
     return img_arr
 
 
 def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
     """
-    Load data from a .nii file.
+    Load data from a ``.nii`` file.
 
     Parameters
     ----------
@@ -223,6 +285,18 @@ def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
     """
     img = nib.load(file_path)
     img_arr = img.get_fdata()
+    return img_arr
+
+
+def _load_binary(data_file_path, data_type, dim_size):
+    # Load data
+    with open(file=data_file_path, mode="rb") as f:  # Open data file
+        img_arr_orig = np.fromfile(
+            file=f, dtype=data_type
+        )  # Read data file into numpy array according to data type
+
+    # Reshape numpy array according to DimSize
+    img_arr = img_arr_orig.reshape(*dim_size[::-1])
     return img_arr
 
 
