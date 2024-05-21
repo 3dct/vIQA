@@ -146,8 +146,8 @@ class BatchMetrics:
                         img=img_m,
                         **self.metrics_parameters[metric_num]
                     )
-                    metric_results[metric._name + '_r'] = result_r
-                    metric_results[metric._name + '_m'] = result_m
+                    metric_results[metric._name + '_r'] = float(result_r)
+                    metric_results[metric._name + '_m'] = float(result_m)
             self.results[str(pair_num)] = metric_results
 
     def export_results(self, file_path, file_name='results.csv'):
