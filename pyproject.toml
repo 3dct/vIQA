@@ -55,6 +55,7 @@ lint = [
 docs = [
     "sphinx",
     "furo",
+    "sphinx_copybutton",
 ]
 dev = [
     "vIQA[tests, lint, docs]",
