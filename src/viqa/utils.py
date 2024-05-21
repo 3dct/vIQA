@@ -53,6 +53,7 @@ import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
 import scipy.fft as fft
+import skimage as ski
 import torch
 from torch import Tensor
 
@@ -178,6 +179,9 @@ def _load_data_from_disk(
             raise ValueError(
                 "File extension not supported"
             )
+    elif file_ext in [".png", ".jpg", ".jpeg", ".bmp"]:
+        img_arr = ski.io.imread(file_path)
+        return img_arr
     else:
         raise ValueError(
             "File extension not supported"
