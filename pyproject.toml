@@ -33,31 +33,19 @@ dependencies = [
     "piq",
     "scikit-image",
     "nibabel",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]
 book = [
     "jupyter",
-    "matplotlib",
 ]
 
-#[project.urls]
-
-[build-system]
-requires = ["meson-python"]
-build-backend = "mesonpy"
-
-######################################################################
-# PDM
-#[tool.pdm]
-
-[tool.pdm.dev-dependencies]
 tests = [
     "pytest",
     "pytest-cov",
     "pytest-doctestplus",
     "tox",
-    "tox-pdm",
 ]
 lint = [
     "mypy",
@@ -71,14 +59,14 @@ docs = [
 dev = [
     "vIQA[tests, lint, docs]",
     "meson-python",
-    "pdm",
     "build",
 ]
 
-[tool.pdm.scripts]
-#pre-commit = "pre-commit run --all-files"
-#docs = "sphinx-apidoc -f -o docs/source src/viqa"
-#docs = "sphinx-build -M html docs/source docs/build"
+#[project.urls]
+
+[build-system]
+requires = ["meson-python"]
+build-backend = "mesonpy"
 
 ######################################################################
 # Ruff
