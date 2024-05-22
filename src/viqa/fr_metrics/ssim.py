@@ -86,9 +86,7 @@ class SSIM(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-
-        .. note::
-            Currently not supported.
+        If False, the input images are converted to grayscale images if necessary.
 
     Raises
     ------
@@ -151,6 +149,7 @@ class SSIM(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
         )
         score_val = structural_similarity(
             img_r, img_m, data_range=self._parameters["data_range"], **kwargs

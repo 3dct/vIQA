@@ -38,6 +38,7 @@ from typing import Tuple
 
 import numpy as np
 import scipy.fft as fft
+import skimage as ski
 import torch
 from torch import Tensor
 
@@ -85,6 +86,12 @@ def _check_imgs(
                 raise ValueError("Image shapes do not match")
     else:
         raise ValueError("Image format not supported.")
+
+    # Check if images are chromatic
+    chromatic = kwargs.pop("chromatic", False)
+    if chromatic is False and img_r_loaded.shape[-1] == 3:
+        img_r_loaded = ski.color.rgb2gray(img_r_loaded)
+        img_m_loaded = ski.color.rgb2gray(img_m_loaded)
     return img_r_loaded, img_m_loaded
 
 
@@ -466,10 +473,12 @@ def _check_chromatic(img_r, img_m, chromatic):
             # 3D images
             img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2)
             img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2)
-        else:
+        elif img_r.ndim == 2:
             # 2D images
             img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0)
             img_m_tensor = torch.tensor(img_m).unsqueeze(0).unsqueeze(0)
+        else:
+            raise ValueError("Image format not supported.")
     else:
         img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
         img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)

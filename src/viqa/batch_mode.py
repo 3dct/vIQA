@@ -123,10 +123,6 @@ class BatchMetrics:
             modified_path = os.path.join(self.file_dir, pair['modified_image'])
             img_r = load_data(reference_path)
             img_m = load_data(modified_path)
-            # convert to grayscale if regular color image
-            if img_r.shape[2] == 3 or img_m.shape[2] == 3:
-                img_r = rgb2gray(img_r)
-                img_m = rgb2gray(img_m)
 
             metric_results = {}
             for metric_num, metric in enumerate(self.metrics):

@@ -87,9 +87,7 @@ class MAD(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-
-        .. note::
-            Currently not supported.
+        If False, the input images are converted to grayscale images if necessary.
 
     Raises
     ------
@@ -184,6 +182,7 @@ class MAD(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
         )
 
         # Check if images are 2D or 3D
