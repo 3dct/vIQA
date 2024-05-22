@@ -51,7 +51,7 @@ Overview
 | GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:       | [^8]      |
 | CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | [^9]      |
 | SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:       | &mdash;   |
-| Q-Measure | Q-Measure                                     | NR   | 3D only               | :x:                     | $[0, \infty)$                            | :x:                | :x:       | [^10]     |
+| Q-Measure | Q-Measure                                     | NR   | 3D only [^f]          | :x:                     | $[0, \infty)$                            | :x:                | :x:       | [^10]     |
 
 [^a]: UQI is a special case of SSIM. Also see [^2].
 [^b]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
@@ -61,6 +61,8 @@ contrast than reference images.
 Those values should be treated with caution as further testing is required.
 [^e]: The original metric supports RGB images only. This implementation can work 
 with grayscale images by copying the luminance channel 3 times.
+[^f]: The Q-Measure is a special metric designed for CT images. Therefore it only works
+with 3D volumes.
 
 <!-- ## Documentation TODO: add link to documentation -->
 

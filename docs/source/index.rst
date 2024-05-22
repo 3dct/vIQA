@@ -23,9 +23,9 @@ The following metrics are implemented:
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
     | Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour          | Range (different/worst - identical/best) | Tested             | Validated           | Reference |
     +===========+===============================================+======+=======================+===========================+==========================================+====================+=====================+===========+
-    | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
+    | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | :math:`\checkmark`        | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | RMSE      | Root Mean Square Error                        | FR   | 3D native             |                           | :math:`[1, 0]`                           | :math:`\checkmark` | :math:`\times`      | ---       |
+    | RMSE      | Root Mean Square Error                        | FR   | 3D native             | :math:`\checkmark`        | :math:`[1, 0]`                           | :math:`\checkmark` | :math:`\times`      | ---       |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
     | UQI [*]_  | Universal Quality Index                       | FR   | 3D native             |                           | :math:`[-1, 1]`                          | :math:`\times`     | :math:`\times`      | [1]_      |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
@@ -47,7 +47,7 @@ The following metrics are implemented:
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
     | SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | Q-Measure | Q-Measure                                     | NR   | 3D only               | :math:`\times`            | :math:`[0, \infty)`                      | :math:`\times`     | :math:`\times`      | [10]_     |
+    | Q-Measure | Q-Measure                                     | NR   | 3D only [*]_          | :math:`\times`            | :math:`[0, \infty)`                      | :math:`\times`     | :math:`\times`      | [10]_     |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
 
 
@@ -59,6 +59,8 @@ The following metrics are implemented:
     Those values should be treated with caution as further testing is required.
 .. [*] The original metric supports RGB images only. This implementation can work
     with grayscale images by copying the luminance channel 3 times.
+.. [*] The Q-Measure is a special metric designed for CT images. Therefore it only works
+    with 3D volumes.
 
 
 *******************
