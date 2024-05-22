@@ -37,7 +37,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa.load_utils import load_data
-from viqa.utils import _visualize_cnr_2d, _visualize_cnr_3d
+from viqa.visualization_utils import _visualize_cnr_2d, _visualize_cnr_3d
 
 
 class CNR(NoReferenceMetricsInterface):

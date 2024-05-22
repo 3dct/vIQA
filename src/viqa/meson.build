@@ -4,6 +4,7 @@ python_sources = [
     '_metrics.py',
     'deprecation.py',
     'load_utils.py',
+    'visualization_utils.py',
     'utils.py',
     'fusion.py',
     'batch_mode.py',
