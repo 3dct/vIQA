@@ -51,6 +51,7 @@ def _check_imgs(
     **kwargs,
 ) -> Tuple[list | np.ndarray, list | np.ndarray]:
     """Check if two images are of the same type and shape."""
+    chromatic = kwargs.pop("chromatic", False)
     # load images
     img_r_loaded = load_data(img_r, **kwargs)
     img_m_loaded = load_data(img_m, **kwargs)
@@ -88,7 +89,6 @@ def _check_imgs(
         raise ValueError("Image format not supported.")
 
     # Check if images are chromatic
-    chromatic = kwargs.pop("chromatic", False)
     if chromatic is False and img_r_loaded.shape[-1] == 3:
         img_r_loaded = ski.color.rgb2gray(img_r_loaded)
         img_m_loaded = ski.color.rgb2gray(img_m_loaded)
