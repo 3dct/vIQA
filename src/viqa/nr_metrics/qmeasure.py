@@ -43,8 +43,9 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
+from viqa.load_utils import load_data
 from viqa.nr_metrics.qmeasure_utils import qmeasurecalc
-from viqa.utils import _to_float, load_data
+from viqa.utils import _to_float
 
 
 class QMeasure(NoReferenceMetricsInterface):

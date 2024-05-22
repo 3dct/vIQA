@@ -38,7 +38,7 @@ import os
 
 from skimage.color import rgb2gray
 
-from viqa.utils import load_data
+from viqa.load_utils import load_data
 
 
 class BatchMetrics:

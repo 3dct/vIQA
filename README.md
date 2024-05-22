@@ -110,8 +110,7 @@ Better:
 
 ```python
 import viqa
-from viqa import load_data
-from viqa.utils import normalize_data
+from viqa import load_data, normalize_data
 
 ## load images
 file_path_img_r = 'path/to/reference_image_8bit_512x512x512.raw'

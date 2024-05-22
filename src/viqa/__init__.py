@@ -6,7 +6,7 @@ The package provides a set of metrics to assess the quality of volumetric images
 It can be used for 2D and 3D images.
 """
 
-__version__ = "0.19.3"
+__version__ = "0.19.4"
 __author__ = "Lukas Behammer"
 __all__ = ["FSIM", "GSM", "MAD", "UQI", "MSSSIM", "PSNR", "PSNR", "RMSE", "SSIM",
            "VIFp", "VSI", "CNR", "SNR", "QMeasure", "load_data", "normalize_data",
@@ -15,5 +15,6 @@ __all__ = ["FSIM", "GSM", "MAD", "UQI", "MSSSIM", "PSNR", "PSNR", "RMSE", "SSIM"
 from .batch_mode import BatchMetrics
 from .fr_metrics import *
 from .fusion import fuse_metrics_linear_combination
+from .load_utils import load_data, normalize_data
 from .nr_metrics import *
-from .utils import export_csv, load_data, normalize_data
+from .utils import export_csv

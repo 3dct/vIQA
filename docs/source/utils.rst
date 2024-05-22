@@ -1,7 +1,7 @@
 Utilities module
 -----------------
 
-.. currentmodule:: viqa.utils
+.. currentmodule:: viqa.load_utils
 
 .. autosummary::
    :toctree: generated
@@ -11,6 +11,12 @@ Utilities module
     load_raw
     load_nifti
     normalize_data
+
+.. currentmodule:: viqa.utils
+
+.. autosummary::
+   :toctree: generated
+
     correlate_convolve_abs
     gabor_convolve
     export_csv

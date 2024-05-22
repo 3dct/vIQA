@@ -118,7 +118,7 @@ The metrics are implemented to calculate the scores for an 8-bit data range (0-2
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
 data range should be used for all metrics. The data range can be changed by setting the parameter ``data_range`` for each
 metric. This parameter primarily affects the loading behaviour of the class instances when not using the
-:doc:`generated/viqa.utils.load_data` function directly as described further below, but for some metrics setting the data range is
+:doc:`generated/viqa.load_utils.load_data` function directly as described further below, but for some metrics setting the data range is
 necessary to calculate the score (e.g. PSNR).
 
 Examples
