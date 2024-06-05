@@ -40,7 +40,7 @@ Overview
 | Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour        | Range (different/worst - identical/best) | Tested             | Validated          | Reference |
 |-----------|-----------------------------------------------|------|-----------------------|-------------------------|------------------------------------------|--------------------|--------------------|-----------|
 | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :heavy_check_mark: | &mdash;   |
-| RMSE      | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :x:                | &mdash;   |
+| RMSE      | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :heavy_check_mark: | &mdash;   |
 | UQI [^a]  | Universal Quality Index                       | FR   | 3D native             |                         | $[-1, 1]$                                | :x:                | :x:                | [^1]      |
 | SSIM      | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^b]                           | :heavy_check_mark: | :x:                | [^2]      |
 | MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:                | [^3]      |
