@@ -286,6 +286,18 @@ class FSIM(FullReferenceMetricsInterface):
         return score_val
 
     def print_score(self, decimals=2):
+        """Print the FSIM score value of the last calculation.
+
+        Parameters
+        ----------
+        decimals : int, default=2
+            Number of decimal places to print the score value.
+
+        Warns
+        -----
+        RuntimeWarning
+            If :py:attr:`score_val` is not available.
+        """
         if self.score_val is not None:
             print("FSIM: {}".format(round(self.score_val, decimals)))
         else:
