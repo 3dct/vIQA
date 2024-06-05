@@ -35,6 +35,7 @@ import csv
 import math
 import os
 from typing import Tuple
+from warnings import warn
 
 import numpy as np
 import scipy.fft as fft
@@ -90,6 +91,7 @@ def _check_imgs(
 
     # Check if images are chromatic
     if chromatic is False and img_r_loaded.shape[-1] == 3:
+        warn("Images are chromatic. Converting to grayscale.")
         img_r_loaded = _to_float(img_r_loaded)
         img_m_loaded = _to_float(img_m_loaded)
         img_r_loaded = ski.color.rgb2gray(img_r_loaded)
