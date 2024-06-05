@@ -170,9 +170,10 @@ class VIFp(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
         )
 
-        if img_r.ndim == 3:
+        if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (
                     dim is not None and type(im_slice) is int
             ):  # if dim and im_slice are given
@@ -242,7 +243,7 @@ class VIFp(FullReferenceMetricsInterface):
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
                 )
-        elif img_r.ndim == 2:
+        elif img_r.ndim == 2 or (img_r.ndim == 3 and img_r.shape[-1] == 3):
             if dim or im_slice:
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate VIFp for 2D images
