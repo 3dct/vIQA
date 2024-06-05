@@ -43,7 +43,7 @@ import skimage as ski
 import torch
 from torch import Tensor
 
-from viqa.load_utils import load_data
+from viqa.load_utils import load_data, normalize_data
 
 
 def _check_imgs(
@@ -91,11 +91,22 @@ def _check_imgs(
 
     # Check if images are chromatic
     if chromatic is False and img_r_loaded.shape[-1] == 3:
+        # Convert to grayscale
         warn("Images are chromatic. Converting to grayscale.")
-        img_r_loaded = _to_float(img_r_loaded)
-        img_m_loaded = _to_float(img_m_loaded)
+        # img_r_loaded = _to_float(img_r_loaded)
+        # img_m_loaded = _to_float(img_m_loaded)
         img_r_loaded = ski.color.rgb2gray(img_r_loaded)
         img_m_loaded = ski.color.rgb2gray(img_m_loaded)
+        img_r_loaded = normalize_data(img_r_loaded,
+                                      data_range_output=(0, 255),
+                                      data_range_input=(0, 1),
+                                      automatic_data_range=False
+                                      )
+        img_m_loaded = normalize_data(img_m_loaded,
+                                      data_range_output=(0, 255),
+                                      data_range_input=(0, 1),
+                                      automatic_data_range=False
+                                      )
     elif chromatic is True and img_r_loaded.shape[-1] != 3:
         raise ValueError("Images are not chromatic.")
 
