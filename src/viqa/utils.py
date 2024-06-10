@@ -35,6 +35,7 @@ import csv
 import math
 import os
 from typing import Tuple
+from warnings import warn
 
 import numpy as np
 import scipy.fft as fft
@@ -42,7 +43,7 @@ import skimage as ski
 import torch
 from torch import Tensor
 
-from viqa.load_utils import load_data
+from viqa.load_utils import load_data, normalize_data
 
 
 def _check_imgs(
@@ -90,8 +91,17 @@ def _check_imgs(
 
     # Check if images are chromatic
     if chromatic is False and img_r_loaded.shape[-1] == 3:
+        # Convert to grayscale as backup if falsely claimed to be non-chromatic
+        warn("Images are chromatic. Converting to grayscale.")
+        img_r_loaded = _to_float(img_r_loaded)
+        img_m_loaded = _to_float(img_m_loaded)
         img_r_loaded = ski.color.rgb2gray(img_r_loaded)
         img_m_loaded = ski.color.rgb2gray(img_m_loaded)
+        img_r_loaded[img_r_loaded > 255] = 255
+        img_m_loaded[img_m_loaded > 255] = 255
+    elif chromatic is True and img_r_loaded.shape[-1] != 3:
+        raise ValueError("Images are not chromatic.")
+
     return img_r_loaded, img_m_loaded
 
 

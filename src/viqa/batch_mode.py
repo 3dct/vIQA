@@ -132,7 +132,7 @@ class BatchMetrics:
                         img_m=img_m,
                         **self.metrics_parameters[metric_num]
                     )
-                    metric_results[metric._name] = result
+                    metric_results[metric._name] = float(result)
                 else:
                     result_r = metric.score(
                         img=img_r,

@@ -363,7 +363,7 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
         return gradient_similarity(img_r, img_m, **kwargs)
 
 
-def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
+def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1, **kwargs):
     """Calculate the gradient similarity between two images.
 
     Parameters
