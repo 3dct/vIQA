@@ -321,7 +321,7 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
         raise ValueError("Image has to be either 2D or 3D.")
 
     # Calculate SNR
-    if np.mean(signal) == 0:
+    if np.std(signal) == 0:
         snr_val = 0
     else:
         snr_val = np.mean(signal) / np.std(signal)
