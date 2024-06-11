@@ -93,16 +93,33 @@ def _check_imgs(
     if chromatic is False and img_r_loaded.shape[-1] == 3:
         # Convert to grayscale as backup if falsely claimed to be non-chromatic
         warn("Images are chromatic. Converting to grayscale.")
-        img_r_loaded = _to_float(img_r_loaded)
-        img_m_loaded = _to_float(img_m_loaded)
-        img_r_loaded = ski.color.rgb2gray(img_r_loaded)
-        img_m_loaded = ski.color.rgb2gray(img_m_loaded)
-        img_r_loaded[img_r_loaded > 255] = 255
-        img_m_loaded[img_m_loaded > 255] = 255
+        img_r_loaded = _to_grayscale(img_r_loaded)
+        img_m_loaded = _to_grayscale(img_m_loaded)
     elif chromatic is True and img_r_loaded.shape[-1] != 3:
         raise ValueError("Images are not chromatic.")
 
     return img_r_loaded, img_m_loaded
+
+
+def _to_grayscale(img):
+    """Convert an image to grayscale."""
+    img = _to_float(img)
+    img_gray = ski.color.rgb2gray(img)
+    img_gray[img_gray > 255] = 255
+    return img_gray
+
+
+def _rgb_to_yuv(img):
+    """Convert an RGB image to YUV."""
+    weights = np.array(
+        [
+            [0.2126, 0.7152, 0.0722],
+            [-0.09991, -0.33609, 0.436],
+            [0.615, -0.55861, -0.05639],
+        ]
+    )
+    img_yuv = img @ weights
+    return img_yuv
 
 
 def _to_float(img, dtype=np.float64):

@@ -37,6 +37,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa.load_utils import load_data
+from viqa.utils import _to_grayscale, _rgb_to_yuv
 from viqa.visualization_utils import _visualize_snr_2d, _visualize_snr_3d
 
 
@@ -147,18 +148,27 @@ class SNR(NoReferenceMetricsInterface):
             signal_center = self._parameters["signal_center"]
             radius = self._parameters["radius"]
 
-        if img.ndim != len(signal_center):
-            raise ValueError("Center has to be in the same dimension as img.")
+        # Check if img and signal_center have the same dimension
+        if img.shape[-1] == 3:
+            if img.ndim != len(signal_center) + 1:
+                raise ValueError("Center has to be in the same dimension as img.")
+        else:
+            if img.ndim != len(signal_center):
+                raise ValueError("Center has to be in the same dimension as img.")
 
-        if img.ndim == 2:
-            _visualize_snr_2d(img=img, signal_center=signal_center, radius=radius)
-        elif img.ndim == 3:
+        # Visualize centers
+        if img.ndim == 3 and (img.shape[-1] != 3):
             _visualize_snr_3d(img=img, signal_center=signal_center, radius=radius)
+        elif img.ndim == 3 and (img.shape[-1] == 3):
+            img = _to_grayscale(img)
+            _visualize_snr_2d(img=img, signal_center=signal_center, radius=radius)
+        elif img.ndim == 2:
+            _visualize_snr_2d(img=img, signal_center=signal_center, radius=radius)
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def signal_to_noise_ratio(img, signal_center, radius):
+def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
     """Calculate the signal-to-noise ratio (SNR) for an image.
 
     Parameters
@@ -170,11 +180,24 @@ def signal_to_noise_ratio(img, signal_center, radius):
         3D images.
     radius : int
         Width of the regions.
+    yuv : bool, default True
+
+        .. important::
+            Only applicable for color images.
+
+        If True, the input images are expected to be RGB images and are converted to YUV
+        color space. If False, the input images are kept as RGB images.
 
     Returns
     -------
-    score_val : float
-        SNR score value.
+    snr_lum : float
+        SNR score value for grayscale image.
+    snr_val[...] : float, optional
+        SNR score values per channel for color image. The order is Y, U, V for YUV
+        images and R, G, B for RGB images.
+
+        .. note::
+            For RGB images the first return value is the SNR for the luminance channel.
 
     Raises
     ------
@@ -186,13 +209,52 @@ def signal_to_noise_ratio(img, signal_center, radius):
 
     Notes
     -----
-    This implementation uses a cubic region to calculate the SNR. The calculation is
-    based on the following formula:
+    This implementation uses a cubic region to calculate the SNR. The calculation for
+    grayscale images is based on the following formula:
 
     .. math::
        SNR = \\frac{\\mu}{\\sigma}
 
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
+
+    For color images, the calculation is a lot more complicated. The image is first
+    converted to YUV color space by matrix multiplication with the weighting matrix [1]_:
+
+    .. math::
+        \\begin{bmatrix}
+            Y \\\\
+            U \\\\
+            V \\\\
+        \\end{bmatrix}
+        =
+        \\begin{bmatrix}
+            0.2126 & 0.7152 & 0.0722 \\\\
+            -0.09991 & -0.33609 & 0.436 \\\\
+            0.615 & -0.55861 & -0.05639 \\\\
+        \\end{bmatrix}
+        \\begin{bmatrix}
+            R \\\\
+            G \\\\
+            B \\\\
+        \\end{bmatrix}
+
+    Then the SNR is calculated for each channel separately [2]_:
+
+    .. math::
+        SNR_{channel} = \\frac{\\mu_{Y}}{\\sigma_{channel}}
+
+    where :math:`\\mu_{Y}` is the mean of the Y channel and :math:`\\sigma_{channel}` is
+    the standard deviation of the channel for YUV images and:
+
+    .. math::
+        SNR_{channel} = \\frac{\\mu_{channel}}{\\sigma_{channel}}
+
+    for RGB images.
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/YUV
+    .. [2] https://www.imatest.com/docs/color-tone-esfriso-noise/#chromanoise
     """
     # check if signal_center is a tuple of integers and radius is an integer
     for center in signal_center:
@@ -207,8 +269,41 @@ def signal_to_noise_ratio(img, signal_center, radius):
         raise TypeError("Radius has to be a positive integer.")
 
     # Check if img and signal_center have the same dimension
-    if img.ndim != len(signal_center):
-        raise ValueError("Center has to be in the same dimension as img.")
+    if img.shape[-1] == 3:
+        if img.ndim != len(signal_center) + 1:
+            raise ValueError("Center has to be in the same dimension as img.")
+    else:
+        if img.ndim != len(signal_center):
+            raise ValueError("Center has to be in the same dimension as img.")
+
+    # Color images
+    if img.ndim == 3 and (img.shape[-1] == 3):  # 2D RGB image
+        if yuv:
+            img = _rgb_to_yuv(img)
+
+        signal = img[
+            signal_center[0] - radius : signal_center[0] + radius,
+            signal_center[1] - radius : signal_center[1] + radius,
+            :,
+        ]
+
+        sdev = np.std(signal, axis=(0, 1))
+
+        if yuv:
+            snr_val = [np.mean(signal[..., 0]) / sdev[i] if sdev[i] != 0 else 0
+                       for i in range(3)]
+            return snr_val[0], snr_val[1], snr_val[2]
+        else:
+            snr_lum = signal_to_noise_ratio(
+                _to_grayscale(img),
+                signal_center,
+                radius,
+                yuv=False
+            )
+            snr_val = [np.mean(signal[..., i]) / sdev[i] if sdev[i] != 0 else 0
+                       for i in range(3)]
+
+        return snr_lum, snr_val[0], snr_val[1], snr_val[2]
 
     # Define regions
     if img.ndim == 2:  # 2D image
@@ -216,7 +311,7 @@ def signal_to_noise_ratio(img, signal_center, radius):
             signal_center[0] - radius : signal_center[0] + radius,
             signal_center[1] - radius : signal_center[1] + radius,
         ]
-    elif img.ndim == 3:  # 3D image
+    elif img.ndim == 3 and (img.shape[-1] != 3):  # 3D image
         signal = img[
             signal_center[0] - radius : signal_center[0] + radius,
             signal_center[1] - radius : signal_center[1] + radius,
