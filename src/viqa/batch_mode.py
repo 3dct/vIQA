@@ -36,7 +36,7 @@ Examples
 import csv
 import os
 
-from skimage.color import rgb2gray
+from skimage.transform import resize
 
 from viqa.load_utils import load_data
 
@@ -86,6 +86,13 @@ class BatchMetrics:
     ValueError
         If the number of metrics and metric parameters is not equal.
 
+    Notes
+    -----
+    .. attention::
+
+        In image pairs with unequal shapes, the modified image will be resized to the
+        shape of the reference image.
+
     Examples
     --------
     .. doctest-skip::
@@ -123,6 +130,11 @@ class BatchMetrics:
             modified_path = os.path.join(self.file_dir, pair['modified_image'])
             img_r = load_data(reference_path)
             img_m = load_data(modified_path)
+
+            # Resize image if shapes unequal
+            if img_r.shape != img_m.shape:
+                img_m = resize(img_m, img_r.shape, preserve_range=True, order=1)
+                img_m = img_m.astype(img_r.dtype)
 
             metric_results = {}
             for metric_num, metric in enumerate(self.metrics):
