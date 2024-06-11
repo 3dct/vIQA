@@ -27,9 +27,9 @@ The following metrics are implemented:
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+-------------------------+-----------+
     | RMSE      | Root Mean Square Error                        | FR   | 3D native             | :math:`\checkmark`        | :math:`(\infty, 0]`                      | :math:`\checkmark`      | :math:`\checkmark`      | ---       |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+-------------------------+-----------+
-    | UQI [*]_  | Universal Quality Index                       | FR   | 3D native             | :math:`\checkmark`        | :math:`[-1, 1]`                          | :math:`\times`          | :math:`\checkmark` [*]_ | [1]_      |
+    | UQI [*]_  | Universal Quality Index                       | FR   | 3D native             | (:math:`\checkmark`) [*]_ | :math:`[-1, 1]`                          | :math:`\times`          | :math:`\checkmark` [*]_ | [1]_      |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+-------------------------+-----------+
-    | SSIM      | Structured Similarity                         | FR   | 3D native             | :math:`\checkmark`        | :math:`[-1, 1]` [*]_                     | :math:`\checkmark`      | :math:`\checkmark`      | [2]_      |
+    | SSIM      | Structured Similarity                         | FR   | 3D native             | (:math:`\checkmark`) [*]_ | :math:`[-1, 1]` [*]_                     | :math:`\checkmark`      | :math:`\checkmark`      | [2]_      |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+-------------------------+-----------+
     | MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | ?                         | :math:`[0, 1]`                           | :math:`\times`          | :math:`\checkmark`      | [3]_      |
     +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+-------------------------+-----------+
@@ -52,7 +52,9 @@ The following metrics are implemented:
 
 
 .. [*] UQI is a special case of SSIM. Also see [2]_.
+.. [*] The metric is calculated channel-wise for color images. The values are then averaged after weighting.
 .. [*] As UQI is a special case of SSIM, the validation of SSIM is also valid for UQI.
+.. [*] The metric is calculated channel-wise for color images. The values are then averaged after weighting.
 .. [*] The range for SSIM is given as :math:`[-1, 1]`, but is usually :math:`[0, 1]` in practice.
 .. [*] Normally :math:`[0, 1]`, but can be higher than 1 for modified images with higher
     contrast than reference images.

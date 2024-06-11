@@ -76,8 +76,6 @@ class FSIM(FullReferenceMetricsInterface):
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
 
-    .. todo:: validate
-
     Notes
     -----
     For more information on the FSIM metric, see [1]_.

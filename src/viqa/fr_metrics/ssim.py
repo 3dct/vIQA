@@ -146,7 +146,8 @@ class SSIM(FullReferenceMetricsInterface):
 
         Notes
         -----
-        The metric is currently not usable for color images.
+        For color images, the metric is calculated channel-wise and the mean after
+        weighting with the color weights is returned.
         """
         img_r, img_m = _check_imgs(
             img_r,
