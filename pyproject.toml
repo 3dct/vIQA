@@ -1,11 +1,12 @@
 [project]
 name = "vIQA"
 dynamic = ["version"]
-description = "A Python package for volumetric image quality assessment"
+description = "A Python package for volumetric image quality assessment."
 authors = [
     { name = "Lukas Behammer", email = "lukas.behammer@fh-wels.at" },
 ]
 readme = "README.md"
+#readme
 requires-python = ">=3.11"
 keywords = [
     "IQA",
@@ -22,10 +23,10 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Image Processing",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3 :: Only",
-    "Operating System :: OS Independent",
-    "Private :: Do Not Upload"
+    "Operating System :: OS Independent"
 ]
-license = { file = "LICENSE.txt" }
+#license = { file = "LICENSE.txt" }
+license = { text = "BSD-3-Clause" }
 dependencies = [
     "scipy",
     "numpy",
@@ -63,7 +64,10 @@ dev = [
     "build",
 ]
 
-#[project.urls]
+[project.urls]
+Repository = "https://github.com/3dct/vIQA"
+#Homepage
+#Documentation
 
 [build-system]
 requires = ["meson-python"]
