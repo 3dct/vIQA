@@ -1,7 +1,19 @@
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 # vIQA &mdash; volumetric Image Quality Assessment
 
-[[_TOC_]]
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+## Table of Contents
+
+* [Overview](#overview)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Workflow](#workflow)
+  * [Examples](#examples)
+* [TODO](#todo)
+* [License](#license)
+* [Contacts](#contacts)
+* [References](#references)
 
 vIQA provides an extensive assessment suite for image quality of 2D-images or 3D-volumes as a python package.
 Image Quality Assessment (IQA) is a field of research that aims to quantify the quality of an image. This is usually 
@@ -20,48 +32,54 @@ The metrics used are:
 - Multi-Scale Structural Similarity (MS-SSIM) [^3]
 - Feature Similarity Index (FSIM) [^4]
 - Visual Information Fidelity in *pixel* domain (VIFp) [^5]
-  > [!CAUTION]
-  > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
-  > caution as further testing is required.
+
+> [!CAUTION]
+> The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
+> caution as further testing is required.
+
 - Visual Saliency Index (VSI) [^6]
-  > [!WARNING]
-  > The original metric supports RGB images only. This implementation can work with 
-  > grayscale images by copying the luminance channel 3 times. 
+
+> [!WARNING]
+> The original metric supports RGB images only. This implementation can work with 
+> grayscale images by copying the luminance channel 3 times. 
+
 - Most Apparent Distortion (MAD) [^7]
 - Gradient Similarity Measure (GSM) [^8]
-  > [!CAUTION]
-  > This metric is not yet tested. The metric should be only used for experimental purposes.
+
+> [!CAUTION]
+> This metric is not yet tested. The metric should be only used for experimental purposes.
+
 - Contrast to Noise Ratio (CNR) [^9]
 - Signal to Noise Ratio (SNR)
 - Q-Measure [^10]
 
-Overview
---------
-| Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour        | Range (different/worst - identical/best) | Tested             | Validated          | Reference |
-|-----------|-----------------------------------------------|------|-----------------------|-------------------------|------------------------------------------|--------------------|--------------------|-----------|
-| PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :heavy_check_mark: | &mdash;   |
-| RMSE      | Root Mean Square Error                        | FR   | 3D native             |                         | $[1, 0]$                                 | :heavy_check_mark: | :heavy_check_mark: | &mdash;   |
-| UQI [^a]  | Universal Quality Index                       | FR   | 3D native             |                         | $[-1, 1]$                                | :x:                | :x:                | [^1]      |
-| SSIM      | Structured Similarity                         | FR   | 3D native             |                         | $[-1, 1]$ [^b]                           | :heavy_check_mark: | :x:                | [^2]      |
-| MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:              | $[0, 1]$                                 | :x:                | :x:                | [^3]      |
-| FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:      | $[0, 1]$                                 | :heavy_check_mark: | :x:                | [^4]      |
-| VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:              | $[0, \infty)$ [^c]                       | :x:                | :x: [^d]           | [^5]      |
-| VSI       | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^e] | $[0, 1]$                                 | :x:                | :x:                | [^6]      |
-| MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:                | [^7]      |
-| GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                         | $[0, 1]$                                 | :x:                | :x:                | [^8]      |
-| CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:                | [^9]      |
-| SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                         | $[0, \infty)$                            | :heavy_check_mark: | :x:                | &mdash;   |
-| Q-Measure | Q-Measure                                     | NR   | 3D only [^f]          | :x:                     | $[0, \infty)$                            | :x:                | :x:                | [^10]     |
+## Overview
+
+| Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour            | Range (different/worst - identical/best) | Tested             | Validated                 | Reference |
+|-----------|-----------------------------------------------|------|-----------------------|-----------------------------|------------------------------------------|--------------------|---------------------------|-----------|
+| PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | :heavy_check_mark:          | $[0, \infty)$                            | :heavy_check_mark: | :heavy_check_mark:        | &mdash;   |
+| RMSE      | Root Mean Square Error                        | FR   | 3D native             | :heavy_check_mark:          | $(\infty, 0]$                            | :heavy_check_mark: | :heavy_check_mark:        | &mdash;   |
+| UQI [^a]  | Universal Quality Index                       | FR   | 3D native             | ( :heavy_check_mark: ) [^b] | $[-1, 1]$                                | :x:                | (:heavy_check_mark:) [^c] | [^1]      |
+| SSIM      | Structured Similarity                         | FR   | 3D native             | ( :heavy_check_mark: ) [^b] | $[-1, 1]$ [^d]                           | :heavy_check_mark: | :heavy_check_mark:        | [^2]      |
+| MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:                  | $[0, 1]$                                 | :x:                | :heavy_check_mark:        | [^3]      |
+| FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:          | $[0, 1]$                                 | :heavy_check_mark: | :heavy_check_mark:        | [^4]      |
+| VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:                  | $[0, \infty)$ [^e]                       | :x:                | :x:                       | [^5]      |
+| VSI       | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^f]     | $[0, 1]$                                 | :x:                | :x:                       | [^6]      |
+| MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                             | $[0, \infty)$                            | :heavy_check_mark: | :x:                       | [^7]      |
+| GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                             | $[0, 1]$                                 | :x:                | :x:                       | [^8]      |
+| CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                             | $[0, \infty)$                            | :heavy_check_mark: | :x:                       | [^9]      |
+| SNR       | Signal to Noise Ratio                         | NR   | 3D native             | :heavy_check_mark:          | $[0, \infty)$                            | :heavy_check_mark: | :x:                       | &mdash;   |
+| Q-Measure | Q-Measure                                     | NR   | 3D only [^g]          | :x:                         | $[0, \infty)$                            | :x:                | :x:                       | [^10]     |
 
 [^a]: UQI is a special case of SSIM. Also see [^2].
-[^b]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
-[^c]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
+[^b]: The metric is calculated channel-wise for color images. The values are then averaged after weighting.
+[^c]: As UQI is a special case of SSIM, the validation of SSIM is also valid for UQI.
+[^d]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
+[^e]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
 contrast than reference images.
-[^d]: The calculated values for VIFp are probably not correct in this implementation.
-Those values should be treated with caution as further testing is required.
-[^e]: The original metric supports RGB images only. This implementation can work 
+[^f]: The original metric supports RGB images only. This implementation can work 
 with grayscale images by copying the luminance channel 3 times.
-[^f]: The Q-Measure is a special metric designed for CT images. Therefore it only works
+[^g]: The Q-Measure is a special metric designed for CT images. Therefore it only works
 with 3D volumes.
 
 <!-- ## Documentation TODO: add link to documentation -->
@@ -82,6 +100,8 @@ Use either `pip`
 ```
 pip install viqa
 ```
+
+<!--
 or `conda`
 ```
 conda install -c conda-forge viqa
@@ -91,6 +111,7 @@ conda install -c conda-forge viqa
 > The package is currently in development and not yet available on PyPI or conda-forge. To install the package, you 
 > have to clone the repository and install the package manually.
 
+-->
 
 ## Usage
 
@@ -188,7 +209,7 @@ psnr.print_score(decimals=2)
 > single metric.
 
 > [!IMPORTANT]
-> The current recommended usage file is: [`Image_Comparison.ipynb`](Image_Comparison.ipynb).
+> The current recommended usage file is: [`Image_Comparison.ipynb`](Image_Comparison.ipynb)
 
 <!-- ## Metric List TODO: add list of metrics -->
 

@@ -76,8 +76,6 @@ class FSIM(FullReferenceMetricsInterface):
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
 
-    .. todo:: validate
-
     Notes
     -----
     For more information on the FSIM metric, see [1]_.
@@ -96,7 +94,10 @@ class FSIM(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, **kwargs
         )
-        self._name = "FSIM"
+        if self._parameters["chromatic"]:
+            self._name = "FSIMc"
+        else:
+            self._name = "FSIM"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
         """Calculate the FSIM score between two images.
