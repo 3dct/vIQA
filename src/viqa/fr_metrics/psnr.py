@@ -77,9 +77,7 @@ class PSNR(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-
-        .. note::
-            Currently not supported.
+        If False, the input images are converted to grayscale images if necessary.
 
     Raises
     ------
@@ -100,7 +98,10 @@ class PSNR(FullReferenceMetricsInterface):
         super().__init__(
             data_range=data_range, normalize=normalize, **kwargs
         )
-        self._name = "PSNR"
+        if self._parameters["chromatic"]:
+            self._name = "PSNRc"
+        else:
+            self._name = "PSNR"
 
     def score(self, img_r, img_m):
         """Calculate the peak signal-to-noise ratio (PSNR) between two images.
@@ -123,6 +124,7 @@ class PSNR(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
         )
         # Calculate score
         if np.array_equal(img_r, img_m):

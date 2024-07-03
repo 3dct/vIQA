@@ -20,38 +20,41 @@ The following metrics are implemented:
 .. table:: Implemented metrics
     :widths: auto
 
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour          | Range (different/worst - identical/best) | Tested             | Validated           | Reference |
-    +===========+===============================================+======+=======================+===========================+==========================================+====================+=====================+===========+
-    | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | RMSE      | Root Mean Square Error                        | FR   | 3D native             |                           | :math:`[1, 0]`                           | :math:`\checkmark` | :math:`\times`      | ---       |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | UQI [*]_  | Universal Quality Index                       | FR   | 3D native             |                           | :math:`[-1, 1]`                          | :math:`\times`     | :math:`\times`      | [1]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | SSIM      | Structured Similarity                         | FR   | 3D native             |                           | :math:`[-1, 1]` [*]_                     | :math:`\checkmark` | :math:`\times`      | [2]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | ?                         | :math:`[0, 1]`                           | :math:`\times`     | :math:`\times`      | [3]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | FSIM      | Feature Similarity                            | FR   | 3D slicing            | :math:`\checkmark`        | :math:`[0, 1]`                           | :math:`\checkmark` | :math:`\times`      | [4]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | ?                         | :math:`[0, \infty)` [*]_                 | :math:`\times`     | :math:`\times` [*]_ | [5]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | VSI       | Visual Saliency-based Index                   | FR   | 3D slicing            | :math:`\checkmark` [*]_   | :math:`[0, 1]`                           | :math:`\times`     | :math:`\times`      | [6]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | [7]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                           | :math:`[0, 1]`                           | :math:`\times`     | :math:`\times`      | [8]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | [9]_      |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | SNR       | Signal to Noise Ratio                         | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark` | :math:`\times`      | ---       |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
-    | Q-Measure | Q-Measure                                     | NR   | 3D only               | :math:`\times`            | :math:`[0, \infty)`                      | :math:`\times`     | :math:`\times`      | [10]_     |
-    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+--------------------+---------------------+-----------+
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour          | Range (different/worst - identical/best) | Tested                  | Validated                 | Reference |
+    +===========+===============================================+======+=======================+===========================+==========================================+=========================+===========================+===========+
+    | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | :math:`\checkmark`        | :math:`[0, \infty)`                      | :math:`\checkmark`      | :math:`\checkmark`        | ---       |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | RMSE      | Root Mean Square Error                        | FR   | 3D native             | :math:`\checkmark`        | :math:`(\infty, 0]`                      | :math:`\checkmark`      | :math:`\checkmark`        | ---       |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | UQI [*]_  | Universal Quality Index                       | FR   | 3D native             | (:math:`\checkmark`) [*]_ | :math:`[-1, 1]`                          | :math:`\times`          | (:math:`\checkmark`) [*]_ | [1]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | SSIM      | Structured Similarity                         | FR   | 3D native             | (:math:`\checkmark`) [*]_ | :math:`[-1, 1]` [*]_                     | :math:`\checkmark`      | :math:`\checkmark`        | [2]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | ?                         | :math:`[0, 1]`                           | :math:`\times`          | :math:`\checkmark`        | [3]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | FSIM      | Feature Similarity                            | FR   | 3D slicing            | :math:`\checkmark`        | :math:`[0, 1]`                           | :math:`\checkmark`      | :math:`\checkmark`        | [4]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | ?                         | :math:`[0, \infty)` [*]_                 | :math:`\times`          | :math:`\times` [*]_       | [5]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | VSI       | Visual Saliency-based Index                   | FR   | 3D slicing            | :math:`\checkmark` [*]_   | :math:`[0, 1]`                           | :math:`\times`          | :math:`\times`            | [6]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                           | :math:`[0, \infty)`                      | :math:`\checkmark`      | :math:`\times`            | [7]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                           | :math:`[0, 1]`                           | :math:`\times`          | :math:`\times`            | [8]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                           | :math:`[0, \infty)`                      | :math:`\checkmark`      | :math:`\times`            | [9]_      |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | SNR       | Signal to Noise Ratio                         | NR   | 3D native             | :math:`\checkmark`        | :math:`[0, \infty)`                      | :math:`\checkmark`      | :math:`\times`            | ---       |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
+    | Q-Measure | Q-Measure                                     | NR   | 3D only [*]_          | :math:`\times`            | :math:`[0, \infty)`                      | :math:`\times`          | :math:`\times`            | [10]_     |
+    +-----------+-----------------------------------------------+------+-----------------------+---------------------------+------------------------------------------+-------------------------+---------------------------+-----------+
 
 
 .. [*] UQI is a special case of SSIM. Also see [2]_.
+.. [*] The metric is calculated channel-wise for color images. The values are then averaged after weighting.
+.. [*] As UQI is a special case of SSIM, the validation of SSIM is also valid for UQI.
+.. [*] The metric is calculated channel-wise for color images. The values are then averaged after weighting.
 .. [*] The range for SSIM is given as :math:`[-1, 1]`, but is usually :math:`[0, 1]` in practice.
 .. [*] Normally :math:`[0, 1]`, but can be higher than 1 for modified images with higher
     contrast than reference images.
@@ -59,6 +62,8 @@ The following metrics are implemented:
     Those values should be treated with caution as further testing is required.
 .. [*] The original metric supports RGB images only. This implementation can work
     with grayscale images by copying the luminance channel 3 times.
+.. [*] The Q-Measure is a special metric designed for CT images. Therefore it only works
+    with 3D volumes.
 
 
 *******************
@@ -83,14 +88,21 @@ Installation
 ============
 
 The package can be installed via ``pip``:
+
 .. code-block:: bash
 
     pip install viqa
 
 or ``conda``:
+
 .. code-block:: bash
 
     conda install -c conda-forge viqa
+
+.. important::
+
+    The package is currently in development and not yet available on PyPI or conda-forge. To install the package,
+    you have to clone the repository and install the package manually.
 
 
 General Usage Advice
@@ -111,7 +123,7 @@ The metrics are implemented to calculate the scores for an 8-bit data range (0-2
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
 data range should be used for all metrics. The data range can be changed by setting the parameter ``data_range`` for each
 metric. This parameter primarily affects the loading behaviour of the class instances when not using the
-:doc:`generated/viqa.utils.load_data` function directly as described further below, but for some metrics setting the data range is
+:doc:`generated/viqa.load_utils.load_data` function directly as described further below, but for some metrics setting the data range is
 necessary to calculate the score (e.g. PSNR).
 
 Examples

@@ -36,7 +36,9 @@ Examples
 import csv
 import os
 
-from viqa.utils import load_data
+from skimage.transform import resize
+
+from viqa.load_utils import load_data
 
 
 class BatchMetrics:
@@ -84,6 +86,13 @@ class BatchMetrics:
     ValueError
         If the number of metrics and metric parameters is not equal.
 
+    Notes
+    -----
+    .. attention::
+
+        In image pairs with unequal shapes, the modified image will be resized to the
+        shape of the reference image.
+
     Examples
     --------
     .. doctest-skip::
@@ -103,7 +112,7 @@ class BatchMetrics:
 
     def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
         """Constructor method."""
-        if len(metrics) == len(metrics_parameters):
+        if len(metrics) != len(metrics_parameters):
             raise ValueError("The number of metrics and metric parameters must be "
                              "equal.")
 
@@ -121,6 +130,12 @@ class BatchMetrics:
             modified_path = os.path.join(self.file_dir, pair['modified_image'])
             img_r = load_data(reference_path)
             img_m = load_data(modified_path)
+
+            # Resize image if shapes unequal
+            if img_r.shape != img_m.shape:
+                img_m = resize(img_m, img_r.shape, preserve_range=True, order=1)
+                img_m = img_m.astype(img_r.dtype)
+
             metric_results = {}
             for metric_num, metric in enumerate(self.metrics):
                 if metric._name not in ["CNR", "SNR", "Q-Measure"]:
@@ -129,7 +144,7 @@ class BatchMetrics:
                         img_m=img_m,
                         **self.metrics_parameters[metric_num]
                     )
-                    metric_results[metric._name] = result
+                    metric_results[metric._name] = float(result)
                 else:
                     result_r = metric.score(
                         img=img_r,
@@ -139,8 +154,8 @@ class BatchMetrics:
                         img=img_m,
                         **self.metrics_parameters[metric_num]
                     )
-                    metric_results[metric._name + '_r'] = result_r
-                    metric_results[metric._name + '_m'] = result_m
+                    metric_results[metric._name + '_r'] = float(result_r)
+                    metric_results[metric._name + '_m'] = float(result_m)
             self.results[str(pair_num)] = metric_results
 
     def export_results(self, file_path, file_name='results.csv'):

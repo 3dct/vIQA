@@ -87,9 +87,7 @@ class GSM(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-
-        .. note::
-            Currently not supported.
+        If False, the input images are converted to grayscale images if necessary.
 
     Raises
     ------
@@ -195,6 +193,7 @@ class GSM(FullReferenceMetricsInterface):
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
         )
 
         if img_r.ndim == 3:
@@ -364,7 +363,7 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
         return gradient_similarity(img_r, img_m, **kwargs)
 
 
-def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
+def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1, **kwargs):
     """Calculate the gradient similarity between two images.
 
     Parameters

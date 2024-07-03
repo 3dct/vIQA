@@ -86,9 +86,7 @@ class SSIM(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-
-        .. note::
-            Currently not supported.
+        If False, the input images are converted to grayscale images if necessary.
 
     Raises
     ------
@@ -124,7 +122,7 @@ class SSIM(FullReferenceMetricsInterface):
         )
         self._name = "SSIM"
 
-    def score(self, img_r, img_m, **kwargs):
+    def score(self, img_r, img_m, color_weights, **kwargs):
         """Calculate the structural similarity index (SSIM) between two images.
 
         Parameters
@@ -133,6 +131,10 @@ class SSIM(FullReferenceMetricsInterface):
             Reference image to calculate score against.
         img_m : np.ndarray
             Modified image to calculate score of.
+        color_weights : np.ndarray
+            Weights for the color channels. The array must have the same length as the
+            number of color channels in the images. Is only effective if
+            ``chromatic=True`` is set during initialization.
         **kwargs : optional
             Additional parameters for the SSIM calculation. The keyword arguments are
             passed to :py:func:`.viqa.fr_metrics.ssim.structural_similarity`.
@@ -144,17 +146,32 @@ class SSIM(FullReferenceMetricsInterface):
 
         Notes
         -----
-        The metric is currently not usable for color images.
+        For color images, the metric is calculated channel-wise and the mean after
+        weighting with the color weights is returned.
         """
         img_r, img_m = _check_imgs(
             img_r,
             img_m,
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
         )
-        score_val = structural_similarity(
-            img_r, img_m, data_range=self._parameters["data_range"], **kwargs
-        )
+
+        if self._parameters["chromatic"]:
+            scores = []
+            for channel in range(img_r.shape[-1]):
+                score = structural_similarity(
+                    img_r[..., channel],
+                    img_m[..., channel],
+                    data_range=self._parameters["data_range"],
+                    **kwargs
+                )
+                scores.append(score)
+            score_val = (color_weights * np.array(scores)).mean()
+        else:
+            score_val = structural_similarity(
+                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+            )
         self.score_val = score_val
         return score_val
 
