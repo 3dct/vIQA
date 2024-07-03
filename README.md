@@ -1,7 +1,19 @@
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 # vIQA &mdash; volumetric Image Quality Assessment
 
-[[_TOC_]]
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+## Table of Contents
+
+* [Overview](#overview)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Workflow](#workflow)
+  * [Examples](#examples)
+* [TODO](#todo)
+* [License](#license)
+* [Contacts](#contacts)
+* [References](#references)
 
 vIQA provides an extensive assessment suite for image quality of 2D-images or 3D-volumes as a python package.
 Image Quality Assessment (IQA) is a field of research that aims to quantify the quality of an image. This is usually 
@@ -20,23 +32,29 @@ The metrics used are:
 - Multi-Scale Structural Similarity (MS-SSIM) [^3]
 - Feature Similarity Index (FSIM) [^4]
 - Visual Information Fidelity in *pixel* domain (VIFp) [^5]
+
   > [!CAUTION]
   > The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
   > caution as further testing is required.
+
 - Visual Saliency Index (VSI) [^6]
+
   > [!WARNING]
   > The original metric supports RGB images only. This implementation can work with 
   > grayscale images by copying the luminance channel 3 times. 
+
 - Most Apparent Distortion (MAD) [^7]
 - Gradient Similarity Measure (GSM) [^8]
+
   > [!CAUTION]
   > This metric is not yet tested. The metric should be only used for experimental purposes.
+
 - Contrast to Noise Ratio (CNR) [^9]
 - Signal to Noise Ratio (SNR)
 - Q-Measure [^10]
 
-Overview
---------
+## Overview
+
 | Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour          | Range (different/worst - identical/best) | Tested             | Validated                 | Reference |
 |-----------|-----------------------------------------------|------|-----------------------|---------------------------|------------------------------------------|--------------------|---------------------------|-----------|
 | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | :heavy_check_mark:        | $[0, \infty)$                            | :heavy_check_mark: | :heavy_check_mark:        | &mdash;   |
@@ -82,6 +100,8 @@ Use either `pip`
 ```
 pip install viqa
 ```
+
+<!--
 or `conda`
 ```
 conda install -c conda-forge viqa
@@ -91,6 +111,7 @@ conda install -c conda-forge viqa
 > The package is currently in development and not yet available on PyPI or conda-forge. To install the package, you 
 > have to clone the repository and install the package manually.
 
+-->
 
 ## Usage
 
