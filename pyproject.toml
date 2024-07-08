@@ -166,9 +166,9 @@ omit = [
 [tool.cibuildwheel]
 build = [
     "*-musllinux*",
-    "cp311-win*",
-    "cp312-win*",
-    "cp313-win*",
+    "cp311-win_*64",
+    "cp312-win*64",
+    "cp313-win*64",
     "cp311-macosx*",
     "cp312-macosx*",
     "cp313-macosx*",
