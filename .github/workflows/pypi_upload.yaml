@@ -9,7 +9,9 @@ on:
 jobs:
     upload_pypi:
         runs-on: ubuntu-latest
-        environment: pypi
+        environment:
+          name: testpypi
+          url: https://test.pypi.org/project/vIQA/
         permissions:
             id-token: write
         # if: github.event_name == 'release' && github.event.action == 'published'
