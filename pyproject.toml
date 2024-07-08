@@ -26,7 +26,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Operating System :: OS Independent"
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Unix",
 ]
 #license = { file = "LICENSE.txt" }
 license = { text = "BSD-3-Clause" }
@@ -172,3 +173,6 @@ build = [
     "cp312-macosx*",
     "cp313-macosx*",
 ]
+
+[tool.cibuildwheel.windows.config-settings]
+setup-args = "--vsenv"
