@@ -101,8 +101,7 @@ or ``conda``:
 
 .. important::
 
-    The package is currently in development and not yet available on PyPI or conda-forge. To install the package,
-    you have to clone the repository and install the package manually.
+    The package is currently in development and not yet available on conda-forge.
 
 
 General Usage Advice
