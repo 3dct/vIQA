@@ -41,7 +41,6 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
@@ -57,4 +56,14 @@ autodoc_default_options = {
     'exclude-members': '__init__',
 }
 
-autodoc_mock_imports = ["viqa.fr_metrics.stat_utils", "viqa.nr_metrics.qmeasure_utils"]
+autodoc_mock_imports = [
+    "viqa.fr_metrics.stat_utils",
+    "viqa.nr_metrics.qmeasure_utils",
+    "skimage",
+    "torch",
+    "scipy",
+    "numpy",
+    "matplotlib",
+    "piq",
+    "nibabel",
+]
