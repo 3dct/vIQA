@@ -180,4 +180,4 @@ build = [
 setup-args = "--vsenv"
 
 [tool.cibuildwheel.macos]
-archs = ["auto", "universal2"]
+compile-args = "-stdlib=libc++ -std=c++20"
