@@ -59,11 +59,4 @@ autodoc_default_options = {
 autodoc_mock_imports = [
     "viqa.fr_metrics.stat_utils",
     "viqa.nr_metrics.qmeasure_utils",
-    "skimage",
-    "torch",
-    "scipy",
-    "numpy",
-    "matplotlib",
-    "piq",
-    "nibabel",
 ]
