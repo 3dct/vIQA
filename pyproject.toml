@@ -171,13 +171,13 @@ build = [
     "cp311-win_*64",
     "cp312-win_*64",
 #    "cp313-win_*64",
-    "cp311-macosx*",
-    "cp312-macosx*",
-    "cp313-macosx*",
+#    "cp311-macosx*",
+#    "cp312-macosx*",
+#    "cp313-macosx*",
 ]
 
 [tool.cibuildwheel.windows.config-settings]
 setup-args = "--vsenv"
 
-[tool.cibuildwheel.macos.config-settings]
-compile-args = "-stdlib=libc++ -std=c++20"
+#[tool.cibuildwheel.macos.config-settings]
+#compile-args = "-stdlib=libc++ -std=c++20"
