@@ -1,4 +1,4 @@
-name: documentation
+name: Build documentation with Sphinx
 
 on: [push, pull_request, workflow_dispatch]
 
