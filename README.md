@@ -55,21 +55,21 @@ The metrics used are:
 
 ## Overview
 
-| Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour            | Range (different/worst - identical/best) | Tested             | Validated                 | Reference |
-|-----------|-----------------------------------------------|------|-----------------------|-----------------------------|------------------------------------------|--------------------|---------------------------|-----------|
-| PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | :heavy_check_mark:          | $[0, \infty)$                            | :heavy_check_mark: | :heavy_check_mark:        | &mdash;   |
-| RMSE      | Root Mean Square Error                        | FR   | 3D native             | :heavy_check_mark:          | $(\infty, 0]$                            | :heavy_check_mark: | :heavy_check_mark:        | &mdash;   |
-| UQI [^a]  | Universal Quality Index                       | FR   | 3D native             | ( :heavy_check_mark: ) [^b] | $[-1, 1]$                                | :x:                | (:heavy_check_mark:) [^c] | [^1]      |
-| SSIM      | Structured Similarity                         | FR   | 3D native             | ( :heavy_check_mark: ) [^b] | $[-1, 1]$ [^d]                           | :heavy_check_mark: | :heavy_check_mark:        | [^2]      |
-| MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:                  | $[0, 1]$                                 | :x:                | :heavy_check_mark:        | [^3]      |
-| FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:          | $[0, 1]$                                 | :heavy_check_mark: | :heavy_check_mark:        | [^4]      |
-| VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:                  | $[0, \infty)$ [^e]                       | :x:                | :x:                       | [^5]      |
-| VSI       | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^f]     | $[0, 1]$                                 | :x:                | :x:                       | [^6]      |
-| MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                             | $[0, \infty)$                            | :heavy_check_mark: | :x:                       | [^7]      |
-| GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                             | $[0, 1]$                                 | :x:                | :x:                       | [^8]      |
-| CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                             | $[0, \infty)$                            | :heavy_check_mark: | :x:                       | [^9]      |
-| SNR       | Signal to Noise Ratio                         | NR   | 3D native             | :heavy_check_mark:          | $[0, \infty)$                            | :heavy_check_mark: | :x:                       | &mdash;   |
-| Q-Measure | Q-Measure                                     | NR   | 3D only [^g]          | :x:                         | $[0, \infty)$                            | :x:                | :x:                       | [^10]     |
+| Metric    | Name                                          | Type | Dimensional behaviour | Colour Behaviour            | Range (different/worst - identical/best) | Tested             | Validated                   | Reference |
+|-----------|-----------------------------------------------|------|-----------------------|-----------------------------|------------------------------------------|--------------------|-----------------------------|-----------|
+| PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | :heavy_check_mark:          | $[0, \infty)$                            | :heavy_check_mark: | :heavy_check_mark:          | &mdash;   |
+| RMSE      | Root Mean Square Error                        | FR   | 3D native             | :heavy_check_mark:          | $(\infty, 0]$                            | :heavy_check_mark: | :heavy_check_mark:          | &mdash;   |
+| UQI [^a]  | Universal Quality Index                       | FR   | 3D native             | ( :heavy_check_mark: ) [^b] | $[-1, 1]$                                | :x:                | ( :heavy_check_mark: ) [^c] | [^1]      |
+| SSIM      | Structured Similarity                         | FR   | 3D native             | ( :heavy_check_mark: ) [^b] | $[-1, 1]$ [^d]                           | :heavy_check_mark: | :heavy_check_mark:          | [^2]      |
+| MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | :question:                  | $[0, 1]$                                 | :x:                | :heavy_check_mark:          | [^3]      |
+| FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | :heavy_check_mark:          | $[0, 1]$                                 | :heavy_check_mark: | :heavy_check_mark:          | [^4]      |
+| VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | :question:                  | $[0, \infty)$ [^e]                       | :x:                | :x:                         | [^5]      |
+| VSI       | Visual Saliency Index                         | FR   | 3D slicing            | :heavy_check_mark: [^f]     | $[0, 1]$                                 | :x:                | :x:                         | [^6]      |
+| MAD       | Most Apparent Distortion                      | FR   | 3D slicing            |                             | $[0, \infty)$                            | :heavy_check_mark: | :x:                         | [^7]      |
+| GSM       | Gradient Similarity                           | FR   | 3D native or slicing  |                             | $[0, 1]$                                 | :x:                | :x:                         | [^8]      |
+| CNR       | Contrast to Noise Ratio                       | NR   | 3D native             |                             | $[0, \infty)$                            | :heavy_check_mark: | :x:                         | [^9]      |
+| SNR       | Signal to Noise Ratio                         | NR   | 3D native             | :heavy_check_mark:          | $[0, \infty)$                            | :heavy_check_mark: | :x:                         | &mdash;   |
+| Q-Measure | Q-Measure                                     | NR   | 3D only [^g]          | :x:                         | $[0, \infty)$                            | :x:                | :x:                         | [^10]     |
 
 [^a]: UQI is a special case of SSIM. Also see [^2].
 [^b]: The metric is calculated channel-wise for color images. The values are then averaged after weighting.
