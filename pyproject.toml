@@ -17,7 +17,7 @@ keywords = [
     "computed tomography",
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Image Processing",
@@ -67,7 +67,7 @@ dev = [
 [project.urls]
 Repository = "https://github.com/3dct/vIQA"
 #Homepage
-#Documentation
+Documentation = "https://3dct.github.io/vIQA/"
 
 [build-system]
 requires = ["meson-python"]

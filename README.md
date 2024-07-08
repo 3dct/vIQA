@@ -82,7 +82,8 @@ with grayscale images by copying the luminance channel 3 times.
 [^g]: The Q-Measure is a special metric designed for CT images. Therefore it only works
 with 3D volumes.
 
-<!-- ## Documentation TODO: add link to documentation -->
+## Documentation
+The API documentation can be found [here](https://3dct.github.io/vIQA/).
 
 ## Requirements
 The following packages have to be installed:
