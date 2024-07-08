@@ -13,24 +13,30 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ ubuntu-latest, windows-latest]
+        os: [ ubuntu-24.04, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # update once build dependencies are available
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.2
-        # env:
-        #   CIBW_SOME_OPTION: value
-        #    ...
+        env:
+          CIBW_CONFIG_SETTINGS_WINDOWS: "setup-args=--vsenv"
         with:
           package-dir: .
           output-dir: wheelhouse
           config-file: "pyproject.toml"
 
-      - uses: actions/upload-artifact@v4
+      - name: Store artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
