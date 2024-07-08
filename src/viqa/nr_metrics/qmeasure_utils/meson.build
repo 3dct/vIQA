@@ -1,6 +1,4 @@
-incdir_numpy = run_command('../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
-# incdir_numpy = '/home/lukas/.virtualenvs/vIQA_Package/lib/python3.12/site-packages/numpy/_core/include'
-# incdir_numpy = '/opt/python/cp312-cp312/lib/python3.12/site-packages/numpy/_core/include'
+incdir_numpy = run_command('python', '../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
 
 sources = files(
 'ImageHistogram.cpp',

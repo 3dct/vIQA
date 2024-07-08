@@ -23,6 +23,9 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Image Processing",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent"
 ]
 #license = { file = "LICENSE.txt" }
@@ -70,7 +73,7 @@ Repository = "https://github.com/3dct/vIQA"
 Documentation = "https://3dct.github.io/vIQA/"
 
 [build-system]
-requires = ["meson-python"]
+requires = ["meson-python", "numpy"]
 build-backend = "mesonpy"
 
 ######################################################################
@@ -155,4 +158,17 @@ omit = [
     "*/sphinxext/*",
     "*/tmp/tmp*.py",
     "docs/*",
+]
+
+######################################################################
+# cibuildwheel
+[tool.cibuildwheel]
+build = [
+    "*-musllinux*",
+    "cp311-win*",
+    "cp312-win*",
+    "cp313-win*",
+    "cp311-macosx*",
+    "cp312-macosx*",
+    "cp313-macosx*",
 ]
