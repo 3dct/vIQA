@@ -1,10 +1,20 @@
-# vIQA &mdash; volumetric Image Quality Assessment
+<h1 align="center">
+<img src="https://raw.githubusercontent.com/3dct/vIQA/main/branding/logo/Logo_vIQA_wo-text.svg" width="300">
 
+vIQA &mdash; volumetric Image Quality Assessment
+</h1><br>
+
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vIQA)](https://pypi.org/project/vIQA/)
+[![PyPI - Version](https://img.shields.io/pypi/v/vIQA)](https://pypi.org/project/vIQA/latest)
+[![PyPI - License](https://img.shields.io/pypi/l/vIQA)](https://pypi.org/project/vIQA/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/vIQA)](https://pypi.org/project/vIQA/)
+[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://3dct.github.io/vIQA/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ## Table of Contents
 
 * [Overview](#overview)
+* [Documentation](#documentation)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
