@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-python@v5
       - name: Install dependencies
         run: |
-          pip install sphinx furo sphinx-copybutton
+          pip install sphinx furo sphinx-copybutton pytest-doctestplus
       - name: Sphinx build
         run: |
           sphinx-build docs/source _build
