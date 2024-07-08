@@ -68,10 +68,10 @@ jobs:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
-#      name: pypi
-      url: https://test.pypi.org/project/vIQA/
-#      url: https://pypi.org/project/vIQA/
+#      name: testpypi
+      name: pypi
+#      url: https://test.pypi.org/project/vIQA/
+      url: https://pypi.org/project/vIQA/
     permissions:
       id-token: write
     # if: github.event_name == 'release' && github.event.action == 'published'
@@ -89,4 +89,4 @@ jobs:
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
+#          repository-url: https://test.pypi.org/legacy/
