@@ -178,3 +178,6 @@ build = [
 
 [tool.cibuildwheel.windows.config-settings]
 setup-args = "--vsenv"
+
+[tool.cibuildwheel.macos]
+archs = ["auto", "universal2"]

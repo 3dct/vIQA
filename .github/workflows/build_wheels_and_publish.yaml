@@ -1,4 +1,4 @@
-name: Build wheels and sdist
+name: Build and Upload to PyPI
 
 on:
   workflow_dispatch:
@@ -19,7 +19,8 @@ jobs:
         os: [ ubuntu-24.04, windows-latest, macos-13, macos-14 ]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
 #      - name: Setup Python
 #        uses: actions/setup-python@v5
@@ -45,7 +46,8 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
 #      - name: Setup Python
 #        uses: actions/setup-python@v5
@@ -55,7 +57,8 @@ jobs:
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v4
+      - name: Store artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: cibw-sdist
           path: dist/*.tar.gz
@@ -66,20 +69,24 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
+#      name: pypi
       url: https://test.pypi.org/project/vIQA/
+#      url: https://pypi.org/project/vIQA/
     permissions:
       id-token: write
     # if: github.event_name == 'release' && github.event.action == 'published'
     # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
     # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         with:
           # unpacks all CIBW artifacts into dist/
           pattern: cibw-*
           path: dist
           merge-multiple: true
 
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
