@@ -12,4 +12,5 @@ py.extension_module(
     install: true,
     include_directories: incdir_numpy,
     subdir: 'viqa/nr_metrics/qmeasure_utils',
+    c_args: ['-std=c++20'],
 )

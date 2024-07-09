@@ -11,7 +11,17 @@ project(
     ],
 )
 
-#cc = meson.get_compiler('c')
+cc = meson.get_compiler('c')
+ccpp = meson.get_compiler('cpp')
+
+message(ccpp.get_id())
+if ccpp.get_id() == 'clang'
+    libs_compiler = ['-stdlib=libc++']
+    libs_linker   = ['-stdlib=libc++', '-lstdc++fs']
+
+    add_project_arguments(libs_compiler, language: 'cpp')
+    add_project_link_arguments(libs_linker, language: 'cpp')
+endif
 
 #_global_c_args = cc.get_supported_arguments(
 #  '-Wno-unused-function',
