@@ -15,8 +15,8 @@ cc = meson.get_compiler('c')
 ccpp = meson.get_compiler('cpp')
 
 if ccpp.get_id() == 'clang'
-    libs_compiler = ['-stdlib=libc++']
-    libs_linker   = ['-stdlib=libc++', '-lstdc++fs']
+    libs_compiler = ['-stdlib=libc++', '-mmacosx-version-min=13.3']
+    libs_linker   = ['-stdlib=libc++', '-lstdc++fs', '-mmacosx-version-min=13.3']
 
     add_project_arguments(libs_compiler, language: 'cpp')
     add_project_link_arguments(libs_linker, language: 'cpp')
