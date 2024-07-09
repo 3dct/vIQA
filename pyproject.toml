@@ -176,7 +176,8 @@ build = [
 #    "cp313-win_*64",
     "cp311-macosx*",
     "cp312-macosx*",
-    "cp313-macosx*",
+    "cp313-macosx_arm64",
+
 ]
 manylinux-x86_64-image = "manylinux_2_28"
 
