@@ -204,7 +204,7 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 
 .. tip::
 
-    It is recommended to load the images directly with the `vIQA.utils.load_data` function first and then pass the image
+    It is recommended to load the images directly with the :doc:`generated/viqa.load_utils.load_data` function first and then pass the image
     arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case,
     the images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a
     single metric.
