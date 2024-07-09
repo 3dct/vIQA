@@ -1,6 +1,15 @@
 name: Build documentation with Sphinx
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+    tags:
+      - v*
+  workflow_dispatch:
 
 permissions:
   contents: write
