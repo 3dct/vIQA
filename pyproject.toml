@@ -165,6 +165,9 @@ omit = [
 # cibuildwheel
 [tool.cibuildwheel]
 build = [
+    "cp311-manylinux_x86_64",
+    "cp312-manylinux_x86_64",
+    "cp313-manylinux_x86_64",
     "cp311-musllinux_x86_64",
     "cp312-musllinux_x86_64",
     "cp313-musllinux_x86_64",
@@ -175,6 +178,10 @@ build = [
     "cp312-macosx*",
     "cp313-macosx*",
 ]
+manylinux-x86_64-image = "manylinux_2_28"
+
+[tool.cibuildwheel.linux]
+before-all = "dnf install gcc-toolset-13"
 
 [tool.cibuildwheel.windows.config-settings]
 setup-args = "--vsenv"
