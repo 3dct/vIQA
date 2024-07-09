@@ -182,7 +182,7 @@ manylinux-x86_64-image = "manylinux_2_28"
 
 [[tool.cibuildwheel.overrides]]
 select = "*-manylinux_x86_64"
-before-all = "dnf install gcc-toolset-13"
+before-all = ["dnf install gcc-toolset-13", "source /opt/rh/gcc-toolset-13/enable"]
 
 [tool.cibuildwheel.windows.config-settings]
 setup-args = "--vsenv"
