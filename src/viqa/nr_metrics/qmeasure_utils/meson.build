@@ -6,11 +6,18 @@ sources = files(
 'qmeasurecalcmodule.cpp',
 )
 
+if ccpp.get_id() == 'clang'
+    extra_args = ['-stdlib=libc++', '-std=c++20']
+    libs_linker   = ['-stdlib=libc++', '-lstdc++fs']
+else
+    extra_args = []
+endif
+
 py.extension_module(
     'qmeasurecalc',
     sources: sources,
     install: true,
     include_directories: incdir_numpy,
     subdir: 'viqa/nr_metrics/qmeasure_utils',
-    c_args: ['-std=c++20'],
+    c_args: extra_args,
 )
