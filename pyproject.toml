@@ -176,6 +176,7 @@ build = [
 #    "cp313-win_*64",
     "cp311-macosx*",
     "cp312-macosx*",
+#    "cp313-macosx_x86_64",
     "cp313-macosx_arm64",
 
 ]
