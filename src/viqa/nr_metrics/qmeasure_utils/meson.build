@@ -7,8 +7,7 @@ sources = files(
 )
 
 if ccpp.get_id() == 'clang'
-    extra_args = ['-stdlib=libc++', '-std=c++20']
-    libs_linker   = ['-stdlib=libc++', '-lstdc++fs']
+    extra_args = ['-std=c++20']
 else
     extra_args = []
 endif
