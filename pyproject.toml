@@ -188,7 +188,7 @@ before-all = [
     "dnf install gcc-toolset-13 -y",
     "source /opt/rh/gcc-toolset-13/enable",
 ]
-environment = { DEVTOOLSET_ROOTPATH="/opt/rh/gcc-toolset-13/root", PATH="$PATH/opt/rh/gcc-toolset-13/root/usr/bin", LD_LIBRARY_PATH="/opt/rh/gcc-toolset-13/root/usr/lib64:/opt/rh/gcc-toolset-13/root/usr/lib:/opt/rh/gcc-toolset-13/root/usr/lib64/dyninst:/opt/rh/gcc-toolset-13/root/usr/lib/dyninst" }
+environment = { DEVTOOLSET_ROOTPATH="/opt/rh/gcc-toolset-13/root", PATH="/opt/rh/gcc-toolset-13/root/usr/bin:$PATH", LD_LIBRARY_PATH="/opt/rh/gcc-toolset-13/root/usr/lib64:/opt/rh/gcc-toolset-13/root/usr/lib:/opt/rh/gcc-toolset-13/root/usr/lib64/dyninst:/opt/rh/gcc-toolset-13/root/usr/lib/dyninst" }
 
 [tool.cibuildwheel.windows.config-settings]
 setup-args = "--vsenv"
