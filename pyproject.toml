@@ -180,7 +180,8 @@ build = [
 ]
 manylinux-x86_64-image = "manylinux_2_28"
 
-[tool.cibuildwheel.linux]
+[[tool.cibuildwheel.override]]
+select = "*-manylinux_x86_64"
 before-all = "dnf install gcc-toolset-13"
 
 [tool.cibuildwheel.windows.config-settings]
