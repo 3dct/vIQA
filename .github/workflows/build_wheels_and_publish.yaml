@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ ubuntu-24.04, windows-latest, macos-13, macos-14 ]
+        os: [ ubuntu-24.04, windows-latest, macos-14 ]
 
     steps:
       - name: Checkout code
@@ -24,9 +24,9 @@ jobs:
 
       - name: Select Xcode version
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           clang -v
-        if: ${{ matrix.os == 'macos-13'}}
+        if: ${{ matrix.os == 'macos-14-large'}}
 
       - name: Select Xcode version
         run: |
