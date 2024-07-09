@@ -16,7 +16,7 @@ py.extension_module(
     'qmeasurecalc',
     sources: sources,
     install: true,
+    c_args: extra_args,
     include_directories: incdir_numpy,
     subdir: 'viqa/nr_metrics/qmeasure_utils',
-    c_args: extra_args,
 )
