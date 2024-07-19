@@ -4,12 +4,15 @@
 vIQA &mdash; volumetric Image Quality Assessment
 </h1><br>
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vIQA)](https://pypi.org/project/vIQA/)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![PyPI - Version](https://img.shields.io/pypi/v/vIQA)](https://pypi.org/project/vIQA/latest)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vIQA)](https://pypi.org/project/vIQA/)
 [![PyPI - License](https://img.shields.io/pypi/l/vIQA)](https://pypi.org/project/vIQA/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/vIQA)](https://pypi.org/project/vIQA/)
-[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://3dct.github.io/vIQA/)
+[![Documentation GH Action](https://github.com/3dct/vIQA/actions/workflows/documentation.yaml/badge.svg)](https://3dct.github.io/vIQA/)
+[![Build GH Action](https://github.com/3dct/vIQA/actions/workflows/build_wheels_and_publish.yaml/badge.svg)](https://github.com/3dct/vIQA/actions/workflows/build_wheels_and_publish.yaml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/3dct/vIQA/main)
 
 ## Table of Contents
 
