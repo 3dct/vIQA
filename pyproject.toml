@@ -33,7 +33,7 @@ classifiers = [
 license = { text = "BSD-3-Clause" }
 dependencies = [
     "scipy",
-    "numpy",
+    "numpy<2.0.0",
     "torch",
     "piq",
     "scikit-image",
