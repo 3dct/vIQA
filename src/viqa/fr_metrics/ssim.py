@@ -122,7 +122,7 @@ class SSIM(FullReferenceMetricsInterface):
         )
         self._name = "SSIM"
 
-    def score(self, img_r, img_m, color_weights, **kwargs):
+    def score(self, img_r, img_m, color_weights=None, **kwargs):
         """Calculate the structural similarity index (SSIM) between two images.
 
         Parameters
@@ -131,7 +131,7 @@ class SSIM(FullReferenceMetricsInterface):
             Reference image to calculate score against.
         img_m : np.ndarray
             Modified image to calculate score of.
-        color_weights : np.ndarray
+        color_weights : np.ndarray, optional
             Weights for the color channels. The array must have the same length as the
             number of color channels in the images. Is only effective if
             ``chromatic=True`` is set during initialization.
@@ -143,6 +143,11 @@ class SSIM(FullReferenceMetricsInterface):
         -------
         score_val : float
             SSIM score value.
+
+        Raises
+        ------
+        ValueError
+            If ``color_weights`` are not set for chromatic images.
 
         Notes
         -----
@@ -158,6 +163,8 @@ class SSIM(FullReferenceMetricsInterface):
         )
 
         if self._parameters["chromatic"]:
+            if color_weights is None:
+                raise ValueError("Color weights must be set for chromatic images.")
             scores = []
             for channel in range(img_r.shape[-1]):
                 score = structural_similarity(
