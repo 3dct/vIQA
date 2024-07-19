@@ -1,4 +1,4 @@
-name: Build and Upload to PyPI
+name: Build
 
 on:
   workflow_dispatch:
