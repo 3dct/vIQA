@@ -6,6 +6,7 @@ Utilities module
 .. autosummary::
    :toctree: generated
 
+    ImageArray
     load_data
     load_mhd
     load_raw

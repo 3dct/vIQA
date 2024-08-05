@@ -33,6 +33,7 @@ Examples
 # -------
 # BSD-3-Clause License
 
+import csv
 import glob
 import os
 import re
@@ -42,12 +43,160 @@ from warnings import warn
 import nibabel as nib
 import numpy as np
 import skimage as ski
+from scipy.stats import kurtosis, skew
 from torch import Tensor
+
+
+class ImageArray(np.ndarray):
+    """
+    Class for image arrays.
+
+    This class is a subclass of numpy.ndarray and adds attributes for image statistics.
+
+    Attributes
+    ----------
+    mean : float
+        Mean of the image array
+    median : float
+        Median of the image array
+    variance : float
+        Variance of the image array
+    standarddev : float
+        Standard deviation of the image array
+    skewness : float
+        Skewness of the image array
+    kurtosis : float
+        Kurtosis of the image array
+    histogram : tuple
+        Histogram of the image array
+    minimum : float
+        Minimum value of the image array
+    maximum : float
+        Maximum value of the image array
+
+    Parameters
+    ----------
+    input_array : np.ndarray
+        Numpy array containing the data
+
+    Returns
+    -------
+    obj : ImageArray
+        New instance of the ImageArray class
+    """
+
+    def __new__(cls, input_array):
+        """
+        Create a new instance of the ImageArray class.
+
+        Parameters
+        ----------
+        input_array : np.ndarray
+            Numpy array containing the data
+
+        Returns
+        -------
+        obj : ImageArray
+            New instance of the ImageArray class
+        """
+        # Input array is an already formed ndarray instance
+        obj = np.asarray(input_array).view(cls)
+        # Add attributes
+        obj.mean = np.mean(input_array)
+        obj.median = np.median(input_array)
+        obj.variance = np.var(input_array)
+        obj.standarddev = np.std(input_array)
+        obj.skewness = skew(input_array, axis=None)
+        obj.kurtosis = kurtosis(input_array, axis=None)
+        if input_array.dtype.kind in ['u', 'i']:
+            obj.histogram = np.histogram(input_array, bins=np.iinfo(input_array.dtype).max)
+        else:
+            obj.histogram = np.histogram(input_array, bins=255)
+        obj.minimum = np.min(input_array)
+        obj.maximum = np.max(input_array)
+        return obj
+
+    def __array_finalize__(self, obj):
+        """
+        Finalize the array.
+
+        Parameters
+        ----------
+        obj : object
+            Object to finalize
+        """
+        if obj is None:
+            return
+        # Add attributes
+        self.mean = getattr(obj, 'mean', None)
+        self.median = getattr(obj, 'median', None)
+        self.variance = getattr(obj, 'variance', None)
+        self.standarddev = getattr(obj, 'standarddev', None)
+        self.skewness = getattr(obj, 'skewness', None)
+        self.kurtosis = getattr(obj, 'kurtosis', None)
+        self.histogram = getattr(obj, 'histogram', None)
+        self.minimum = getattr(obj, 'minimum', None)
+        self.maximum = getattr(obj, 'maximum', None)
+
+    def describe(self, path: str | os.PathLike = None, filename: str = None) -> dict:
+        """
+        Export image statistics to a csv file.
+
+        Parameters
+        ----------
+        path : str or os.PathLike, optional
+            Path to the directory where the csv file should be saved
+        filename : str, optional
+            Name of the csv file
+
+        Returns
+        -------
+        stats : dict
+            Dictionary containing the image statistics
+
+        Warns
+        -----
+        RuntimeWarning
+            If no path or filename is provided. Statistics are not exported.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from viqa import ImageArray
+        >>> img = np.random.rand(128, 128)
+        >>> img = ImageArray(img)
+        >>> img.describe(path="path/to", filename="image_statistics")
+        """
+        stats = {
+            "mean": self.mean,
+            "median": self.median,
+            "variance": self.variance,
+            "standarddev": self.standarddev,
+            "skewness": self.skewness,
+            "kurtosis": self.kurtosis,
+            "minimum": self.minimum,
+            "maximum": self.maximum
+        }
+        if path and filename:
+            # export to csv
+            if not filename.lower().endswith(".csv"):
+                filename += ".csv"
+            # Create file path
+            file_path = os.path.join(path, filename)
+            with open(file_path, mode="w", newline="") as f:  # Open file
+                writer = csv.DictWriter(f, stats.keys())
+                writer.writeheader()
+                writer.writerow(stats)
+            print(f"Statistics exported to {file_path}")
+        else:
+            warn("No path or filename provided. Statistics not exported.",
+                 RuntimeWarning)
+        return stats
 
 
 def _load_data_from_disk(
     file_dir: str | os.PathLike, file_name: str | os.PathLike
-) -> np.ndarray:
+) -> ImageArray:
     """
     Load data from a file.
 
@@ -60,7 +209,7 @@ def _load_data_from_disk(
 
     Returns
     -------
-    img_arr : np.ndarray
+    img_arr : ImageArray
         Numpy array containing the data
 
     Raises
@@ -79,24 +228,24 @@ def _load_data_from_disk(
     # Check file extension
     if file_ext == ".mhd":  # If file is a .mhd file
         img_arr = load_mhd(file_dir, file_name)
-        return img_arr
+        return ImageArray(img_arr)
     elif file_ext == ".raw":  # If file is a .raw file
         img_arr = load_raw(file_dir, file_name)
-        return img_arr
+        return ImageArray(img_arr)
     elif file_ext == ".nii":
         img_arr = load_nifti(file_path)
-        return img_arr
+        return ImageArray(img_arr)
     elif file_ext == ".gz":
         if re.search('.nii', file_name):
             img_arr = load_nifti(file_path)
-            return img_arr
+            return ImageArray(img_arr)
         else:
             raise ValueError(
                 "File extension not supported"
             )
     elif file_ext in [".png", ".jpg", ".jpeg", ".bmp"]:
         img_arr = ski.io.imread(file_path)
-        return img_arr
+        return ImageArray(img_arr)
     else:
         raise ValueError(
             "File extension not supported"
