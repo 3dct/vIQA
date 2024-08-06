@@ -35,6 +35,7 @@ Examples
 
 import csv
 import os
+from importlib.metadata import version
 
 from skimage.transform import resize
 
@@ -192,6 +193,36 @@ class BatchMetrics:
                     + [self.pairs[int(pair_num)]['modified_image']]
                     + list(results.values())
                 )
+
+    def export_metadata(self, file_path, file_name='metadata.txt'):
+        """Export the metadata (custom parameters and package version) to a txt file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the directory where the txt file should be saved.
+        file_name : str, default='metadata.txt'
+            Name of the txt file. Default is 'metadata.txt'.
+
+        Notes
+        -----
+            .. attention::
+
+                The txt file will be overwritten if it already exists.
+        """
+        path = os.path.join(file_path, file_name)
+        with open(path, mode='w') as txtfile:
+            txtfile.write('vIQA_version: ' + version('viqa'))
+            txtfile.write('\n')
+            txtfile.write('\n')
+            txtfile.write('custom metric parameters: \n')
+            for metric_num, metric in enumerate(self.metrics):
+                txtfile.write(metric.__str__().split('(')[0])
+                txtfile.write('\n')
+                for key, value in self.metrics_parameters[metric_num].items():
+                    txtfile.write(key + ': ' + str(value))
+                    txtfile.write('\n')
+                txtfile.write('\n')
 
 
 def _read_csv(file_path):
