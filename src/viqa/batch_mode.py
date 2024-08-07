@@ -35,6 +35,7 @@ Examples
 
 import csv
 import os
+from datetime import datetime
 from importlib.metadata import version
 
 from skimage.transform import resize
@@ -219,11 +220,14 @@ class BatchMetrics:
         path = os.path.join(file_path, file_name)
         with open(path, mode='w') as txtfile:
             txtfile.write('vIQA_version: ' + version('viqa'))
+            txtfile.write('Time: ' + datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
             txtfile.write('\n')
             txtfile.write('\n')
             txtfile.write('custom metric parameters: \n')
+            txtfile.write('------------------------- \n')
             for metric_num, metric in enumerate(self.metrics):
                 txtfile.write(metric.__str__().split('(')[0])
+                txtfile.write(str('-' for char in metric.__str__().split('(')[0]))
                 txtfile.write('\n')
                 for key, value in self.metrics_parameters[metric_num].items():
                     txtfile.write(key + ': ' + str(value))
