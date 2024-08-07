@@ -41,6 +41,7 @@ from warnings import warn
 
 import numpy as np
 from scipy.ndimage import convolve
+from tqdm.autonotebook import trange
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.deprecation import RemovedInNextVersionWarning
@@ -317,21 +318,21 @@ def most_apparent_distortion_3d(
     # Calculate MAD for all slices of the given dimension
     match dim:
         case 0:
-            for slice_ in range(x):
+            for slice_ in trange(x):
                 scores.append(
                     most_apparent_distortion(
                         img_r[slice_, :, :], img_m[slice_, :, :], **kwargs
                     )
                 )
         case 1:
-            for slice_ in range(y):
+            for slice_ in trange(y):
                 scores.append(
                     most_apparent_distortion(
                         img_r[:, slice_, :], img_m[:, slice_, :], **kwargs
                     )
                 )
         case 2:
-            for slice_ in range(z):
+            for slice_ in trange(z):
                 scores.append(
                     most_apparent_distortion(
                         img_r[:, :, slice_], img_m[:, :, slice_], **kwargs

@@ -107,6 +107,7 @@ The following packages have to be installed:
 - pytorch
 - scikit-image
 - scipy
+- tqdm
 - (jupyter) if you want to use the provided notebook
 
 ## Installation

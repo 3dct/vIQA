@@ -39,6 +39,7 @@ dependencies = [
     "scikit-image",
     "nibabel",
     "matplotlib",
+    "tqdm",
 ]
 
 [project.optional-dependencies]

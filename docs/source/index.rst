@@ -82,6 +82,7 @@ The package is written in Python 3.11 and requires the following packages:
 * pytorch
 * scikit-image
 * scipy
+* tqdm
 * (jupyter) if you want to use the notebook on Github
 
 Installation

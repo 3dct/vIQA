@@ -32,6 +32,7 @@ from warnings import warn
 
 import numpy as np
 import scipy.ndimage as ndi
+from tqdm.autonotebook import trange
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.kernels import *
@@ -336,21 +337,21 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
         # Calculate GSM for all slices of the given dimension
         match dim:
             case 0:
-                for slice_ in range(x):
+                for slice_ in trange(x):
                     scores.append(
                         gradient_similarity(
                             img_r[slice_, :, :], img_m[slice_, :, :], **kwargs
                         )
                     )
             case 1:
-                for slice_ in range(y):
+                for slice_ in trange(y):
                     scores.append(
                         gradient_similarity(
                             img_r[:, slice_, :], img_m[:, slice_, :], **kwargs
                         )
                     )
             case 2:
-                for slice_ in range(z):
+                for slice_ in trange(z):
                     scores.append(
                         gradient_similarity(
                             img_r[:, :, slice_], img_m[:, :, slice_], **kwargs

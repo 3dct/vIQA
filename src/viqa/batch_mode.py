@@ -39,6 +39,7 @@ from datetime import datetime
 from importlib.metadata import version
 
 from skimage.transform import resize
+from tqdm.autonotebook import tqdm
 
 from viqa.load_utils import load_data
 
@@ -127,7 +128,7 @@ class BatchMetrics:
 
     def calculate(self):
         """Calculate the metrics in batch mode."""
-        for pair_num, pair in enumerate(self.pairs):
+        for pair_num, pair in enumerate(tqdm(self.pairs)):
             reference_path = os.path.join(self.file_dir, pair['reference_image'])
             modified_path = os.path.join(self.file_dir, pair['modified_image'])
             img_r = load_data(reference_path)

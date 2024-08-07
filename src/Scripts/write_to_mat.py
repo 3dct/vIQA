@@ -6,6 +6,7 @@ import sys
 
 import scipy.io as sio
 import viqa
+from tqdm import tqdm
 
 
 def write_to_mat(data_dir, filename="volume.mhd"):
@@ -14,7 +15,7 @@ def write_to_mat(data_dir, filename="volume.mhd"):
     subfolders = glob.glob(os.path.join(data_dir, "*"))
 
     counter = 0
-    for subfolder in subfolders:
+    for subfolder in tqdm(subfolders):
         print(".", end="")
         img = viqa.load_data(os.path.join(subfolder, filename),
                              normalize=False,

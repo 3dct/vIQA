@@ -45,6 +45,7 @@ import numpy as np
 import skimage as ski
 from scipy.stats import kurtosis, skew
 from torch import Tensor
+from tqdm.autonotebook import tqdm
 
 
 class ImageArray(np.ndarray):
@@ -520,7 +521,7 @@ def load_data(
                 files = glob.glob(img)  # type: ignore[type-var]
                 img_arr = []  # Initialize list for numpy arrays
                 # Load data from disk for each file
-                for file in files:
+                for file in tqdm(files):
                     img_arr.append(
                         _load_data_from_disk(
                             file_dir=os.path.dirname(file),
