@@ -919,11 +919,11 @@ def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
     """Calculate the minimum standard deviation of blocks of a given image.
 
     .. deprecated::
-        Will be removed in 1.0.0. Use :py:func:`viqa.fr_metrics.statisticscalc.minstd`
+        Will be removed in 2.0.0. Use :py:func:`viqa.fr_metrics.statisticscalc.minstd`
         instead.
 
     """
-    warn("This function will be deprecated in 1.0.0. "
+    warn("This function will be deprecated in 2.0.0. "
          "Use viqa.fr_metrics.statisticscalc.minstd instead.", RemovedInNextVersionWarning)
 
     # Preallocate arrays
@@ -972,11 +972,11 @@ def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
     """Calculate the statistics of blocks of a given image.
 
     .. deprecated::
-        Will be removed in 1.0.0. Use
+        Will be removed in 2.0.0. Use
         :py:func:`viqa.fr_metrics.statisticscalc.getstatistics` instead.
 
     """
-    warn("This function will be deprecated in 1.0.0. "
+    warn("This function will be deprecated in 2.0.0. "
          "Use viqa.fr_metrics.statisticscalc.getstatistics instead.",
          RemovedInNextVersionWarning)
 
