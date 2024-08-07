@@ -175,6 +175,9 @@ class BatchMetrics:
 
                 The csv file will be overwritten if it already exists.
         """
+        if os.path.splitext(file_name)[1] != '.csv':
+            raise ValueError(f"The file name {file_name} must have the "
+                             f"extension '.csv'.")
         path = os.path.join(file_path, file_name)
         with open(path, mode='w', newline='') as csvfile:
             writer = csv.writer(csvfile)
@@ -210,6 +213,9 @@ class BatchMetrics:
 
                 The txt file will be overwritten if it already exists.
         """
+        if os.path.splitext(file_name)[1] != '.txt':
+            raise ValueError(f"The file name {file_name} must have the "
+                             f"extension '.txt'.")
         path = os.path.join(file_path, file_name)
         with open(path, mode='w') as txtfile:
             txtfile.write('vIQA_version: ' + version('viqa'))
