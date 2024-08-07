@@ -59,6 +59,8 @@ Examples
 
 from warnings import warn
 
+import numpy as np
+
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.fr_metrics.ssim import structural_similarity
 from viqa.utils import _check_imgs
@@ -183,6 +185,6 @@ class UQI(FullReferenceMetricsInterface):
             If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
-            print("UQI: {}".format(round(self.score_val, decimals)))
+            print("UQI: {}".format(np.round(self.score_val, decimals)))
         else:
             warn("No score value for UQI. Run score() first.", RuntimeWarning)

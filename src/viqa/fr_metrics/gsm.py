@@ -274,7 +274,7 @@ class GSM(FullReferenceMetricsInterface):
             If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
-            print("GSM: {}".format(round(self.score_val, decimals)))
+            print("GSM: {}".format(np.round(self.score_val, decimals)))
         else:
             warn("No score value for GSM. Run score() first.", RuntimeWarning)
 

@@ -30,6 +30,7 @@ Examples
 
 from warnings import warn
 
+import numpy as np
 from piq import vsi
 
 from viqa._metrics import FullReferenceMetricsInterface
@@ -300,6 +301,6 @@ class VSI(FullReferenceMetricsInterface):
             If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
-            print("VSI: {}".format(round(self.score_val, decimals)))
+            print("VSI: {}".format(np.round(self.score_val, decimals)))
         else:
             print("No score value for VSI. Run score() first.")

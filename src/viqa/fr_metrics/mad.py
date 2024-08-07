@@ -264,7 +264,7 @@ class MAD(FullReferenceMetricsInterface):
             If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
-            print("MAD: {}".format(round(self.score_val, decimals)))
+            print("MAD: {}".format(np.round(self.score_val, decimals)))
         else:
             warn("No score value for MAD. Run score() first.", RuntimeWarning)
 

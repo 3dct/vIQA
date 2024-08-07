@@ -121,7 +121,7 @@ class CNR(NoReferenceMetricsInterface):
             If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
-            print("CNR: {}".format(round(self.score_val, decimals)))
+            print("CNR: {}".format(np.round(self.score_val, decimals)))
         else:
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 

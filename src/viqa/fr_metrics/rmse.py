@@ -132,6 +132,6 @@ class RMSE(FullReferenceMetricsInterface):
             If no score value is available. Run score() first.
         """
         if self.score_val is not None:
-            print("RMSE: {}".format(round(self.score_val, decimals)))
+            print("RMSE: {}".format(np.round(self.score_val, decimals)))
         else:
             warn("No score value for RMSE. Run score() first.", RuntimeWarning)

@@ -31,6 +31,7 @@ Examples
 
 from warnings import warn
 
+import numpy as np
 from piq import multi_scale_ssim
 
 from viqa._metrics import FullReferenceMetricsInterface
@@ -300,6 +301,6 @@ class MSSSIM(FullReferenceMetricsInterface):
             If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
-            print("MS-SSIM: {}".format(round(self.score_val, decimals)))
+            print("MS-SSIM: {}".format(np.round(self.score_val, decimals)))
         else:
             print("No score value for MS-SSIM. Run score() first.")

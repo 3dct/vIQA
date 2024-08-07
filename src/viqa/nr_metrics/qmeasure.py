@@ -154,6 +154,6 @@ class QMeasure(NoReferenceMetricsInterface):
             If no score value is available. Run score() first.
         """
         if self.score_val is not None:
-            print("Q-Measure: {}".format(round(self.score_val, decimals)))
+            print("Q-Measure: {}".format(np.round(self.score_val, decimals)))
         else:
             warn("No score value for Q-Measure. Run score() first.", RuntimeWarning)
