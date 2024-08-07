@@ -224,7 +224,7 @@ def structural_similarity(
         The side-length of the sliding window used in comparison. Must be an
         odd value. If ``gaussian_weights`` is True, this is ignored and the
         window size will depend on ``sigma``.
-    data_range : int, default=255
+    data_range : int, default=None
         Data range of the input images.
     gaussian_weights : bool, default=True
         If True, each patch has its mean and variance spatially weighted by a
