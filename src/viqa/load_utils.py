@@ -102,7 +102,7 @@ class ImageArray(np.ndarray):
         # Input array is an already formed ndarray instance
         obj = np.asarray(input_array).view(cls)
         # Add attributes
-        obj.mean = np.mean(input_array)
+        obj.mean_value = np.mean(input_array)
         obj.median = np.median(input_array)
         obj.variance = np.var(input_array)
         obj.standarddev = np.std(input_array)
@@ -128,7 +128,7 @@ class ImageArray(np.ndarray):
         if obj is None:
             return
         # Add attributes
-        self.mean = getattr(obj, 'mean', None)
+        self.mean_value = getattr(obj, 'mean_value', None)
         self.median = getattr(obj, 'median', None)
         self.variance = getattr(obj, 'variance', None)
         self.standarddev = getattr(obj, 'standarddev', None)
@@ -431,6 +431,11 @@ def _load_binary(data_file_path, data_type, dim_size):
             file=f, dtype=data_type
         )  # Read data file into numpy array according to data type
 
+    if img_arr_orig.size != np.prod(dim_size):
+        raise ValueError(
+            "Size of data file (" + data_file_path + ") does not match dimensions ("
+            + str(dim_size) + ")"
+        )
     # Reshape numpy array according to DimSize
     img_arr = img_arr_orig.reshape(*dim_size[::-1])
     return img_arr
