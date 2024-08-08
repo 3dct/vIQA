@@ -6,7 +6,6 @@ authors = [
     { name = "Lukas Behammer", email = "lukas.behammer@fh-wels.at" },
 ]
 readme = "README.md"
-#readme
 requires-python = ">=3.11"
 keywords = [
     "IQA",
@@ -67,6 +66,7 @@ dev = [
     "vIQA[tests, lint, docs]",
     "meson-python",
     "build",
+    "python-semantic-release",
 ]
 
 [project.urls]
@@ -198,3 +198,16 @@ setup-args = "--vsenv"
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
 environment = { MACOSX_DEPLOYMENT_TARGET = "13.3" }
+
+######################################################################
+# Semantic Release
+[tool.semantic_release]
+commit_parser = "angular"
+logging_use_named_masks = true
+allow_zero_version = true
+tag_format = "v{version}"
+version_variables = ["./src/viqa/__init__.py:__version__"]
+
+[tool.semantic_release.changelog]
+template_dir = "./templates"
+changelog_file = "CHANGELOG.md"
