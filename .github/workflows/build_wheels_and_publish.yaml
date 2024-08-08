@@ -100,3 +100,8 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 #        with:
 #          repository-url: https://test.pypi.org/legacy/
+
+      - name: Test install from PyPI
+        run: |
+            pip install vIQA
+            python -c "import vIQA; print(vIQA.__version__)"
