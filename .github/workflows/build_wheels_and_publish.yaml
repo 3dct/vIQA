@@ -138,7 +138,7 @@ jobs:
             echo "tested=true" >> $GITHUB_OUTPUT
 
       - name: Publish package distributions to GitHub Releases
-        if: test_install.outputs.tested == 'true'
+        if: steps.test_install.outputs.tested == 'true'
         uses: python-semantic-release/upload-to-gh-release@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
