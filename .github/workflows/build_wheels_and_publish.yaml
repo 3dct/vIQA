@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: write
     outputs:
       tag: ${{ steps.release.outputs.tag }}
       released: ${{ steps.release.outputs.released }}
@@ -28,7 +29,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           vcs_release: "false"
-          skip_build: "true"
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
