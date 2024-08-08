@@ -34,7 +34,6 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     needs: semantic_release
     runs-on: ${{ matrix.os }}
-    if: needs.semantic_release.outputs.released == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -81,7 +80,6 @@ jobs:
     name: Build source distribution
     needs: semantic_release
     runs-on: ubuntu-24.04
-    if: needs.semantic_release.outputs.released == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -101,7 +99,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    name: Upload to PyPI and GitHub Releases
+    name: Upload to PyPI
     needs: [semantic_release, build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: needs.semantic_release.outputs.released == 'true'
@@ -132,14 +130,30 @@ jobs:
       - name: Test install from PyPI
         id: test_install
         run: |
-            pip install vIQA
+            pip install viqa
             python -c "import vIQA; print(vIQA.__version__)"
             echo "vIQA installed successfully"
             echo "tested=true" >> $GITHUB_OUTPUT
 
-      - name: Publish package distributions to GitHub Releases
-        if: steps.test_install.outputs.tested == 'true'
-        uses: python-semantic-release/upload-to-gh-release@main
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.semantic_release.outputs.tag }}
+  upload_github:
+      name: Upload to GitHub Releases
+      needs: [semantic_release, build_wheels, build_sdist]
+      runs-on: ubuntu-latest
+      permissions:
+        id-token: write
+        contents: write
+
+      steps:
+        - name: Download artifacts
+          uses: actions/download-artifact@v4
+          with:
+            # unpacks all CIBW artifacts into dist/
+            pattern: cibw-*
+            path: dist
+            merge-multiple: true
+
+        - name: Publish package distributions to GitHub Releases
+          uses: python-semantic-release/upload-to-gh-release@main
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            tag: ${{ needs.semantic_release.outputs.tag }}
