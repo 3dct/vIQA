@@ -43,7 +43,7 @@ import skimage as ski
 import torch
 from torch import Tensor
 
-from viqa.load_utils import load_data, normalize_data
+from viqa.load_utils import load_data
 
 
 def _check_imgs(
