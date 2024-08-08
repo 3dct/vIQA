@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
       - name: Install dependencies
         run: |
-          pip install sphinx furo sphinx-copybutton pytest-doctestplus piq scipy scikit-image matplotlib nibabel
+          pip install sphinx furo sphinx-copybutton pytest-doctestplus piq scipy scikit-image matplotlib nibabel tqdm
       - name: Sphinx build
         run: |
           sphinx-build docs/source _build
