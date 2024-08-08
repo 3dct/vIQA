@@ -32,14 +32,14 @@ classifiers = [
 #license = { file = "LICENSE.txt" }
 license = { text = "BSD-3-Clause" }
 dependencies = [
-    "scipy",
-    "numpy<2.0.0",
-    "torch",
-    "piq",
-    "scikit-image",
-    "nibabel",
-    "matplotlib",
-    "tqdm",
+    "scipy >=1.10.0",
+    "numpy <2.0.0, >=1.24.0",
+    "torch >=1.13.0",
+    "piq >= 0.8.0",
+    "scikit-image >= 0.19.0",
+    "nibabel >=5.0.0",
+    "matplotlib >=3.5.0",
+    "tqdm >=4.65.0",
 ]
 
 [project.optional-dependencies]
