@@ -33,6 +33,7 @@ from warnings import warn
 
 import numpy as np
 from piq import multi_scale_ssim
+from torch import tensor
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.utils import _check_chromatic, _check_imgs
@@ -194,6 +195,9 @@ class MSSSIM(FullReferenceMetricsInterface):
             normalize=self._parameters["normalize"],
             chromatic=self._parameters["chromatic"],
         )
+
+        if "scale_weights" in kwargs and type(kwargs["scale_weights"]) is list:
+            kwargs["scale_weights"] = tensor(kwargs["scale_weights"])
 
         if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (
