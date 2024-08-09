@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   semantic_release:
@@ -159,4 +162,4 @@ jobs:
           uses: python-semantic-release/upload-to-gh-release@main
           with:
             github_token: ${{ secrets.GITHUB_TOKEN }}
-            tag: ${{ needs.semantic_release.outputs.tag }}
+            #tag: ${{ needs.semantic_release.outputs.tag }}
