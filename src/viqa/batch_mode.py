@@ -114,7 +114,7 @@ class BatchMetrics:
     """
 
     def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
-        """Constructor method."""
+        """Construct method."""
         if len(metrics) != len(metrics_parameters):
             raise ValueError("The number of metrics and metric parameters must be "
                              "equal.")

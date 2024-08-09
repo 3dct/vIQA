@@ -96,7 +96,7 @@ class VSI(FullReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, **kwargs):
-        """Constructor method."""
+        """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(

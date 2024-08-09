@@ -37,7 +37,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa.load_utils import load_data
-from viqa.utils import _to_grayscale, _rgb_to_yuv
+from viqa.utils import _rgb_to_yuv, _to_grayscale
 from viqa.visualization_utils import _visualize_snr_2d, _visualize_snr_3d
 
 
@@ -72,7 +72,7 @@ class SNR(NoReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
-        """Constructor method."""
+        """Construct method."""
         super().__init__(
             data_range=data_range, normalize=normalize, **kwargs
         )
@@ -218,7 +218,8 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
     where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
 
     For color images, the calculation is a lot more complicated. The image is first
-    converted to YUV color space by matrix multiplication with the weighting matrix [1]_:
+    converted to YUV color space by matrix multiplication with the
+    weighting matrix [1]_:
 
     .. math::
         \\begin{bmatrix}

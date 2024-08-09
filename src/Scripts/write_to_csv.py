@@ -1,4 +1,20 @@
 #!/usr/bin/python3
+"""Write pairs of reference and modified images to a CSV file via CLI."""
+
+# Authors
+# -------
+# Author: Lukas Behammer
+# Research Center Wels
+# University of Applied Sciences Upper Austria, 2023
+# CT Research Group
+#
+# Modifications
+# -------------
+# Original code, 2024, Lukas Behammer
+#
+# License
+# -------
+# BSD-3-Clause License
 
 import csv
 import glob
@@ -25,8 +41,14 @@ def write_to_csv(path_modified, path_reference, path_csv, copy=False):
                 if img_ref_name == img_mod_name:
                     writer.writerow([filename_reference, filename_modified])
                     if copy:
-                        copy_file(file_reference, os.path.join(path_csv, "images", filename_reference))
-                        copy_file(file_modified, os.path.join(path_csv, "images", filename_modified))
+                        copy_file(
+                            file_reference,
+                            os.path.join(path_csv, "images", filename_reference)
+                        )
+                        copy_file(
+                            file_modified,
+                            os.path.join(path_csv, "images", filename_modified)
+                        )
 
 
 def copy_file(origin_path, destination_path):
@@ -42,7 +64,8 @@ if __name__ == "__main__":
         path_csv = sys.argv[3]
         if sys.argv[4] == "copy":
             copy = True
-            print(f"Copying images from {path_modified} and {path_reference} to {path_csv}/images.")
+            print(f"Copying images from {path_modified} and {path_reference} "
+                  f"to {path_csv}/images.")
         else:
             copy = False
         path_modified = os.path.join(path_modified, "*")
@@ -50,5 +73,6 @@ if __name__ == "__main__":
         write_to_csv(path_modified, path_reference, path_csv, copy=copy)
         print("Done!")
     else:
-        print("Usage: python3 write_to_csv.py <path_modified> <path_reference> <path_csv> [copy]")
+        print("Usage: python3 write_to_csv.py <path_modified> <path_reference> "
+              "<path_csv> [copy]")
         sys.exit(1)

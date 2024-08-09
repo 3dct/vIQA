@@ -90,7 +90,7 @@ class QMeasure(NoReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
-        """Constructor method."""
+        """Construct method."""
         super().__init__(
             data_range=data_range, normalize=normalize, **kwargs
         )

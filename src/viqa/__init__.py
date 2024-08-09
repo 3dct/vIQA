@@ -1,6 +1,5 @@
 """
-vIQA (volumetric Image Quality Assessment) is a Python package for the assessment of
-volumetric image quality.
+vIQA is a Python package for the assessment of volumetric image quality.
 
 The package provides a set of metrics to assess the quality of volumetric images.
 It can be used for 2D and 3D images.

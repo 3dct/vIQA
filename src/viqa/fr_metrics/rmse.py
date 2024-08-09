@@ -81,7 +81,7 @@ class RMSE(FullReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=None, normalize=False, **kwargs) -> None:
-        """Constructor method."""
+        """Construct method."""
         super().__init__(
             data_range=data_range, normalize=normalize, **kwargs
         )

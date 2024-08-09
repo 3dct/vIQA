@@ -110,7 +110,9 @@ class ImageArray(np.ndarray):
         obj.skewness = skew(input_array, axis=None)
         obj.kurtosis = kurtosis(input_array, axis=None)
         if input_array.dtype.kind in ['u', 'i']:
-            obj.histogram = np.histogram(input_array, bins=np.iinfo(input_array.dtype).max)
+            obj.histogram = np.histogram(
+                input_array,
+                bins=np.iinfo(input_array.dtype).max)
         else:
             obj.histogram = np.histogram(input_array, bins=255)
         obj.minimum = np.min(input_array)

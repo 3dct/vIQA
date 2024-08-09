@@ -117,7 +117,7 @@ class MAD(FullReferenceMetricsInterface):
     """
 
     def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
-        """Constructor method."""
+        """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(
@@ -925,7 +925,8 @@ def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
 
     """
     warn("This function will be deprecated in 2.0.0. "
-         "Use viqa.fr_metrics.statisticscalc.minstd instead.", RemovedInNextVersionWarning)
+         "Use viqa.fr_metrics.statisticscalc.minstd instead.",
+         RemovedInNextVersionWarning)
 
     # Preallocate arrays
     tmp = np.empty(image.shape)
