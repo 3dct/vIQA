@@ -73,9 +73,7 @@ class SNR(NoReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
         """Construct method."""
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "SNR"
 
     def score(self, img, **kwargs):
@@ -291,18 +289,19 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
         sdev = np.std(signal, axis=(0, 1))
 
         if yuv:
-            snr_val = [np.mean(signal[..., 0]) / sdev[i] if sdev[i] != 0 else 0
-                       for i in range(3)]
+            snr_val = [
+                np.mean(signal[..., 0]) / sdev[i] if sdev[i] != 0 else 0
+                for i in range(3)
+            ]
             return snr_val[0], snr_val[1], snr_val[2]
         else:
             snr_lum = signal_to_noise_ratio(
-                _to_grayscale(img),
-                signal_center,
-                radius,
-                yuv=False
+                _to_grayscale(img), signal_center, radius, yuv=False
             )
-            snr_val = [np.mean(signal[..., i]) / sdev[i] if sdev[i] != 0 else 0
-                       for i in range(3)]
+            snr_val = [
+                np.mean(signal[..., i]) / sdev[i] if sdev[i] != 0 else 0
+                for i in range(3)
+            ]
 
         return snr_lum, snr_val[0], snr_val[1], snr_val[2]
 

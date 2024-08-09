@@ -109,10 +109,10 @@ class ImageArray(np.ndarray):
         obj.standarddev = np.std(input_array)
         obj.skewness = skew(input_array, axis=None)
         obj.kurtosis = kurtosis(input_array, axis=None)
-        if input_array.dtype.kind in ['u', 'i']:
+        if input_array.dtype.kind in ["u", "i"]:
             obj.histogram = np.histogram(
-                input_array,
-                bins=np.iinfo(input_array.dtype).max)
+                input_array, bins=np.iinfo(input_array.dtype).max
+            )
         else:
             obj.histogram = np.histogram(input_array, bins=255)
         obj.minimum = np.min(input_array)
@@ -131,15 +131,15 @@ class ImageArray(np.ndarray):
         if obj is None:
             return
         # Add attributes
-        self.mean_value = getattr(obj, 'mean_value', None)
-        self.median = getattr(obj, 'median', None)
-        self.variance = getattr(obj, 'variance', None)
-        self.standarddev = getattr(obj, 'standarddev', None)
-        self.skewness = getattr(obj, 'skewness', None)
-        self.kurtosis = getattr(obj, 'kurtosis', None)
-        self.histogram = getattr(obj, 'histogram', None)
-        self.minimum = getattr(obj, 'minimum', None)
-        self.maximum = getattr(obj, 'maximum', None)
+        self.mean_value = getattr(obj, "mean_value", None)
+        self.median = getattr(obj, "median", None)
+        self.variance = getattr(obj, "variance", None)
+        self.standarddev = getattr(obj, "standarddev", None)
+        self.skewness = getattr(obj, "skewness", None)
+        self.kurtosis = getattr(obj, "kurtosis", None)
+        self.histogram = getattr(obj, "histogram", None)
+        self.minimum = getattr(obj, "minimum", None)
+        self.maximum = getattr(obj, "maximum", None)
 
     def describe(self, path: str | os.PathLike = None, filename: str = None) -> dict:
         """
@@ -178,7 +178,7 @@ class ImageArray(np.ndarray):
             "skewness": self.skewness,
             "kurtosis": self.kurtosis,
             "minimum": self.minimum,
-            "maximum": self.maximum
+            "maximum": self.maximum,
         }
         if path and filename:
             # export to csv
@@ -192,8 +192,9 @@ class ImageArray(np.ndarray):
                 writer.writerow(stats)
             print(f"Statistics exported to {file_path}")
         else:
-            warn("No path or filename provided. Statistics not exported.",
-                 RuntimeWarning)
+            warn(
+                "No path or filename provided. Statistics not exported.", RuntimeWarning
+            )
         return stats
 
 
@@ -239,13 +240,11 @@ def _load_data_from_disk(
         img_arr = load_nifti(file_path)
         return ImageArray(img_arr)
     elif file_ext == ".gz":
-        if re.search('.nii', file_name):
+        if re.search(".nii", file_name):
             img_arr = load_nifti(file_path)
             return ImageArray(img_arr)
         else:
-            raise ValueError(
-                "File extension not supported"
-            )
+            raise ValueError("File extension not supported")
     elif file_ext in [".png", ".jpg", ".jpeg", ".bmp"]:
         img_arr = ski.io.imread(file_path)
         return ImageArray(img_arr)
@@ -375,9 +374,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
         r"(\d{1,2}bit)", file_name_head
     )  # Search for the bit depth in file name
     if bit_depth_search_result is not None:  # If the bit depth was found
-        bit_depth = bit_depth_search_result.group(
-            1
-        )  # Get the bit depth from file name
+        bit_depth = bit_depth_search_result.group(1)  # Get the bit depth from file name
     else:
         raise ValueError(
             "No bit depth found"
@@ -436,8 +433,11 @@ def _load_binary(data_file_path, data_type, dim_size):
 
     if img_arr_orig.size != np.prod(dim_size):
         raise ValueError(
-            "Size of data file (" + data_file_path + ") does not match dimensions ("
-            + str(dim_size) + ")"
+            "Size of data file ("
+            + data_file_path
+            + ") does not match dimensions ("
+            + str(dim_size)
+            + ")"
         )
     # Reshape numpy array according to DimSize
     img_arr = img_arr_orig.reshape(*dim_size[::-1])
@@ -565,10 +565,10 @@ def load_data(
 
 
 def normalize_data(
-        img: np.ndarray,
-        data_range_output: Tuple[int, int],
-        data_range_input: Tuple[int, int] = None,
-        automatic_data_range: bool = True,
+    img: np.ndarray,
+    data_range_output: Tuple[int, int],
+    data_range_input: Tuple[int, int] = None,
+    automatic_data_range: bool = True,
 ) -> np.ndarray:
     """Normalize a numpy array to a given data range.
 
@@ -635,8 +635,11 @@ def normalize_data(
             img_min = data_range_input[0]
             img_max = data_range_input[1]
         # Normalize numpy array
-        img = ((img - img_min) * (data_range_output[1] - data_range_output[0])
-               / (img_max - img_min)) + data_range_output[0]
+        img = (
+            (img - img_min)
+            * (data_range_output[1] - data_range_output[0])
+            / (img_max - img_min)
+        ) + data_range_output[0]
 
         # Change data type
         # If data range is 255 (8 bit)
@@ -649,8 +652,10 @@ def normalize_data(
         elif data_range_output[1] == 1 and data_range_output[0] == 0:
             img = img.astype(np.float32)  # Change data type to float32
         else:
-            raise ValueError("Data range not supported. Please use (0, 1), (0, 255) or "
-                             "(0, 65535) as data_range_output.")
+            raise ValueError(
+                "Data range not supported. Please use (0, 1), (0, 255) or "
+                "(0, 65535) as data_range_output."
+            )
     else:
         warn("Data is already normalized.", RuntimeWarning)
 

@@ -29,7 +29,7 @@ def write_to_csv(path_modified, path_reference, path_csv, copy=False):
         os.makedirs(path_csv)
         if copy:
             os.makedirs(os.path.join(path_csv, "images"))
-    with open(os.path.join(path_csv, "pairs.csv"), mode='w', newline='') as file:
+    with open(os.path.join(path_csv, "pairs.csv"), mode="w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["reference_image", "modified_image"])
         for file_reference in glob.glob(path_reference):
@@ -43,11 +43,11 @@ def write_to_csv(path_modified, path_reference, path_csv, copy=False):
                     if copy:
                         copy_file(
                             file_reference,
-                            os.path.join(path_csv, "images", filename_reference)
+                            os.path.join(path_csv, "images", filename_reference),
                         )
                         copy_file(
                             file_modified,
-                            os.path.join(path_csv, "images", filename_modified)
+                            os.path.join(path_csv, "images", filename_modified),
                         )
 
 
@@ -64,8 +64,10 @@ if __name__ == "__main__":
         path_csv = sys.argv[3]
         if sys.argv[4] == "copy":
             copy = True
-            print(f"Copying images from {path_modified} and {path_reference} "
-                  f"to {path_csv}/images.")
+            print(
+                f"Copying images from {path_modified} and {path_reference} "
+                f"to {path_csv}/images."
+            )
         else:
             copy = False
         path_modified = os.path.join(path_modified, "*")
@@ -73,6 +75,8 @@ if __name__ == "__main__":
         write_to_csv(path_modified, path_reference, path_csv, copy=copy)
         print("Done!")
     else:
-        print("Usage: python3 write_to_csv.py <path_modified> <path_reference> "
-              "<path_csv> [copy]")
+        print(
+            "Usage: python3 write_to_csv.py <path_modified> <path_reference> "
+            "<path_csv> [copy]"
+        )
         sys.exit(1)

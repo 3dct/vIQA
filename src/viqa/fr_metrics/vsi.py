@@ -99,9 +99,7 @@ class VSI(FullReferenceMetricsInterface):
         """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "VSI"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
@@ -198,7 +196,7 @@ class VSI(FullReferenceMetricsInterface):
 
         if img_r.ndim == 3:
             if (
-                    dim is not None and type(im_slice) is int
+                dim is not None and type(im_slice) is int
             ):  # if dim and im_slice are given
                 # Calculate VSI for given slice of given dimension
                 match dim:
@@ -243,7 +241,7 @@ class VSI(FullReferenceMetricsInterface):
                             "Invalid dim value. Must be integer of 0, 1 or 2."
                         )
             elif (
-                    dim is not None and im_slice is None
+                dim is not None and im_slice is None
             ):  # if dim is given, but im_slice is not, calculate VSI for full volume
                 warn(
                     "im_slice is not given. Calculating VSI for full volume.",

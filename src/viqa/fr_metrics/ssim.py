@@ -117,9 +117,7 @@ class SSIM(FullReferenceMetricsInterface):
         """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "SSIM"
 
     def score(self, img_r, img_m, color_weights=None, **kwargs):
@@ -171,7 +169,7 @@ class SSIM(FullReferenceMetricsInterface):
                     img_r[..., channel],
                     img_m[..., channel],
                     data_range=self._parameters["data_range"],
-                    **kwargs
+                    **kwargs,
                 )
                 scores.append(score)
             score_val = (color_weights * np.array(scores)).mean()

@@ -7,10 +7,28 @@ It can be used for 2D and 3D images.
 
 __version__ = "1.5.1"
 __author__ = "Lukas Behammer"
-__all__ = ["FSIM", "GSM", "MAD", "UQI", "MSSSIM", "PSNR", "PSNR", "RMSE", "SSIM",
-           "VIFp", "VSI", "CNR", "SNR", "QMeasure", "load_data", "normalize_data",
-           "export_csv", "fuse_metrics_linear_combination", "BatchMetrics",
-           "ImageArray"]
+__all__ = [
+    "FSIM",
+    "GSM",
+    "MAD",
+    "UQI",
+    "MSSSIM",
+    "PSNR",
+    "PSNR",
+    "RMSE",
+    "SSIM",
+    "VIFp",
+    "VSI",
+    "CNR",
+    "SNR",
+    "QMeasure",
+    "load_data",
+    "normalize_data",
+    "export_csv",
+    "fuse_metrics_linear_combination",
+    "BatchMetrics",
+    "ImageArray",
+]
 
 from .batch_mode import BatchMetrics
 from .fr_metrics import *

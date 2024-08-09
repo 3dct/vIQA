@@ -37,7 +37,6 @@ Examples
 # -------
 # BSD-3-Clause License
 
-
 from warnings import warn
 
 import numpy as np
@@ -91,9 +90,7 @@ class QMeasure(NoReferenceMetricsInterface):
 
     def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
         """Construct method."""
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "Q-Measure"
 
     def score(self, img, **kwargs):

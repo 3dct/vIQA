@@ -33,12 +33,12 @@ def write_to_mat(data_dir, filename="volume.mhd"):
     counter = 0
     for subfolder in tqdm(subfolders):
         print(".", end="")
-        img = viqa.load_data(os.path.join(subfolder, filename),
-                             normalize=False,
-                             batch=False)
-        img_norm = viqa.normalize_data(img,
-                                       data_range_output=(0, 1),
-                                       automatic_data_range=True)
+        img = viqa.load_data(
+            os.path.join(subfolder, filename), normalize=False, batch=False
+        )
+        img_norm = viqa.normalize_data(
+            img, data_range_output=(0, 1), automatic_data_range=True
+        )
         sio.savemat(os.path.join(subfolder, "image.mat"), {"image": img_norm})
         counter += 1
 

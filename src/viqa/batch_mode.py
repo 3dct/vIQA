@@ -116,8 +116,9 @@ class BatchMetrics:
     def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
         """Construct method."""
         if len(metrics) != len(metrics_parameters):
-            raise ValueError("The number of metrics and metric parameters must be "
-                             "equal.")
+            raise ValueError(
+                "The number of metrics and metric parameters must be equal."
+            )
 
         self.results = {}
         self.file_dir = file_dir
@@ -129,8 +130,8 @@ class BatchMetrics:
     def calculate(self):
         """Calculate the metrics in batch mode."""
         for pair_num, pair in enumerate(tqdm(self.pairs)):
-            reference_path = os.path.join(self.file_dir, pair['reference_image'])
-            modified_path = os.path.join(self.file_dir, pair['modified_image'])
+            reference_path = os.path.join(self.file_dir, pair["reference_image"])
+            modified_path = os.path.join(self.file_dir, pair["modified_image"])
             img_r = load_data(reference_path)
             img_m = load_data(modified_path)
 
@@ -143,25 +144,21 @@ class BatchMetrics:
             for metric_num, metric in enumerate(self.metrics):
                 if metric._name not in ["CNR", "SNR", "Q-Measure"]:
                     result = metric.score(
-                        img_r=img_r,
-                        img_m=img_m,
-                        **self.metrics_parameters[metric_num]
+                        img_r=img_r, img_m=img_m, **self.metrics_parameters[metric_num]
                     )
                     metric_results[metric._name] = float(result)
                 else:
                     result_r = metric.score(
-                        img=img_r,
-                        **self.metrics_parameters[metric_num]
+                        img=img_r, **self.metrics_parameters[metric_num]
                     )
                     result_m = metric.score(
-                        img=img_m,
-                        **self.metrics_parameters[metric_num]
+                        img=img_m, **self.metrics_parameters[metric_num]
                     )
-                    metric_results[metric._name + '_r'] = float(result_r)
-                    metric_results[metric._name + '_m'] = float(result_m)
+                    metric_results[metric._name + "_r"] = float(result_r)
+                    metric_results[metric._name + "_m"] = float(result_m)
             self.results[str(pair_num)] = metric_results
 
-    def export_results(self, file_path, file_name='results.csv'):
+    def export_results(self, file_path, file_name="results.csv"):
         """Export the results to a csv file.
 
         Parameters
@@ -177,29 +174,30 @@ class BatchMetrics:
 
                 The csv file will be overwritten if it already exists.
         """
-        if os.path.splitext(file_name)[1] != '.csv':
-            raise ValueError(f"The file name {file_name} must have the "
-                             f"extension '.csv'.")
+        if os.path.splitext(file_name)[1] != ".csv":
+            raise ValueError(
+                f"The file name {file_name} must have the " f"extension '.csv'."
+            )
         path = os.path.join(file_path, file_name)
-        with open(path, mode='w', newline='') as csvfile:
+        with open(path, mode="w", newline="") as csvfile:
             writer = csv.writer(csvfile)
             # Write header
             writer.writerow(
-                ['pair_num']
-                + ['reference_image']
-                + ['modified_image']
+                ["pair_num"]
+                + ["reference_image"]
+                + ["modified_image"]
                 + list(self.results[str(0)].keys())
             )
             # Write data
             for pair_num, results in self.results.items():
                 writer.writerow(
                     [pair_num]
-                    + [self.pairs[int(pair_num)]['reference_image']]
-                    + [self.pairs[int(pair_num)]['modified_image']]
+                    + [self.pairs[int(pair_num)]["reference_image"]]
+                    + [self.pairs[int(pair_num)]["modified_image"]]
                     + list(results.values())
                 )
 
-    def export_metadata(self, file_path, file_name='metadata.txt'):
+    def export_metadata(self, file_path, file_name="metadata.txt"):
         """Export the metadata (custom parameters and package version) to a txt file.
 
         Parameters
@@ -215,34 +213,40 @@ class BatchMetrics:
 
                 The txt file will be overwritten if it already exists.
         """
-        if os.path.splitext(file_name)[1] != '.txt':
-            raise ValueError(f"The file name {file_name} must have the "
-                             f"extension '.txt'.")
+        if os.path.splitext(file_name)[1] != ".txt":
+            raise ValueError(
+                f"The file name {file_name} must have the " f"extension '.txt'."
+            )
         path = os.path.join(file_path, file_name)
-        with open(path, mode='w') as txtfile:
-            txtfile.write('vIQA_version: ' + version('viqa'))
-            txtfile.write('Time: ' + datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
-            txtfile.write('\n')
-            txtfile.write('\n')
-            txtfile.write('custom metric parameters: \n')
-            txtfile.write('------------------------- \n')
+        with open(path, mode="w") as txtfile:
+            txtfile.write("vIQA_version: " + version("viqa"))
+            txtfile.write("Time: " + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+            txtfile.write("\n")
+            txtfile.write("\n")
+            txtfile.write("custom metric parameters: \n")
+            txtfile.write("========================= \n")
             for metric_num, metric in enumerate(self.metrics):
-                txtfile.write(metric.__str__().split('(')[0])
-                txtfile.write(str('-' for char in metric.__str__().split('(')[0]))
-                txtfile.write('\n')
+                txtfile.write(metric.__str__().split("(")[0])
+                txtfile.write("\n")
+                [txtfile.write("-") for char in metric.__str__().split("(")[0]]
+                txtfile.write("\n")
                 for key, value in self.metrics_parameters[metric_num].items():
-                    txtfile.write(key + ': ' + str(value))
-                    txtfile.write('\n')
-                txtfile.write('\n')
+                    txtfile.write(key + ": " + str(value))
+                    txtfile.write("\n")
+                txtfile.write("\n")
 
 
 def _read_csv(file_path):
-    with open(file_path, mode='r', newline='') as csvfile:
+    with open(file_path, mode="r", newline="") as csvfile:
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
         csvfile.seek(0)
         reader = csv.DictReader(csvfile, dialect=dialect)
-        if ('reference_image' not in reader.fieldnames
-                or 'modified_image' not in reader.fieldnames):
-            raise ValueError("CSV file must contain the columns 'reference_image' and "
-                             "'modified_image'.")
+        if (
+            "reference_image" not in reader.fieldnames
+            or "modified_image" not in reader.fieldnames
+        ):
+            raise ValueError(
+                "CSV file must contain the columns 'reference_image' and "
+                "'modified_image'."
+            )
         return list(reader)

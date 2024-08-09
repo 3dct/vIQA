@@ -121,9 +121,7 @@ class UQI(FullReferenceMetricsInterface):
         """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "UQI"
 
     def score(self, img_r, img_m, **kwargs):

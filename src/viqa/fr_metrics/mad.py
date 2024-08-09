@@ -120,9 +120,7 @@ class MAD(FullReferenceMetricsInterface):
         """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "MAD"
 
     def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
@@ -924,9 +922,11 @@ def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
         instead.
 
     """
-    warn("This function will be deprecated in 2.0.0. "
-         "Use viqa.fr_metrics.statisticscalc.minstd instead.",
-         RemovedInNextVersionWarning)
+    warn(
+        "This function will be deprecated in 2.0.0. "
+        "Use viqa.fr_metrics.statisticscalc.minstd instead.",
+        RemovedInNextVersionWarning,
+    )
 
     # Preallocate arrays
     tmp = np.empty(image.shape)
@@ -978,9 +978,11 @@ def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
         :py:func:`viqa.fr_metrics.statisticscalc.getstatistics` instead.
 
     """
-    warn("This function will be deprecated in 2.0.0. "
-         "Use viqa.fr_metrics.statisticscalc.getstatistics instead.",
-         RemovedInNextVersionWarning)
+    warn(
+        "This function will be deprecated in 2.0.0. "
+        "Use viqa.fr_metrics.statisticscalc.getstatistics instead.",
+        RemovedInNextVersionWarning,
+    )
 
     # Preallocate arrays
     stdout = np.empty(image.shape)

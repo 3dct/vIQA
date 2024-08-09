@@ -95,9 +95,7 @@ class PSNR(FullReferenceMetricsInterface):
         """Construct method."""
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
-        super().__init__(
-            data_range=data_range, normalize=normalize, **kwargs
-        )
+        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         if self._parameters["chromatic"]:
             self._name = "PSNRc"
         else:
