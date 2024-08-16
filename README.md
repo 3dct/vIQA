@@ -4,7 +4,7 @@
 vIQA &mdash; volumetric Image Quality Assessment
 </h1><br>
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![PyPI - Version](https://img.shields.io/pypi/v/vIQA)](https://pypi.org/project/vIQA/latest)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vIQA)](https://pypi.org/project/vIQA/)
 [![PyPI - License](https://img.shields.io/pypi/l/vIQA)](https://pypi.org/project/vIQA/)
@@ -34,7 +34,9 @@ Image Quality Assessment (IQA) is a field of research that aims to quantify the 
 done by comparing the image to a reference image (full-reference metrics), but can also be done by evaluating the image
 without a reference (no-reference metrics). The reference image is usually the original image, but can also be
 another image that is considered to be of high quality. The comparison is done by calculating a metric that quantifies
-the difference between the two images or for the image itself.
+the difference between the two images or for the image itself. These quality metrics are used in various fields, such as
+medical imaging, computer vision, and image processing. For example the efficiency of image compression algorithms can be
+evaluated by comparing the compressed image to the original image.
 This package implements several metrics to compare two images or volumes using different IQA metrics. In addition, some
 metrics are implemented that can be used to evaluate a single image or volume.
 
@@ -222,30 +224,18 @@ psnr.print_score(decimals=2)
 > single metric.
 
 > [!IMPORTANT]
-> The current recommended usage file is: [`Image_Comparison.ipynb`](Image_Comparison.ipynb)
+> The current recommended usage files are: [`Image_Comparison.ipynb`](Image_Comparison.ipynb) and [`Image_comparison_batch.ipynb`](Image_comparison_batch.ipynb).
 
-<!-- ## Metric List TODO: add list of metrics -->
+For more examples, see the provided Jupyter notebooks and the documentation under [API Reference](https://3dct.github.io/vIQA/api_reference.html).
 
 <!-- ## Benchmark TODO: add benchmark results and instructions -->
 
 ## TODO
 - [ ] Add metrics
-    - [x] Add RMSE
-    - [x] Add PSNR
-    - [x] Add SSIM
-    - [x] Add MSSSIM
-    - [x] Add FSIM
-    - [x] Add VSI
-    - [x] Add VIF
-    - [x] Add MAD
-    - [x] Add GSM
     - [ ] Add SFF/IFS
-    - [x] Add CNR
-    - [x] Add SNR
     - [ ] Add Ma
     - [ ] Add PI
     - [ ] Add NIQE
-    - [x] Add Q-Measure
 - [ ] Add tests
     - [x] Add tests for RMSE
     - [x] Add tests for PSNR
@@ -256,17 +246,12 @@ psnr.print_score(decimals=2)
     - [ ] Add tests for VIF
     - [x] Add tests for MAD
     - [ ] Add tests for GSM
-    - [ ] Add tests for SFF/IFS
     - [x] Add tests for CNR
     - [x] Add tests for SNR
-    - [ ] Add tests for Ma
-    - [ ] Add tests for PI
-    - [ ] Add tests for NIQE
     - [ ] Add tests for Q-Measure
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
 - [ ] Add color image support
-- [x] Add batch support
 - [x] Add support for printing values
   - [ ] Add support for .txt files
   - [x] Add support for .csv files
@@ -275,6 +260,12 @@ psnr.print_score(decimals=2)
   - [ ] Add support for decision fusion
 
 <!-- ## Citation TODO: add citation instructions -->
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to the
+project and [development guide](https://3dct.github.io/vIQA/developer_guide.html) for
+further information.
 
 ## License
 **BSD 3-Clause**
