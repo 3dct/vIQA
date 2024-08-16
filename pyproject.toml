@@ -63,6 +63,7 @@ docs = [
     "sphinx",
     "furo",
     "sphinx_copybutton",
+    "sphinx_github_changelog",
     "viqa[tests]",
 ]
 dev = [

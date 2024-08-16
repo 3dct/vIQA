@@ -137,6 +137,15 @@ API Reference
 
    api_reference
 
+*********
+Changelog
+*********
+
+.. toctree::
+   :maxdepth: 1
+
+   changelog
+
 *******
 Contact
 *******

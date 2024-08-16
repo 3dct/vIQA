@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx_copybutton',
     'pytest_doctestplus.sphinx.doctestplus',
+    'sphinx_github_changelog',
 ]
 
 templates_path = ['_templates']
@@ -60,3 +61,6 @@ autodoc_mock_imports = [
     "viqa.fr_metrics.stat_utils",
     "viqa.nr_metrics.qmeasure_utils",
 ]
+
+# -- Options for Github Changelog --------------------------------------------
+sphinx_github_changelog_token = os.getenv("GH_TOKEN")
