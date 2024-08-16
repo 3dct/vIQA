@@ -1,3 +1,4 @@
+---
 name: Build
 
 on:
@@ -41,7 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ ubuntu-24.04, windows-latest, macos-14 ]
+        os: [ubuntu-24.04, windows-latest, macos-14]
 
     steps:
       - name: Checkout code
@@ -59,15 +60,15 @@ jobs:
           clang -v
         if: ${{ matrix.os == 'macos-14'}}
 
-#      - name: Setup Python
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: "3.11" # update once build dependencies are available
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.11" # update once build dependencies are available
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.2
         env:
-          CIBW_PRERELEASE_PYTHONS: True
+          CIBW_PRERELEASE_PYTHONS: true
         with:
           package-dir: .
           output-dir: wheelhouse
@@ -87,10 +88,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-#      - name: Setup Python
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: "3.11" # update once build dependencies are available
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.11" # update once build dependencies are available
 
       - name: Build sdist
         run: pipx run build --sdist
@@ -107,10 +108,10 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.semantic_release.outputs.released == 'true'
     environment:
-#      name: testpypi
+      # name: testpypi
       name: pypi
-#      url: https://test.pypi.org/project/vIQA/
-      url: https://pypi.org/project/vIQA/
+      url: https://test.pypi.org/project/vIQA/
+      # url: https://pypi.org/project/vIQA/
     permissions:
       id-token: write
     # if: github.event_name == 'release' && github.event.action == 'published'
@@ -127,8 +128,8 @@ jobs:
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          repository-url: https://test.pypi.org/legacy/
+        # with:
+        #   repository-url: https://test.pypi.org/legacy/
 
       - name: Test install from PyPI
         id: test_install
@@ -139,29 +140,29 @@ jobs:
             echo "tested=true" >> $GITHUB_OUTPUT
 
   upload_github:
-      name: Upload to GitHub Releases
-      needs: [semantic_release, build_wheels, build_sdist]
-      runs-on: ubuntu-latest
-      permissions:
-        id-token: write
-        contents: write
+    name: Upload to GitHub Releases
+    needs: [semantic_release, build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
-          with:
-            fetch_depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        - name: Download artifacts
-          uses: actions/download-artifact@v4
-          with:
-            # unpacks all CIBW artifacts into dist/
-            pattern: cibw-*
-            path: dist
-            merge-multiple: true
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
 
-        - name: Publish package distributions to GitHub Releases
-          uses: python-semantic-release/upload-to-gh-release@main
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            #tag: ${{ needs.semantic_release.outputs.tag }}
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/upload-to-gh-release@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # tag: ${{ needs.semantic_release.outputs.tag }}

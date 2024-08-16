@@ -1,3 +1,4 @@
+---
 name: Documentation
 
 on:
@@ -6,8 +7,7 @@ on:
     tags:
       - v*
   pull_request:
-    tags:
-      - v*
+    branches: [main]
   workflow_run:
     workflows: ["Build"]
     branches: [main]
