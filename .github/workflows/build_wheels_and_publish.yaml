@@ -32,13 +32,12 @@ jobs:
         uses: python-semantic-release/python-semantic-release@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          vcs_release: "false"
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     needs: semantic_release
     runs-on: ${{ matrix.os }}
-    # if: needs.semantic_release.outputs.released == 'true'
+    if: needs.semantic_release.outputs.released == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -87,7 +86,7 @@ jobs:
     name: Build source distribution
     needs: semantic_release
     runs-on: ubuntu-24.04
-    # if: needs.semantic_release.outputs.released == 'true'
+    if: needs.semantic_release.outputs.released == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -112,7 +111,7 @@ jobs:
     name: Upload to PyPI
     needs: [semantic_release, build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    # if: needs.semantic_release.outputs.released == 'true'
+    if: needs.semantic_release.outputs.released == 'true'
     environment:
       # name: testpypi
       name: pypi
@@ -141,7 +140,7 @@ jobs:
         id: test_install
         run: |
             pip install viqa
-            python -c "import vIQA; print(vIQA.__version__)"
+            python -c "import viqa; print(viqa.__version__)"
             echo "vIQA installed successfully"
             echo "tested=true" >> $GITHUB_OUTPUT
 
@@ -149,7 +148,7 @@ jobs:
     name: Upload to GitHub Releases
     needs: [semantic_release, build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    # if: needs.semantic_release.outputs.released == 'true'
+    if: needs.semantic_release.outputs.released == 'true'
     permissions:
       id-token: write
       contents: write
