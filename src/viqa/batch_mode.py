@@ -237,7 +237,7 @@ class BatchMetrics:
 
 
 def _read_csv(file_path):
-    with open(file_path, mode="r", newline="") as csvfile:
+    with open(file_path, newline="") as csvfile:
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
         csvfile.seek(0)
         reader = csv.DictReader(csvfile, dialect=dialect)

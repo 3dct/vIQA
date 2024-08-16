@@ -146,9 +146,13 @@ pretty = true
 [[tool.mypy.overrides]]
 module = [
     "scipy",
+    "scipy.io",
     "scipy.ndimage",
     "scipy.fft",
+    "scipy.stats",
     "piq",
+    "tqdm",
+    "tqdm.autonotebook",
 ]
 ignore_missing_imports = true
 

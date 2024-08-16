@@ -37,7 +37,7 @@ import csv
 import glob
 import os
 import re
-from typing import Tuple
+from typing import Tuple, Union
 from warnings import warn
 
 import nibabel as nib
@@ -141,7 +141,11 @@ class ImageArray(np.ndarray):
         self.minimum = getattr(obj, "minimum", None)
         self.maximum = getattr(obj, "maximum", None)
 
-    def describe(self, path: str | os.PathLike = None, filename: str = None) -> dict:
+    def describe(
+        self,
+        path: Union[str, os.PathLike, None] = None,
+        filename: Union[str, None] = None,
+    ) -> dict:
         """
         Export image statistics to a csv file.
 
@@ -198,9 +202,7 @@ class ImageArray(np.ndarray):
         return stats
 
 
-def _load_data_from_disk(
-    file_dir: str | os.PathLike, file_name: str | os.PathLike
-) -> ImageArray:
+def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str) -> ImageArray:
     """
     Load data from a file.
 
@@ -282,7 +284,7 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     """
     file_path = os.path.join(file_dir, file_name)  # Complete file path
 
-    f = open(file=file_path, mode="rt")  # Open header file
+    f = open(file=file_path)  # Open header file
 
     file_header_txt = f.read().split("\n")  # Extract header lines
     # Create dictionary from lines
@@ -299,7 +301,7 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     # Extract dimension
     # Change DimSize to type int
     file_header.update(
-        {"DimSize": [int(val) for val in file_header["DimSize"].split()]}
+        {"DimSize": [int(val) for val in file_header["DimSize"].split()]}  # type: ignore # TODO
     )
     dim_size = file_header["DimSize"]  # Get DimSize from header
 
@@ -312,7 +314,7 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     elif bit_depth == "MET_UCHAR":
         data_type = np.ubyte  # Set data type to unsigned byte
     elif bit_depth == "MET_FLOAT":
-        data_type = np.float32  # Set data type to float32
+        data_type = np.float32  # type: ignore # Set data type to float32 # TODO
     else:
         raise ValueError(
             "Bit depth not supported"
@@ -420,7 +422,7 @@ def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
     This function wraps the nibabel function ``nib.load``.
     """
     img = nib.load(file_path)
-    img_arr = img.get_fdata()
+    img_arr = img.get_fdata()  # type: ignore[attr-defined]
     return img_arr
 
 
@@ -567,7 +569,7 @@ def load_data(
 def normalize_data(
     img: np.ndarray,
     data_range_output: Tuple[int, int],
-    data_range_input: Tuple[int, int] = None,
+    data_range_input: Union[Tuple[int, int], None] = None,
     automatic_data_range: bool = True,
 ) -> np.ndarray:
     """Normalize a numpy array to a given data range.
@@ -632,8 +634,8 @@ def normalize_data(
             img_min = np.min(img)  # Get minimum value of numpy array
             img_max = np.max(img)  # Get maximum value of numpy array
         else:
-            img_min = data_range_input[0]
-            img_max = data_range_input[1]
+            img_min = data_range_input[0]  # type: ignore # TODO
+            img_max = data_range_input[1]  # type: ignore # TODO
         # Normalize numpy array
         img = (
             (img - img_min)

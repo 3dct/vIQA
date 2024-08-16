@@ -2,4 +2,4 @@
 
 __all__ = ["statisticscalc"]
 
-import statisticscalc
+import statisticscalc  # type: ignore # TODO
