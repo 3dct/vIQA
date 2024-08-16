@@ -92,7 +92,6 @@ extend-exclude = [
     "tests",
 ]
 target-version = "py311"
-per-file-ignores = { "__init__.py" = ["F403"] }
 
 [tool.ruff.lint]
 preview = true
@@ -112,6 +111,8 @@ ignore = [
     "D205",
     "D301",
     "B028",
+    "E203",
+    "C901", # temporarily disable complexity TODO: rewrite functions
 ]
 
 [tool.ruff.lint.per-file-ignores]
