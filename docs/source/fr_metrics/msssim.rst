@@ -4,7 +4,7 @@
 .. automodule:: viqa.fr_metrics.msssim
     :exclude-members: MSSSIM
 
-   
+
 .. rubric:: Classes
 
 .. currentmodule:: viqa.fr_metrics.msssim

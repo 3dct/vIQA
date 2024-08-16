@@ -4,7 +4,7 @@
 .. automodule:: viqa.fr_metrics.rmse
     :exclude-members: RMSE
 
-   
+
 .. rubric:: Classes
 
 .. currentmodule:: viqa.fr_metrics.rmse

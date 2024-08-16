@@ -4,7 +4,7 @@
 .. automodule:: viqa.fr_metrics.ssim
     :exclude-members: SSIM, structural_similarity
 
-   
+
 .. rubric:: Functions
 
 .. currentmodule:: viqa.fr_metrics.ssim

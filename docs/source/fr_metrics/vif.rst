@@ -4,7 +4,7 @@
 .. automodule:: viqa.fr_metrics.vif
     :exclude-members: VIFp
 
-   
+
 .. rubric:: Classes
 
 .. currentmodule:: viqa.fr_metrics.vif

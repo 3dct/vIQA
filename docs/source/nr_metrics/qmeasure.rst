@@ -4,7 +4,7 @@
 .. automodule:: viqa.nr_metrics.qmeasure
     :exclude-members: QMeasure
 
-   
+
 .. rubric:: Classes
 
 .. currentmodule:: viqa.nr_metrics.qmeasure
