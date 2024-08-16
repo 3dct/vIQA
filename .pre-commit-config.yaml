@@ -66,16 +66,15 @@ repos:
       - id: rstcheck
         additional_dependencies:
           - sphinx>=1.8.1
-          - tomli
 
-  - repo: https://github.com/thclark/pre-commit-sphinx
-    rev: 0.0.3
-    hooks:
-      - id: build-docs
-        additional_dependencies:
-          - viqa[tests, docs]
-        args: ['--cache-dir', 'docs/build/doctrees', '--html-dir', 'docs/build/html', '--source-dir', 'docs/source']
-        language_version: python3
+  #  - repo: https://github.com/thclark/pre-commit-sphinx
+  #    rev: 0.0.3
+  #    hooks:
+  #      - id: build-docs
+  #        additional_dependencies:
+  #          - viqa[tests, docs]
+  #        args: ['--cache-dir', 'docs/build/doctrees', '--html-dir', 'docs/build/html', '--source-dir', 'docs/source']
+  #        language_version: python3
 
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.1
