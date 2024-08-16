@@ -63,7 +63,7 @@ docs = [
     "sphinx_copybutton",
 ]
 dev = [
-    "vIQA[tests, lint, docs]",
+    "viqa[tests, lint, docs]",
     "meson-python",
     "build",
     "python-semantic-release",
@@ -138,7 +138,6 @@ exclude = [
     "docs",
     "build",
     "dist",
-    "_private_tests",
     "data",
 ]
 strict = false
