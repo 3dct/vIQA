@@ -11,7 +11,7 @@ class TestInit:
     def test_init_with_default_parameters(self):
         mad = viqa.MAD()
         assert mad.score_val is None, 'Score value should be None'
-        assert mad._parameters['data_range'] is 255, 'Data range should be None'
+        assert mad._parameters['data_range'] == 255, 'Data range should be None'
         assert mad._parameters['normalize'] is False, 'Normalize should be False'
         assert mad._parameters['chromatic'] is False, 'Chromatic should be False'
 
@@ -68,7 +68,7 @@ class TestScoring3D:
         img_m = np.zeros((128, 128, 128))
         mad = viqa.MAD(data_range=1)
         assert mad.score(img_r, img_m, dim=1) == 0.0, 'MAD of identical images should be 0'
-        
+
     def test_mad_score_with_different_images_3d_dim2_slice64(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         mad = viqa.MAD()
