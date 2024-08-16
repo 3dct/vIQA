@@ -6,6 +6,11 @@ sources = files(
 'qmeasurecalcmodule.cpp',
 )
 
+python_sources = files(
+'__init__.py',
+'qmeasurecalc.pyi',
+)
+
 if ccpp.get_id() == 'clang'
     extra_args = ['-std=c++20']
 else
@@ -18,5 +23,11 @@ py.extension_module(
     install: true,
     c_args: extra_args,
     include_directories: incdir_numpy,
+    subdir: 'viqa/nr_metrics/qmeasure_utils',
+)
+
+py.install_sources(
+    python_sources,
+    pure: false,
     subdir: 'viqa/nr_metrics/qmeasure_utils',
 )
