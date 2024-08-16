@@ -1,4 +1,4 @@
-Batch Module
+Batch module
 ------------
 
 .. automodule:: viqa.batch_mode
