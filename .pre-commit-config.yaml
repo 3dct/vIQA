@@ -74,7 +74,7 @@ repos:
       - id: build-docs
         additional_dependencies:
           - viqa[tests, docs]
-        args: ['--cache-dir docs/doctrees', '--html-dir docs/html', '--source-dir docs/source']
+        args: ['--cache-dir', 'docs/build/doctrees', '--html-dir', 'docs/build/html', '--source-dir', 'docs/source']
         language_version: python3
 
   - repo: https://github.com/rhysd/actionlint
