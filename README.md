@@ -11,6 +11,7 @@ vIQA &mdash; volumetric Image Quality Assessment
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/vIQA)](https://pypi.org/project/vIQA/)
 [![Documentation GH Action](https://github.com/3dct/vIQA/actions/workflows/documentation.yaml/badge.svg)](https://3dct.github.io/vIQA/)
 [![Build GH Action](https://github.com/3dct/vIQA/actions/workflows/build_wheels_and_publish.yaml/badge.svg)](https://github.com/3dct/vIQA/actions/workflows/build_wheels_and_publish.yaml)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/3dct/vIQA/main)
 
@@ -29,8 +30,8 @@ vIQA &mdash; volumetric Image Quality Assessment
 * [References](#references)
 
 vIQA provides an extensive assessment suite for image quality of 2D-images or 3D-volumes as a python package.
-Image Quality Assessment (IQA) is a field of research that aims to quantify the quality of an image. This is usually 
-done by comparing the image to a reference image (full-reference metrics), but can also be done by evaluating the image 
+Image Quality Assessment (IQA) is a field of research that aims to quantify the quality of an image. This is usually
+done by comparing the image to a reference image (full-reference metrics), but can also be done by evaluating the image
 without a reference (no-reference metrics). The reference image is usually the original image, but can also be
 another image that is considered to be of high quality. The comparison is done by calculating a metric that quantifies
 the difference between the two images or for the image itself.
@@ -47,14 +48,14 @@ The metrics used are:
 - Visual Information Fidelity in *pixel* domain (VIFp) [^5]
 
 > [!CAUTION]
-> The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with 
+> The calculated values for VIFp are probably not correct in this implementation. Those values should be treated with
 > caution as further testing is required.
 
 - Visual Saliency Index (VSI) [^6]
 
 > [!WARNING]
-> The original metric supports RGB images only. This implementation can work with 
-> grayscale images by copying the luminance channel 3 times. 
+> The original metric supports RGB images only. This implementation can work with
+> grayscale images by copying the luminance channel 3 times.
 
 - Most Apparent Distortion (MAD) [^7]
 - Gradient Similarity Measure (GSM) [^8]
@@ -88,9 +89,9 @@ The metrics used are:
 [^b]: The metric is calculated channel-wise for color images. The values are then averaged after weighting.
 [^c]: As UQI is a special case of SSIM, the validation of SSIM is also valid for UQI.
 [^d]: The range for SSIM is given as $[-1, 1]$, but is usually $[0, 1]$ in practice.
-[^e]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher 
+[^e]: Normally $[0, 1]$, but can be higher than 1 for modified images with higher
 contrast than reference images.
-[^f]: The original metric supports RGB images only. This implementation can work 
+[^f]: The original metric supports RGB images only. This implementation can work
 with grayscale images by copying the luminance channel 3 times.
 [^g]: The Q-Measure is a special metric designed for CT images. Therefore it only works
 with 3D volumes.
@@ -128,16 +129,16 @@ conda install -c conda-forge viqa
 ## Usage
 
 ### Workflow
-Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data 
-range (if the parameter `normalize=True` is set) and then compared. The scores are then calculated and can be printed. 
-If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8bit.raw`, `_16bit.mhd`) and 
-the dimensions of the images need to be given in the file name (e.g. `512x512x512`). The images are assumed to be 
+Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data
+range (if the parameter `normalize=True` is set) and then compared. The scores are then calculated and can be printed.
+If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8bit.raw`, `_16bit.mhd`) and
+the dimensions of the images need to be given in the file name (e.g. `512x512x512`). The images are assumed to be
 grayscale. Treatment of color images is planned for later versions.
 The metrics are implemented to calculate the scores for an 8-bit data range (0-255) per default. For some metrics the
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
-data range should be used for all metrics. The data range can be changed by setting the parameter `data_range` for each 
-metric. This parameter primarily affects the loading behaviour of the class instances when not using the 
-`vIQA.utils.load_data` function directly as described further below, but for some metrics setting the data range is 
+data range should be used for all metrics. The data range can be changed by setting the parameter `data_range` for each
+metric. This parameter primarily affects the loading behaviour of the class instances when not using the
+`vIQA.utils.load_data` function directly as described further below, but for some metrics setting the data range is
 necessary to calculate the score (e.g. PSNR).
 
 ### Examples
@@ -151,8 +152,8 @@ from viqa import load_data, normalize_data
 file_path_img_r = 'path/to/reference_image_8bit_512x512x512.raw'
 file_path_img_m = 'path/to/modified_image_8bit_512x512x512.raw'
 img_r = load_data(
-  file_path_img_r, 
-  data_range=1, 
+  file_path_img_r,
+  data_range=1,
   normalize=False,
 )  # data_range ignored due to normalize=False
 img_m = load_data(file_path_img_m)  # per default: normalize=False
@@ -199,9 +200,9 @@ file_path_img_r = 'path/to/reference_image_512x512x512_16bit.raw'
 file_path_img_m = 'path/to/modified_image_512x512x512_16bit.raw'
 
 load_parameters = {'data_range': 1, 'normalize': True}
-# data_range is set to 1 to normalize the images 
-# to 0-1 and for calculation, if not set 255 would 
-# be used as default for loading and calculating 
+# data_range is set to 1 to normalize the images
+# to 0-1 and for calculation, if not set 255 would
+# be used as default for loading and calculating
 # the score
 
 psnr = viqa.PSNR(**load_parameters)  # load_parameters necessary due to direct loading by class
@@ -209,15 +210,15 @@ psnr = viqa.PSNR(**load_parameters)  # load_parameters necessary due to direct l
 # if images would not be normalized, data_range should be
 # 65535 for 16-bit images for correct calculation
 score = psnr.score(file_path_img_r, file_path_img_m)
-# --> images are loaded as 16-bit images and normalized to 0-1 via the `load_data` function 
+# --> images are loaded as 16-bit images and normalized to 0-1 via the `load_data` function
 #     called by the score method
 psnr.print_score(decimals=2)
 ```
 
 > [!TIP]
-> It is recommended to load the images directly with the `vIQA.utils.load_data` function first and then pass the image 
-> arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case, 
-> the images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a 
+> It is recommended to load the images directly with the `vIQA.utils.load_data` function first and then pass the image
+> arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case,
+> the images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a
 > single metric.
 
 > [!IMPORTANT]
@@ -265,7 +266,7 @@ psnr.print_score(decimals=2)
 - [ ] Add support for different data ranges
 - [ ] Validate metrics
 - [ ] Add color image support
-- [x] Add batch support 
+- [x] Add batch support
 - [x] Add support for printing values
   - [ ] Add support for .txt files
   - [x] Add support for .csv files
@@ -309,32 +310,32 @@ Lukas Behammer, [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
 ## References
 [^1]: Wang, Z., & Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL
         PROCESSING LETTERS, 9(3). https://doi.org/10.1109/97.995823
-[^2]: Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality 
-assessment: From error visibility to structural similarity. IEEE Transactions on 
+[^2]: Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality
+assessment: From error visibility to structural similarity. IEEE Transactions on
 Image Processing, 13(4), 600–612. https://doi.org/10.1109/TIP.2003.819861
-[^3]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural 
-similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on 
+[^3]: Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale structural
+similarity for image quality assessment. The Thirty-Seventh Asilomar Conference on
 Signals, Systems & Computers, 1298–1402. https://doi.org/10.1109/ACSSC.2003.1292216
-[^4]: Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity 
-index for image quality assessment. IEEE Transactions on Image Processing, 20(8). 
+[^4]: Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature similarity
+index for image quality assessment. IEEE Transactions on Image Processing, 20(8).
 https://doi.org/10.1109/TIP.2011.2109730
-[^5]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE 
-Transactions on Image Processing, 15(2), 430–444. 
+[^5]: Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual quality. IEEE
+Transactions on Image Processing, 15(2), 430–444.
 https://doi.org/10.1109/TIP.2005.859378
-[^6]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for 
-perceptual image quality assessment. IEEE Transactions on Image Processing, 23(10), 
+[^6]: Zhang, L., Shen, Y., & Li, H. (2014). VSI: A visual saliency-induced index for
+perceptual image quality assessment. IEEE Transactions on Image Processing, 23(10),
 4270–4281. https://doi.org/10.1109/TIP.2014.2346028
-[^7]: Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference 
+[^7]: Larson, E. C., & Chandler, D. M. (2010). Most apparent distortion: full-reference
 image quality assessment and the role of strategy. Journal of Electronic Imaging, 19
 (1), 011006. https://doi.org/10.1117/1.3267105
-[^8]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on 
-gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512. 
+[^8]: Liu, A., Lin, W., & Narwaria, M. (2012). Image quality assessment based on
+gradient similarity. IEEE Transactions on Image Processing, 21(4), 1500–1512.
 https://doi.org/10.1109/TIP.2011.2175935
-[^9]: Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image 
-quality in computed radiographic (CR) imaging systems. Medical Imaging 2010: Physics 
+[^9]: Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of image
+quality in computed radiographic (CR) imaging systems. Medical Imaging 2010: Physics
 of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
-[^10]: Reiter, M., Weiß, D., Gusenbauer, C., Erler, M., Kuhn, C., Kasperl, S., & 
-Kastner, J. (2014). Evaluation of a Histogram-based Image Quality Measure for X-ray 
-computed Tomography. 5th Conference on Industrial Computed Tomography (iCT) 2014, 25-28 
-February 2014, Wels, Austria. e-Journal of Nondestructive Testing Vol. 19(6). 
+[^10]: Reiter, M., Weiß, D., Gusenbauer, C., Erler, M., Kuhn, C., Kasperl, S., &
+Kastner, J. (2014). Evaluation of a Histogram-based Image Quality Measure for X-ray
+computed Tomography. 5th Conference on Industrial Computed Tomography (iCT) 2014, 25-28
+February 2014, Wels, Austria. e-Journal of Nondestructive Testing Vol. 19(6).
 https://www.ndt.net/?id=15715
