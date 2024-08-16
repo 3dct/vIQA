@@ -61,12 +61,14 @@ docs = [
     "sphinx",
     "furo",
     "sphinx_copybutton",
+    "viqa[tests]",
 ]
 dev = [
-    "viqa[tests, lint, docs]",
+    "viqa[lint, docs]",
     "meson-python",
     "build",
     "python-semantic-release",
+    "cibuildwheel",
 ]
 
 [project.urls]
