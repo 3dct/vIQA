@@ -16,7 +16,7 @@ keywords = [
     "computed tomography",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Image Processing",
@@ -25,6 +25,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: C",
+    "Programming Language :: C++",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Unix",
 ]
