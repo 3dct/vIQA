@@ -230,7 +230,11 @@ class MAD(FullReferenceMetricsInterface):
                     dim=dim,
                     **kwargs,
                 )
-            elif dim is not None and type(im_slice) is not (int or None):
+            elif (
+                dim is not None
+                and type(im_slice) is not int
+                or type(im_slice) is not None
+            ):
                 raise ValueError("im_slice must be an integer or None.")
             else:
                 raise ValueError(
