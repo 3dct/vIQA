@@ -2,6 +2,39 @@
 
 
 
+## v1.6.0 (2024-08-20)
+
+### Ci
+
+* ci: update .pre-commit-config.yaml
+
+exclude CHANGELOG.md and CODE_OF_CONDUCT.md from codespell hook, activate sphinx hook for push only, remove stage commit from validate-pyproject hook, add exclude for conda recipes for check-yaml hook ([`d84c21f`](https://github.com/3dct/vIQA/commit/d84c21f12072d6341f7282249d95c11f81b121cc))
+
+* ci: update build_wheels_and_publish.yaml
+
+remove vcs_release=&#34;false&#34; argument from semantic_release job, update test install ([`2eae29e`](https://github.com/3dct/vIQA/commit/2eae29ec52fe36a546b08340c0d47f9262520f1a))
+
+* ci: add specific code checkout to build_wheels_and_publish.yaml
+
+add &#34;ref: main&#34; to checkout step to ensure checking out the latest commit, temporarily deactivate conditions for jobs to release last version ([`9e8b5ce`](https://github.com/3dct/vIQA/commit/9e8b5ce5de64b8194b5cc6856fa2c4f96a38db60))
+
+### Documentation
+
+* docs: change title of Changelog page to Release History ([`ef913a6`](https://github.com/3dct/vIQA/commit/ef913a6d0671ac1d7de26184ce2f7aadd6f1e2d2))
+
+* docs: add changelog page ([`730ecf1`](https://github.com/3dct/vIQA/commit/730ecf17b6b4932479aee3ceebeeb40a42352c53))
+
+* docs: add contributor covenant shield ([`1ab08c1`](https://github.com/3dct/vIQA/commit/1ab08c166fae1de6005d278ef83f75b71f6084b8))
+
+### Feature
+
+* feat(load_utils.py): add support for .tiff files ([`a7c8b74`](https://github.com/3dct/vIQA/commit/a7c8b74d01c4ed4a2476a3eef71b385651b15389))
+
+### Unknown
+
+* Create CODE_OF_CONDUCT.md ([`3860e91`](https://github.com/3dct/vIQA/commit/3860e91f7fbd0bb6117d909185686c989bfa5437))
+
+
 ## v1.5.2 (2024-08-16)
 
 ### Build
