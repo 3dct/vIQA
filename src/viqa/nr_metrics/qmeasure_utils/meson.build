@@ -7,7 +7,6 @@ sources = files(
 )
 
 python_sources = files(
-'__init__.py',
 'qmeasurecalc.pyi',
 )
 

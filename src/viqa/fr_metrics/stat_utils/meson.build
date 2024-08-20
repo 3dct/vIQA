@@ -1,7 +1,6 @@
 incdir_numpy = run_command('python', '../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
 
 python_sources = files(
-'__init__.py',
 'statisticscalc.pyi',
 )
 
