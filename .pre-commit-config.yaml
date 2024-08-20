@@ -32,7 +32,8 @@ repos:
       - id: name-tests-test
         args: ["--pytest-test-first"]
       - id: check-yaml
-        args: [--allow-multiple-documents]
+        exclude: conda/recipe/meta.yaml
+        args: [--allow-multiple-documents, --unsafe]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
@@ -48,7 +49,6 @@ repos:
     hooks:
       - id: validate-pyproject
         name: Validate pyproject.toml
-        stages: [commit]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.17.0
@@ -67,14 +67,15 @@ repos:
         additional_dependencies:
           - sphinx>=1.8.1
 
-  #  - repo: https://github.com/thclark/pre-commit-sphinx
-  #    rev: 0.0.3
-  #    hooks:
-  #      - id: build-docs
-  #        additional_dependencies:
-  #          - viqa[tests, docs]
-  #        args: ['--cache-dir', 'docs/build/doctrees', '--html-dir', 'docs/build/html', '--source-dir', 'docs/source']
-  #        language_version: python3
+  - repo: https://github.com/thclark/pre-commit-sphinx
+    rev: 0.0.3
+    hooks:
+      - id: build-docs
+        additional_dependencies:
+          - viqa[docs]
+        args: ['--cache-dir', 'docs/build/doctrees', '--html-dir', 'docs/build/html', '--source-dir', 'docs/source']
+        language_version: python3
+        stages: [push]
 
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.1
@@ -91,7 +92,12 @@ repos:
     rev: v2.3.0
     hooks:
       - id: codespell
-        files: ^.*\.(py|c|cpp|h|m|md|rst|yml)$
+        files: ^.*\.(py|c|cpp|h|m|md|rst|yml|yaml)$
+        exclude: |
+          (?x)^(
+          CHANGELOG |
+          CODE_OF_CONDUCT
+          )
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.1
