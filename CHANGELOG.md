@@ -2,6 +2,21 @@
 
 
 
+## v1.6.1 (2024-08-20)
+
+### Ci
+
+* ci: add Setup Python step before Test install from PyPI ([`4471af6`](https://github.com/3dct/vIQA/commit/4471af61882190b62e9db019e5054caf16915409))
+
+* ci: skip build-docs and mypy on pre-commit.ci ([`32654c5`](https://github.com/3dct/vIQA/commit/32654c58e0c6331452fbc5a5b22239e9e08d0db8))
+
+### Fix
+
+* fix: remove __init__.py files for C extensions
+
+import of the package is now possible again ([`e747cf7`](https://github.com/3dct/vIQA/commit/e747cf7f184b43b67bf3024d0a7bdd3cd0129546))
+
+
 ## v1.6.0 (2024-08-20)
 
 ### Ci
