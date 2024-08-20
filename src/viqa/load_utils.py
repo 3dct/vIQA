@@ -247,7 +247,7 @@ def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str) -> ImageAr
             return ImageArray(img_arr)
         else:
             raise ValueError("File extension not supported")
-    elif file_ext in [".png", ".jpg", ".jpeg", ".bmp"]:
+    elif file_ext in [".png", ".jpg", ".jpeg", ".bmp", ".tiff"]:
         img_arr = ski.io.imread(file_path)
         return ImageArray(img_arr)
     else:
