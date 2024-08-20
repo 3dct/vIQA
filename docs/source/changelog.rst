@@ -1,5 +1,5 @@
-Changelog
-=========
+Release History
+===============
 
 .. changelog::
     :github: https://github.com/3dct/vIQA/releases/
