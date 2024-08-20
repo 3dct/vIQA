@@ -12,6 +12,7 @@ vIQA &mdash; volumetric Image Quality Assessment
 [![Documentation GH Action](https://github.com/3dct/vIQA/actions/workflows/documentation.yaml/badge.svg)](https://3dct.github.io/vIQA/)
 [![Build GH Action](https://github.com/3dct/vIQA/actions/workflows/build_wheels_and_publish.yaml/badge.svg)](https://github.com/3dct/vIQA/actions/workflows/build_wheels_and_publish.yaml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/3dct/vIQA/main.svg)](https://results.pre-commit.ci/latest/github/3dct/vIQA/main)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/3dct/vIQA/main)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](code_of_conduct.md)
