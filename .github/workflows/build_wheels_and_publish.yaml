@@ -136,10 +136,15 @@ jobs:
         # with:
         #   repository-url: https://test.pypi.org/legacy/
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"  # update once build dependencies are available
+
       - name: Test install from PyPI
         id: test_install
         run: |
-            pip install viqa
+            pip3 install viqa
             python -c "import viqa; print(viqa.__version__)"
             echo "vIQA installed successfully"
             echo "tested=true" >> $GITHUB_OUTPUT
