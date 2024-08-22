@@ -228,7 +228,7 @@ class BatchMetrics:
             )
         path = os.path.join(file_path, file_name)
         with open(path, mode="w") as txtfile:
-            txtfile.write("vIQA_version: " + version("viqa"))
+            txtfile.write("vIQA_version: " + version("viqa") + "\n")
             txtfile.write("Time: " + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
             txtfile.write("\n")
             txtfile.write("\n")
@@ -239,6 +239,9 @@ class BatchMetrics:
                 txtfile.write("\n")
                 [txtfile.write("-") for char in metric.__str__().split("(")[0]]
                 txtfile.write("\n")
+                txtfile.write(
+                    "data_range: " + str(metric._parameters["data_range"]) + "\n"
+                )
                 for key, value in self.metrics_parameters[metric_num].items():
                     txtfile.write(key + ": " + str(value))
                     txtfile.write("\n")
