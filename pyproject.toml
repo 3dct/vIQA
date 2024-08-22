@@ -80,7 +80,7 @@ Repository = "https://github.com/3dct/vIQA"
 Documentation = "https://3dct.github.io/vIQA/"
 
 [build-system]
-requires = ["meson-python", "numpy"]
+requires = ["meson-python", "numpy<2.0.0"]
 build-backend = "mesonpy"
 
 ######################################################################
