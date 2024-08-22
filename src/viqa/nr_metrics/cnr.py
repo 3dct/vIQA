@@ -143,10 +143,10 @@ class CNR(NoReferenceMetricsInterface):
             Image to visualize.
         signal_center : Tuple(int), optional
             Center of the signal.
-            Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+            Order is ``(x, y)`` for 2D images and ``(x, y, z)`` for 3D images.
         background_center : Tuple(int), optional
-            Center of the background. Order is ``(y, x)`` for 2D images and
-            ``(z, y, x)`` for 3D images.
+            Center of the background. Order is ``(x, y)`` for 2D images and
+            ``(x, y, z)`` for 3D images.
         radius : int, optional
             Width of the regions.
         export_path : str or os.PathLike, optional
@@ -200,10 +200,10 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     background_center : Tuple(int)
-        Center of the background. Order is ``(y, x)`` for 2D images and ``(z, y, x)``
+        Center of the background. Order is ``(x, y)`` for 2D images and ``(x, y, z)``
         for 3D images.
     signal_center : Tuple(int)
-        Center of the signal. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for
+        Center of the signal. Order is ``(x, y)`` for 2D images and ``(x, y, z)`` for
         3D images.
     radius : int
         Width of the regions.

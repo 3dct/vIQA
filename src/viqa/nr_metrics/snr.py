@@ -138,7 +138,7 @@ class SNR(NoReferenceMetricsInterface):
             Image to visualize.
         signal_center : Tuple(int), optional
             Center of the signal.
-            Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for 3D images.
+            Order is ``(x, y)`` for 2D images and ``(x, y, z)`` for 3D images.
         radius : int, optional
             Width of the regions.
         export_path : str or os.PathLike, optional
@@ -200,7 +200,7 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     signal_center : Tuple(int)
-        Center of the signal. Order is ``(y, x)`` for 2D images and ``(z, y, x)`` for
+        Center of the signal. Order is ``(x, y)`` for 2D images and ``(x, y, z)`` for
         3D images.
     radius : int
         Width of the regions.
