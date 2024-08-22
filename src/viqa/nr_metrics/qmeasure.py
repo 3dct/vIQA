@@ -111,6 +111,17 @@ class QMeasure(NoReferenceMetricsInterface):
         num_peaks : int, default=2
             Number of peaks to consider in the histogram.
 
+        Raises
+        ------
+        ValueError
+            If the input image is not a 3D volume.
+
+        Warns
+        -----
+        RuntimeWarning
+            If the input image is a 2D RGB image. Q-Measure is only defined for 3D
+            volumes.
+
         Returns
         -------
         score_val : float
@@ -122,6 +133,15 @@ class QMeasure(NoReferenceMetricsInterface):
             data_range=self._parameters["data_range"],
             normalize=self._parameters["normalize"],
         )
+
+        if img.ndim < 3:
+            raise ValueError("Q-Measure is only defined for 3D CT volumes.")
+        elif img.shape[-1] == 3:
+            warn(
+                "Q-Measure is not defined for 2D images. You probably passed an "
+                "RGB image. Make sure that img is a 3D volume.",
+                RuntimeWarning,
+            )
 
         # Convert to float and get min and max values
         img = _to_float(img, np.float32)
