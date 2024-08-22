@@ -124,11 +124,18 @@ class CNR(NoReferenceMetricsInterface):
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 
     def visualize_centers(
-        self, img, signal_center=None, background_center=None, radius=None
+        self,
+        img,
+        signal_center=None,
+        background_center=None,
+        radius=None,
+        export_path=None,
+        **kwargs,
     ):
         """Visualize the centers for CNR calculation.
 
         The visualization shows the signal and background regions in a matplotlib plot.
+        If export_path is provided, the plot is saved to the given path.
 
         Parameters
         ----------
@@ -142,6 +149,11 @@ class CNR(NoReferenceMetricsInterface):
             ``(z, y, x)`` for 3D images.
         radius : int, optional
             Width of the regions.
+        export_path : str or os.PathLike, optional
+            Path to export the visualization to.
+        **kwargs : optional
+            Additional parameters for visualization. The keyword arguments are passed to
+            ``matplotlib.pyplot.subplots``.
         """
         if not signal_center or not background_center or not radius:
             if (
@@ -164,6 +176,8 @@ class CNR(NoReferenceMetricsInterface):
                 signal_center=signal_center,
                 background_center=background_center,
                 radius=radius,
+                export_path=export_path,
+                **kwargs,
             )
         elif img.ndim == 3:
             _visualize_cnr_3d(
@@ -171,6 +185,8 @@ class CNR(NoReferenceMetricsInterface):
                 signal_center=signal_center,
                 background_center=background_center,
                 radius=radius,
+                export_path=export_path,
+                **kwargs,
             )
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")

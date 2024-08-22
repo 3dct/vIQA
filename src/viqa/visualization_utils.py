@@ -20,8 +20,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def _visualize_cnr_2d(img, signal_center, background_center, radius):
-    fig, axs = plt.subplots(2, 1, figsize=(6, 12), dpi=300)
+def _visualize_cnr_2d(
+    img, signal_center, background_center, radius, export_path=None, **kwargs
+):
+    figsize = kwargs.pop("figsize", (6, 12))
+    dpi = kwargs.pop("dpi", 300)
+
+    fig, axs = plt.subplots(2, 1, figsize=figsize, dpi=dpi)
     fig.suptitle("Regions for CNR Calculation", y=0.92)
     axs[0].imshow(img, cmap="gray")
     axs[0].set_title("Background")
@@ -57,9 +62,13 @@ def _visualize_cnr_2d(img, signal_center, background_center, radius):
     )
     axs[1].add_patch(rect_1)
     plt.show()
+    if export_path:
+        plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_cnr_3d(img, signal_center, background_center, radius, **kwargs):
+def _visualize_cnr_3d(
+    img, signal_center, background_center, radius, export_path=None, **kwargs
+):
     figsize = kwargs.pop("figsize", (14, 10))
     dpi = kwargs.pop("dpi", 300)
 
@@ -189,10 +198,15 @@ def _visualize_cnr_3d(img, signal_center, background_center, radius, **kwargs):
     axs[1][2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
     axs[1][2].add_patch(rect_3)
     plt.show()
+    if export_path:
+        plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_snr_2d(img, signal_center, radius):
-    fig, ax = plt.subplots(1, 1, figsize=(6, 6), dpi=300)
+def _visualize_snr_2d(img, signal_center, radius, export_path=None, **kwargs):
+    figsize = kwargs.pop("figsize", (6, 6))
+    dpi = kwargs.pop("dpi", 300)
+
+    fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
     fig.suptitle("Signal Region for SNR Calculation", y=0.92)
 
     ax.imshow(img, cmap="gray")
@@ -211,9 +225,11 @@ def _visualize_snr_2d(img, signal_center, radius):
     )
     ax.add_patch(rect_1)
     plt.show()
+    if export_path:
+        plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_snr_3d(img, signal_center, radius, **kwargs):
+def _visualize_snr_3d(img, signal_center, radius, export_path=None, **kwargs):
     figsize = kwargs.pop("figsize", (14, 6))
     dpi = kwargs.pop("dpi", 300)
 
@@ -280,11 +296,16 @@ def _visualize_snr_3d(img, signal_center, radius, **kwargs):
     axs[2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
     axs[2].add_patch(rect_3)
     plt.show()
+    if export_path:
+        plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def visualize_3d(img, slices, **kwargs):
+def visualize_3d(img, slices, export_path=None, **kwargs):
     """
     Visualize 3D image slices in 3 different planes.
+
+    The function visualizes the 3D image slices in the x, y, and z direction. If
+    `export_path` is provided, the visualization is saved to the specified path.
 
     Parameters
     ----------
@@ -293,6 +314,8 @@ def visualize_3d(img, slices, **kwargs):
     slices : tuple
         The slices to visualize in the x, y, and z direction. The slices must be
         positive or negative integers.
+    export_path : str or Path, optional
+        The path to save the visualization.
     kwargs :
         Additional keyword arguments for the plot. Passed to
         ``matplotlib.pyplot.subplots``.
@@ -307,7 +330,6 @@ def visualize_3d(img, slices, **kwargs):
         If the number of slices is not 3 or if the slices are not integers.
         If the image is not 3D.
         If the slices are out of bounds.
-
     """
     if len(slices) != 3:
         raise ValueError("The number of slices must be 3.")
@@ -354,3 +376,5 @@ def visualize_3d(img, slices, **kwargs):
     axs[2].set_title(f"z-axis, slice: {z}", c="#7570b3")
 
     plt.show()
+    if export_path:
+        plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)

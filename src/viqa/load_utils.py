@@ -203,14 +203,20 @@ class ImageArray(np.ndarray):
             )
         return stats
 
-    def visualize(self, slices: Tuple[int, int, int], **kwargs) -> None:
+    def visualize(
+        self, slices: Tuple[int, int, int], export_path=None, **kwargs
+    ) -> None:
         """
         Visualize the image array.
+
+        If export_path is provided, the visualization is saved to the directory.
 
         Parameters
         ----------
         slices : Tuple[int, int, int]
             Slices for the x, y and z axis
+        export_path : str or os.PathLike, optional
+            Path to the directory where the visualization should be saved
         **kwargs : dict
             Additional keyword arguments for visualization. See
             :py:func:`.viqa.visualization_utils.visualize_3d`.
@@ -223,7 +229,7 @@ class ImageArray(np.ndarray):
         >>> img = ImageArray(img)
         >>> img.visualize(slices=(64, 64, 64))
         """
-        visualize_3d(self, slices, **kwargs)
+        visualize_3d(self, slices, export_path, **kwargs)
 
 
 def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str) -> ImageArray:
