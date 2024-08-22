@@ -47,7 +47,7 @@ from scipy.stats import kurtosis, skew
 from torch import Tensor
 from tqdm.autonotebook import tqdm
 
-from viqa.visualization_utils import visualize_3d
+from viqa.visualization_utils import visualize_2d, visualize_3d
 
 
 class ImageArray(np.ndarray):
@@ -221,6 +221,11 @@ class ImageArray(np.ndarray):
             Additional keyword arguments for visualization. See
             :py:func:`.viqa.visualization_utils.visualize_3d`.
 
+        Raises
+        ------
+        ValueError
+            If the image is not 2D or 3D.
+
         Examples
         --------
         >>> import numpy as np
@@ -229,7 +234,12 @@ class ImageArray(np.ndarray):
         >>> img = ImageArray(img)
         >>> img.visualize(slices=(64, 64, 64))
         """
-        visualize_3d(self, slices, export_path, **kwargs)
+        if self.ndim == 3:
+            visualize_3d(self, slices, export_path, **kwargs)
+        elif self.ndim == 2:
+            visualize_2d(self, export_path, **kwargs)
+        else:
+            raise ValueError("Image must be 2D or 3D.")
 
 
 def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str) -> ImageArray:

@@ -303,6 +303,51 @@ def _visualize_snr_3d(img, signal_center, radius, export_path=None, **kwargs):
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
+def visualize_2d(img, export_path=None, **kwargs):
+    """
+    Visualize a 2D image.
+
+    The function visualizes a 2D image. If `export_path` is provided, the
+    visualization is saved to the specified path.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        The 2D image to visualize.
+    export_path : str or Path, optional
+        The path to save the visualization.
+    kwargs :
+        Additional keyword arguments for the plot. Passed to
+        ``matplotlib.pyplot.imshow``.
+
+    Raises
+    ------
+    ValueError
+        If the image is not 2D.
+
+    Returns
+    -------
+    None
+    """
+    if img.ndim != 2:
+        raise ValueError("The image must be 2D.")
+
+    figsize = kwargs.pop("figsize", (6, 6))
+    dpi = kwargs.pop("dpi", 300)
+
+    plt.figure(figsize=figsize, dpi=dpi)
+    if "cmap" not in kwargs:
+        plt.imshow(img, cmap="gray", **kwargs)
+    else:
+        plt.imshow(img, **kwargs)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.gca().invert_yaxis()
+    plt.show()
+    if export_path:
+        plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
+
+
 def visualize_3d(img, slices, export_path=None, **kwargs):
     """
     Visualize 3D image slices in 3 different planes.
