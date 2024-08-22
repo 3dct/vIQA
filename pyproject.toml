@@ -129,7 +129,7 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"  # Accepts: "google", "numpy", or "pep257".
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src/vIQA"]
 
 [tool.ruff.format]
