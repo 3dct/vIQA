@@ -25,7 +25,7 @@ jobs:
       - name: Check import
         id: check_import
         run: |
-          pip install -e .
+          pip install .
           python -c "import viqa"
           echo "imported=true" >> $GITHUB_OUTPUT
 
