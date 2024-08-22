@@ -22,10 +22,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Check import
         id: check_import
         run: |
-          pip install . -vv
+          pip3 install . -vv
           python -c "import viqa"
           echo "imported=true" >> $GITHUB_OUTPUT
 
