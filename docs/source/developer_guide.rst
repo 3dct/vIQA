@@ -95,6 +95,7 @@ Versioning and Dependencies
 ---------------------------
 
 Python Semantic Release is used to automate the versioning and release process. This follows the `Semantic Versioning <https://semver.org/>`_ guidelines.
-Therefore the version dunder does not need to be updated manually. If you want to update the version manually anyway please use a dev version (e.g. 0.1.0.dev0).
+Therefore the version dunder does not need to be updated manually. If you want to update the version manually anyway please use a dev version (e.g. 0.1.0.dev0) and tag the commit accordingly (e.g. v0.1.0.dev0).
+Please do this only on the dev branch. The version will be updated automatically on the main branch.
 PEP 440 versioning is used in the newest spec of `PyPA <https://packaging.python.org/en/latest/specifications/version-specifiers/#version-specifiers>`_.
 NEP 29 is followed for the project. Please have a look at the `NEP 29 <https://numpy.org/neps/nep-0029-deprecation_policy.html>`_ for more information.
