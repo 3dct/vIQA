@@ -30,12 +30,13 @@ def _visualize_cnr_2d(
     fig.suptitle("Regions for CNR Calculation", y=0.92)
     axs[0].imshow(img, cmap="gray")
     axs[0].set_title("Background")
-    axs[0].set_xlabel("y")
-    axs[0].set_ylabel("x")
+    axs[0].set_xlabel("x")
+    axs[0].set_ylabel("y")
+    axs[0].invert_yaxis()
     rect_1 = patches.Rectangle(
         (
-            background_center[1] - radius,
             background_center[0] - radius,
+            background_center[1] - radius,
         ),
         radius * 2,
         radius * 2,
@@ -45,14 +46,15 @@ def _visualize_cnr_2d(
     )
     axs[0].add_patch(rect_1)
 
-    axs[1].imshow(img, cmap="gray")
+    axs[1].imshow(img[..., ::-1], cmap="gray")
     axs[1].set_title("Signal")
-    axs[1].set_xlabel("y")
-    axs[1].set_ylabel("x")
+    axs[1].set_xlabel("x")
+    axs[1].set_ylabel("y")
+    axs[1].invert_yaxis()
     rect_1 = patches.Rectangle(
         (
-            signal_center[1] - radius,
             signal_center[0] - radius,
+            signal_center[1] - radius,
         ),
         radius * 2,
         radius * 2,
@@ -209,9 +211,10 @@ def _visualize_snr_2d(img, signal_center, radius, export_path=None, **kwargs):
     fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
     fig.suptitle("Signal Region for SNR Calculation", y=0.92)
 
-    ax.imshow(img, cmap="gray")
-    ax.set_xlabel("y")
-    ax.set_ylabel("x")
+    ax.imshow(img[..., ::-1], cmap="gray")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.invert_yaxis()
     rect_1 = patches.Rectangle(
         (
             signal_center[0] - radius,
