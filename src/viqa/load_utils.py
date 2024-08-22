@@ -443,6 +443,9 @@ def _load_binary(data_file_path, data_type, dim_size):
         )
     # Reshape numpy array according to DimSize
     img_arr = img_arr_orig.reshape(*dim_size[::-1])
+    # Rotate and flip image
+    img_arr = np.rot90(img_arr, axes=(0, 2))
+    img_arr = np.flip(img_arr, 0)
     return img_arr
 
 
