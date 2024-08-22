@@ -47,6 +47,8 @@ from scipy.stats import kurtosis, skew
 from torch import Tensor
 from tqdm.autonotebook import tqdm
 
+from viqa.visualization_utils import visualize_3d
+
 
 class ImageArray(np.ndarray):
     """
@@ -200,6 +202,28 @@ class ImageArray(np.ndarray):
                 "No path or filename provided. Statistics not exported.", RuntimeWarning
             )
         return stats
+
+    def visualize(self, slices: Tuple[int, int, int], **kwargs) -> None:
+        """
+        Visualize the image array.
+
+        Parameters
+        ----------
+        slices : Tuple[int, int, int]
+            Slices for the x, y and z axis
+        **kwargs : dict
+            Additional keyword arguments for visualization. See
+            :py:func:`.viqa.visualization_utils.visualize_3d`.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from viqa import ImageArray
+        >>> img = np.random.rand(128, 128, 128)
+        >>> img = ImageArray(img)
+        >>> img.visualize(slices=(64, 64, 64))
+        """
+        visualize_3d(self, slices, **kwargs)
 
 
 def _load_data_from_disk(file_dir: str | os.PathLike, file_name: str) -> ImageArray:

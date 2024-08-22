@@ -26,6 +26,7 @@ __all__ = [
     "normalize_data",
     "export_csv",
     "fuse_metrics_linear_combination",
+    "visualize_3d",
     "BatchMetrics",
     "ImageArray",
 ]
@@ -36,6 +37,7 @@ from .fusion import fuse_metrics_linear_combination
 from .load_utils import ImageArray, load_data, normalize_data
 from .nr_metrics import *
 from .utils import export_csv
+from .visualization_utils import visualize_3d
 
 
 def get_version():

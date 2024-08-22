@@ -21,3 +21,10 @@ Utilities module
     correlate_convolve_abs
     gabor_convolve
     export_csv
+
+.. currentmodule:: viqa.visualization_utils
+
+.. autosummary::
+   :toctree: generated
+
+    visualize_3d

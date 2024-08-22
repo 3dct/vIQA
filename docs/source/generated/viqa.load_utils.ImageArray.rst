@@ -70,6 +70,7 @@
       ~ImageArray.transpose
       ~ImageArray.var
       ~ImageArray.view
+      ~ImageArray.visualize
    
    
 

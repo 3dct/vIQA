@@ -280,3 +280,77 @@ def _visualize_snr_3d(img, signal_center, radius, **kwargs):
     axs[2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
     axs[2].add_patch(rect_3)
     plt.show()
+
+
+def visualize_3d(img, slices, **kwargs):
+    """
+    Visualize 3D image slices in 3 different planes.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        The 3D image to visualize.
+    slices : tuple
+        The slices to visualize in the x, y, and z direction. The slices must be
+        positive or negative integers.
+    kwargs :
+        Additional keyword arguments for the plot. Passed to
+        ``matplotlib.pyplot.subplots``.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    ValueError
+        If the number of slices is not 3 or if the slices are not integers.
+        If the image is not 3D.
+        If the slices are out of bounds.
+
+    """
+    if len(slices) != 3:
+        raise ValueError("The number of slices must be 3.")
+    if not all(isinstance(slice_, int) for slice_ in slices):
+        raise ValueError("All slices must be integers.")
+    if img.ndim != 3:
+        raise ValueError("The image must be 3D.")
+    if not all(
+        -img.shape[i] <= slice_ <= img.shape[i] for i, slice_ in enumerate(slices)
+    ):
+        raise ValueError("The slices are out of bounds.")
+
+    x = slices[0]
+    y = slices[1]
+    z = slices[2]
+
+    figsize = kwargs.pop("figsize", (14, 6))
+    dpi = kwargs.pop("dpi", 300)
+
+    _, axs = plt.subplots(1, 3, figsize=figsize, dpi=dpi, **kwargs)
+
+    axs[0].imshow(np.rot90(img[x, :, ::-1]), cmap="gray")
+    axs[0].set_xlabel("y")
+    axs[0].set_ylabel("z")
+    axs[0].invert_yaxis()
+    axs[0].axhline(y=z, color="#7570b3", linestyle="--")
+    axs[0].axvline(x=y, color="#d95f02", linestyle="--")
+    axs[0].set_title(f"x-axis, slice: {x}", c="#1b9e77")
+
+    axs[1].imshow(np.rot90(img[:, y, ::-1]), cmap="gray")
+    axs[1].set_xlabel("x")
+    axs[1].set_ylabel("z")
+    axs[1].invert_yaxis()
+    axs[1].axhline(y=z, color="#7570b3", linestyle="--")
+    axs[1].axvline(x=x, color="#1b9e77", linestyle="--")
+    axs[1].set_title(f"y-axis, slice: {y}", c="#d95f02")
+
+    axs[2].imshow(np.rot90(img[::-1, :, z], -1), cmap="gray")
+    axs[2].set_xlabel("x")
+    axs[2].set_ylabel("y")
+    axs[2].invert_yaxis()
+    axs[2].axhline(y=y, color="#d95f02", linestyle="--")
+    axs[2].axvline(x=x, color="#1b9e77", linestyle="--")
+    axs[2].set_title(f"z-axis, slice: {z}", c="#7570b3")
+
+    plt.show()
