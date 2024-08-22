@@ -127,8 +127,15 @@ class BatchMetrics:
         self.pairs_csv = pairs_csv
         self.pairs = _read_csv(self.pairs_csv)
 
-    def calculate(self):
-        """Calculate the metrics in batch mode."""
+    def calculate(self, scaling_order=1):
+        """Calculate the metrics in batch mode.
+
+        Parameters
+        ----------
+        scaling_order : int, default=1
+            Order of the spline interpolation used for image resizing. Default is 1.
+            Passed to `skimage.transform.resize`.
+        """
         for pair_num, pair in enumerate(tqdm(self.pairs)):
             reference_path = os.path.join(self.file_dir, pair["reference_image"])
             modified_path = os.path.join(self.file_dir, pair["modified_image"])
@@ -137,7 +144,9 @@ class BatchMetrics:
 
             # Resize image if shapes unequal
             if img_r.shape != img_m.shape:
-                img_m = resize(img_m, img_r.shape, preserve_range=True, order=1)
+                img_m = resize(
+                    img_m, img_r.shape, preserve_range=True, order=scaling_order
+                )
                 img_m = img_m.astype(img_r.dtype)
 
             metric_results = {}
