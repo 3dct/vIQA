@@ -2,6 +2,51 @@
 
 
 
+## v1.7.0 (2024-08-22)
+
+### Chore
+
+* chore: update version to 1.6.1
+
+fix versioning for python-semantic-release ([`6d00255`](https://github.com/3dct/vIQA/commit/6d0025588954ea20f28f316d768e222a00756eca))
+
+### Ci
+
+* ci: add commit type book to python semantic release ([`ec50245`](https://github.com/3dct/vIQA/commit/ec50245c91e763a2ec705fb688b4b2017a08e227))
+
+### Documentation
+
+* docs: update docstring for load_utils.py:load_raw
+
+add periods to sentences in the &#34;Raises&#34; section of docstring ([`c3f3591`](https://github.com/3dct/vIQA/commit/c3f35911c7bd86e0860db92659115e7a41de33c9))
+
+* docs: add pre-commit.ci status badge ([`b02ca8b`](https://github.com/3dct/vIQA/commit/b02ca8b7820f9333d0f3456905cd14c641693131))
+
+### Feature
+
+* feat: add custom visualization
+
+add method for class ImageArray and function visualize_3d for custom visualization of slices of 3d volumes, update documentation for the respective method and function ([`8423592`](https://github.com/3dct/vIQA/commit/8423592d1e691b72550b5c2d915e1491db9056b1))
+
+### Fix
+
+* fix: change orientation of loaded image array
+
+add rotation and flip when loading from binary, update visualization functions for cnr and snr ([`4d7c3e0`](https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923))
+
+### Performance
+
+* perf: use attribute of class ImageArray for method describe
+
+attribute mean_value in method describe is now used, fix documentation for class ImageArray ([`b0830cf`](https://github.com/3dct/vIQA/commit/b0830cf2ede2e20a5349775ab23649557ca72f85))
+
+### Unknown
+
+* book: update visualization in jupyter notebooks
+
+visualization now reflects the changes in commit 4d7c3e02 ([`7d94131`](https://github.com/3dct/vIQA/commit/7d94131d0c7a9a0296dcb819d0fb3c72f652f6ab))
+
+
 ## v1.6.1 (2024-08-20)
 
 ### Ci
