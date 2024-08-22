@@ -56,7 +56,7 @@ class ImageArray(np.ndarray):
 
     Attributes
     ----------
-    mean : float
+    mean_value : float
         Mean of the image array
     median : float
         Median of the image array
@@ -175,7 +175,7 @@ class ImageArray(np.ndarray):
         >>> img.describe(path="path/to", filename="image_statistics")
         """
         stats = {
-            "mean": self.mean,
+            "mean": self.mean_value,
             "median": self.median,
             "variance": self.variance,
             "standarddev": self.standarddev,
