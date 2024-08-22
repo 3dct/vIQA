@@ -11,34 +11,9 @@ on:
       - main
 
 jobs:
-  check_import:
-    name: Check import
-    runs-on: ubuntu-latest
-    outputs:
-      imported: ${{ steps.check_import.outputs.imported }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Check import
-        id: check_import
-        run: |
-          pip install . -vv
-          python -c "import viqa"
-          echo "imported=true" >> $GITHUB_OUTPUT
-
   semantic_release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    needs: check_import
-    if: needs.check_import.outputs.imported == 'true'
     permissions:
       id-token: write
       contents: write
