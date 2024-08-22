@@ -1,17 +1,56 @@
-data/
-
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+*.a
+*.com
+*.dll
+*.exe
+*.o
+*.o.d
+*.mod
 
 # C extensions
 *.so
 
+# Packages
+*.7z
+*.bz2
+*.bzip2
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.tbz2
+*.tgz
+*.zip
+
+# OS generated files
+.DS_Store*
+.VolumeIcon.icns
+.fseventsd
+Icon?
+.gdb_history
+ehthumbs.db
+Thumbs.db
+.directory
+
+# Databases
+*.log
+*.sql
+*.sqlite
+
+# Patches
+*.patch
+*.diff
+
 # Distribution / packaging
 .Python
 build/
+build-install/
 develop-eggs/
 dist/
 downloads/
@@ -28,6 +67,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Meson
+.mesonpy-native-file.ini
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -73,6 +115,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/source/**/generated/
 
 # PyBuilder
 .pybuilder/
@@ -88,7 +131,7 @@ ipython_config.py
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
 #   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+.python-version
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
@@ -111,6 +154,9 @@ ipython_config.py
 #   in version control.
 #   https://pdm.fming.dev/#use-with-ide
 .pdm-python
+
+# pip
+pip-wheel-metadata/
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/
@@ -160,7 +206,7 @@ cython_debug/
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+.idea/
 
 ### PyCharm+iml template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
