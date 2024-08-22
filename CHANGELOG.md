@@ -2,6 +2,33 @@
 
 
 
+## v1.9.0 (2024-08-22)
+
+### Build
+
+* build: set specific meson and meson-python versions ([`e395ba2`](https://github.com/3dct/vIQA/commit/e395ba2591718aef853d6de8136c7422b7a0262e))
+
+* build: remove support for Python 3.13 until in stable
+
+Python 3.13 build takes too long or fails, add specific dependency version for meson-python ([`d6dd0e6`](https://github.com/3dct/vIQA/commit/d6dd0e67c9c54458ca3bae15158f611ebab91236))
+
+### Chore
+
+* chore: update .gitignore
+
+remove docs/source/**/generated/ files ([`be86072`](https://github.com/3dct/vIQA/commit/be86072bec3ff1d1df010d17466cf2cc51c4802c))
+
+### Feature
+
+* feat(batch_mode.py): add parameter data_range to export_metadata ([`00cb4c4`](https://github.com/3dct/vIQA/commit/00cb4c427ae4cf17db83a006397dca7aaf3ef0cc))
+
+* feat: add parameter to set order of scaling in batch_mode.py ([`0c3886c`](https://github.com/3dct/vIQA/commit/0c3886c8d00e25b9400ce87eb801a4d3be3b0ac9))
+
+### Fix
+
+* fix: add Exception and warning to handle non 3D volumes in qmeasure.py ([`33e288a`](https://github.com/3dct/vIQA/commit/33e288ae032a1ed127c23c65412d084ae6054f8b))
+
+
 ## v1.8.0 (2024-08-22)
 
 ### Build
