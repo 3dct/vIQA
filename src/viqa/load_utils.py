@@ -343,9 +343,9 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     Raises
     ------
     ValueError
-        If the bit depth is not supported \n
-        If no bit depth was found \n
-        If no dimension was found
+        If the bit depth is not supported. \n
+        If no bit depth was found. \n
+        If no dimension was found.
 
     Examples
     --------
