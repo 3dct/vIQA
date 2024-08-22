@@ -68,7 +68,7 @@ docs = [
 ]
 dev = [
     "viqa[lint, docs]",
-    "meson-python>=1.3.0",
+    "meson-python>=0.16.0",
     "build",
     "python-semantic-release",
     "cibuildwheel",
@@ -80,7 +80,7 @@ Repository = "https://github.com/3dct/vIQA"
 Documentation = "https://3dct.github.io/vIQA/"
 
 [build-system]
-requires = ["meson-python>=1.3.0", "numpy<2.0.0"]
+requires = ["meson-python>=0.16.0", "numpy<2.0.0"]
 build-backend = "mesonpy"
 
 ######################################################################

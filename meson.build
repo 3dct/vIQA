@@ -2,13 +2,13 @@ project(
     'viqa',
     'c', 'cpp',
     version: run_command('python', 'src/viqa/_build_utils/version.py', check: true).stdout().strip(),
-    #version: '0.20.15',
     license: 'BSD-3',
     default_options: [
         'buildtype=release',
         'c_std=c11',
         'cpp_std=c++20',
     ],
+    meson_version: '>=1.3.0',
 )
 
 cc = meson.get_compiler('c')
