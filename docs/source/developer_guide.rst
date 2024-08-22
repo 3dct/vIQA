@@ -44,6 +44,7 @@ Accepted commit types are:
 *   ``build``: Changes that affect the build system or external dependencies (example scopes: pip)
 *   ``ci``: Changes to our CI configuration files and scripts (example scopes: GitHub Actions)
 *   ``chore``: Changes that affect the chore of the project (example scopes: versioning, release, configs, etc)
+*   ``book``: Changes to the jupyter books
 
 You can use a scope to specify the part of the codebase that is affected by the commit if you want to.
 
