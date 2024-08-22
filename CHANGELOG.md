@@ -2,6 +2,49 @@
 
 
 
+## v1.8.0 (2024-08-22)
+
+### Build
+
+* build: update numpy dependency for build to be lower than 2.0.0 ([`54ac725`](https://github.com/3dct/vIQA/commit/54ac725020e2394baa9188774fce5f45ce49cfb7))
+
+### Chore
+
+* chore: remove check install job from build_wheels_and_publish.yaml ([`235cd1c`](https://github.com/3dct/vIQA/commit/235cd1c572ab37ac48ec1b12eb559d7d3f788beb))
+
+* chore: use pip instead of pip3 in check_import job ([`d739e83`](https://github.com/3dct/vIQA/commit/d739e83c02972c61ca87410c4ef4b7f405bfa8d7))
+
+* chore: add Set up Python step check_import job ([`70448e3`](https://github.com/3dct/vIQA/commit/70448e36fec50348c5c6904b15e9a119e8efba42))
+
+* chore: add -vv argument in check_import job for debugging ([`03e50b1`](https://github.com/3dct/vIQA/commit/03e50b128bc1d1904166213feb4bad7ac362de86))
+
+* chore: fix check_import job to use non-editable install ([`e772e8f`](https://github.com/3dct/vIQA/commit/e772e8ff51cacf7a525efd85d002f00c1daf6860))
+
+* chore: move isort config from ruff.isort to ruff.lint.isort ([`8d7f21b`](https://github.com/3dct/vIQA/commit/8d7f21be7a8164d9310837fea7f8e248c18fbdc5))
+
+* chore: update release process in build_wheels_and_publish.yaml
+
+add check for import to catch non-importable releases, add upload to TestPyPI and check installing from there before real upload ([`53d69e9`](https://github.com/3dct/vIQA/commit/53d69e9edc82c6e0f896fe0e79e4039e904b39f4))
+
+### Documentation
+
+* docs: update Tuple order for visualization methods in snr.py and cnr.py
+
+change Tuple order according to 4d7c3e02 and 0bab2b85 ([`3aef76d`](https://github.com/3dct/vIQA/commit/3aef76d95204a3fb3fdc736aaafbdc62e85cb0c4))
+
+### Feature
+
+* feat: add 2D visualization for class ImageArray ([`d09dfad`](https://github.com/3dct/vIQA/commit/d09dfad695470fea67b01a9e38f05154e31c21d1))
+
+* feat: add parameter to export image in visualization functions ([`6e418e2`](https://github.com/3dct/vIQA/commit/6e418e2769a8168b2b9ba67a467c8175368e4851))
+
+### Fix
+
+* fix: update 2D visualization for snr and cnr
+
+fix visualization based on 4d7c3e02 ([`0bab2b8`](https://github.com/3dct/vIQA/commit/0bab2b8534a320b18780f9a131c6384bf79c6303))
+
+
 ## v1.7.0 (2024-08-22)
 
 ### Chore
