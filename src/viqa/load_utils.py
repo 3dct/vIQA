@@ -495,7 +495,7 @@ def load_data(
     data_range: int | None = None,
     normalize: bool = False,
     batch: bool = False,
-) -> list | np.ndarray:
+) -> list[ImageArray] | ImageArray:
     """
     Load data from a numpy array, a pytorch tensor or a file path.
 
@@ -516,8 +516,9 @@ def load_data(
 
     Returns
     -------
-    img_arr : np.ndarray
-        Numpy array containing the data
+    img_arr : ImageArray or list[ImageArray]
+        :py:class:`viqa.load_utils.ImageArray` or list of
+        :py:class:`viqa.load_utils.ImageArray` containing the data
 
     Raises
     ------
@@ -559,7 +560,7 @@ def load_data(
             RuntimeWarning,
         )
 
-    img_arr: list[np.ndarray] | np.ndarray
+    img_arr: list[ImageArray] | ImageArray
     # Check input type
     match img:
         case str() | os.PathLike():  # If input is a file path
@@ -584,13 +585,13 @@ def load_data(
                 )  # Load data from disk
         case np.ndarray():  # If input is a numpy array
             if not normalize:
-                return img
+                return ImageArray(img)
             else:
-                img_arr = img  # Use input as numpy array
+                img_arr = ImageArray(img)  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
-            img_arr = img.cpu().numpy()  # Convert tensor to numpy array
+            img_arr = ImageArray(img.cpu().numpy())  # Convert tensor to numpy array
         case [np.ndarray()]:  # If input is a list
-            img_arr = img  # Use input as list of numpy arrays
+            img_arr = [ImageArray(im) for im in img]  # Use input as list of ImageArrays
             batch = True  # Set batch to True to normalize list of numpy arrays
         case _:
             raise ValueError(
@@ -598,20 +599,22 @@ def load_data(
             )  # Raise exception if input type is not supported
 
     # Normalize data
-    if normalize:
+    if normalize and data_range:
         if batch:
             img_arr = [
-                normalize_data(img=img, data_range_output=(0, data_range))  # type: ignore[arg-type]
+                ImageArray(normalize_data(img=img, data_range_output=(0, data_range)))
                 for img in img_arr
             ]
-        else:
-            img_arr = normalize_data(img=img_arr, data_range_output=(0, data_range))  # type: ignore[arg-type]
+        elif not isinstance(img_arr, list):
+            img_arr = ImageArray(
+                normalize_data(img=img_arr, data_range_output=(0, data_range))
+            )
 
     return img_arr
 
 
 def normalize_data(
-    img: np.ndarray,
+    img: np.ndarray | ImageArray,
     data_range_output: Tuple[int, int],
     data_range_input: Union[Tuple[int, int], None] = None,
     automatic_data_range: bool = True,
@@ -620,7 +623,7 @@ def normalize_data(
 
     Parameters
     ----------
-    img : np.ndarray
+    img : np.ndarray or ImageArray
         Input image
     data_range_output : Tuple[int]
         Data range of the returned data
