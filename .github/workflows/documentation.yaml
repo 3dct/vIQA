@@ -26,8 +26,7 @@ jobs:
         run: |
           pip install sphinx furo sphinx-copybutton pytest-doctestplus \
           sphinx_github_changelog piq scipy scikit-image matplotlib nibabel tqdm \
-          sphinxcontrib-email sphinx-last-updated-by-git sphinx-hoverxref \
-          sphinx-notfound-page
+          sphinxcontrib-email sphinx-last-updated-by-git sphinx-hoverxref
       - name: Sphinx build
         run: |
           sphinx-build docs/source _build

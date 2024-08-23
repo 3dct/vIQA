@@ -68,7 +68,6 @@ docs = [
     "sphinx-autobuild",
     "sphinx-last-updated-by-git",
     "sphinx-hoverxref",
-    "sphinx-notfound-page",
     "viqa[tests]",
 ]
 dev = [

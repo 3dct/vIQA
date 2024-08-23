@@ -39,8 +39,7 @@ extensions = [
     'sphinx_github_changelog',
     'sphinx_last_updated_by_git',
     'pytest_doctestplus.sphinx.doctestplus',
-    'hoverxref.extension',
-    'notfound.extension',
+    # 'hoverxref.extension', # Works only on readthedocs
 ]
 
 templates_path = ['_templates']
