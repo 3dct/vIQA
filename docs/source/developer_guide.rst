@@ -85,6 +85,11 @@ You can build the documentation with the following command::
 
     sphinx-build -b html docs/source docs/build
 
+Alternatively, if you want to rebuild the documentation automatically on changes you can use the following command::
+
+    pip install sphinx-autobuild
+    sphinx-autobuild docs/source docs/build/html
+
 The documentation will be available in the ``docs/build`` directory. If you build the documentation multiple times, you may have to delete the ``docs/build`` directory before building again.
 This is for example possible with::
 
