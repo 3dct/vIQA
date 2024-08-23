@@ -15,6 +15,7 @@ jobs:
   semantic_release:
     name: Semantic Release
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     permissions:
       id-token: write
       contents: write
@@ -29,7 +30,6 @@ jobs:
           fetch-depth: 0
 
       - name: Python Semantic Release
-        if: github.ref == 'refs/heads/main'
         id: release
         uses: python-semantic-release/python-semantic-release@master
         with:
@@ -38,6 +38,8 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: [semantic_release]
+    if: ${{ always() && !cancelled() }}
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +82,8 @@ jobs:
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-24.04
+    needs: [semantic_release]
+    if: ${{ always() && !cancelled() }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -96,7 +100,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_testpypi:
-    name: Upload to Test PyPI and test install
+    name: Upload to Test PyPI
     needs: [semantic_release, build_wheels, build_sdist]
     if: |
       (github.ref == 'refs/heads/dev' && startsWith(github.ref, 'refs/tags/v')) ||
