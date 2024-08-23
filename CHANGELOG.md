@@ -2,6 +2,29 @@
 
 
 
+## v1.9.1 (2024-08-23)
+
+### Chore
+
+* chore: change GitHub emojis to emoji characters in README.md
+
+improve rendering for PyPI ([`0a04811`](https://github.com/3dct/vIQA/commit/0a048118e9b9587d5cf498e914436559efb99d3d))
+
+* chore: update automatic build process in build_wheels_and_publish.yaml ([`bcdc3b1`](https://github.com/3dct/vIQA/commit/bcdc3b13a365f63db2a5e1eee27a358e197c186a))
+
+### Documentation
+
+* docs: update docs
+
+multiple changes to docstrings and docs rendering and docs building ([`080045f`](https://github.com/3dct/vIQA/commit/080045f19703513633d6a18a7da26e44b2b8f7eb))
+
+### Fix
+
+* fix: use ImageArray instead of np.ndarray
+
+update according to 40f0d029ad416747135f79e8716de040335da592, fixes mypy ([`4ecfc86`](https://github.com/3dct/vIQA/commit/4ecfc8627321d7eee39e3ab0656bb155cfc56307))
+
+
 ## v1.9.0 (2024-08-22)
 
 ### Build
