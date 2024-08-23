@@ -2,10 +2,20 @@
 Welcome to vIQA's documentation!
 ################################
 
-:Author: Lukas Behammer
-:Release: |release|
-:Date: |today|
-:Github: https://github.com/3dct/vIQA
+.. toctree::
+   :hidden:
+
+   getting_started
+   user_guide
+   api_reference
+
+.. toctree::
+   :hidden:
+   :caption: Development
+
+   changelog
+   developer_guide
+   Github <https://github.com/3dct/vIQA>
 
 .. image:: ../../branding/logo/Logo_vIQA_wo-text.svg
     :width: 400
@@ -72,98 +82,19 @@ The following metrics are implemented:
 .. [*] The Q-Measure is a special metric designed for CT images. Therefore it only works
     with 3D volumes.
 
+If you want to use the package, please have a look at the :doc:`getting_started` page.
+If you find bugs, please head to the `Github issue tracker`_ and open an issue.
 
-***************
-Getting started
-***************
-
-Requirements
-============
-
-The package is written in Python 3.11 and requires the following packages:
-
-* matplotlib
-* nibabel
-* numpy
-* piq
-* pytorch
-* scikit-image
-* scipy
-* tqdm
-* (jupyter) if you want to use the notebooks on Github
-
-Installation
-============
-
-The package can be installed via ``pip``:
-
-.. code-block:: bash
-
-    pip install viqa
-
-or ``conda``:
-
-.. code-block:: bash
-
-    conda install -c conda-forge viqa
-
-.. important::
-
-    The package is currently in development and not yet available on conda-forge.
-
-First steps
-===========
-
-Have a look at the :doc:`usage` page to get started with the package or use the Jupyter Notebooks or binder on the `Github`_ page.
-For a in-depth look at the implemented metrics, have a look at the :doc:`api_reference` page.
-
-.. _Github: https://github.com/3dct/vIQA
-
-*****
-Usage
-*****
-
-.. toctree::
-   :maxdepth: 2
-
-   usage
-
-*************
-API Reference
-*************
-
-.. toctree::
-   :maxdepth: 2
-
-   api_reference
-
-*********
-Changelog
-*********
-
-.. toctree::
-   :maxdepth: 1
-
-   changelog
+.. _Github issue tracker: https://github.com/3dct/vIQA/issues
 
 *******
 Contact
 *******
 
-If you have any questions, please contact the author at: `<lukas.behammer@fh-wels.at>`_.
+If you have any questions, please contact the author at: :email:`lukas.behammer@fh-wels.at`.
 
 ..
     & Citing
-
-
-***************
-Developer Guide
-***************
-
-.. toctree::
-   :maxdepth: 2
-
-   developer_guide
 
 ******************
 Indices and tables

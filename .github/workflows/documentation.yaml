@@ -3,11 +3,6 @@ name: Documentation
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - v*
-  pull_request:
-    branches: [main]
   workflow_run:
     workflows: ["Build"]
     branches: [main]
@@ -19,10 +14,13 @@ permissions:
 
 jobs:
   Docs:
+    name: Build and deploy documentation
     runs-on: ubuntu-latest
     concurrency: Docs
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
       - name: Install dependencies
         run: |

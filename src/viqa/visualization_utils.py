@@ -352,21 +352,21 @@ def visualize_3d(img, slices, export_path=None, **kwargs):
     """
     Visualize 3D image slices in 3 different planes.
 
-    The function visualizes the 3D image slices in the x, y, and z direction. If
-    `export_path` is provided, the visualization is saved to the specified path.
+    The function visualizes the 3D image slices in the ``x``, ``y`` and ``z`` direction.
+    If ``export_path`` is provided, the visualization is saved to the specified path.
 
     Parameters
     ----------
     img : np.ndarray
         The 3D image to visualize.
     slices : tuple
-        The slices to visualize in the x, y, and z direction. The slices must be
-        positive or negative integers.
+        The slices to visualize in the ``x``, ``y`` and ``z`` direction. The slices must
+        be positive or negative integers.
     export_path : str or Path, optional
         The path to save the visualization.
     kwargs :
         Additional keyword arguments for the plot. Passed to
-        ``matplotlib.pyplot.subplots``.
+        :py:func:`matplotlib.pyplot.subplots`.
 
     Returns
     -------

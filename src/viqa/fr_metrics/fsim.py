@@ -50,22 +50,20 @@ class FSIM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the FSIM calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.utils.load_data`.
+        :py:func:`.viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images and FSIMc is
-        calculated. See [1]. Passed to
-        ``piq.fsim``. See the documentation under
-        `piq.fsim
-        <https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
+        calculated. See [1]_. Passed to
+        :py:func:`piq.fsim`. See the documentation under [2]_.
 
     Raises
     ------
@@ -86,6 +84,7 @@ class FSIM(FullReferenceMetricsInterface):
     .. [1] Zhang, L., Zhang, L., Mou, X., & Zhang, D. (2011). FSIM: A feature
         similarity index for image quality assessment. IEEE Transactions on Image
         Processing, 20(8). https://doi.org/10.1109/TIP.2011.2109730
+    .. [2] https://piq.readthedocs.io/en/latest/functions.html#piq.fsim
     """
 
     def __init__(self, data_range=255, normalize=False, **kwargs):
@@ -119,9 +118,7 @@ class FSIM(FullReferenceMetricsInterface):
             If given, FSIM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for FSIM calculation. The keyword arguments are passed
-            to ``piq.fsim``. See the documentation under
-            `piq.fsim
-            <https://piq.readthedocs.io/en/latest/functions.html#feature-similarity-index-measure-fsim>`_.
+            to :py:func:`piq.fsim`. See the documentation under [3]_.
 
         Other Parameters
         ----------------
@@ -180,6 +177,10 @@ class FSIM(FullReferenceMetricsInterface):
         the FSIM values of all slices of the given dimension. If ``dim`` is given and
         ``im_slice`` is given, the FSIM is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
+
+        References
+        ----------
+        .. [3] https://piq.readthedocs.io/en/latest/functions.html#piq.fsim
         """
         img_r, img_m = _check_imgs(
             img_r,

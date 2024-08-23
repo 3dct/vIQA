@@ -33,9 +33,14 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.mathjax',
     'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
+    'sphinxcontrib.email',
     'sphinx_copybutton',
-    'pytest_doctestplus.sphinx.doctestplus',
     'sphinx_github_changelog',
+    'sphinx_last_updated_by_git',
+    'pytest_doctestplus.sphinx.doctestplus',
+    'hoverxref.extension',
+    'notfound.extension',
 ]
 
 templates_path = ['_templates']
@@ -48,6 +53,7 @@ exclude_patterns = []
 html_theme = 'furo'
 html_static_path = ['_static']
 html_favicon = '../../branding/logo/Logo_vIQA_wo-text.svg'
+html_title = f"{project} documentation v{release}"
 
 # -- Options for Autodoc -----------------------------------------------------
 
@@ -62,5 +68,21 @@ autodoc_mock_imports = [
     "viqa.nr_metrics.qmeasure_utils",
 ]
 
+# -- Options for Hoverxref ---------------------------------------------------
+hoverxref_domains = ['py']
+hoverxref_intersphinx = [
+    'python', 'numpy', 'scipy', 'matplotlib', 'scikit-image', 'nibabel', 'piq'
+]
+
 # -- Options for Github Changelog --------------------------------------------
 sphinx_github_changelog_token = os.getenv("GH_TOKEN")
+
+# -- Options for Intersphinx -------------------------------------------------
+intersphinx_mapping = {
+    "scikit-image": ("https://scikit-image.org/docs/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "nibabel": ("https://nipy.org/nibabel/", None),
+    "piq": ("https://piq.readthedocs.io/en/latest/", None),
+}

@@ -54,7 +54,8 @@ class ImageArray(np.ndarray):
     """
     Class for image arrays.
 
-    This class is a subclass of numpy.ndarray and adds attributes for image statistics.
+    This class is a subclass of :py:class:`numpy.ndarray` and adds attributes for image
+    statistics.
 
     Attributes
     ----------
@@ -459,7 +460,7 @@ def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
 
     Notes
     -----
-    This function wraps the nibabel function ``nib.load``.
+    This function wraps the nibabel function :py:func:`nibabel.loadsave.load`.
     """
     img = nib.load(file_path)
     img_arr = img.get_fdata()  # type: ignore[attr-defined]
@@ -504,7 +505,7 @@ def load_data(
         Numpy array, tensor or file path
     data_range : int, optional, default=None
         Maximum value of the returned data. Passed to
-        :py:func:`.viqa.utils.normalize_data`.
+        :py:func:`viqa.load_utils.normalize_data`.
     normalize : bool, default False
         If True, data is normalized to (0, ``data_range``) based on min and max of img.
     batch : bool, default False

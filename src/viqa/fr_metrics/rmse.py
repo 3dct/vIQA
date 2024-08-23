@@ -64,13 +64,13 @@ class RMSE(FullReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Can be omitted if ``normalize``
-        is False. Passed to :py:func:`viqa.utils.load_data`.
+        is False. Passed to :py:func:`viqa.load_utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.utils.load_data`.
+        :py:func:`viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
@@ -127,7 +127,7 @@ class RMSE(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
             print("RMSE: {}".format(np.round(self.score_val, decimals)))

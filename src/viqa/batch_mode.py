@@ -134,7 +134,7 @@ class BatchMetrics:
         ----------
         scaling_order : int, default=1
             Order of the spline interpolation used for image resizing. Default is 1.
-            Passed to `skimage.transform.resize`.
+            Passed to :py:func:`skimage.transform.resize`.
         """
         for pair_num, pair in enumerate(tqdm(self.pairs)):
             reference_path = os.path.join(self.file_dir, pair["reference_image"])

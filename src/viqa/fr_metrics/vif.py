@@ -52,13 +52,13 @@ class VIFp(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the VIFp calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.utils.load_data`.
+        :py:func:`.viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
@@ -67,9 +67,7 @@ class VIFp(FullReferenceMetricsInterface):
 
         .. note::
             Color images can be used, but it is unclear how the called implementation
-            `piq.vif_p
-            <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_
-            handles the color channels.
+            :py:func:`piq.vif_p` handles the color channels.
 
     Raises
     ------
@@ -119,14 +117,12 @@ class VIFp(FullReferenceMetricsInterface):
             If given, VIFp is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for VIFp calculation. The keyword arguments are passed
-            to ``piq.vif_p``. See the documentation under
-            `piq.vif_p
-            <https://piq.readthedocs.io/en/latest/functions.html#visual-information-fidelity-vifp>`_.
+            to :py:func:`piq.vif_p`. See the documentation under [2]_.
 
         Other Parameters
         ----------------
         sigma_n_sq : float, default=2.0
-            HVS model parameter (variance of the visual noise). See [2]_.
+            HVS model parameter (variance of the visual noise). See [3]_.
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
 
@@ -160,7 +156,8 @@ class VIFp(FullReferenceMetricsInterface):
 
         References
         ----------
-        .. [2] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
+        .. [2] https://piq.readthedocs.io/en/latest/functions.html#piq.vif_p
+        .. [3] Sheikh, H. R., & Bovik, A. C. (2006). Image information and visual
             quality. IEEE Transactions on Image Processing, 15(2), 430–444.
             https://doi.org/10.1109/TIP.2005.859378
         """

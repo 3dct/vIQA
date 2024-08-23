@@ -1,12 +1,21 @@
 Utilities module
 -----------------
 
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   utils/ImageArray
+
 .. currentmodule:: viqa.load_utils
+
+.. autosummary::
+
+    ImageArray
 
 .. autosummary::
    :toctree: generated
 
-    ImageArray
     load_data
     load_mhd
     load_raw

@@ -75,13 +75,14 @@ class MAD(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the MAD calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:func:`most_apparent_distortion`.
+        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.fr_metrics.mad.most_apparent_distortion`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.utils.load_data`.
+        :py:func:`viqa.load_utils.load_data`.
 
 
     Other Parameters
@@ -144,8 +145,7 @@ class MAD(FullReferenceMetricsInterface):
             If given, MAD is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MAD calculation. The keyword arguments are passed
-            to :py:func:`viqa.fr_metrics.mad.most_apparent_distortion_3d` or
-            :py:func:`viqa.fr_metrics.mad.most_apparent_distortion`.
+            to :py:func:`viqa.fr_metrics.mad.most_apparent_distortion`.
 
         Returns
         -------

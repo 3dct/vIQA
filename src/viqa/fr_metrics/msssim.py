@@ -53,13 +53,13 @@ class MSSSIM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the MS-SSIM calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.utils.load_data`.
+        :py:func:`.viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
@@ -68,9 +68,7 @@ class MSSSIM(FullReferenceMetricsInterface):
 
         .. note::
             Color images can be used, but it is unclear how the called implementation
-            `piq.multi_scale_ssim
-            <https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_
-            handles the color channels.
+            :py:func:`piq.multi_scale_ssim` handles the color channels.
 
     Raises
     ------
@@ -90,6 +88,7 @@ class MSSSIM(FullReferenceMetricsInterface):
 
     See Also
     --------
+    viqa.fr_metrics.uqi.UQI : Universal quality index (UQI) between two images.
     viqa.fr_metrics.ssim.SSIM : Structural similarity index (SSIM) between two images.
 
     References
@@ -125,9 +124,7 @@ class MSSSIM(FullReferenceMetricsInterface):
             If given, MS-SSIM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for MS-SSIM calculation. The keyword arguments are
-            passed to ``piq.multi_scale_ssim``. See the documentation under
-            `piq.multi_scale_ssim
-            <https://piq.readthedocs.io/en/latest/functions.html#multi-scale-structural-similarity-ms-ssim>`_.
+            passed to :py:func:`piq.multi_scale_ssim`. See the documentation under [2]_.
 
         Other Parameters
         ----------------
@@ -141,9 +138,9 @@ class MSSSIM(FullReferenceMetricsInterface):
             scale_weights : list, default=[0.0448, 0.2856, 0.3001, 0.2363, 0.1333]
                 Weights for different scales.
             k1 : float, default=0.01
-                Algorithm parameter, K1 (small constant, see [2]_).
+                Algorithm parameter, K1 (small constant, see [3]_).
             k2 : float, default=0.03
-                Algorithm parameter, K2 (small constant, see [2]_).
+                Algorithm parameter, K2 (small constant, see [3]_).
                 Try a larger K2 constant (e.g. 0.4) if you get a negative or NaN
                 results.
 
@@ -181,7 +178,8 @@ class MSSSIM(FullReferenceMetricsInterface):
 
         References
         ----------
-        .. [2] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale
+        .. [2] https://piq.readthedocs.io/en/latest/functions.html#piq.multi_scale_ssim
+        .. [3] Wang, Z., Simoncelli, E. P., & Bovik, A. C. (2003). Multi-scale
             structural similarity for image quality assessment. The Thirty-Seventh
             Asilomar Conference on Signals, Systems & Computers, 1298–1402.
             https://doi.org/10.1109/ACSSC.2003.1292216

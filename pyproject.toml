@@ -62,8 +62,13 @@ lint = [
 docs = [
     "sphinx",
     "furo",
+    "sphinxcontrib-email",
     "sphinx_copybutton",
     "sphinx_github_changelog",
+    "sphinx-autobuild",
+    "sphinx-last-updated-by-git",
+    "sphinx-hoverxref",
+    "sphinx-notfound-page",
     "viqa[tests]",
 ]
 dev = [

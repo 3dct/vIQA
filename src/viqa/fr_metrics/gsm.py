@@ -76,13 +76,14 @@ class GSM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the GSM calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:func:`gradient_similarity`.
+        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.fr_metrics.gsm.gradient_similarity`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.utils.load_data`.
+        :py:func:`.viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
@@ -145,8 +146,7 @@ class GSM(FullReferenceMetricsInterface):
             If given, GSM is calculated only for the given slice of the 3D image.
         **kwargs : optional
             Additional parameters for GSM calculation. The keyword arguments are passed
-            to :py:func:`.viqa.fr_metrics.gsm.gradient_similarity_3d` or
-            :py:func:`.viqa.fr_metrics.gsm.gradient_similarity`.
+            to :py:func:`.viqa.fr_metrics.gsm.gradient_similarity`.
 
         Returns
         -------
@@ -290,9 +290,9 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     dim : {0, 1, 2}, default=2
         Dimension on which the slices are iterated.
     experimental : bool, default=False
-        If True, calculate GSM for the full volume with experimental 3D kernels. If
-        False, calculate GSM for all slices of the given dimension and calculate mean
-        over all single slice values.
+        If ``True``, calculate GSM for the full volume with experimental 3D kernels. If
+        ``False``, calculate GSM for all slices of the given dimension and calculate
+        mean over all single slice values.
 
         .. attention::
             This is experimental and the resulting values are not validated.

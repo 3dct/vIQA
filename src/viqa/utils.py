@@ -144,15 +144,11 @@ def correlate_convolve_abs(
         Kernel
     mode : str, default='correlate'
         'correlate' or 'convolve'
-
-        .. seealso::
-            Scipy documentation
-
     border_mode : str, default='constant'
         'constant', 'reflect', 'nearest', 'mirror' or 'wrap'
 
         .. seealso::
-            Scipy documentation
+            See NumPy documentation for :py:func:`numpy.pad`.
 
     value : int, optional, default=0
         Value for constant border mode
@@ -170,10 +166,8 @@ def correlate_convolve_abs(
 
     See Also
     --------
-    `scipy.signal.correlate
-    <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.correlate.html>`_
-    and `scipy.signal.convolve
-    <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve.html>`_
+    :py:func:`scipy.signal.correlate`
+    :py:func:`scipy.signal.convolve`
 
     Notes
     -----

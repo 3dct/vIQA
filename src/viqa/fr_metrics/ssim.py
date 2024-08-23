@@ -2,7 +2,8 @@
 
 Notes
 -----
-This code is adapted from skimage.metrics.structural_similarity available under [1]_.
+This code is adapted from :py:func:`skimage.metrics.structural_similarity` available
+under [1]_.
 
 References
 ----------
@@ -74,13 +75,14 @@ class SSIM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the SSIM calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:func:`structural_similarity`.
+        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.fr_metrics.ssim.structural_similarity`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.utils.load_data`.
+        :py:func:`viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
@@ -103,6 +105,7 @@ class SSIM(FullReferenceMetricsInterface):
 
     See Also
     --------
+    viqa.fr_metrics.uqi.UQI : Universal quality index.
     viqa.fr_metrics.msssim.MSSSIM : Multi-scale structural similarity index.
 
     References
@@ -135,7 +138,7 @@ class SSIM(FullReferenceMetricsInterface):
             ``chromatic=True`` is set during initialization.
         **kwargs : optional
             Additional parameters for the SSIM calculation. The keyword arguments are
-            passed to :py:func:`.viqa.fr_metrics.ssim.structural_similarity`.
+            passed to :py:func:`viqa.fr_metrics.ssim.structural_similarity`.
 
         Returns
         -------
@@ -247,7 +250,8 @@ def structural_similarity(
         'reflect' or 'wrap'.
 
         .. seealso::
-            See Numpy documentation for detail.
+            See Scipy documentation for :py:func:`scipy.ndimage.gaussian_filter` or
+            :py:func:`scipy.ndimage.uniform_filter` for more information on the modes.
 
     cval : float, optional
         Value to fill past edges of input if ``mode`` is 'constant'. Default is 0.
@@ -271,7 +275,7 @@ def structural_similarity(
     Notes
     -----
     To match the implementation in [1]_, set ``gaussian_weights`` to True and ``sigma``
-    to 1.5. This code is adapted from ``skimage.metrics.structural_similarity``
+    to 1.5. This code is adapted from :py:func:`skimage.metrics.structural_similarity`
     available under [2]_. The metric would possibly result in a value of nan in specific
     cases. To avoid this, the function replaces nan values with 1.0 before computing the
     final score.

@@ -59,13 +59,13 @@ class QMeasure(NoReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
-        ``normalize`` is True. Passed to :py:func:`viqa.utils.load_data`.
+        ``normalize`` is True. Passed to :py:func:`viqa.load_utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.utils.load_data`.
+        :py:func:`viqa.load_utils.load_data`.
 
     Other Parameters
     ----------------
@@ -77,7 +77,7 @@ class QMeasure(NoReferenceMetricsInterface):
 
     Notes
     -----
-    This metric will always be calculated with float32 precision.
+    This metric will always be calculated with ``float32`` precision.
 
     References
     ----------
@@ -168,7 +168,7 @@ class QMeasure(NoReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If no score value is available. Run score() first.
+            If :py:attr:`score_val` is not available.
         """
         if self.score_val is not None:
             print("Q-Measure: {}".format(np.round(self.score_val, decimals)))
