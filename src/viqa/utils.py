@@ -8,11 +8,11 @@ Examples
         >>> img_path = "path/to/image.mhd"
         >>> img = load_data(img_path)
 
-        >>> from viqa import export_csv, PSNR, RMSE
+        >>> from viqa import export_results, PSNR, RMSE
         >>> metrics = [PSNR, RMSE]
         >>> output_path = "path/to/output"
         >>> filename = "metrics.csv"
-        >>> export_csv(metrics, output_path, filename)
+        >>> export_results(metrics, output_path, filename)
 
 """
 
@@ -506,7 +506,7 @@ def _check_chromatic(img_r, img_m, chromatic):
     return img_r_tensor, img_m_tensor
 
 
-def export_csv(metrics, output_path, filename):
+def export_results(metrics, output_path, filename):
     """Export data to a csv file.
 
     Parameters
@@ -518,15 +518,25 @@ def export_csv(metrics, output_path, filename):
     filename : str or os.PathLike
         Name of the file
 
+    Notes
+    -----
+    This function just writes the ``score_val`` attribute of instanced metrics
+    to a csv file. Therefore, the metrics must have been calculated before exporting and
+    no-reference metrics cannot be distinguished between reference and modified image.
+
+    .. attention::
+
+        The csv file will be overwritten if it already exists.
+
     Examples
     --------
         .. doctest-skip::
 
-            >>> from viqa import export_csv, FSIM, PSNR
+            >>> from viqa import export_results, FSIM, PSNR
             >>> metric1 = FSIM()
             >>> metric2 = PSNR()
             >>> metrics = [metric1, metric2]
-            >>> export_csv(metrics, "path/to/output", "filename.csv")
+            >>> export_results(metrics, "path/to/output", "filename.csv")
     """
     # Check if filename has the correct extension
     if not filename.lower().endswith(".csv"):
