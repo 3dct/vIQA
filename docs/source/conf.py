@@ -60,6 +60,7 @@ autodoc_default_options = {
     'members': None,
     'member-order': 'bysource',
     'exclude-members': '__init__',
+    'inherited-members': None,
 }
 
 autodoc_mock_imports = [
