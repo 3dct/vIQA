@@ -140,10 +140,6 @@ jobs:
       tested: ${{ steps.test_install.outputs.tested }}
 
     steps:
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-
       - name: Test install from Test PyPI
         id: test_install
         run: |
