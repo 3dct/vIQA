@@ -34,6 +34,8 @@ Examples
 import csv
 import math
 import os
+from datetime import datetime
+from importlib.metadata import version
 from typing import Tuple
 from warnings import warn
 
@@ -41,6 +43,7 @@ import numpy as np
 import scipy.fft as fft
 import skimage as ski
 import torch
+from skimage.transform import resize
 from torch import Tensor
 
 from viqa.load_utils import load_data
@@ -551,3 +554,55 @@ def export_results(metrics, output_path, filename):
                 metric.score_val = "n/a"
             else:
                 writer.writerow([metric._name, metric.score_val])
+
+
+def _resize_image(img_r, img_m, scaling_order=1):
+    # Resize image if shapes unequal
+    if img_r.shape != img_m.shape:
+        img_m = resize(img_m, img_r.shape, preserve_range=True, order=scaling_order)
+        img_m = img_m.astype(img_r.dtype)
+    return img_m
+
+
+def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.txt"):
+    """Export the metadata (custom parameters and package version) to a txt file.
+
+    Parameters
+    ----------
+    metrics : list
+        List of metric instances.
+    metrics_parameters : list
+        List of dictionaries containing the parameters for the metrics.
+    file_path : str
+        Path to the directory where the txt file should be saved.
+    file_name : str, default='metadata.txt'
+        Name of the txt file. Default is 'metadata.txt'.
+
+    Notes
+    -----
+        .. attention::
+
+            The txt file will be overwritten if it already exists.
+    """
+    if os.path.splitext(file_name)[1] != ".txt":
+        raise ValueError(
+            f"The file name {file_name} must have the " f"extension '.txt'."
+        )
+    path = os.path.join(file_path, file_name)
+    with open(path, mode="w") as txtfile:
+        txtfile.write("vIQA_version: " + version("viqa") + "\n")
+        txtfile.write("Time: " + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
+        txtfile.write("\n")
+        txtfile.write("\n")
+        txtfile.write("custom metric parameters: \n")
+        txtfile.write("========================= \n")
+        for metric_num, metric in enumerate(metrics):
+            txtfile.write(metric.__str__().split("(")[0])
+            txtfile.write("\n")
+            [txtfile.write("-") for char in metric.__str__().split("(")[0]]
+            txtfile.write("\n")
+            txtfile.write("data_range: " + str(metric._parameters["data_range"]) + "\n")
+            for key, value in metrics_parameters[metric_num].items():
+                txtfile.write(key + ": " + str(value))
+                txtfile.write("\n")
+            txtfile.write("\n")

@@ -24,19 +24,21 @@ __all__ = [
     "QMeasure",
     "load_data",
     "normalize_data",
+    "export_metadata",
     "export_results",
     "fuse_metrics_linear_combination",
     "visualize_3d",
     "BatchMetrics",
+    "MultipleMetrics",
     "ImageArray",
 ]
 
-from .batch_mode import BatchMetrics
 from .fr_metrics import *
 from .fusion import fuse_metrics_linear_combination
 from .load_utils import ImageArray, load_data, normalize_data
+from .multiple import BatchMetrics, MultipleMetrics
 from .nr_metrics import *
-from .utils import export_results
+from .utils import export_metadata, export_results
 from .visualization_utils import visualize_3d
 
 

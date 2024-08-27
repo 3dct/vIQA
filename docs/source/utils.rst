@@ -30,6 +30,7 @@ Utilities module
     correlate_convolve_abs
     gabor_convolve
     export_results
+    export_metadata
 
 .. currentmodule:: viqa.visualization_utils
 

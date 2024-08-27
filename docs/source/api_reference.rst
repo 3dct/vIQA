@@ -26,4 +26,4 @@ This is the API reference for the VIQA package. The following modules are availa
 .. toctree::
    :maxdepth: 2
 
-   batch_mode
+   multiple

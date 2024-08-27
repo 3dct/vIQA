@@ -7,7 +7,7 @@ python_sources = [
     'visualization_utils.py',
     'utils.py',
     'fusion.py',
-    'batch_mode.py',
+    'multiple.py',
 ]
 
 py.install_sources(
