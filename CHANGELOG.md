@@ -2,6 +2,45 @@
 
 
 
+## v1.10.0 (2024-08-27)
+
+### Chore
+
+* chore: update docs config to autodocument inherited members ([`9bc640f`](https://github.com/3dct/vIQA/commit/9bc640f86e3b01997ca27920b46a5e900da83e93))
+
+* chore: update documentation build
+
+add dependencies for Sphinx in GitHub Actions job ([`4596169`](https://github.com/3dct/vIQA/commit/4596169db77fc0c3f5940e5607e0e8e9baab25a0))
+
+* chore: update release process
+
+build only after semantic_release job ran ([`5fe798c`](https://github.com/3dct/vIQA/commit/5fe798c625e00786938a8bc0dbec272c0bd6799b))
+
+### Documentation
+
+* docs: update docs
+
+remove sphinx-notfound-page, temporarily disable hoverxref ([`614d52a`](https://github.com/3dct/vIQA/commit/614d52aa0a05e87c664ed99fb8f7e76b43b9c589))
+
+* docs: add sphinx-autobuild to developer_guide.rst ([`59381a4`](https://github.com/3dct/vIQA/commit/59381a4910dfbf2b4386c3766241dd54a4d42349))
+
+### Feature
+
+* feat: add function to compute multiple metrics at once
+
+rename batch_mode.py to multiple.py, add MultipleMetrics class, move export_metadata to it&#39;s own function in utils.py, add base class for classes of type multiple, update class BatchMetrics ([`6f4f8a7`](https://github.com/3dct/vIQA/commit/6f4f8a7765078a322e12cfca6720f3d8e0842082))
+
+### Refactor
+
+* refactor: add new parent class metric
+
+rename export_csv to export_results, restructure abstract base classes for metrics ([`4bc3bef`](https://github.com/3dct/vIQA/commit/4bc3bef3c85b9e21c4bf0b2259fb9a957c193e4b))
+
+### Unknown
+
+* book: update Image_Comparison.ipynb accordingly to 6f4f8a77 ([`8ac53e8`](https://github.com/3dct/vIQA/commit/8ac53e8d7a9d3fa193fade7cc295f5b581e917fb))
+
+
 ## v1.9.1 (2024-08-23)
 
 ### Chore
