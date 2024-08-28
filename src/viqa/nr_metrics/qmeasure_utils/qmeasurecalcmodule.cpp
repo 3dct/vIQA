@@ -9,13 +9,17 @@
  * Modifications
  * #############
  * Original code, 2024, Lukas Behammer
+ *
+ * License
+ * #######
+ * BSD-3-Clause License
  */
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "qmeasurecalcmodule.h"
-#include "iAQMeasureCalculation.h"
+#include "QMeasureCalculation.h"
 
 // Method Table
 static PyMethodDef qmeasureMethods[] = {
@@ -70,8 +74,8 @@ static PyObject
     auto data = (float *) PyArray_DATA(matin);
 
     // Call the C++ function
-    iAQMeasureCalculation iAQMeasureCalculation;
-    auto result = iAQMeasureCalculation.computeOrigQ(data, dims, data_range, ihistbins, inumpeaks, false);
+    QMeasureCalculation QMeasureCalculation;
+    auto result = QMeasureCalculation.computeOrigQ(data, dims, data_range, ihistbins, inumpeaks, false);
 
     // Get Q value from map
     qvalue = result["Q (orig, equ 1)"];

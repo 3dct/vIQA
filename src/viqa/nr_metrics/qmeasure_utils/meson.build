@@ -1,8 +1,10 @@
 incdir_numpy = run_command('python', '../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
+incdir_qmeasure = './qmeasure/src'
+inc_dir = include_directories(incdir_numpy, incdir_qmeasure)
 
 sources = files(
-'ImageHistogram.cpp',
-'iAQMeasureCalculation.cpp',
+'qmeasure/src/ImageHistogram.cpp',
+'qmeasure/src/QMeasureCalculation.cpp',
 'qmeasurecalcmodule.cpp',
 )
 
@@ -21,7 +23,7 @@ py.extension_module(
     sources: sources,
     install: true,
     c_args: extra_args,
-    include_directories: incdir_numpy,
+    include_directories: inc_dir,
     subdir: 'viqa/nr_metrics/qmeasure_utils',
 )
 

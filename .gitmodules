@@ -1,0 +1,3 @@
+[submodule "src/viqa/nr_metrics/qmeasure_utils/qmeasure"]
+	path = src/viqa/nr_metrics/qmeasure_utils/qmeasure
+	url = https://github.com/3dct/qmeasure.git

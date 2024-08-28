@@ -8,7 +8,7 @@ Environment setup
 
 Clone the latest development version of the repository with the following command::
 
-    git clone -b dev https://github.com/3dct/vIQA
+    git clone --recurse-submodules -b dev https://github.com/3dct/vIQA
 
 It's best practice to use a virtual environment for development. For example you can create a new virtual environment with the following command::
 
