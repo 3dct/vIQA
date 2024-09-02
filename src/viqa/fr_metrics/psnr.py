@@ -49,7 +49,6 @@ import numpy as np
 from skimage.metrics import peak_signal_noise_ratio
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs
 
 
 class PSNR(FullReferenceMetricsInterface):
@@ -116,14 +115,7 @@ class PSNR(FullReferenceMetricsInterface):
         score_val : float
             PSNR score value.
         """
-        # Check images
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
         # Calculate score
         if np.array_equal(img_r, img_m):
             score_val = np.inf  # PSNR of identical images is infinity

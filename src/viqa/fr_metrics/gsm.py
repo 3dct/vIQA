@@ -36,7 +36,7 @@ from tqdm.autonotebook import trange
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.kernels import *
-from viqa.utils import _check_imgs, _to_float
+from viqa.utils import _to_float
 
 # Load the kernels as constants
 KERNELS_3D = [
@@ -187,13 +187,7 @@ class GSM(FullReferenceMetricsInterface):
         with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the
         Kernel `n` and :math:`\\pmb{X}` denoting an image block.
         """
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
 
         if img_r.ndim == 3:
             if (

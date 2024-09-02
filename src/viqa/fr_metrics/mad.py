@@ -47,7 +47,6 @@ from viqa._metrics import FullReferenceMetricsInterface
 from viqa.deprecation import RemovedInNextVersionWarning
 from viqa.fr_metrics.stat_utils import statisticscalc
 from viqa.utils import (
-    _check_imgs,
     _extract_blocks,
     _fft,
     _ifft,
@@ -175,14 +174,7 @@ class MAD(FullReferenceMetricsInterface):
         ``im_slice`` is given, the MAD is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
         """
-        # Check images
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:

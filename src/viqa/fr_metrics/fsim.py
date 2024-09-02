@@ -34,7 +34,7 @@ import numpy as np
 from piq import fsim
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_chromatic, _check_imgs
+from viqa.utils import _check_chromatic
 
 
 class FSIM(FullReferenceMetricsInterface):
@@ -182,13 +182,7 @@ class FSIM(FullReferenceMetricsInterface):
         ----------
         .. [3] https://piq.readthedocs.io/en/latest/functions.html#piq.fsim
         """
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
 
         if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (

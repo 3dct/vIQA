@@ -63,7 +63,6 @@ import numpy as np
 
 from viqa._metrics import FullReferenceMetricsInterface
 from viqa.fr_metrics.ssim import structural_similarity
-from viqa.utils import _check_imgs
 
 
 class UQI(FullReferenceMetricsInterface):
@@ -148,13 +147,8 @@ class UQI(FullReferenceMetricsInterface):
         In the original implementation `win_size` is set to 8, here it is set to 7 by
         default, but can be changed to other odd values.
         """
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
+
         score_val = structural_similarity(
             img_r,
             img_m,

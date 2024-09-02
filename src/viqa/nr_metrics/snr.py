@@ -36,7 +36,6 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.load_utils import load_data
 from viqa.utils import _rgb_to_yuv, _to_grayscale
 from viqa.visualization_utils import _visualize_snr_2d, _visualize_snr_3d
 
@@ -92,15 +91,10 @@ class SNR(NoReferenceMetricsInterface):
         score_val : float
             SNR score value.
         """
+        img = super().score(img)
+
         # write kwargs to ._parameters attribute
         self._parameters.update(kwargs)
-
-        # Load image
-        img = load_data(
-            img,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-        )
 
         score_val = signal_to_noise_ratio(img, **kwargs)
         self.score_val = score_val

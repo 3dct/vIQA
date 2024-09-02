@@ -49,7 +49,6 @@ import numpy as np
 from skimage.metrics import mean_squared_error
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs
 
 
 class RMSE(FullReferenceMetricsInterface):
@@ -103,14 +102,8 @@ class RMSE(FullReferenceMetricsInterface):
         score_val : float
             RMSE score value.
         """
-        # Check images
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
+
         # Calculate score
         score_val = np.sqrt(mean_squared_error(img_r, img_m))
         self.score_val = score_val

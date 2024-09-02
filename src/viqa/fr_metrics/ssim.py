@@ -59,7 +59,6 @@ from scipy.ndimage import gaussian_filter, uniform_filter
 from skimage.util.arraycrop import crop
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_imgs
 
 
 class SSIM(FullReferenceMetricsInterface):
@@ -155,13 +154,7 @@ class SSIM(FullReferenceMetricsInterface):
         For color images, the metric is calculated channel-wise and the mean after
         weighting with the color weights is returned.
         """
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
 
         if self._parameters["chromatic"]:
             if color_weights is None:

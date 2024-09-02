@@ -35,7 +35,7 @@ import numpy as np
 from piq import vif_p
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_chromatic, _check_imgs
+from viqa.utils import _check_chromatic
 
 
 class VIFp(FullReferenceMetricsInterface):
@@ -161,13 +161,7 @@ class VIFp(FullReferenceMetricsInterface):
             quality. IEEE Transactions on Image Processing, 15(2), 430–444.
             https://doi.org/10.1109/TIP.2005.859378
         """
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
 
         if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (

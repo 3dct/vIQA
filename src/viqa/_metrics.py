@@ -15,7 +15,8 @@
 
 from abc import ABC, abstractmethod
 
-from viqa.utils import export_results
+from viqa.load_utils import load_data
+from viqa.utils import _check_imgs, export_results
 
 
 class Metric:
@@ -55,7 +56,15 @@ class FullReferenceMetricsInterface(ABC, Metric):
 
     @abstractmethod
     def score(self, img_r, img_m):
-        pass
+        img_r, img_m = _check_imgs(
+            img_r=img_r,
+            img_m=img_m,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            chromatic=self._parameters["chromatic"],
+            roi=self._parameters["roi"],
+        )
+        return img_r, img_m
 
     @abstractmethod
     def print_score(self):
@@ -90,7 +99,14 @@ class NoReferenceMetricsInterface(ABC, Metric):
 
     @abstractmethod
     def score(self, img):
-        pass
+        # Load image
+        img = load_data(
+            img=img,
+            data_range=self._parameters["data_range"],
+            normalize=self._parameters["normalize"],
+            roi=self._parameters["roi"],
+        )
+        return img
 
     @abstractmethod
     def print_score(self):

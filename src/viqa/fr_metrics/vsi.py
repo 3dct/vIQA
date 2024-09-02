@@ -34,7 +34,7 @@ import numpy as np
 from piq import vsi
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.utils import _check_chromatic, _check_imgs
+from viqa.utils import _check_chromatic
 
 
 class VSI(FullReferenceMetricsInterface):
@@ -182,12 +182,7 @@ class VSI(FullReferenceMetricsInterface):
             method by combining simple priors. 2013 IEEE International Conference on
             Image Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
         """
-        img_r, img_m = _check_imgs(
-            img_r,
-            img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-        )
+        img_r, img_m = super().score(img_r, img_m)
 
         if img_r.ndim == 3:
             if (

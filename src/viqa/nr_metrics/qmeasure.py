@@ -42,7 +42,6 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.load_utils import load_data
 from viqa.nr_metrics.qmeasure_utils import qmeasurecalc
 from viqa.utils import _to_float
 
@@ -127,12 +126,7 @@ class QMeasure(NoReferenceMetricsInterface):
         score_val : float
             Q-Measure value.
         """
-        # Load image
-        img = load_data(
-            img,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-        )
+        img = super().score(img)
 
         if img.ndim < 3:
             raise ValueError("Q-Measure is only defined for 3D CT volumes.")
