@@ -2,6 +2,47 @@
 
 
 
+## v1.11.0 (2024-09-02)
+
+### Chore
+
+* chore: update .pre-commit-config.yaml
+
+add submodule checkout, add custom autoupdate commit message, change sphinx building stage to pre-push ([`8998a73`](https://github.com/3dct/vIQA/commit/8998a736ea1883835139af88df2652888e7813d8))
+
+* chore: update LICENSE.txt
+
+include License statement for qmeasure submodule, fix file paths, update style ([`4ec7e17`](https://github.com/3dct/vIQA/commit/4ec7e1739c46d27e4cdc4f085b66882d53e2ecf7))
+
+### Ci
+
+* ci: add recursive checkout ([`ef72c4a`](https://github.com/3dct/vIQA/commit/ef72c4a11196a925d8aaf04933ca533a1f1a7640))
+
+* ci: make checkout branch variable for wheel and sdist building
+
+set checkout branch for semantic_release to main ([`59d0375`](https://github.com/3dct/vIQA/commit/59d037557cfb899eb6191e61aad331a6afe4bbf6))
+
+* ci: remove sleep step in job test_install ([`fde39ba`](https://github.com/3dct/vIQA/commit/fde39baa64fa830d35451c35dd905de7f2affc04))
+
+### Feature
+
+* feat: add function to crop images
+
+cal cropping function during loading if parameter roi is given ([`140d101`](https://github.com/3dct/vIQA/commit/140d101ace4ffa3dbd97ecc11db8ada3dba0ae6b))
+
+### Refactor
+
+* refactor: add warning to visualize method in class ImageArray
+
+add warning that parameter slices will be ignored if method is called on a 2D image ([`cd496be`](https://github.com/3dct/vIQA/commit/cd496be36ed3ad8ba638ba4de04c942ff53ec5f4))
+
+* refactor: handle data loading in interface classes
+
+move data loading and checking to score methods of metrics interface classes ([`1ad011b`](https://github.com/3dct/vIQA/commit/1ad011bea42b52c94d3e17f26b750e21394f3e1b))
+
+* refactor: use qmeasure submodule ([`1c1ae61`](https://github.com/3dct/vIQA/commit/1c1ae61dc8b061fe21c29fba69e705274eb07897))
+
+
 ## v1.10.0 (2024-08-27)
 
 ### Chore
