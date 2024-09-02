@@ -25,6 +25,7 @@ class Metric:
             "data_range": data_range,
             "normalize": normalize,
             "chromatic": False,
+            "roi": None,
             **kwargs,
         }
         self.score_val = None

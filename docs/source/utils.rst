@@ -21,6 +21,7 @@ Utilities module
     load_raw
     load_nifti
     normalize_data
+    crop_image
 
 .. currentmodule:: viqa.utils
 

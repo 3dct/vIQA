@@ -495,6 +495,7 @@ def load_data(
     data_range: int | None = None,
     normalize: bool = False,
     batch: bool = False,
+    roi: Union[list[Tuple[int, int]], None] = None,
 ) -> list[ImageArray] | ImageArray:
     """
     Load data from a numpy array, a pytorch tensor or a file path.
@@ -513,6 +514,10 @@ def load_data(
 
         .. caution::
             Currently not tested.
+
+    roi : list[Tuple[int, int]], optional, default=None
+        Region of interest for cropping the image. The format is a list of tuples
+        with the ranges for the x, y and z axis. If not set, the whole image is loaded.
 
     Returns
     -------
@@ -584,10 +589,7 @@ def load_data(
                     file_dir, file_name
                 )  # Load data from disk
         case np.ndarray():  # If input is a numpy array
-            if not normalize:
-                return ImageArray(img)
-            else:
-                img_arr = ImageArray(img)  # Use input as numpy array
+            img_arr = ImageArray(img)  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
             img_arr = ImageArray(img.cpu().numpy())  # Convert tensor to numpy array
         case [np.ndarray()]:  # If input is a list
@@ -609,6 +611,13 @@ def load_data(
             img_arr = ImageArray(
                 normalize_data(img=img_arr, data_range_output=(0, data_range))
             )
+
+    # Crop image
+    if roi:
+        if batch:
+            img_arr = [ImageArray(crop_image(img, *roi)) for img in img_arr]
+        elif not isinstance(img_arr, list):
+            img_arr = ImageArray(crop_image(img_arr, *roi))
 
     return img_arr
 
@@ -709,3 +718,49 @@ def normalize_data(
         warn("Data is already normalized.", RuntimeWarning)
 
     return img
+
+
+def crop_image(
+    img: np.ndarray | ImageArray,
+    x: Tuple[int, int],
+    y: Tuple[int, int],
+    z: Union[Tuple[int, int], None],
+) -> np.ndarray | ImageArray:
+    """
+    Crop the image array.
+
+    Parameters
+    ----------
+    img : np.ndarray or ImageArray
+        Input image
+    x : Tuple[int, int]
+        Range for the x-axis
+    y : Tuple[int, int]
+        Range for the y-axis
+    z : Tuple[int, int]
+        Range for the z-axis
+
+    Returns
+    -------
+    img_crop : np.ndarray or ImageArray
+        Cropped image array
+
+    Raises
+    ------
+    ValueError
+        If the image is not 2D or 3D.
+
+    Warns
+    -----
+    RuntimeWarning
+        If the image is 2D, the parameter z will be ignored.
+    """
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
+        if z is not None:
+            warn("Image is 2D. Parameter z will be ignored.", RuntimeWarning)
+        img_crop = img[x[0] : x[1], y[0] : y[1]]
+    elif img.ndim == 3 and z is not None:
+        img_crop = img[x[0] : x[1], y[0] : y[1], z[0] : z[1]]
+    else:
+        raise ValueError("Image must be 2D or 3D.")
+    return img_crop
