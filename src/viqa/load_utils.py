@@ -227,6 +227,11 @@ class ImageArray(np.ndarray):
         ValueError
             If the image is not 2D or 3D.
 
+        Warns
+        -----
+        UserWarning
+            If the image is 2D, the parameter slices will be ignored.
+
         Examples
         --------
         >>> import numpy as np
@@ -238,6 +243,7 @@ class ImageArray(np.ndarray):
         if self.ndim == 3:
             visualize_3d(self, slices, export_path, **kwargs)
         elif self.ndim == 2:
+            warn("Image is 2D. Parameter slices will be ignored.", RuntimeWarning)
             visualize_2d(self, export_path, **kwargs)
         else:
             raise ValueError("Image must be 2D or 3D.")
@@ -627,7 +633,7 @@ def normalize_data(
     data_range_output: Tuple[int, int],
     data_range_input: Union[Tuple[int, int], None] = None,
     automatic_data_range: bool = True,
-) -> np.ndarray:
+) -> np.ndarray | ImageArray:
     """Normalize a numpy array to a given data range.
 
     Parameters
@@ -643,7 +649,7 @@ def normalize_data(
 
     Returns
     -------
-    img_arr : np.ndarray
+    img_arr : np.ndarray or ImageArray
         Input image normalized to data_range
 
     Raises
