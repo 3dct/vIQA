@@ -103,3 +103,18 @@ Therefore the version dunder does not need to be updated manually. If you want t
 Please do this only on the dev branch. The version will be updated automatically on the main branch.
 PEP 440 versioning is used in the newest spec of `PyPA <https://packaging.python.org/en/latest/specifications/version-specifiers/#version-specifiers>`_.
 NEP 29 is followed for the project. Please have a look at the `NEP 29 <https://numpy.org/neps/nep-0029-deprecation_policy.html>`_ for more information.
+
+Pre-commit usage
+----------------
+
+This repository uses `pre-commit <https://pre-commit.com/>`_ to manage the hooks. Please install pre-commit with the following command::
+
+    pip install pre-commit
+
+To install pre-commit hooks (including the pre-push hook to check if the docs can be built), run the following command::
+
+    pre-commit install --hook-type pre-commit --hook-type pre-push
+
+You can now run the pre-commit hooks manually with the following command::
+
+    pre-commit run --all-files --hook-stage pre-commit --hook-stage pre-push
