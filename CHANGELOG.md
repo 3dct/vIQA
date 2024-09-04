@@ -2,6 +2,15 @@
 
 
 
+## v1.12.0 (2024-09-04)
+
+### Feature
+
+* feat: add function to create image report
+
+move print_image method to utils.py as function and rename to export_image, add parameter to change filename, fix bug when number of fr-metrics is not a multiple of four ([`cc8b4ff`](https://github.com/3dct/vIQA/commit/cc8b4ff654f8721a552c13b9c9e26d8a6697fecd))
+
+
 ## v1.11.1 (2024-09-04)
 
 ### Documentation
