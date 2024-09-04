@@ -105,6 +105,7 @@ class ImageArray(np.ndarray):
         """
         # Input array is an already formed ndarray instance
         obj = np.asarray(input_array).view(cls)
+        # FIXME: Only calculate statistics on method call
         # Add attributes
         obj.mean_value = np.mean(input_array)
         obj.median = np.median(input_array)
@@ -497,7 +498,7 @@ def _load_binary(data_file_path, data_type, dim_size):
 
 
 def load_data(
-    img: np.ndarray | Tensor | str | os.PathLike,
+    img: np.ndarray | ImageArray | Tensor | str | os.PathLike,
     data_range: int | None = None,
     normalize: bool = False,
     batch: bool = False,
@@ -508,8 +509,8 @@ def load_data(
 
     Parameters
     ----------
-    img : np.ndarray, torch.Tensor, str or os.PathLike
-        Numpy array, tensor or file path
+    img : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
+        Numpy array, ImageArray, tensor or file path
     data_range : int, optional, default=None
         Maximum value of the returned data. Passed to
         :py:func:`viqa.load_utils.normalize_data`.
@@ -520,6 +521,10 @@ def load_data(
 
         .. caution::
             Currently not tested.
+
+        .. todo::
+            Deprecate batch loading as this has no use with the current implementation
+            as BatchMetrics class.
 
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
@@ -571,7 +576,7 @@ def load_data(
             RuntimeWarning,
         )
 
-    img_arr: list[ImageArray] | ImageArray
+    img_arr: list[np.ndarray] | np.ndarray
     # Check input type
     match img:
         case str() | os.PathLike():  # If input is a file path
@@ -594,12 +599,18 @@ def load_data(
                 img_arr = _load_data_from_disk(
                     file_dir, file_name
                 )  # Load data from disk
+        case ImageArray():  # If input is an ImageArray
+            img_arr = img  # Use input as ImageArray
         case np.ndarray():  # If input is a numpy array
-            img_arr = ImageArray(img)  # Use input as numpy array
+            img_arr = img  # Use input as numpy array
         case Tensor():  # If input is a pytorch tensor
-            img_arr = ImageArray(img.cpu().numpy())  # Convert tensor to numpy array
+            img_arr = img.cpu().numpy()  # Convert tensor to numpy array
         case [np.ndarray()]:  # If input is a list
-            img_arr = [ImageArray(im) for im in img]  # Use input as list of ImageArrays
+            # FIXME: This should never get called as the input should not be a list
+            #  according to the type hint.
+            #  Either add support for list input (and add case [ImageArray()]) or remove
+            #  this case.
+            img_arr = img  # Use input as list of ImageArrays
             batch = True  # Set batch to True to normalize list of numpy arrays
         case _:
             raise ValueError(
@@ -610,22 +621,28 @@ def load_data(
     if normalize and data_range:
         if batch:
             img_arr = [
-                ImageArray(normalize_data(img=img, data_range_output=(0, data_range)))
+                normalize_data(img=img, data_range_output=(0, data_range))
                 for img in img_arr
             ]
         elif not isinstance(img_arr, list):
-            img_arr = ImageArray(
-                normalize_data(img=img_arr, data_range_output=(0, data_range))
-            )
+            img_arr = normalize_data(img=img_arr, data_range_output=(0, data_range))
 
-    # Crop image
     if roi:
+        # Crop image
         if batch:
-            img_arr = [ImageArray(crop_image(img, *roi)) for img in img_arr]
+            img_arr = [crop_image(img, *roi) for img in img_arr]
         elif not isinstance(img_arr, list):
-            img_arr = ImageArray(crop_image(img_arr, *roi))
+            img_arr = crop_image(img_arr, *roi)
 
-    return img_arr
+    img_final: list[ImageArray] | ImageArray
+    if isinstance(img_arr, ImageArray):
+        img_final = img_arr
+    elif isinstance(img_arr, list):
+        img_final = [ImageArray(img) for img in img_arr]
+    else:
+        img_final = ImageArray(img_arr)
+
+    return img_final
 
 
 def normalize_data(
