@@ -76,6 +76,7 @@ repos:
       - id: build-docs
         additional_dependencies:
           - viqa[docs]
+          - sphinxcontrib-email
         args: ['--cache-dir', 'docs/build/doctrees', '--html-dir', 'docs/build/html', '--source-dir', 'docs/source']
         language_version: python3
         stages: [pre-push]
