@@ -2,27 +2,28 @@
 
 
 
+## v1.11.1 (2024-09-04)
+
+### Documentation
+
+* docs: add pre-commit usage in developer guide ([`4c313ab`](https://github.com/3dct/vIQA/commit/4c313ab31a66b5dd9369ad2ec8d226b9c46279b9))
+
+* docs: Update docs
+
+update developer guide regarding docs generation, rename pages for utility modules and usage ([`4f35dd3`](https://github.com/3dct/vIQA/commit/4f35dd3d1a51f54035640ce7cb6c2b9115c85e48))
+
+### Performance
+
+* perf: improve performance of load_data
+
+call ImageArray only at the end of load_data function and only if necessary ([`b3fdecd`](https://github.com/3dct/vIQA/commit/b3fdecdad190ab8a8831d4885bbe5e0f5e96c420))
+
+* perf: improve performance of BatchMetrics
+
+add checks to load images only if not already in memory, add function to calculate no-reference metrics only if not already calculated ([`a0f3a26`](https://github.com/3dct/vIQA/commit/a0f3a267cf132c35e4416b9f5ae5be097e7dc162))
+
+
 ## v1.11.0 (2024-09-02)
-
-### Chore
-
-* chore: update .pre-commit-config.yaml
-
-add submodule checkout, add custom autoupdate commit message, change sphinx building stage to pre-push ([`8998a73`](https://github.com/3dct/vIQA/commit/8998a736ea1883835139af88df2652888e7813d8))
-
-* chore: update LICENSE.txt
-
-include License statement for qmeasure submodule, fix file paths, update style ([`4ec7e17`](https://github.com/3dct/vIQA/commit/4ec7e1739c46d27e4cdc4f085b66882d53e2ecf7))
-
-### Ci
-
-* ci: add recursive checkout ([`ef72c4a`](https://github.com/3dct/vIQA/commit/ef72c4a11196a925d8aaf04933ca533a1f1a7640))
-
-* ci: make checkout branch variable for wheel and sdist building
-
-set checkout branch for semantic_release to main ([`59d0375`](https://github.com/3dct/vIQA/commit/59d037557cfb899eb6191e61aad331a6afe4bbf6))
-
-* ci: remove sleep step in job test_install ([`fde39ba`](https://github.com/3dct/vIQA/commit/fde39baa64fa830d35451c35dd905de7f2affc04))
 
 ### Feature
 
@@ -30,32 +31,8 @@ set checkout branch for semantic_release to main ([`59d0375`](https://github.com
 
 cal cropping function during loading if parameter roi is given ([`140d101`](https://github.com/3dct/vIQA/commit/140d101ace4ffa3dbd97ecc11db8ada3dba0ae6b))
 
-### Refactor
-
-* refactor: add warning to visualize method in class ImageArray
-
-add warning that parameter slices will be ignored if method is called on a 2D image ([`cd496be`](https://github.com/3dct/vIQA/commit/cd496be36ed3ad8ba638ba4de04c942ff53ec5f4))
-
-* refactor: handle data loading in interface classes
-
-move data loading and checking to score methods of metrics interface classes ([`1ad011b`](https://github.com/3dct/vIQA/commit/1ad011bea42b52c94d3e17f26b750e21394f3e1b))
-
-* refactor: use qmeasure submodule ([`1c1ae61`](https://github.com/3dct/vIQA/commit/1c1ae61dc8b061fe21c29fba69e705274eb07897))
-
 
 ## v1.10.0 (2024-08-27)
-
-### Chore
-
-* chore: update docs config to autodocument inherited members ([`9bc640f`](https://github.com/3dct/vIQA/commit/9bc640f86e3b01997ca27920b46a5e900da83e93))
-
-* chore: update documentation build
-
-add dependencies for Sphinx in GitHub Actions job ([`4596169`](https://github.com/3dct/vIQA/commit/4596169db77fc0c3f5940e5607e0e8e9baab25a0))
-
-* chore: update release process
-
-build only after semantic_release job ran ([`5fe798c`](https://github.com/3dct/vIQA/commit/5fe798c625e00786938a8bc0dbec272c0bd6799b))
 
 ### Documentation
 
@@ -71,26 +48,8 @@ remove sphinx-notfound-page, temporarily disable hoverxref ([`614d52a`](https://
 
 rename batch_mode.py to multiple.py, add MultipleMetrics class, move export_metadata to it&#39;s own function in utils.py, add base class for classes of type multiple, update class BatchMetrics ([`6f4f8a7`](https://github.com/3dct/vIQA/commit/6f4f8a7765078a322e12cfca6720f3d8e0842082))
 
-### Refactor
-
-* refactor: add new parent class metric
-
-rename export_csv to export_results, restructure abstract base classes for metrics ([`4bc3bef`](https://github.com/3dct/vIQA/commit/4bc3bef3c85b9e21c4bf0b2259fb9a957c193e4b))
-
-### Unknown
-
-* book: update Image_Comparison.ipynb accordingly to 6f4f8a77 ([`8ac53e8`](https://github.com/3dct/vIQA/commit/8ac53e8d7a9d3fa193fade7cc295f5b581e917fb))
-
 
 ## v1.9.1 (2024-08-23)
-
-### Chore
-
-* chore: change GitHub emojis to emoji characters in README.md
-
-improve rendering for PyPI ([`0a04811`](https://github.com/3dct/vIQA/commit/0a048118e9b9587d5cf498e914436559efb99d3d))
-
-* chore: update automatic build process in build_wheels_and_publish.yaml ([`bcdc3b1`](https://github.com/3dct/vIQA/commit/bcdc3b13a365f63db2a5e1eee27a358e197c186a))
 
 ### Documentation
 
@@ -115,12 +74,6 @@ update according to 40f0d029ad416747135f79e8716de040335da592, fixes mypy ([`4ecf
 
 Python 3.13 build takes too long or fails, add specific dependency version for meson-python ([`d6dd0e6`](https://github.com/3dct/vIQA/commit/d6dd0e67c9c54458ca3bae15158f611ebab91236))
 
-### Chore
-
-* chore: update .gitignore
-
-remove docs/source/**/generated/ files ([`be86072`](https://github.com/3dct/vIQA/commit/be86072bec3ff1d1df010d17466cf2cc51c4802c))
-
 ### Feature
 
 * feat(batch_mode.py): add parameter data_range to export_metadata ([`00cb4c4`](https://github.com/3dct/vIQA/commit/00cb4c427ae4cf17db83a006397dca7aaf3ef0cc))
@@ -137,24 +90,6 @@ remove docs/source/**/generated/ files ([`be86072`](https://github.com/3dct/vIQA
 ### Build
 
 * build: update numpy dependency for build to be lower than 2.0.0 ([`54ac725`](https://github.com/3dct/vIQA/commit/54ac725020e2394baa9188774fce5f45ce49cfb7))
-
-### Chore
-
-* chore: remove check install job from build_wheels_and_publish.yaml ([`235cd1c`](https://github.com/3dct/vIQA/commit/235cd1c572ab37ac48ec1b12eb559d7d3f788beb))
-
-* chore: use pip instead of pip3 in check_import job ([`d739e83`](https://github.com/3dct/vIQA/commit/d739e83c02972c61ca87410c4ef4b7f405bfa8d7))
-
-* chore: add Set up Python step check_import job ([`70448e3`](https://github.com/3dct/vIQA/commit/70448e36fec50348c5c6904b15e9a119e8efba42))
-
-* chore: add -vv argument in check_import job for debugging ([`03e50b1`](https://github.com/3dct/vIQA/commit/03e50b128bc1d1904166213feb4bad7ac362de86))
-
-* chore: fix check_import job to use non-editable install ([`e772e8f`](https://github.com/3dct/vIQA/commit/e772e8ff51cacf7a525efd85d002f00c1daf6860))
-
-* chore: move isort config from ruff.isort to ruff.lint.isort ([`8d7f21b`](https://github.com/3dct/vIQA/commit/8d7f21be7a8164d9310837fea7f8e248c18fbdc5))
-
-* chore: update release process in build_wheels_and_publish.yaml
-
-add check for import to catch non-importable releases, add upload to TestPyPI and check installing from there before real upload ([`53d69e9`](https://github.com/3dct/vIQA/commit/53d69e9edc82c6e0f896fe0e79e4039e904b39f4))
 
 ### Documentation
 
@@ -176,16 +111,6 @@ fix visualization based on 4d7c3e02 ([`0bab2b8`](https://github.com/3dct/vIQA/co
 
 
 ## v1.7.0 (2024-08-22)
-
-### Chore
-
-* chore: update version to 1.6.1
-
-fix versioning for python-semantic-release ([`6d00255`](https://github.com/3dct/vIQA/commit/6d0025588954ea20f28f316d768e222a00756eca))
-
-### Ci
-
-* ci: add commit type book to python semantic release ([`ec50245`](https://github.com/3dct/vIQA/commit/ec50245c91e763a2ec705fb688b4b2017a08e227))
 
 ### Documentation
 
@@ -213,20 +138,8 @@ add rotation and flip when loading from binary, update visualization functions f
 
 attribute mean_value in method describe is now used, fix documentation for class ImageArray ([`b0830cf`](https://github.com/3dct/vIQA/commit/b0830cf2ede2e20a5349775ab23649557ca72f85))
 
-### Unknown
-
-* book: update visualization in jupyter notebooks
-
-visualization now reflects the changes in commit 4d7c3e02 ([`7d94131`](https://github.com/3dct/vIQA/commit/7d94131d0c7a9a0296dcb819d0fb3c72f652f6ab))
-
 
 ## v1.6.1 (2024-08-20)
-
-### Ci
-
-* ci: add Setup Python step before Test install from PyPI ([`4471af6`](https://github.com/3dct/vIQA/commit/4471af61882190b62e9db019e5054caf16915409))
-
-* ci: skip build-docs and mypy on pre-commit.ci ([`32654c5`](https://github.com/3dct/vIQA/commit/32654c58e0c6331452fbc5a5b22239e9e08d0db8))
 
 ### Fix
 
@@ -236,20 +149,6 @@ import of the package is now possible again ([`e747cf7`](https://github.com/3dct
 
 
 ## v1.6.0 (2024-08-20)
-
-### Ci
-
-* ci: update .pre-commit-config.yaml
-
-exclude CHANGELOG.md and CODE_OF_CONDUCT.md from codespell hook, activate sphinx hook for push only, remove stage commit from validate-pyproject hook, add exclude for conda recipes for check-yaml hook ([`d84c21f`](https://github.com/3dct/vIQA/commit/d84c21f12072d6341f7282249d95c11f81b121cc))
-
-* ci: update build_wheels_and_publish.yaml
-
-remove vcs_release=&#34;false&#34; argument from semantic_release job, update test install ([`2eae29e`](https://github.com/3dct/vIQA/commit/2eae29ec52fe36a546b08340c0d47f9262520f1a))
-
-* ci: add specific code checkout to build_wheels_and_publish.yaml
-
-add &#34;ref: main&#34; to checkout step to ensure checking out the latest commit, temporarily deactivate conditions for jobs to release last version ([`9e8b5ce`](https://github.com/3dct/vIQA/commit/9e8b5ce5de64b8194b5cc6856fa2c4f96a38db60))
 
 ### Documentation
 
@@ -262,10 +161,6 @@ add &#34;ref: main&#34; to checkout step to ensure checking out the latest commi
 ### Feature
 
 * feat(load_utils.py): add support for .tiff files ([`a7c8b74`](https://github.com/3dct/vIQA/commit/a7c8b74d01c4ed4a2476a3eef71b385651b15389))
-
-### Unknown
-
-* Create CODE_OF_CONDUCT.md ([`3860e91`](https://github.com/3dct/vIQA/commit/3860e91f7fbd0bb6117d909185686c989bfa5437))
 
 
 ## v1.5.2 (2024-08-16)
@@ -285,32 +180,6 @@ add pull_request trigger for Build, add concurrency for Documentation, add event
 * build: fix build_wheels_and_publish.yaml
 
 add code checkout to github release job ([`e2c9a39`](https://github.com/3dct/vIQA/commit/e2c9a39b7ba22b522502db637e822097a85a5c62))
-
-### Chore
-
-* chore: update PyPI classifiers ([`21a1994`](https://github.com/3dct/vIQA/commit/21a199410b03f9e5f3705fe9304175a2dd49469e))
-
-* chore: add CONTRIBUTING.md ([`8491e64`](https://github.com/3dct/vIQA/commit/8491e64759385c1881b3bffe7e31409161792483))
-
-* chore: update dev dependencies ([`ac22ca6`](https://github.com/3dct/vIQA/commit/ac22ca6d17ddaaf3a3a585a9f3d7895eb88c0c53))
-
-* chore: remove sphinx from pre-commit ([`2372f99`](https://github.com/3dct/vIQA/commit/2372f99bc475fc16d6e320fed4474dc06c7e17cd))
-
-* chore: update args for pre-commit-sphinx ([`c672fa5`](https://github.com/3dct/vIQA/commit/c672fa576512dfc2ae6833b6b0e3d7a3e4dbe2e5))
-
-* chore: update dev dependencies ([`d769aab`](https://github.com/3dct/vIQA/commit/d769aabe8b4bf1b8eebf258e21abcfa63e614188))
-
-* chore: add pre-commit ([`83c300c`](https://github.com/3dct/vIQA/commit/83c300ca39606ba4253bc665271a5dd39e13748b))
-
-* chore: add lint rules to ignore
-
-ignore E203 and C901 ([`1372c60`](https://github.com/3dct/vIQA/commit/1372c605b226fb56dd3d76af9e7f1a2c5a8b019b))
-
-### Ci
-
-* ci: update build_wheels_and_publish.yaml
-
-perform jobs only if condition released == true is met, add explicit tag for upload_github job ([`c941bd9`](https://github.com/3dct/vIQA/commit/c941bd9f04a85d4c856b6399f1d31d4f9e4de34c))
 
 ### Documentation
 
@@ -333,44 +202,6 @@ make &#34;Module&#34; lowercase as all other modules ([`e1105e1`](https://github
 * fix(mad.py): update check for im_slice
 
 in (int or None) int can always be evaluated as true ([`a245fe9`](https://github.com/3dct/vIQA/commit/a245fe98e5290c49253a651f8e93d0fe30eb1bc4))
-
-### Refactor
-
-* refactor: update test assertion
-
-change is 255 to == 255 ([`df39f34`](https://github.com/3dct/vIQA/commit/df39f345890cb280594b849f4f009d1c52f2b166))
-
-### Style
-
-* style: update end of file new line ([`3c89f86`](https://github.com/3dct/vIQA/commit/3c89f863cd94c2ad84d21549a27641f9080177a6))
-
-* style: format files
-
-remove trailing whitespace, adjust end of files ([`1cc275c`](https://github.com/3dct/vIQA/commit/1cc275c4de2933e9b7365280f006013902e8c507))
-
-* style: add mypy check
-
-implement mypy check, update files for mypy, add stub files qmeasurecalc.pyi and statisticscalc.pyi ([`1997516`](https://github.com/3dct/vIQA/commit/19975166b487609775126bb2fff5dce06ab2f8ef))
-
-* style: add yamllint
-
-implement yamllint and refactor .yaml files ([`6c46ace`](https://github.com/3dct/vIQA/commit/6c46ace37acc9285445b3e7467dabccbb04757af))
-
-* style: add rst check
-
-implement rst check and refactor .rst files ([`92f2dbd`](https://github.com/3dct/vIQA/commit/92f2dbdf89d19b877bb5e4e2f37049eda1b2ec3c))
-
-* style: update formatting
-
-use ruff formater to format codebase ([`dc48022`](https://github.com/3dct/vIQA/commit/dc48022d93f3c478a460e5545d1a39ad93e2075c))
-
-* style: update linting
-
-fix and update ruff config, fix lint errors ([`452b6fc`](https://github.com/3dct/vIQA/commit/452b6fcf3da3e7aefa8ff5eae965dbcc1a9a533a))
-
-### Unknown
-
-* Merge remote-tracking branch &#39;github/main&#39; ([`609891d`](https://github.com/3dct/vIQA/commit/609891d6f1114dd15bd33bd85ee8f0e1029dfedf))
 
 
 ## v1.5.1 (2024-08-08)
@@ -395,23 +226,11 @@ fix dependency for publishing to GitHub ([`9a48467`](https://github.com/3dct/vIQ
 
 tests the install from pypi after publishing ([`054ffd5`](https://github.com/3dct/vIQA/commit/054ffd5a7030968065f0a1693d61b6c97c0ea5d5))
 
-### Chore
-
-* chore: set versions for main dependencies ([`a1b8454`](https://github.com/3dct/vIQA/commit/a1b8454d568cffd9a897969d8986048cac784813))
-
-* chore: update ci for documentation
-
-install tqdm in github runner for documentation building ([`46c60f6`](https://github.com/3dct/vIQA/commit/46c60f603f0f31e2eac4b6ac0b723dc576481271))
-
 ### Fix
 
 * fix(msssim.py): fix scale weights
 
 parameter scale_weights in msssim now gets converted from list to tensor. Fixes bug where using scale_weights resulted in an error. ([`b1aad49`](https://github.com/3dct/vIQA/commit/b1aad4984ec0fb401fbb03fe527fbb8aca90d264))
-
-### Refactor
-
-* refactor(utils.py): remove import of normalize_data() ([`6a2bc73`](https://github.com/3dct/vIQA/commit/6a2bc7350497128c177b488c6fe2fe8b3efe81e5))
 
 
 ## v1.5.0 (2024-08-07)
@@ -452,10 +271,6 @@ raise an exception if file extension is not correctly specified in export_result
 
 
 ## v1.2.3 (2024-08-07)
-
-### Refactor
-
-* refactor: update deprecation warnings ([`19b416b`](https://github.com/3dct/vIQA/commit/19b416be438a905575ed1b9a19c60892c4ac5e4c))
 
 
 ## v1.2.2 (2024-08-07)
@@ -499,12 +314,4 @@ function writes custom parameters and package version to a .txt file ([`5b8e607`
 * feat(ImageArray)!: add class for images
 
 subclass of np.ndarray, calculates image statistics ([`40f0d02`](https://github.com/3dct/vIQA/commit/40f0d029ad416747135f79e8716de040335da592))
-
-### Chore
-
-* chore(README.md): add badges ([`65bcc2e`](https://github.com/3dct/vIQA/commit/65bcc2ef6038b8284ad11956a96ae0c13602b87b))
-
-### Ci
-
-* ci: update workflow names, update condition for documentation publishing ([`17db8fe`](https://github.com/3dct/vIQA/commit/17db8fec74d36c057712a78ee3c30979d99c652d))
 
