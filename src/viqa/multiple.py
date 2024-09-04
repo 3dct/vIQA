@@ -161,10 +161,13 @@ class BatchMetrics(_MultipleInterface):
 
     Notes
     -----
+    Make sure to use a well-structured CSV file as performance is better with e.g. the
+    same reference image in multiple consecutive rows.
+
     .. attention::
 
         In image pairs with unequal shapes, the modified image will be resized to the
-        shape of the reference image.
+        shape of the reference image in the :py:meth:`calculate` method.
 
     Examples
     --------
@@ -209,15 +212,46 @@ class BatchMetrics(_MultipleInterface):
         -------
         results : dict
             Dictionary containing the results of the metrics.
+
+        Warns
+        -----
+        UserWarning
+            If the images are the same as in the previous pair.
         """
+        reference_img = None
+        prev_ref_path = None
+        modified_img = None
+        prev_mod_path = None
+        metric_results = None
         for pair_num, pair in enumerate(tqdm(self.pairs)):
             reference_path = os.path.join(self.file_dir, pair["reference_image"])
             modified_path = os.path.join(self.file_dir, pair["modified_image"])
+            # Skip calculation if the images are the same as in the previous pair
+            if reference_path == prev_ref_path and modified_path == prev_mod_path:
+                self.results[str(pair_num)] = metric_results
+                warn("Skipping calculation for identical image pair.", UserWarning)
+                continue
+            # Load the images only once if it is the same for multiple pairs
+            if reference_path != prev_ref_path:
+                reference_img = load_data(reference_path, **kwargs)
+                prev_ref_path = reference_path
+                prev_result_reference = None
+            else:
+                prev_result_reference = metric_results
+            if modified_path != prev_mod_path:
+                modified_img = load_data(modified_path, **kwargs)
+                prev_mod_path = modified_path
+                prev_result_modified = None
+            else:
+                prev_result_modified = metric_results
+
             metric_results = _calc(
                 self.metrics,
                 self.metrics_parameters,
-                reference_path,
-                modified_path,
+                reference_img,
+                modified_img,
+                prev_result_reference=prev_result_reference,
+                prev_result_modified=prev_result_modified,
                 **kwargs,
             )
             self.results[str(pair_num)] = metric_results
@@ -642,6 +676,8 @@ def _read_csv(file_path):
 def _calc(metrics, metrics_parameters, img_r, img_m, **kwargs):
     scaling_order = kwargs.pop("scaling_order", 1)
     leave = kwargs.pop("leave", False)
+    prev_result_reference = kwargs.pop("prev_result_reference", None)
+    prev_result_modified = kwargs.pop("prev_result_modified", None)
 
     img_r = load_data(img_r, **kwargs)
     img_m = load_data(img_m, **kwargs)
@@ -655,10 +691,22 @@ def _calc(metrics, metrics_parameters, img_r, img_m, **kwargs):
         zip(metrics, metrics_parameters, strict=False), total=len(metrics), leave=leave
     ):
         if metric.type == "no-reference":
-            result_r = metric.score(img_r, **parameters)
-            metric_results[metric._name + "_r"] = float(result_r)
-            result_m = metric.score(img_m, **parameters)
-            metric_results[metric._name + "_m"] = float(result_m)
+            if prev_result_reference is not None and isinstance(
+                prev_result_reference, dict
+            ):
+                metric_results[name] = prev_result_reference[
+                    name := metric._name + "_r"
+                ]
+            else:
+                result_r = metric.score(img_r, **parameters)
+                metric_results[metric._name + "_r"] = float(result_r)
+            if prev_result_modified is not None and isinstance(
+                prev_result_modified, dict
+            ):
+                metric_results[name] = prev_result_modified[name := metric._name + "_m"]
+            else:
+                result_m = metric.score(img_m, **parameters)
+                metric_results[metric._name + "_m"] = float(result_m)
         elif metric.type == "full-reference":
             result = metric.score(img_r, img_m, **parameters)
             metric_results[metric._name] = float(result)
