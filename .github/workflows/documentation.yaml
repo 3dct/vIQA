@@ -22,7 +22,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - name: Set up Python ${{ vars.MINIMAL_PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
       - name: Install dependencies
         run: |
           pip install sphinx furo sphinx-copybutton pytest-doctestplus \

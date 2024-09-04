@@ -15,7 +15,7 @@ jobs:
   semantic_release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.repository == '3dct/viqa'
     permissions:
       id-token: write
       contents: write
@@ -142,10 +142,10 @@ jobs:
       tested: ${{ steps.test_install.outputs.tested }}
 
     steps:
-      - name: Set up Python 3.12
+      - name: Set up Python ${{ vars.MINIMAL_PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
 
       - name: Test install from Test PyPI
         id: test_install
