@@ -26,6 +26,7 @@ __all__ = [
     "normalize_data",
     "export_metadata",
     "export_results",
+    "export_image",
     "fuse_metrics_linear_combination",
     "visualize_3d",
     "BatchMetrics",
@@ -38,7 +39,7 @@ from .fusion import fuse_metrics_linear_combination
 from .load_utils import ImageArray, load_data, normalize_data
 from .multiple import BatchMetrics, MultipleMetrics
 from .nr_metrics import *
-from .utils import export_metadata, export_results
+from .utils import export_image, export_metadata, export_results
 from .visualization_utils import visualize_3d
 
 

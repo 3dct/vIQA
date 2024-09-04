@@ -32,6 +32,7 @@ Utilities modules
     gabor_convolve
     export_results
     export_metadata
+    export_image
 
 .. currentmodule:: viqa.visualization_utils
 

@@ -51,13 +51,11 @@ import os
 from abc import ABC, abstractmethod
 from warnings import warn
 
-import matplotlib.pyplot as plt
-import numpy as np
 from tqdm.autonotebook import tqdm
 
 from viqa._metrics import Metric
 from viqa.load_utils import load_data
-from viqa.utils import _check_imgs, _resize_image, export_metadata
+from viqa.utils import _check_imgs, _resize_image, export_image, export_metadata
 
 
 class _MultipleInterface(ABC):
@@ -449,14 +447,14 @@ class MultipleMetrics(_MultipleInterface):
             If the reference and modified image are not provided
         """
         decimals = kwargs.pop("decimals", 2)
-        export_image = kwargs.pop("export_image", False)
+        export_image_ = kwargs.pop("export_image", False)
         img_r = kwargs.pop("img_r", None)
         img_m = kwargs.pop("img_m", None)
         x = kwargs.pop("x", None)
         y = kwargs.pop("y", None)
         z = kwargs.pop("z", None)
 
-        if export_image:
+        if export_image_:
             img_file_path = file_path
         else:
             img_file_path = None
@@ -466,15 +464,17 @@ class MultipleMetrics(_MultipleInterface):
         if image:
             if img_r is None or img_m is None:
                 raise ValueError("Reference and modified image must be provided.")
-            self.print_image(
-                img_r=img_r,
-                img_m=img_m,
-                file_path=img_file_path,
-                x=x,
-                y=y,
-                z=z,
-                **kwargs,
-            )
+            else:
+                export_image(
+                    results=self.results,
+                    img_r=img_r,
+                    img_m=img_m,
+                    file_path=img_file_path,
+                    x=x,
+                    y=y,
+                    z=z,
+                    **kwargs,
+                )
         if csv:
             self.export_results(file_path=file_path, file_name="results.csv")
         if metadata:
@@ -490,143 +490,6 @@ class MultipleMetrics(_MultipleInterface):
         """
         for metric, result in self.results.items():
             print(f"{metric}: {result:.{decimals}f}")
-
-    def print_image(
-        self, img_r, img_m, x=None, y=None, z=None, file_path=None, **kwargs
-    ):
-        """Print the reference and modified image side by side with the metric values.
-
-        Parameters
-        ----------
-        img_r : str or np.ndarray
-            Path to the reference image or the image itself.
-        img_m : str or np.ndarray
-            Path to the modified image or the image itself.
-        x, y, z : int, optional
-            The index of the slice to be plotted. Only one axis can be specified.
-        file_path : str, optional
-            Path to the directory where the image should be saved. If None, the image
-            will be displayed only.
-        kwargs : dict
-            Additional parameters. Passed to :py:func:`matplotlib.pyplot.subplots`.
-
-        Other Parameters
-        ----------------
-        dpi : int, default=300
-            Dots per inch of the figure.
-        scaling_order : int, default=1
-            Order of the spline interpolation used for image resizing. Default is 1.
-            Passed to :py:func:`skimage.transform.resize`
-
-        Raises
-        ------
-        Exception
-            If the area to be plotted was not correctly specified.
-            If the image is not 2D or 3D.
-            If no axis or more than one axis was specified.
-        """
-        if len(self.results) == 0:
-            warn("No results to plot. Only the images are plotted.", UserWarning)
-
-        dpi = kwargs.pop("dpi", 300)
-
-        img_r = load_data(img_r)
-        img_m = load_data(img_m)
-        scaling_order = kwargs.pop("scaling_order", 1)
-        img_m = _resize_image(img_r, img_m, scaling_order=scaling_order)
-        img_r, img_m = _check_imgs(img_r, img_m)
-
-        if img_r.ndim == 2 or (img_r.ndim == 3 and img_r.shape[-1] == 3):
-            # For 2D (color) images, flip the image to match the imshow orientation
-            img_r_plot = np.flip(img_r, 1)
-            img_m_plot = np.flip(img_m, 1)
-        elif img_r.ndim == 3:
-            if {x, y, z} == {None}:
-                raise Exception("One axis must be specified")
-            if len({x, y, z} - {None}) != 1:
-                raise Exception("Only one axis can be specified")
-
-            # For 3D images, plot the specified area
-            x_1, x_2 = 0, img_r.shape[0]
-            y_1, y_2 = 0, img_r.shape[1]
-            z_1, z_2 = 0, img_r.shape[2]
-
-            if x is not None:
-                img_r_plot = np.rot90(np.flip(img_r[x, y_1:y_2, z_1:z_2], 1))
-                img_m_plot = np.rot90(np.flip(img_m[x, y_1:y_2, z_1:z_2], 1))
-            elif y is not None:
-                img_r_plot = np.rot90(np.flip(img_r[x_1:x_2, y, z_1:z_2], 1))
-                img_m_plot = np.rot90(np.flip(img_m[x_1:x_2, y, z_1:z_2], 1))
-            elif z is not None:
-                img_r_plot = np.rot90(np.flip(img_r[x_1:x_2, y_1:y_2, z], 0), -1)
-                img_m_plot = np.rot90(np.flip(img_m[x_1:x_2, y_1:y_2, z], 0), -1)
-            else:
-                raise Exception("Area to be plotted was not correctly specified")
-        else:
-            raise Exception("Image must be 2D or 3D")
-
-        fig, axs = plt.subplots(1, 2, dpi=dpi, **kwargs)
-        axs[0].imshow(img_r_plot, cmap="gray")
-        axs[0].invert_yaxis()
-        axs[1].imshow(img_m_plot, cmap="gray")
-        axs[1].invert_yaxis()
-
-        fig.suptitle("Image Comparison and IQA metric values", y=0.92)
-        axs[0].set_title("Reference image")
-        axs[1].set_title("Modified image")
-
-        num_full_reference = 0
-        num_no_reference = 0
-        for metric in self.results.keys():
-            if not (metric.endswith("_r") or metric.endswith("_m")):
-                num_full_reference += 1
-            else:
-                num_no_reference += 1
-
-        cols = ((num_full_reference - 1) // 4) + 1  # 4 metrics per column
-        if num_no_reference != 0:
-            cols += 1
-
-        # Split the results into full-reference and no-reference metrics
-        results_fr = {
-            k: v
-            for k, v in self.results.items()
-            if not (k.endswith("_r") or k.endswith("_m"))
-        }
-        results_nr = {
-            k: v
-            for k, v in self.results.items()
-            if k.endswith("_r") or k.endswith("_m")
-        }
-
-        # Plot full-reference metrics
-        counter = 0
-        for i in range(cols - 1):
-            x_pos = 1.0 / (cols + 1)
-            lines = 4  # 4 metrics per column
-            x_pos = x_pos * (i + 1)
-            for j in range(lines):
-                y_pos = 0.09 - 0.03 * j  # 0.09 is the top of the plot
-                metric, result = list(results_fr.items())[counter]
-                fig.text(
-                    x_pos, y_pos, f"{metric}: {result:.2f}", ha="center", fontsize=8
-                )
-                counter += 1
-        # Plot no-reference metrics
-        x_pos = 1.0 / (cols + 1) * cols  # last column
-        for j in range(num_no_reference):
-            y_pos = 0.09 - 0.03 * j
-            metric, result = list(results_nr.items())[j]
-            fig.text(x_pos, y_pos, f"{metric}: {result:.2f}", ha="center", fontsize=8)
-
-        axs[0].axis("off")
-        axs[1].axis("off")
-
-        if file_path:
-            file_name = "image_comparison.png"
-            file_path = os.path.join(file_path, file_name)
-            plt.savefig(file_path, bbox_inches="tight", pad_inches=0.5)
-        plt.show()
 
     def export_results(self, file_path, file_name="results.csv"):
         """Export the results to a csv file.
