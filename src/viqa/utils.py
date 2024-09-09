@@ -93,14 +93,15 @@ def _check_imgs(
     else:
         raise ValueError("Image format not supported.")
 
-    # Check if images are chromatic
-    if chromatic is False and img_r_loaded.shape[-1] == 3:  # type: ignore # TODO
-        # Convert to grayscale as backup if falsely claimed to be non-chromatic
-        warn("Images are chromatic. Converting to grayscale.")
-        img_r_loaded = _to_grayscale(img_r_loaded)
-        img_m_loaded = _to_grayscale(img_m_loaded)
-    elif chromatic is True and img_r_loaded.shape[-1] != 3:  # type: ignore # TODO
-        raise ValueError("Images are not chromatic.")
+    if not isinstance(img_r_loaded, list):
+        # Check if images are chromatic
+        if chromatic is False and img_r_loaded.shape[-1] == 3:
+            # Convert to grayscale as backup if falsely claimed to be non-chromatic
+            warn("Images are chromatic. Converting to grayscale.")
+            img_r_loaded = _to_grayscale(img_r_loaded)
+            img_m_loaded = _to_grayscale(img_m_loaded)
+        elif chromatic is True and img_r_loaded.shape[-1] != 3:
+            raise ValueError("Images are not chromatic.")
 
     return img_r_loaded, img_m_loaded
 
