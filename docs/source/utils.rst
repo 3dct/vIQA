@@ -39,4 +39,5 @@ Utilities modules
 .. autosummary::
    :toctree: generated
 
+    visualize_2d
     visualize_3d

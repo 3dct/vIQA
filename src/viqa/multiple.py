@@ -486,7 +486,7 @@ class MultipleMetrics(_MultipleInterface):
             :py:meth:`print_values` will be called.
         image : bool, default=False
             If True, the reference and modified image will be plotted side by side.
-            :py:meth:`print_image` will be called.
+            :py:func:`viqa.utils.export_image` will be called.
         file_path : str, optional
             Path to the directory where the files should be saved. If None, the files
             will be saved in the current working directory.
