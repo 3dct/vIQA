@@ -618,6 +618,7 @@ def export_image(
     z=None,
     file_path=None,
     file_name="image_comparison.png",
+    show_image=True,
     **kwargs,
 ):
     """Print the reference and modified image side by side with the metric values.
@@ -637,6 +638,8 @@ def export_image(
         will be displayed only.
     file_name : str, optional
         Name of the image file. Default is 'image_comparison.png'.
+    show_image : bool, optional
+        If True, the image will be displayed. Default is True.
     kwargs : dict
         Additional parameters. Passed to :py:func:`matplotlib.pyplot.subplots`.
 
@@ -753,4 +756,7 @@ def export_image(
     if file_path:
         file_path = os.path.join(file_path, file_name)
         plt.savefig(file_path, bbox_inches="tight", pad_inches=0.5)
-    plt.show()
+        if show_image:
+            plt.show()
+    else:
+        plt.show()
