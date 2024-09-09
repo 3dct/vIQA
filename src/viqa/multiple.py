@@ -255,7 +255,7 @@ class BatchMetrics(_MultipleInterface):
             self.results[str(pair_num)] = metric_results
         return self.results
 
-    def report(self, csv=True, metadata=True, file_path="."):
+    def report(self, csv=True, metadata=True, file_path=".", project_name=None):
         """Report the results and metadata.
 
         Parameters
@@ -269,11 +269,27 @@ class BatchMetrics(_MultipleInterface):
         file_path : str, optional
             Path to the directory where the files should be saved. If None, the files
             will be saved in the current working directory.
+        project_name : str, optional
+            Name of the project. Used for the image file name.
         """
         if csv:
-            self.export_results(file_path=file_path, file_name="results.csv")
+            self.export_results(
+                file_path=file_path,
+                file_name=(
+                    "results.csv"
+                    if project_name is None
+                    else f"{project_name}_results.csv"
+                ),
+            )
         if metadata:
-            self.export_metadata(file_path=file_path, file_name="metadata.txt")
+            self.export_metadata(
+                file_path=file_path,
+                file_name=(
+                    "metadata.txt"
+                    if project_name is None
+                    else f"{project_name}_metadata.txt"
+                ),
+            )
 
     def export_results(self, file_path=".", file_name="results.csv"):
         """Export the results to a csv file.
@@ -404,7 +420,14 @@ class MultipleMetrics(_MultipleInterface):
         return self.results
 
     def report(
-        self, csv=True, metadata=True, text=True, image=False, file_path=".", **kwargs
+        self,
+        csv=True,
+        metadata=True,
+        text=True,
+        image=False,
+        file_path=".",
+        project_name=None,
+        **kwargs,
     ):
         """Report the results and metadata.
 
@@ -425,6 +448,8 @@ class MultipleMetrics(_MultipleInterface):
         file_path : str, optional
             Path to the directory where the files should be saved. If None, the files
             will be saved in the current working directory.
+        project_name : str, optional
+            Name of the project. Used for the image file name.
         kwargs : dict
             Additional parameters. Passed to :py:func:`print_image`.
 
@@ -470,15 +495,34 @@ class MultipleMetrics(_MultipleInterface):
                     img_r=img_r,
                     img_m=img_m,
                     file_path=img_file_path,
+                    file_name=(
+                        "image_comparison.png"
+                        if project_name is None
+                        else f"{project_name}_image_comparison.png"
+                    ),
                     x=x,
                     y=y,
                     z=z,
                     **kwargs,
                 )
         if csv:
-            self.export_results(file_path=file_path, file_name="results.csv")
+            self.export_results(
+                file_path=file_path,
+                file_name=(
+                    "results.csv"
+                    if project_name is None
+                    else f"{project_name}_results.csv"
+                ),
+            )
         if metadata:
-            self.export_metadata(file_path=file_path, file_name="metadata.txt")
+            self.export_metadata(
+                file_path=file_path,
+                file_name=(
+                    "metadata.txt"
+                    if project_name is None
+                    else f"{project_name}_metadata.txt"
+                ),
+            )
 
     def print_values(self, decimals=2):
         """Print the metric values to the console.
