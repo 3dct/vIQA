@@ -255,7 +255,15 @@ class BatchMetrics(_MultipleInterface):
             self.results[str(pair_num)] = metric_results
         return self.results
 
-    def report(self, csv=True, metadata=True, file_path=".", project_name=None):
+    def report(
+        self,
+        csv=True,
+        metadata=True,
+        image=False,
+        file_path=".",
+        project_name=None,
+        **kwargs,
+    ):
         """Report the results and metadata.
 
         Parameters
@@ -266,12 +274,27 @@ class BatchMetrics(_MultipleInterface):
         metadata : bool, default=True
             If True, the metadata will be exported to a txt file.
             :py:meth:`export_metadata` will be called.
+        image : bool, default=False
+            If True, the reference and modified image will be plotted side by side.
+            :py:func:`viqa.utils.export_image` will be called for every pair in
+            :py:attr:`pairs`.
         file_path : str, optional
             Path to the directory where the files should be saved. If None, the files
             will be saved in the current working directory.
         project_name : str, optional
             Name of the project. Used for the image file name.
+        kwargs : dict
+            Additional parameters. Passed to :py:func:`viqa.utils.export_image`.
+
+        Other Parameters
+        ----------------
+        x, y, z : int, optional
+            The index of the slice to be plotted. Only one axis can be specified.
         """
+        x = kwargs.pop("x", None)
+        y = kwargs.pop("y", None)
+        z = kwargs.pop("z", None)
+
         if csv:
             self.export_results(
                 file_path=file_path,
@@ -290,6 +313,25 @@ class BatchMetrics(_MultipleInterface):
                     else f"{project_name}_metadata.txt"
                 ),
             )
+        if image:
+            for pair_num, pair in enumerate(tqdm(self.pairs)):
+                img_r = os.path.join(self.file_dir, pair["reference_image"])
+                img_m = os.path.join(self.file_dir, pair["modified_image"])
+                export_image(
+                    results=self.results[str(pair_num)],
+                    img_r=img_r,
+                    img_m=img_m,
+                    file_path=file_path,
+                    file_name=(
+                        f"{project_name}_image_comparison_{pair_num}.png"
+                        if project_name is not None
+                        else f"image_comparison_{pair_num}.png"
+                    ),
+                    show_image=False,
+                    x=x,
+                    y=y,
+                    z=z,
+                )
 
     def export_results(self, file_path=".", file_name="results.csv"):
         """Export the results to a csv file.
