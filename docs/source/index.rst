@@ -14,6 +14,7 @@ Welcome to vIQA's documentation!
    :caption: Development
 
    changelog
+   internal_api_reference
    developer_guide
    Github <https://github.com/3dct/vIQA>
 

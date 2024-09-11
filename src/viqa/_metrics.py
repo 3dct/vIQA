@@ -13,6 +13,11 @@
 # -------
 # BSD-3-Clause License
 
+"""Module for the internal metrics classes.
+
+This module contains the abstract classes for the metrics.
+"""
+
 from abc import ABC, abstractmethod
 
 from viqa.load_utils import load_data
