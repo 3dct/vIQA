@@ -2,6 +2,29 @@
 
 
 
+## v1.13.0 (2024-09-24)
+
+### Documentation
+
+* docs: add internal API reference ([`81a5950`](https://github.com/3dct/vIQA/commit/81a5950f0a9df294441c25aebfdca5a1b6998ce8))
+
+* docs: update docs
+
+add visualize_2d to docs, fix cross-link for parameter image in MultipleMetrics.report ([`25f4e92`](https://github.com/3dct/vIQA/commit/25f4e92773d7b6b03e6964c5d08d74c0e51fa20a))
+
+### Feature
+
+* feat(BatchMetrics): add image export in report method ([`432c31e`](https://github.com/3dct/vIQA/commit/432c31e39a20c1e27c88eda86b1f8c6da7203b0e))
+
+* feat(export_image): add parameter show_image
+
+add option to select if image should be printed when exporting images ([`5dff6a4`](https://github.com/3dct/vIQA/commit/5dff6a461a648e75c940177ff6392499b7108e39))
+
+* feat: add parameter project_name to report methods
+
+filename is constructed of project_name and default filename if project_name is given ([`07541a6`](https://github.com/3dct/vIQA/commit/07541a6167b50dd39fc9a847218e5f3fee6912c0))
+
+
 ## v1.12.0 (2024-09-04)
 
 ### Feature
