@@ -226,7 +226,7 @@ psnr.print_score(decimals=2)
 > single metric.
 
 > [!IMPORTANT]
-> The current recommended usage files are: [`Image_Comparison.ipynb`](Notebooks/Image_Comparison.ipynb) and [`Image_comparison_batch.ipynb`](Notebooks/Image_Comparison_batch.ipynb).
+> The current recommended usage files are: [`Image_Comparison.ipynb`](notebooks/Image_Comparison.ipynb) and [`Image_comparison_batch.ipynb`](notebooks/Image_Comparison_batch.ipynb).
 
 For more examples, see the provided Jupyter notebooks and the documentation under [API Reference](https://3dct.github.io/vIQA/api_reference.html).
 
