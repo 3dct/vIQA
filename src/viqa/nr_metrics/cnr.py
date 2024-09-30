@@ -197,7 +197,7 @@ class CNR(NoReferenceMetricsInterface):
         export_path=None,
         **kwargs,
     ):
-        """An Interactive way to Visualize the centers for CNR calculation.
+        """Visualize and set the centers for CNR calculation interactively.
 
         The visualization shows the signal and background regions in a matplotlib plot.
         If export_path is provided, the plot is saved to the given path.

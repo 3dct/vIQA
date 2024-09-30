@@ -11,7 +11,6 @@ Examples
         >>> snr
         SNR(score_val=None)
         >>> score = snr.score(img,
-        ...                   background_center=(128, 128),
         ...                   signal_center=(32, 32),
         ...                   radius=16)
 """
@@ -191,7 +190,7 @@ class SNR(NoReferenceMetricsInterface):
     def set_centers(
         self, img, signal_center=None, radius=None, export_path=None, **kwargs
     ):
-        """ An Interactive way to Visualize the centers for SNR calculation.
+        """Visualize and set the centers for SNR calculation interactively.
 
         The visualization shows the signal region in a matplotlib plot. If export_path
         is provided, the plot is saved to the path.
