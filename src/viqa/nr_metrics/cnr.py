@@ -192,8 +192,6 @@ class CNR(NoReferenceMetricsInterface):
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
-
-
     def set_centers(
         self,
         img,
@@ -242,133 +240,304 @@ class CNR(NoReferenceMetricsInterface):
             raise ValueError("Centers have to be in the same dimension as img.")
 
         if img.ndim == 2:
+            x_slider_bg = widgets.IntSlider(
+                min=0,
+                max=img.shape[0] - 1,
+                step=1,
+                value=img.shape[0] // 2,
+                description="X background",
+                color="red",
+            )
+            y_slider_bg = widgets.IntSlider(
+                min=0,
+                max=img.shape[1] - 1,
+                step=1,
+                value=img.shape[1] // 2,
+                description="Y background",
+                color="green",
+            )
+            radius_slider_bg = widgets.IntSlider(
+                min=1,
+                max=min(img.shape[0], img.shape[1], img.shape[2]) - 1,
+                step=1,
+                value=1,
+                description="Radius",
+                color="purple",
+            )
+            x_slider_sig = widgets.IntSlider(
+                min=0,
+                max=img.shape[0] - 1,
+                step=1,
+                value=img.shape[0] // 2,
+                description="X signal",
+                color="red",
+            )
+            y_slider_sig = widgets.IntSlider(
+                min=0,
+                max=img.shape[1] - 1,
+                step=1,
+                value=img.shape[1] // 2,
+                description="Y signal",
+                color="green",
+            )
 
-            x_slider_bg = widgets.IntSlider(min=0, max=img.shape[0]-1, step=1, value=img.shape[0] // 2, description='X background', color='red')
-            y_slider_bg = widgets.IntSlider(min=0, max=img.shape[1]-1, step=1, value=img.shape[1] // 2, description='Y background', color='green')
-            radius_slider_bg = widgets.IntSlider(min=1, max=min(img.shape[0], img.shape[1], img.shape[2])-1, step=1, value=1, description='Radius', color='purple')
-            x_slider_sig = widgets.IntSlider(min=0, max=img.shape[0]-1, step=1, value=img.shape[0] // 2, description='X signal', color='red')
-            y_slider_sig = widgets.IntSlider(min=0, max=img.shape[1]-1, step=1, value=img.shape[1] // 2, description='Y signal', color='green')
+            x_slider_bg.layout = widgets.Layout(margin="0px 0px 0px 160px")
+            y_slider_bg.layout = widgets.Layout(margin="0px 20px")
 
-            x_slider_bg.layout = widgets.Layout(margin='0px 0px 0px 160px') 
-            y_slider_bg.layout = widgets.Layout(margin='0px 20px')        
+            x_slider_bg.layout = widgets.Layout(margin="0px 0px 0px 160px")
+            y_slider_bg.layout = widgets.Layout(margin="0px 20px")
 
-            x_slider_bg.layout = widgets.Layout(margin='0px 0px 0px 160px') 
-            y_slider_bg.layout = widgets.Layout(margin='0px 20px')      
+            radius_slider_bg.layout = widgets.Layout(margin="0px 0px 0px 600px")
 
-            radius_slider_bg.layout = widgets.Layout(margin='0px 0px 0px 600px')   
-
-            def update_visualization(x_bg, y_bg,radius, x_sig, y_sig):
+            def update_visualization(x_bg, y_bg, radius, x_sig, y_sig):
                 background_center = (x_bg, y_bg)
                 signal_center = (x_sig, y_sig)
                 radius_background = radius
- 
-                self._parameters.update({
-                    "signal_center": signal_center,
-                    "background_center": background_center,
-                    "radius": radius_background
-                })
-                _visualize_cnr_2d(img=img, signal_center=signal_center, background_center=background_center, radius=radius, export_path=export_path, **kwargs)
-            
-            self._saved_parameters = {"signal_center": None, "background_center": None, "radius": None}
 
-            def save_values(b):
-                self._saved_parameters.update({
+                self._parameters.update(
+                    {
+                        "signal_center": signal_center,
+                        "background_center": background_center,
+                        "radius": radius_background,
+                    }
+                )
+                _visualize_cnr_2d(
+                    img=img,
+                    signal_center=signal_center,
+                    background_center=background_center,
+                    radius=radius,
+                    export_path=export_path,
+                    **kwargs,
+                )
 
-                "signal_center": self._parameters["signal_center"],
-                "background_center": self._parameters["background_center"],    
-                "radius": self._parameters["radius"]
-                })
+            self._saved_parameters = {
+                "signal_center": None,
+                "background_center": None,
+                "radius": None,
+            }
+
+            def save_values():
+                self._saved_parameters.update(
+                    {
+                        "signal_center": self._parameters["signal_center"],
+                        "background_center": self._parameters["background_center"],
+                        "radius": self._parameters["radius"],
+                    }
+                )
                 print("Saved")
 
-            def display_values(b):
-                print("Displayed saved background center:", self._saved_parameters["background_center"])
-                print("Displayed saved signal center:", self._saved_parameters["signal_center"])
+            def display_values():
+                print(
+                    "Displayed saved background center:",
+                    self._saved_parameters["background_center"],
+                )
+                print(
+                    "Displayed saved signal center:",
+                    self._saved_parameters["signal_center"],
+                )
                 print("Displayed saved radius:", self._saved_parameters["radius"])
 
             save_button = widgets.Button(description="Save Current Slices")
             display_button = widgets.Button(description="Display Saved Slices")
 
-            save_button.layout = widgets.Layout(margin='10px 0px 10px 650px')
-            display_button.layout = widgets.Layout(margin='10px 30px 10px 30px')
+            save_button.layout = widgets.Layout(margin="10px 0px 10px 650px")
+            display_button.layout = widgets.Layout(margin="10px 30px 10px 30px")
 
             save_button.on_click(save_values)
             display_button.on_click(display_values)
 
-            out = widgets.interactive_output(update_visualization,{'x_bg': x_slider_bg, 'y_bg': y_slider_bg,'radius':radius_slider_bg,'x_sig': x_slider_sig,'y_sig': y_slider_sig})
+            out = widgets.interactive_output(
+                update_visualization,
+                {
+                    "x_bg": x_slider_bg,
+                    "y_bg": y_slider_bg,
+                    "radius": radius_slider_bg,
+                    "x_sig": x_slider_sig,
+                    "y_sig": y_slider_sig,
+                },
+            )
 
             display(out)
-            display(VBox([HBox([x_slider_bg, y_slider_bg],layout=widgets.Layout(justify_content='space-between')),HBox([x_slider_sig, y_slider_sig,],layout=widgets.Layout(justify_content='space-between')),radius_slider_bg, HBox([save_button, display_button])]),layout=widgets.Layout(padding='10px 60px'))
-
-
-
+            display(
+                VBox(
+                    [
+                        HBox(
+                            [x_slider_bg, y_slider_bg],
+                            layout=widgets.Layout(justify_content="space-between"),
+                        ),
+                        HBox(
+                            [
+                                x_slider_sig,
+                                y_slider_sig,
+                            ],
+                            layout=widgets.Layout(justify_content="space-between"),
+                        ),
+                        radius_slider_bg,
+                        HBox([save_button, display_button]),
+                    ]
+                ),
+                layout=widgets.Layout(padding="10px 60px"),
+            )
 
         elif img.ndim == 3:
+            # Create sliders with its layout for background
+            x_slider_bg = widgets.IntSlider(
+                min=0,
+                max=img.shape[0] - 1,
+                step=1,
+                value=img.shape[0] // 2,
+                description="X background",
+                color="red",
+            )
+            y_slider_bg = widgets.IntSlider(
+                min=0,
+                max=img.shape[1] - 1,
+                step=1,
+                value=img.shape[1] // 2,
+                description="Y background",
+                color="green",
+            )
+            z_slider_bg = widgets.IntSlider(
+                min=0,
+                max=img.shape[2] - 1,
+                step=1,
+                value=img.shape[2] // 2,
+                description="Z background",
+                color="blue",
+            )
 
-            # Create sliders with its layout for background 
-            x_slider_bg = widgets.IntSlider(min=0, max=img.shape[0]-1, step=1, value=img.shape[0] // 2, description='X background', color='red')
-            y_slider_bg = widgets.IntSlider(min=0, max=img.shape[1]-1, step=1, value=img.shape[1] // 2, description='Y background', color='green')
-            z_slider_bg = widgets.IntSlider(min=0, max=img.shape[2]-1, step=1, value=img.shape[2] // 2, description='Z background', color='blue')
+            x_slider_bg.layout = widgets.Layout(margin="0px 0px 0px 160px")
+            y_slider_bg.layout = widgets.Layout(margin="0px 20px")
+            z_slider_bg.layout = widgets.Layout(margin="0px 160px 0px 0px")
 
-            x_slider_bg.layout = widgets.Layout(margin='0px 0px 0px 160px') 
-            y_slider_bg.layout = widgets.Layout(margin='0px 20px')        
-            z_slider_bg.layout = widgets.Layout(margin='0px 160px 0px 0px') 
-            
-            radius_slider_bg = widgets.IntSlider(min=1, max=min(img.shape[0], img.shape[1], img.shape[2])-1, step=1, value=1, description='Radius', color='purple')
-            radius_slider_bg.layout = widgets.Layout(margin='0px 0px 0px 600px') 
-            
+            radius_slider_bg = widgets.IntSlider(
+                min=1,
+                max=min(img.shape[0], img.shape[1], img.shape[2]) - 1,
+                step=1,
+                value=1,
+                description="Radius",
+                color="purple",
+            )
+            radius_slider_bg.layout = widgets.Layout(margin="0px 0px 0px 600px")
+
             # Create sliders with its layout for signal
-            x_slider_sig = widgets.IntSlider(min=0, max=img.shape[0]-1, step=1, value=img.shape[0] // 2, description='X signal', color='red')
-            y_slider_sig = widgets.IntSlider(min=0, max=img.shape[1]-1, step=1, value=img.shape[1] // 2, description='Y signal', color='green')
-            z_slider_sig = widgets.IntSlider(min=0, max=img.shape[2]-1, step=1, value=img.shape[2] // 2, description='Z signal', color='blue')
+            x_slider_sig = widgets.IntSlider(
+                min=0,
+                max=img.shape[0] - 1,
+                step=1,
+                value=img.shape[0] // 2,
+                description="X signal",
+                color="red",
+            )
+            y_slider_sig = widgets.IntSlider(
+                min=0,
+                max=img.shape[1] - 1,
+                step=1,
+                value=img.shape[1] // 2,
+                description="Y signal",
+                color="green",
+            )
+            z_slider_sig = widgets.IntSlider(
+                min=0,
+                max=img.shape[2] - 1,
+                step=1,
+                value=img.shape[2] // 2,
+                description="Z signal",
+                color="blue",
+            )
 
-            x_slider_sig.layout = widgets.Layout(margin='0px 0px 0px 160px') 
-            y_slider_sig.layout = widgets.Layout(margin='0px 20px')        
-            z_slider_sig.layout = widgets.Layout(margin='0px 160px 0px 0px')
+            x_slider_sig.layout = widgets.Layout(margin="0px 0px 0px 160px")
+            y_slider_sig.layout = widgets.Layout(margin="0px 20px")
+            z_slider_sig.layout = widgets.Layout(margin="0px 160px 0px 0px")
 
             def update_visualization(x_bg, y_bg, z_bg, radius, x_sig, y_sig, z_sig):
                 background_center = (x_bg, y_bg, z_bg)
                 signal_center = (x_sig, y_sig, z_sig)
                 radius_background = radius
- 
-                self._parameters.update({
-                    "signal_center": signal_center,
-                    "background_center": background_center,
-                    "radius": radius_background
-                })
-                _visualize_cnr_3d(img=img, signal_center=signal_center, background_center=background_center, radius=radius, export_path=export_path, **kwargs)
-            
-            self._saved_parameters = {"signal_center": None, "background_center": None, "radius": None}
 
-            def save_values(b):
-                self._saved_parameters.update({
+                self._parameters.update(
+                    {
+                        "signal_center": signal_center,
+                        "background_center": background_center,
+                        "radius": radius_background,
+                    }
+                )
+                _visualize_cnr_3d(
+                    img=img,
+                    signal_center=signal_center,
+                    background_center=background_center,
+                    radius=radius,
+                    export_path=export_path,
+                    **kwargs,
+                )
 
-                "signal_center": self._parameters["signal_center"],
-                "background_center": self._parameters["background_center"],    
-                "radius": self._parameters["radius"]
-                })
+            self._saved_parameters = {
+                "signal_center": None,
+                "background_center": None,
+                "radius": None,
+            }
+
+            def save_values():
+                self._saved_parameters.update(
+                    {
+                        "signal_center": self._parameters["signal_center"],
+                        "background_center": self._parameters["background_center"],
+                        "radius": self._parameters["radius"],
+                    }
+                )
                 print("Saved")
 
-            def display_values(b):
-                print("Displayed saved background center:", self._saved_parameters["background_center"])
-                print("Displayed saved signal center:", self._saved_parameters["signal_center"])
+            def display_values():
+                print(
+                    "Displayed saved background center:",
+                    self._saved_parameters["background_center"],
+                )
+                print(
+                    "Displayed saved signal center:",
+                    self._saved_parameters["signal_center"],
+                )
                 print("Displayed saved radius:", self._saved_parameters["radius"])
 
             save_button = widgets.Button(description="Save Current Slices")
             display_button = widgets.Button(description="Display Saved Slices")
 
-            save_button.layout = widgets.Layout(margin='10px 0px 10px 650px')
-            display_button.layout = widgets.Layout(margin='10px 30px 10px 30px')
-            
+            save_button.layout = widgets.Layout(margin="10px 0px 10px 650px")
+            display_button.layout = widgets.Layout(margin="10px 30px 10px 30px")
+
             save_button.on_click(save_values)
             display_button.on_click(display_values)
-            
-            out = widgets.interactive_output(update_visualization,{'x_bg': x_slider_bg, 'y_bg': y_slider_bg,'z_bg': z_slider_bg,'radius':radius_slider_bg,'x_sig': x_slider_sig,'y_sig': y_slider_sig,'z_sig': z_slider_sig})
-            
+
+            out = widgets.interactive_output(
+                update_visualization,
+                {
+                    "x_bg": x_slider_bg,
+                    "y_bg": y_slider_bg,
+                    "z_bg": z_slider_bg,
+                    "radius": radius_slider_bg,
+                    "x_sig": x_slider_sig,
+                    "y_sig": y_slider_sig,
+                    "z_sig": z_slider_sig,
+                },
+            )
+
             display(out)
-            display(VBox([HBox([x_slider_bg, y_slider_bg,z_slider_bg],layout=widgets.Layout(justify_content='space-between')),HBox([x_slider_sig, y_slider_sig,z_slider_sig],layout=widgets.Layout(justify_content='space-between')),radius_slider_bg, HBox([save_button, display_button])]),layout=widgets.Layout(padding='10px 60px'))
-
-
-
+            display(
+                VBox(
+                    [
+                        HBox(
+                            [x_slider_bg, y_slider_bg, z_slider_bg],
+                            layout=widgets.Layout(justify_content="space-between"),
+                        ),
+                        HBox(
+                            [x_slider_sig, y_slider_sig, z_slider_sig],
+                            layout=widgets.Layout(justify_content="space-between"),
+                        ),
+                        radius_slider_bg,
+                        HBox([save_button, display_button]),
+                    ]
+                ),
+                layout=widgets.Layout(padding="10px 60px"),
+            )
 
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")

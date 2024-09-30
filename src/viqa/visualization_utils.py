@@ -232,7 +232,9 @@ def _visualize_snr_2d(img, signal_center, radius, export_path=None, **kwargs):
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_snr_3d(img, signal_center, radius, export_path=None, show=None, **kwargs):
+def _visualize_snr_3d(
+    img, signal_center, radius, export_path=None, show=None, **kwargs
+):
     figsize = kwargs.pop("figsize", (14, 6))
     dpi = kwargs.pop("dpi", 300)
 
