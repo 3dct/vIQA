@@ -33,14 +33,10 @@ Examples
 
 from warnings import warn
 
-import numpy as np
-
-import ipywidgets
 import ipywidgets as widgets
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from ipywidgets import interact, VBox, HBox
+import numpy as np
 from IPython.display import display
+from ipywidgets import HBox, VBox
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa.visualization_utils import _visualize_cnr_2d, _visualize_cnr_3d
