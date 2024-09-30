@@ -232,7 +232,7 @@ def _visualize_snr_2d(img, signal_center, radius, export_path=None, **kwargs):
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_snr_3d(img, signal_center, radius, export_path=None, **kwargs):
+def _visualize_snr_3d(img, signal_center, radius, export_path=None, show=None, **kwargs):
     figsize = kwargs.pop("figsize", (14, 6))
     dpi = kwargs.pop("dpi", 300)
 
@@ -298,7 +298,8 @@ def _visualize_snr_3d(img, signal_center, radius, export_path=None, **kwargs):
     axs[2].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
     axs[2].add_patch(rect_3)
-    plt.show()
+    if show:
+        plt.show()
     if export_path:
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
