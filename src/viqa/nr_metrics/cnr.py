@@ -99,6 +99,19 @@ class CNR(NoReferenceMetricsInterface):
         """
         img = super().score(img)
 
+        # check if signal_center, background_center and radius are provided
+        if not {"signal_center", "background_center", "radius"}.issubset(kwargs):
+            if (
+                not self._parameters["signal_center"]
+                or not self._parameters["background_center"]
+                or not self._parameters["radius"]
+            ):
+                raise ValueError("No center or radius provided.")
+
+            kwargs["signal_center"] = self._parameters["signal_center"]
+            kwargs["background_center"] = self._parameters["background_center"]
+            kwargs["radius"] = self._parameters["radius"]
+
         # write kwargs to ._parameters attribute
         self._parameters.update(kwargs)
 
