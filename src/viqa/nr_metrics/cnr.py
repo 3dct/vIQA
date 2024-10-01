@@ -184,7 +184,18 @@ class CNR(NoReferenceMetricsInterface):
         if img.ndim != len(signal_center) or img.ndim != len(background_center):
             raise ValueError("Centers have to be in the same dimension as img.")
 
-        if img.ndim == 2:
+        # Visualize centers
+        if img.ndim == 3 and img.shape[-1] != 3:  # 3D image
+            _visualize_cnr_3d(
+                img=img,
+                signal_center=signal_center,
+                background_center=background_center,
+                radius=radius,
+                export_path=export_path,
+                **kwargs,
+            )
+        elif img.ndim == 3 and img.shape[-1] == 3:  # 2D RGB image
+            img = _to_grayscale(img)
             _visualize_cnr_2d(
                 img=img,
                 signal_center=signal_center,
@@ -193,8 +204,8 @@ class CNR(NoReferenceMetricsInterface):
                 export_path=export_path,
                 **kwargs,
             )
-        elif img.ndim == 3:
-            _visualize_cnr_3d(
+        elif img.ndim == 2:  # 2D image
+            _visualize_cnr_2d(
                 img=img,
                 signal_center=signal_center,
                 background_center=background_center,
