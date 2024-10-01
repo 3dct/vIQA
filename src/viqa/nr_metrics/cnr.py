@@ -36,14 +36,24 @@ from warnings import warn
 import ipywidgets as widgets
 import numpy as np
 from IPython.display import display
-from ipywidgets import HBox, VBox
+from ipywidgets import HBox, Label, VBox
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.visualization_utils import _visualize_cnr_2d, _visualize_cnr_3d
+from viqa.utils import _to_grayscale
+from viqa.visualization_utils import (
+    FIGSIZE_CNR_2D,
+    FIGSIZE_CNR_3D,
+    _create_slider_widget,
+    _visualize_cnr_2d,
+    _visualize_cnr_3d,
+)
 
 glob_signal_center = None
 glob_background_center = None
 glob_radius = None
+
+FIGSIZE_CNR_2D_ = tuple(f"{val}in" for val in FIGSIZE_CNR_2D)
+FIGSIZE_CNR_3D_ = tuple(f"{val}in" for val in FIGSIZE_CNR_3D)
 
 
 class CNR(NoReferenceMetricsInterface):
@@ -233,8 +243,9 @@ class CNR(NoReferenceMetricsInterface):
             Additional parameters for visualization. The keyword arguments are passed to
             :py:func:`matplotlib.pyplot.subplots`.
         """
-
         # Prepare visualization functions and widgets
+
+        # Define functions for visualization
         def _update_visualization_2d(
             signal_center_x,
             signal_center_y,
@@ -291,6 +302,7 @@ class CNR(NoReferenceMetricsInterface):
                 **kwargs,
             )
 
+        # Define function to save values
         def _save_values(_):
             global glob_signal_center, glob_background_center, glob_radius
             self._parameters.update(
@@ -302,122 +314,91 @@ class CNR(NoReferenceMetricsInterface):
             )
             print("Parameters saved.")
 
+        # Create slider for radius
+        slider_radius = _create_slider_widget(
+            max=1,
+            min=1,
+            value=1,
+            description="Radius",
+        )
+        slider_radius.style = {"handle_color": "#f7f7f7"}
+
         # Create sliders for background center coordinates
-        slider_background_center_x = widgets.IntSlider(
-            min=0,
-            max=img.shape[0] - 1,
-            step=1,
+        slider_background_center_x = _create_slider_widget(
+            min=slider_radius.value + 1,
+            max=img.shape[0] - (slider_radius.value + 1),
             value=img.shape[0] // 2,
-            description="X Coordinate (Background)",
-            continuous_update=False,
         )
-        slider_background_center_y = widgets.IntSlider(
-            min=0,
-            max=img.shape[1] - 1,
-            step=1,
+        slider_background_center_y = _create_slider_widget(
+            min=slider_radius.value + 1,
+            max=img.shape[1] - (slider_radius.value + 1),
             value=img.shape[1] // 2,
-            description="Y Coordinate (Background)",
-            continuous_update=False,
-        )
-        slider_background_center_z = widgets.IntSlider(
-            min=0,
-            max=img.shape[2] - 1,
-            step=1,
-            value=img.shape[2] // 2,
-            description="Z Coordinate (Background)",
-            continuous_update=False,
         )
 
         # Create sliders for signal center coordinates
-        slider_signal_center_x = widgets.IntSlider(
-            min=0,
-            max=img.shape[0] - 1,
-            step=1,
+        slider_signal_center_x = _create_slider_widget(
+            min=slider_radius.value + 1,
+            max=img.shape[0] - (slider_radius.value + 1),
             value=img.shape[0] // 2,
-            description="X Coordinate (Signal)",
-            continuous_update=False,
         )
-        slider_signal_center_y = widgets.IntSlider(
-            min=0,
-            max=img.shape[1] - 1,
-            step=1,
+        slider_signal_center_y = _create_slider_widget(
+            min=slider_radius.value + 1,
+            max=img.shape[1] - (slider_radius.value + 1),
             value=img.shape[1] // 2,
-            description="Y Coordinate (Signal)",
-            continuous_update=False,
-        )
-        slider_signal_center_z = widgets.IntSlider(
-            min=0,
-            max=img.shape[2] - 1,
-            step=1,
-            value=img.shape[2] // 2,
-            description="Z Coordinate (Signal)",
-            continuous_update=False,
         )
 
-        # Create slider for radius
-        slider_radius = widgets.IntSlider(
-            min=1,
-            max=min(img.shape[0], img.shape[1], img.shape[2]) // 2,
-            step=1,
-            value=1,
-            description="Radius",
-            continuous_update=False,
-        )
+        if img.ndim == 3 and img.shape[-1] != 3:
+            # Add widgets for z coordinate
+            slider_background_center_z = _create_slider_widget(
+                min=slider_radius.value + 1,
+                max=img.shape[2] - (slider_radius.value + 1),
+                value=img.shape[2] // 2,
+            )
+            slider_signal_center_z = _create_slider_widget(
+                min=slider_radius.value + 1,
+                max=img.shape[2] - (slider_radius.value + 1),
+                value=img.shape[2] // 2,
+            )
+            slider_background_center_z.style = {"handle_color": "#2c7bb6"}
+            slider_signal_center_z.style = {"handle_color": "#2c7bb6"}
+        elif img.ndim == 3 and img.shape[-1] == 3:
+            img = _to_grayscale(img)
+
+        # Update min and max values of sliders dynamically
+        def _update_values(change):
+            slider_background_center_x.min = change.new + 1
+            slider_background_center_x.max = img.shape[0] - (change.new + 1)
+            slider_background_center_y.min = change.new + 1
+            slider_background_center_y.max = img.shape[1] - (change.new + 1)
+            slider_signal_center_x.min = change.new + 1
+            slider_signal_center_x.max = img.shape[0] - (change.new + 1)
+            slider_signal_center_y.min = change.new + 1
+            slider_signal_center_y.max = img.shape[1] - (change.new + 1)
+            try:
+                slider_background_center_z.min = change.new + 1
+                slider_background_center_z.max = img.shape[2] - (change.new + 1)
+                slider_signal_center_z.min = change.new + 1
+                slider_signal_center_z.max = img.shape[2] - (change.new + 1)
+            except NameError:
+                pass
+
+        slider_radius.observe(_update_values, "value")
 
         # Create button to save values
         save_button = widgets.Button(description="Save Current Values")
         save_button.on_click(_save_values)
 
-        # Set style of widgets
-        slider_signal_center_x.style.handle_color = "#d7191c"
-        slider_signal_center_y.style.handle_color = "#fdae61"
-        slider_signal_center_z.style.handle_color = "#2c7bb6"
-        slider_background_center_x.style.handle_color = "#d7191c"
-        slider_background_center_y.style.handle_color = "#fdae61"
-        slider_background_center_z.style.handle_color = "#2c7bb6"
-        slider_radius.style.handle_color = "#f7f7f7"
+        # Visualize centers
+        if img.ndim == 3 and (img.shape[-1] != 3):  # 3D image
+            # Set style of widgets
+            slider_background_center_x.style = {"handle_color": "#d7191c"}
+            slider_background_center_y.style = {"handle_color": "#fdae61"}
+            slider_signal_center_x.style = {"handle_color": "#d7191c"}
+            slider_signal_center_y.style = {"handle_color": "#fdae61"}
 
-        if img.ndim == 2:
-            # Create output
-            out = widgets.interactive_output(
-                _update_visualization_2d,
-                {
-                    "background_center_x": slider_background_center_x,
-                    "background_center_y": slider_background_center_y,
-                    "signal_center_x": slider_signal_center_x,
-                    "signal_center_y": slider_signal_center_y,
-                    "radius": slider_radius,
-                },
-            )
+            # Set max value of radius slider
+            slider_radius.max = min(img.shape) // 2
 
-            # Create UI
-            ui = VBox(
-                [
-                    HBox(
-                        [
-                            slider_background_center_x,
-                            slider_background_center_y,
-                        ],
-                        layout=widgets.Layout(justify_content="space-between"),
-                    ),
-                    HBox(
-                        [
-                            slider_signal_center_x,
-                            slider_signal_center_y,
-                        ],
-                        layout=widgets.Layout(justify_content="space-between"),
-                    ),
-                    HBox(
-                        [slider_radius, save_button],
-                        layout=widgets.Layout(justify_content="space-between"),
-                    ),
-                ],
-                layout=widgets.Layout(padding="10px 60px"),
-            )
-
-            display(out, ui)
-
-        elif img.ndim == 3:
             # Create output
             out = widgets.interactive_output(
                 _update_visualization_3d,
@@ -431,23 +412,136 @@ class CNR(NoReferenceMetricsInterface):
                     "radius": slider_radius,
                 },
             )
+            figsize = kwargs.get("figsize", FIGSIZE_CNR_3D_)
+            width = figsize[0]
+            height = figsize[1]
+            out.layout = {
+                "width": width,
+                "height": height,
+            }
 
             # Create UI
             ui = VBox(
                 [
                     HBox(
                         [
-                            slider_background_center_x,
-                            slider_background_center_y,
-                            slider_background_center_z,
+                            VBox(
+                                [
+                                    Label("X Coordinate (Background)"),
+                                    slider_background_center_x,
+                                ]
+                            ),
+                            VBox(
+                                [
+                                    Label("Y Coordinate (Background)"),
+                                    slider_background_center_y,
+                                ]
+                            ),
+                            VBox(
+                                [
+                                    Label("Z Coordinate (Background)"),
+                                    slider_background_center_z,
+                                ]
+                            ),
                         ],
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
                     HBox(
                         [
-                            slider_signal_center_x,
-                            slider_signal_center_y,
-                            slider_signal_center_z,
+                            VBox(
+                                [
+                                    Label("X Coordinate (Signal)"),
+                                    slider_signal_center_x,
+                                ]
+                            ),
+                            VBox(
+                                [
+                                    Label("Y Coordinate (Signal)"),
+                                    slider_signal_center_y,
+                                ]
+                            ),
+                            VBox(
+                                [
+                                    Label("Z Coordinate (Signal)"),
+                                    slider_signal_center_z,
+                                ]
+                            ),
+                        ],
+                        layout=widgets.Layout(justify_content="space-around"),
+                    ),
+                    HBox(
+                        [slider_radius, save_button],
+                        layout=widgets.Layout(justify_content="center"),
+                    ),
+                ],
+                layout=widgets.Layout(padding="10px 60px"),
+            )
+
+            display(out, ui)
+
+        elif img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):  # 2D image
+            # Set style of widgets
+            slider_background_center_x.style = {"handle_color": "#ca0020"}
+            slider_background_center_y.style = {"handle_color": "#f4a582"}
+            slider_signal_center_x.style = {"handle_color": "#0571b0"}
+            slider_signal_center_y.style = {"handle_color": "#92c5de"}
+
+            # Set max value of radius slider
+            slider_radius.max = min(img.shape[0:-1]) // 2
+
+            # Create output
+            out = widgets.interactive_output(
+                _update_visualization_2d,
+                {
+                    "background_center_x": slider_background_center_x,
+                    "background_center_y": slider_background_center_y,
+                    "signal_center_x": slider_signal_center_x,
+                    "signal_center_y": slider_signal_center_y,
+                    "radius": slider_radius,
+                },
+            )
+            figsize = kwargs.get("figsize", FIGSIZE_CNR_2D_)
+            width = figsize[0]
+            height = figsize[1]
+            out.layout = {
+                "width": width,
+                "height": height,
+            }
+
+            # Create UI
+            ui = VBox(
+                [
+                    HBox(
+                        [
+                            VBox(
+                                [
+                                    Label("X Coordinate (Background)"),
+                                    slider_background_center_x,
+                                ]
+                            ),
+                            VBox(
+                                [
+                                    Label("X Coordinate (Signal)"),
+                                    slider_signal_center_x,
+                                ]
+                            ),
+                        ],
+                        layout=widgets.Layout(justify_content="space-around"),
+                    ),
+                    HBox(
+                        [
+                            VBox(
+                                [
+                                    Label("Y Coordinate (Background)"),
+                                    slider_background_center_y,
+                                ]
+                            ),
+                            VBox(
+                                [
+                                    Label("Y Coordinate (Signal)"),
+                                    slider_signal_center_y,
+                                ]
+                            ),
                         ],
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
