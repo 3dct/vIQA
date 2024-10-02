@@ -25,6 +25,7 @@ Examples
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Add interactive center selection, 2024, Michael Stidi
 #
 # License
 # -------
