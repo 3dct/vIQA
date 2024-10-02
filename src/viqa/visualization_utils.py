@@ -15,10 +15,13 @@
 # -------
 # BSD-3-Clause License
 
-import ipywidgets as widgets
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
+
+from viqa._module import try_import
+
+widgets, has_ipywidgets = try_import("ipywidgets")
 
 FIGSIZE_CNR_2D = (10, 5.5)
 FIGSIZE_CNR_3D = (10, 8)
@@ -318,6 +321,11 @@ def _visualize_snr_3d(
 
 
 def _create_slider_widget(**kwargs):
+    if not has_ipywidgets:
+        raise ImportError(
+            "ipywidgets is not installed. Please install it to use " "this function."
+        )
+
     min_val = kwargs.pop("min", 0)
     step = kwargs.pop("step", 1)
     continuous_update = kwargs.pop("continuous_update", False)

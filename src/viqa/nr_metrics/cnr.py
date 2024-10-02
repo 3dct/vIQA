@@ -34,12 +34,10 @@ Examples
 
 from warnings import warn
 
-import ipywidgets as widgets
 import numpy as np
-from IPython.display import display
-from ipywidgets import HBox, Label, VBox
 
 from viqa._metrics import NoReferenceMetricsInterface
+from viqa._module import check_interactive_vis_deps, is_ipython, try_import
 from viqa.utils import _to_grayscale
 from viqa.visualization_utils import (
     FIGSIZE_CNR_2D,
@@ -48,6 +46,9 @@ from viqa.visualization_utils import (
     _visualize_cnr_2d,
     _visualize_cnr_3d,
 )
+
+widgets, has_ipywidgets = try_import("ipywidgets")
+display, has_ipython = try_import("IPython.display", "display")
 
 glob_signal_center = None
 glob_background_center = None
@@ -192,8 +193,18 @@ class CNR(NoReferenceMetricsInterface):
             background_center = self._parameters["background_center"]
             radius = self._parameters["radius"]
 
-        if img.ndim != len(signal_center) or img.ndim != len(background_center):
-            raise ValueError("Centers have to be in the same dimension as img.")
+        # Check if img and signal_center have the same dimension
+        if img.shape[-1] == 3:
+            if (
+                img.ndim != len(signal_center) + 1
+                or img.ndim != len(background_center) + 1
+            ):
+                raise ValueError("Centers have to be in the same dimension as img.")
+        else:
+            if img.ndim != len(signal_center) or img.ndim != len(background_center):
+                raise ValueError("Centers have to be in the same dimension as img.")
+        # Check if signal_center is too close to the border
+        # TODO: Check if signal_center is too close to the border
 
         # Visualize centers
         if img.ndim == 3 and img.shape[-1] != 3:  # 3D image
@@ -242,9 +253,55 @@ class CNR(NoReferenceMetricsInterface):
             Image to visualize.
         **kwargs : optional
             Additional parameters for visualization. The keyword arguments are passed to
-            :py:func:`matplotlib.pyplot.subplots`.
+            :py:meth:`visualize_centers` and :py:func:`matplotlib.pyplot.subplots`.
+            ``background_center``, ``signal_center``, and ``radius`` can be provided as
+            starting points for the interactive center selection. If not provided, the
+            center of the image is used as the starting point.
         """
+        if not is_ipython():
+            try:
+                warn("Trying to visualize in a non-interactive environment.")
+                self.visualize_centers(img, **kwargs)
+                return
+            except Exception:
+                raise ImportError(
+                    "Failed to visualize in a non-interactive "
+                    "environment. Please use an IPython environment or try giving "
+                    "the parameters for the centers and radius directly."
+                ) from None
+
+        check_interactive_vis_deps(has_ipywidgets, has_ipython)
+
         # Prepare visualization functions and widgets
+
+        # Define output layout
+        def _output_layout(out, figsize_variable):
+            figsize = kwargs.get("figsize", figsize_variable)
+            width = figsize[0]
+            height = figsize[1]
+            out.layout = {
+                "width": width,
+                "height": height,
+            }
+
+        # Define function to save values from global variables to ._parameters attribute
+        def _save_values(_):
+            global glob_signal_center, glob_background_center, glob_radius
+            self._parameters.update(
+                {
+                    "signal_center": glob_signal_center,
+                    "background_center": glob_background_center,
+                    "radius": glob_radius,
+                }
+            )
+
+        # Define function to save values to global variables
+        def _write_values_to_global(signal_value, background_value, radius_value):
+            # Set global variables
+            global glob_signal_center, glob_background_center, glob_radius
+            glob_signal_center = signal_value
+            glob_background_center = background_value
+            glob_radius = radius_value
 
         # Define functions for visualization
         def _update_visualization_2d(
@@ -257,10 +314,7 @@ class CNR(NoReferenceMetricsInterface):
             signal_center = (signal_center_x, signal_center_y)
             background_center = (background_center_x, background_center_y)
 
-            global glob_signal_center, glob_background_center, glob_radius
-            glob_signal_center = signal_center
-            glob_background_center = background_center
-            glob_radius = radius
+            _write_values_to_global(signal_center, background_center, radius)
 
             _visualize_cnr_2d(
                 img=img,
@@ -290,10 +344,7 @@ class CNR(NoReferenceMetricsInterface):
                 background_center_z,
             )
 
-            global glob_signal_center, glob_background_center, glob_radius
-            glob_signal_center = signal_center
-            glob_background_center = background_center
-            glob_radius = radius
+            _write_values_to_global(signal_center, background_center, radius)
 
             _visualize_cnr_3d(
                 img=img,
@@ -303,23 +354,41 @@ class CNR(NoReferenceMetricsInterface):
                 **kwargs,
             )
 
-        # Define function to save values
-        def _save_values(_):
-            global glob_signal_center, glob_background_center, glob_radius
-            self._parameters.update(
-                {
-                    "signal_center": glob_signal_center,
-                    "background_center": glob_background_center,
-                    "radius": glob_radius,
-                }
-            )
-            print("Parameters saved.")
+        # Check if img is 2D RGB image
+        if img.ndim == 3 and img.shape[-1] == 3:
+            img = _to_grayscale(img)
+
+        center_point = tuple(val // 2 for val in img.shape)
+        # Check if background_center and signal_center are provided
+        if {"background_center", "signal_center", "radius"}.issubset(
+            self._parameters.keys()
+        ):
+            background_start = self._parameters["background_center"]
+            signal_start = self._parameters["signal_center"]
+            radius_start = self._parameters["radius"]
+        else:
+            background_start = kwargs.pop("background_center", center_point)
+            signal_start = kwargs.pop("signal_center", center_point)
+            radius_start = kwargs.pop("radius", 1)
+
+        _write_values_to_global(signal_start, background_start, radius_start)
+
+        # Check if background_center and signal_center are the right shape for 2d and 3d
+        if img.ndim != len(glob_signal_center) or img.ndim != len(
+            glob_background_center
+        ):
+            raise ValueError("Centers have to be in the same dimension as img.")
+        # Check if signal_center is too close to the border
+        # TODO: Check if signal_center is too close to the border
+
+        # Write values to attributes
+        _save_values(None)
 
         # Create slider for radius
         slider_radius = _create_slider_widget(
-            max=1,
+            max=min(img.shape) // 2,
             min=1,
-            value=1,
+            value=radius_start,
             description="Radius",
         )
         slider_radius.style = {"handle_color": "#f7f7f7"}
@@ -328,24 +397,24 @@ class CNR(NoReferenceMetricsInterface):
         slider_background_center_x = _create_slider_widget(
             min=slider_radius.value + 1,
             max=img.shape[0] - (slider_radius.value + 1),
-            value=img.shape[0] // 2,
+            value=background_start[0],
         )
         slider_background_center_y = _create_slider_widget(
             min=slider_radius.value + 1,
             max=img.shape[1] - (slider_radius.value + 1),
-            value=img.shape[1] // 2,
+            value=background_start[1],
         )
 
         # Create sliders for signal center coordinates
         slider_signal_center_x = _create_slider_widget(
             min=slider_radius.value + 1,
             max=img.shape[0] - (slider_radius.value + 1),
-            value=img.shape[0] // 2,
+            value=signal_start[0],
         )
         slider_signal_center_y = _create_slider_widget(
             min=slider_radius.value + 1,
             max=img.shape[1] - (slider_radius.value + 1),
-            value=img.shape[1] // 2,
+            value=signal_start[1],
         )
 
         if img.ndim == 3 and img.shape[-1] != 3:
@@ -353,17 +422,15 @@ class CNR(NoReferenceMetricsInterface):
             slider_background_center_z = _create_slider_widget(
                 min=slider_radius.value + 1,
                 max=img.shape[2] - (slider_radius.value + 1),
-                value=img.shape[2] // 2,
+                value=background_start[2],
             )
             slider_signal_center_z = _create_slider_widget(
                 min=slider_radius.value + 1,
                 max=img.shape[2] - (slider_radius.value + 1),
-                value=img.shape[2] // 2,
+                value=signal_start[2],
             )
             slider_background_center_z.style = {"handle_color": "#2c7bb6"}
             slider_signal_center_z.style = {"handle_color": "#2c7bb6"}
-        elif img.ndim == 3 and img.shape[-1] == 3:
-            img = _to_grayscale(img)
 
         # Update min and max values of sliders dynamically
         def _update_values(change):
@@ -397,9 +464,6 @@ class CNR(NoReferenceMetricsInterface):
             slider_signal_center_x.style = {"handle_color": "#d7191c"}
             slider_signal_center_y.style = {"handle_color": "#fdae61"}
 
-            # Set max value of radius slider
-            slider_radius.max = min(img.shape) // 2
-
             # Create output
             out = widgets.interactive_output(
                 _update_visualization_3d,
@@ -413,64 +477,58 @@ class CNR(NoReferenceMetricsInterface):
                     "radius": slider_radius,
                 },
             )
-            figsize = kwargs.get("figsize", FIGSIZE_CNR_3D_)
-            width = figsize[0]
-            height = figsize[1]
-            out.layout = {
-                "width": width,
-                "height": height,
-            }
+            _output_layout(out, FIGSIZE_CNR_3D_)
 
             # Create UI
-            ui = VBox(
+            ui = widgets.VBox(
                 [
-                    HBox(
+                    widgets.HBox(
                         [
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("X Coordinate (Background)"),
+                                    widgets.Label("X Coordinate (Background)"),
                                     slider_background_center_x,
                                 ]
                             ),
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("Y Coordinate (Background)"),
+                                    widgets.Label("Y Coordinate (Background)"),
                                     slider_background_center_y,
                                 ]
                             ),
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("Z Coordinate (Background)"),
+                                    widgets.Label("Z Coordinate (Background)"),
                                     slider_background_center_z,
                                 ]
                             ),
                         ],
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
-                    HBox(
+                    widgets.HBox(
                         [
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("X Coordinate (Signal)"),
+                                    widgets.Label("X Coordinate (Signal)"),
                                     slider_signal_center_x,
                                 ]
                             ),
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("Y Coordinate (Signal)"),
+                                    widgets.Label("Y Coordinate (Signal)"),
                                     slider_signal_center_y,
                                 ]
                             ),
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("Z Coordinate (Signal)"),
+                                    widgets.Label("Z Coordinate (Signal)"),
                                     slider_signal_center_z,
                                 ]
                             ),
                         ],
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
-                    HBox(
+                    widgets.HBox(
                         [slider_radius, save_button],
                         layout=widgets.Layout(justify_content="center"),
                     ),
@@ -487,9 +545,6 @@ class CNR(NoReferenceMetricsInterface):
             slider_signal_center_x.style = {"handle_color": "#0571b0"}
             slider_signal_center_y.style = {"handle_color": "#92c5de"}
 
-            # Set max value of radius slider
-            slider_radius.max = min(img.shape[0:-1]) // 2
-
             # Create output
             out = widgets.interactive_output(
                 _update_visualization_2d,
@@ -501,52 +556,46 @@ class CNR(NoReferenceMetricsInterface):
                     "radius": slider_radius,
                 },
             )
-            figsize = kwargs.get("figsize", FIGSIZE_CNR_2D_)
-            width = figsize[0]
-            height = figsize[1]
-            out.layout = {
-                "width": width,
-                "height": height,
-            }
+            _output_layout(out, FIGSIZE_CNR_2D_)
 
             # Create UI
-            ui = VBox(
+            ui = widgets.VBox(
                 [
-                    HBox(
+                    widgets.HBox(
                         [
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("X Coordinate (Background)"),
+                                    widgets.Label("X Coordinate (Background)"),
                                     slider_background_center_x,
                                 ]
                             ),
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("X Coordinate (Signal)"),
+                                    widgets.Label("X Coordinate (Signal)"),
                                     slider_signal_center_x,
                                 ]
                             ),
                         ],
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
-                    HBox(
+                    widgets.HBox(
                         [
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("Y Coordinate (Background)"),
+                                    widgets.Label("Y Coordinate (Background)"),
                                     slider_background_center_y,
                                 ]
                             ),
-                            VBox(
+                            widgets.VBox(
                                 [
-                                    Label("Y Coordinate (Signal)"),
+                                    widgets.Label("Y Coordinate (Signal)"),
                                     slider_signal_center_y,
                                 ]
                             ),
                         ],
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
-                    HBox(
+                    widgets.HBox(
                         [slider_radius, save_button],
                         layout=widgets.Layout(justify_content="center"),
                     ),
