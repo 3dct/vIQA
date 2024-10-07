@@ -199,21 +199,21 @@ class GSM(FullReferenceMetricsInterface):
                         score_val = gradient_similarity(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         score_val = gradient_similarity(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         score_val = gradient_similarity(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case _:
@@ -230,7 +230,7 @@ class GSM(FullReferenceMetricsInterface):
                 score_val = gradient_similarity_3d(
                     img_r,
                     img_m,
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     dim=dim,
                     **kwargs,
                 )
@@ -245,7 +245,7 @@ class GSM(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate GSM for 2D images
             score_val = gradient_similarity(
-                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")

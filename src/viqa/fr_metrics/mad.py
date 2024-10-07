@@ -187,21 +187,21 @@ class MAD(FullReferenceMetricsInterface):
                         score_val = most_apparent_distortion(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         score_val = most_apparent_distortion(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         score_val = most_apparent_distortion(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case _:
@@ -218,7 +218,7 @@ class MAD(FullReferenceMetricsInterface):
                 score_val = most_apparent_distortion_3d(
                     img_r,
                     img_m,
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     dim=dim,
                     **kwargs,
                 )
@@ -237,7 +237,7 @@ class MAD(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
             score_val = most_apparent_distortion(
-                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")

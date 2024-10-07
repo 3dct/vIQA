@@ -95,7 +95,7 @@ class PSNR(FullReferenceMetricsInterface):
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
-        if self._parameters["chromatic"]:
+        if self.parameters["chromatic"]:
             self._name = "PSNRc"
         else:
             self._name = "PSNR"
@@ -121,7 +121,7 @@ class PSNR(FullReferenceMetricsInterface):
             score_val = np.inf  # PSNR of identical images is infinity
         else:
             score_val = peak_signal_noise_ratio(
-                img_r, img_m, data_range=self._parameters["data_range"]
+                img_r, img_m, data_range=self.parameters["data_range"]
             )
         self.score_val = score_val
         return score_val

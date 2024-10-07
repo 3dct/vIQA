@@ -113,14 +113,14 @@ class SNR(NoReferenceMetricsInterface):
 
         # check if signal_center and radius are provided
         if not {"signal_center", "radius"}.issubset(kwargs):
-            if not {"signal_center", "radius"}.issubset(self._parameters.keys()):
+            if not {"signal_center", "radius"}.issubset(self.parameters.keys()):
                 raise ValueError("No center or radius provided.")
 
-            kwargs["signal_center"] = self._parameters["signal_center"]
-            kwargs["radius"] = self._parameters["radius"]
+            kwargs["signal_center"] = self.parameters["signal_center"]
+            kwargs["radius"] = self.parameters["radius"]
 
-        # write kwargs to ._parameters attribute
-        self._parameters.update(kwargs)
+        # write kwargs to .parameters attribute
+        self.parameters.update(kwargs)
 
         score_val = signal_to_noise_ratio(img, **kwargs)
         self.score_val = score_val
@@ -182,11 +182,11 @@ class SNR(NoReferenceMetricsInterface):
             If the radius is not a positive integer.
         """
         if not signal_center or not radius:
-            if not {"signal_center", "radius"}.issubset(self._parameters.keys()):
+            if not {"signal_center", "radius"}.issubset(self.parameters.keys()):
                 raise ValueError("No center or radius provided.")
 
-            signal_center = self._parameters["signal_center"]
-            radius = self._parameters["radius"]
+            signal_center = self.parameters["signal_center"]
+            radius = self.parameters["radius"]
 
         # Check if img and signal_center have the same dimension
         if img.shape[-1] == 3:
@@ -300,10 +300,10 @@ class SNR(NoReferenceMetricsInterface):
                 "height": height,
             }
 
-        # Define function to save values from global variables to ._parameters attribute
+        # Define function to save values from global variables to .parameters attribute
         def _save_values(_):
             global glob_signal_center, glob_radius
-            self._parameters.update(
+            self.parameters.update(
                 {
                     "signal_center": glob_signal_center,
                     "radius": glob_radius,
@@ -361,9 +361,9 @@ class SNR(NoReferenceMetricsInterface):
 
         center_point = tuple(val // 2 for val in img.shape)
         # Check if background_center and signal_center are provided
-        if {"signal_center", "radius"}.issubset(self._parameters.keys()):
-            signal_start = self._parameters["signal_center"]
-            radius_start = self._parameters["radius"]
+        if {"signal_center", "radius"}.issubset(self.parameters.keys()):
+            signal_start = self.parameters["signal_center"]
+            radius_start = self.parameters["radius"]
         else:
             signal_start = kwargs.pop("signal_center", center_point)
             radius_start = kwargs.pop("radius", 1)

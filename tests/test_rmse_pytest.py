@@ -11,16 +11,16 @@ class TestInit:
     def test_init_with_default_parameters(self):
         rmse = viqa.RMSE()
         assert rmse.score_val is None, 'Score value should be None'
-        assert rmse._parameters['data_range'] is None, 'Data range should be None'
-        assert rmse._parameters['normalize'] is False, 'Normalize should be False'
-        assert rmse._parameters['chromatic'] is False, 'Chromatic should be False'
+        assert rmse.parameters['data_range'] is None, 'Data range should be None'
+        assert rmse.parameters['normalize'] is False, 'Normalize should be False'
+        assert rmse.parameters['chromatic'] is False, 'Chromatic should be False'
 
     def test_init_with_custom_parameters(self):
         rmse = viqa.RMSE(data_range=1, normalize=True, chromatic=True)
         assert rmse.score_val is None, 'Score value should be None'
-        assert rmse._parameters['data_range'] == 1, 'Data range should be 1'
-        assert rmse._parameters['normalize'] is True, 'Normalize should be True'
-        assert rmse._parameters['chromatic'] is True, 'Chromatic should be True'
+        assert rmse.parameters['data_range'] == 1, 'Data range should be 1'
+        assert rmse.parameters['normalize'] is True, 'Normalize should be True'
+        assert rmse.parameters['chromatic'] is True, 'Chromatic should be True'
 
 
 class TestScoring2D:

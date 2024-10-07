@@ -613,7 +613,7 @@ def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.
             txtfile.write("\n")
             [txtfile.write("-") for char in metric.__str__().split("(")[0]]
             txtfile.write("\n")
-            txtfile.write("data_range: " + str(metric._parameters["data_range"]) + "\n")
+            txtfile.write("data_range: " + str(metric.parameters["data_range"]) + "\n")
             for key, value in metrics_parameters[metric_num].items():
                 txtfile.write(key + ": " + str(value))
                 txtfile.write("\n")

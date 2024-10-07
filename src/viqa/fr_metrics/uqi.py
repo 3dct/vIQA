@@ -152,7 +152,7 @@ class UQI(FullReferenceMetricsInterface):
         score_val = structural_similarity(
             img_r,
             img_m,
-            data_range=self._parameters["data_range"],
+            data_range=self.parameters["data_range"],
             k_1=0,
             k_2=0,
             alpha=1,

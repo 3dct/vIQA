@@ -156,7 +156,7 @@ class SSIM(FullReferenceMetricsInterface):
         """
         img_r, img_m = super().score(img_r, img_m)
 
-        if self._parameters["chromatic"]:
+        if self.parameters["chromatic"]:
             if color_weights is None:
                 raise ValueError("Color weights must be set for chromatic images.")
             scores = []
@@ -164,14 +164,14 @@ class SSIM(FullReferenceMetricsInterface):
                 score = structural_similarity(
                     img_r[..., channel],
                     img_m[..., channel],
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     **kwargs,
                 )
                 scores.append(score)
             score_val = (color_weights * np.array(scores)).mean()
         else:
             score_val = structural_similarity(
-                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         self.score_val = score_val
         return score_val

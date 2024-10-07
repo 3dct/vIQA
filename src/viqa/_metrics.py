@@ -26,7 +26,7 @@ from viqa.utils import _check_imgs, export_results
 
 class Metric:
     def __init__(self, data_range, normalize, **kwargs):
-        self._parameters = {
+        self.parameters = {
             "data_range": data_range,
             "normalize": normalize,
             "chromatic": False,
@@ -35,7 +35,7 @@ class Metric:
         }
         self.score_val = None
         self._name = None
-        if self._parameters["normalize"] and not self._parameters["data_range"]:
+        if self.parameters["normalize"] and not self.parameters["data_range"]:
             raise ValueError("If normalize is True, data_range must be specified")
 
     def export_results(self, path, filename):
@@ -65,10 +65,10 @@ class FullReferenceMetricsInterface(ABC, Metric):
         img_r, img_m = _check_imgs(
             img_r=img_r,
             img_m=img_m,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            chromatic=self._parameters["chromatic"],
-            roi=self._parameters["roi"],
+            data_range=self.parameters["data_range"],
+            normalize=self.parameters["normalize"],
+            chromatic=self.parameters["chromatic"],
+            roi=self.parameters["roi"],
         )
         return img_r, img_m
 
@@ -108,9 +108,9 @@ class NoReferenceMetricsInterface(ABC, Metric):
         # Load image
         img = load_data(
             img=img,
-            data_range=self._parameters["data_range"],
-            normalize=self._parameters["normalize"],
-            roi=self._parameters["roi"],
+            data_range=self.parameters["data_range"],
+            normalize=self.parameters["normalize"],
+            roi=self.parameters["roi"],
         )
         return img
 
