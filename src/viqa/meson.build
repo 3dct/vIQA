@@ -8,6 +8,7 @@ python_sources = [
     'utils.py',
     'fusion.py',
     'multiple.py',
+    '_module.py',
 ]
 
 py.install_sources(

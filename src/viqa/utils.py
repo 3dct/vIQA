@@ -511,6 +511,16 @@ def _check_chromatic(img_r, img_m, chromatic):
     return img_r_tensor, img_m_tensor
 
 
+def _check_border_too_close(center, radius):
+    for center_coordinate in center:
+        if not isinstance(center_coordinate, int):
+            raise TypeError("Center has to be a tuple of integers.")
+        if abs(center_coordinate) - radius < 0:
+            raise ValueError(
+                "Center has to be at least the radius away from the border."
+            )
+
+
 def export_results(metrics, output_path, filename):
     """Export data to a csv file.
 

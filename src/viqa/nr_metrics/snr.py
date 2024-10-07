@@ -11,7 +11,6 @@ Examples
         >>> snr
         SNR(score_val=None)
         >>> score = snr.score(img,
-        ...                   background_center=(128, 128),
         ...                   signal_center=(32, 32),
         ...                   radius=16)
 """
@@ -26,6 +25,7 @@ Examples
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Add interactive center selection, 2024, Michael Stidi
 #
 # License
 # -------
@@ -36,8 +36,24 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa.utils import _rgb_to_yuv, _to_grayscale
-from viqa.visualization_utils import _visualize_snr_2d, _visualize_snr_3d
+from viqa._module import check_interactive_vis_deps, is_ipython, try_import
+from viqa.utils import _check_border_too_close, _rgb_to_yuv, _to_grayscale
+from viqa.visualization_utils import (
+    FIGSIZE_SNR_2D,
+    FIGSIZE_SNR_3D,
+    _create_slider_widget,
+    _visualize_snr_2d,
+    _visualize_snr_3d,
+)
+
+widgets, has_ipywidgets = try_import("ipywidgets")
+display, has_ipython = try_import("IPython.display", "display")
+
+glob_signal_center = None
+glob_radius = None
+
+FIGSIZE_SNR_2D_ = tuple(f"{val}in" for val in FIGSIZE_SNR_2D)
+FIGSIZE_SNR_3D_ = tuple(f"{val}in" for val in FIGSIZE_SNR_3D)
 
 
 class SNR(NoReferenceMetricsInterface):
@@ -92,6 +108,14 @@ class SNR(NoReferenceMetricsInterface):
             SNR score value.
         """
         img = super().score(img)
+
+        # check if signal_center and radius are provided
+        if not {"signal_center", "radius"}.issubset(kwargs):
+            if not self._parameters["signal_center"] or not self._parameters["radius"]:
+                raise ValueError("No center or radius provided.")
+
+            kwargs["signal_center"] = self._parameters["signal_center"]
+            kwargs["radius"] = self._parameters["radius"]
 
         # write kwargs to ._parameters attribute
         self._parameters.update(kwargs)
@@ -155,9 +179,11 @@ class SNR(NoReferenceMetricsInterface):
         else:
             if img.ndim != len(signal_center):
                 raise ValueError("Center has to be in the same dimension as img.")
+        # Check if signal_center is too close to the border
+        # TODO: Check if signal_center is too close to the border
 
         # Visualize centers
-        if img.ndim == 3 and (img.shape[-1] != 3):
+        if img.ndim == 3 and (img.shape[-1] != 3):  # 3D image
             _visualize_snr_3d(
                 img=img,
                 signal_center=signal_center,
@@ -165,7 +191,7 @@ class SNR(NoReferenceMetricsInterface):
                 export_path=export_path,
                 **kwargs,
             )
-        elif img.ndim == 3 and (img.shape[-1] == 3):
+        elif img.ndim == 3 and (img.shape[-1] == 3):  # 2D RGB image
             img = _to_grayscale(img)
             _visualize_snr_2d(
                 img=img,
@@ -174,7 +200,7 @@ class SNR(NoReferenceMetricsInterface):
                 export_path=export_path,
                 **kwargs,
             )
-        elif img.ndim == 2:
+        elif img.ndim == 2:  # 2D image
             _visualize_snr_2d(
                 img=img,
                 signal_center=signal_center,
@@ -182,6 +208,305 @@ class SNR(NoReferenceMetricsInterface):
                 export_path=export_path,
                 **kwargs,
             )
+        else:
+            raise ValueError("No visualization possible for non 2d or non 3d images.")
+
+    def set_centers(
+        self,
+        img,
+        **kwargs,
+    ):
+        """Visualize and set the centers for SNR calculation interactively.
+
+        The visualization shows the signal region in a matplotlib plot.
+
+        Parameters
+        ----------
+        img : np.ndarray or Tensor or str or os.PathLike
+            Image to visualize.
+        **kwargs : optional
+            Additional parameters for visualization. The keyword arguments are passed to
+            :py:meth:`visualize_centers` and :py:func:`matplotlib.pyplot.subplots`.
+            ``signal_center``, and ``radius`` can be provided as starting points for the
+            interactive center selection. If not provided, the center of the image is
+            used as the starting point.
+
+        Warnings
+        --------
+        This method is only available in an IPython environment. If not in an IPython
+        environment, the method will try to visualize the centers in a non-interactive
+        environment.
+
+        Raises
+        ------
+        ImportError
+            If the visualization fails in a non-interactive environment.
+        ValueError
+            If the given signal_center is not in the same dimension as the image.
+            If the center is too close to the border.
+            If the image is not 2D or 3D.
+        TypeError
+            If the center is not a tuple of integers.
+            If the radius is not a positive integer.
+        """
+        if not is_ipython():
+            try:
+                warn("Trying to visualize in a non-interactive environment.")
+                self.visualize_centers(img, **kwargs)
+                return
+            except Exception:
+                raise ImportError(
+                    "Failed to visualize in a non-interactive "
+                    "environment. Please use an IPython environment or try giving "
+                    "the parameters for the center and radius directly."
+                ) from None
+
+        check_interactive_vis_deps(has_ipywidgets, has_ipython)
+
+        # Prepare visualization functions and widgets
+
+        # Define output layout
+        def _output_layout(out, figsize_variable):
+            figsize = kwargs.get("figsize", figsize_variable)
+            width = figsize[0]
+            height = figsize[1]
+            out.layout = {
+                "width": width,
+                "height": height,
+            }
+
+        # Define function to save values from global variables to ._parameters attribute
+        def _save_values(_):
+            global glob_signal_center, glob_radius
+            self._parameters.update(
+                {
+                    "signal_center": glob_signal_center,
+                    "radius": glob_radius,
+                }
+            )
+
+        # Define function to save values to global variables
+        def _write_values_to_global(signal_value, radius_value):
+            # Set global variables
+            global glob_signal_center, glob_radius
+            glob_signal_center = signal_value
+            glob_radius = radius_value
+
+        # Define functions for visualization
+        def _update_visualization_2d(
+            signal_center_x,
+            signal_center_y,
+            radius,
+        ):
+            signal_center = (signal_center_x, signal_center_y)
+
+            _write_values_to_global(signal_center, radius)
+
+            _visualize_snr_2d(
+                img=img,
+                signal_center=signal_center,
+                radius=radius,
+                **kwargs,
+            )
+
+        def _update_visualization_3d(
+            signal_center_x,
+            signal_center_y,
+            signal_center_z,
+            radius,
+        ):
+            signal_center = (
+                signal_center_x,
+                signal_center_y,
+                signal_center_z,
+            )
+
+            _write_values_to_global(signal_center, radius)
+
+            _visualize_snr_3d(
+                img=img,
+                signal_center=signal_center,
+                radius=radius,
+                **kwargs,
+            )
+
+        # Check if img is 2D RGB image
+        if img.ndim == 3 and img.shape[-1] == 3:
+            img = _to_grayscale(img)
+
+        center_point = tuple(val // 2 for val in img.shape)
+        # Check if background_center and signal_center are provided
+        if {"signal_center", "radius"}.issubset(self._parameters.keys()):
+            signal_start = self._parameters["signal_center"]
+            radius_start = self._parameters["radius"]
+        else:
+            signal_start = kwargs.pop("signal_center", center_point)
+            radius_start = kwargs.pop("radius", 1)
+
+        _write_values_to_global(signal_start, radius_start)
+
+        # Check if background_center and signal_center are the right shape for 2d and 3d
+        if len(glob_signal_center) != img.ndim:
+            raise ValueError("Signal center has to be in the same dimension as img.")
+
+        # check if radius is an integer and positive
+        if not isinstance(glob_radius, int) or glob_radius <= 0:
+            raise TypeError("Radius has to be a positive integer.")
+
+        # check if signal_center is a tuple of integers and not too close to the border
+        _check_border_too_close(glob_signal_center, glob_radius)
+
+        # Write values to attributes
+        _save_values(None)
+
+        # Create slider for radius
+        slider_radius = _create_slider_widget(
+            max=min(img.shape) // 2,
+            min=1,
+            value=radius_start,
+            description="Radius",
+        )
+        slider_radius.style = {"handle_color": "#f7f7f7"}
+
+        # Create sliders for signal center coordinates
+        slider_signal_center_x = _create_slider_widget(
+            min=slider_radius.value + 1,
+            max=img.shape[0] - (slider_radius.value + 1),
+            value=signal_start[0],
+        )
+        slider_signal_center_y = _create_slider_widget(
+            min=slider_radius.value + 1,
+            max=img.shape[1] - (slider_radius.value + 1),
+            value=signal_start[1],
+        )
+
+        if img.ndim == 3 and img.shape[-1] != 3:
+            # Add widget for z coordinate
+            slider_signal_center_z = _create_slider_widget(
+                min=slider_radius.value + 1,
+                max=img.shape[2] - (slider_radius.value + 1),
+                value=signal_start[2],
+            )
+            slider_signal_center_z.style = {"handle_color": "#2c7bb6"}
+
+        # Update min and max values of sliders dynamically
+        def _update_values(change):
+            slider_signal_center_x.min = change.new + 1
+            slider_signal_center_x.max = img.shape[0] - (change.new + 1)
+            slider_signal_center_y.min = change.new + 1
+            slider_signal_center_y.max = img.shape[1] - (change.new + 1)
+            try:
+                slider_signal_center_z.min = change.new + 1
+                slider_signal_center_z.max = img.shape[2] - (change.new + 1)
+            except NameError:
+                pass
+
+        slider_radius.observe(_update_values, "value")
+
+        # Create button to save values
+        save_button = widgets.Button(description="Save Current Values")
+        save_button.on_click(_save_values)
+
+        # Visualize centers
+        if img.ndim == 3 and (img.shape[-1] != 3):  # 3D image
+            # Set style of widgets
+            slider_signal_center_x.style = {"handle_color": "#d7191c"}
+            slider_signal_center_y.style = {"handle_color": "#fdae61"}
+
+            # Create output
+            out = widgets.interactive_output(
+                _update_visualization_3d,
+                {
+                    "signal_center_x": slider_signal_center_x,
+                    "signal_center_y": slider_signal_center_y,
+                    "signal_center_z": slider_signal_center_z,
+                    "radius": slider_radius,
+                },
+            )
+            _output_layout(out, FIGSIZE_SNR_3D_)
+
+            # Create UI
+            ui = widgets.VBox(
+                [
+                    widgets.HBox(
+                        [
+                            widgets.VBox(
+                                [
+                                    widgets.Label("X Coordinate (Signal)"),
+                                    slider_signal_center_x,
+                                ]
+                            ),
+                            widgets.VBox(
+                                [
+                                    widgets.Label("Y Coordinate (Signal)"),
+                                    slider_signal_center_y,
+                                ]
+                            ),
+                            widgets.VBox(
+                                [
+                                    widgets.Label("Z Coordinate (Signal)"),
+                                    slider_signal_center_z,
+                                ]
+                            ),
+                        ],
+                        layout=widgets.Layout(justify_content="space-around"),
+                    ),
+                    widgets.HBox(
+                        [slider_radius, save_button],
+                        layout=widgets.Layout(justify_content="center"),
+                    ),
+                ],
+                layout=widgets.Layout(padding="10px 60px"),
+            )
+
+            display(out, ui)
+
+        elif img.ndim == 2 or img.ndim == 3 and (img.shape[-1] == 3):  # 2D image
+            # Set style of widgets
+            slider_signal_center_x.style.handle_color = "#0571b0"
+            slider_signal_center_y.style.handle_color = "#92c5de"
+
+            # Create output
+            out = widgets.interactive_output(
+                _update_visualization_2d,
+                {
+                    "signal_center_x": slider_signal_center_x,
+                    "signal_center_y": slider_signal_center_y,
+                    "radius": slider_radius,
+                },
+            )
+            _output_layout(out, FIGSIZE_SNR_2D_)
+
+            # Create UI
+            ui = widgets.VBox(
+                [
+                    widgets.HBox(
+                        [
+                            widgets.VBox(
+                                [
+                                    widgets.Label("X Coordinate (Signal)"),
+                                    slider_signal_center_x,
+                                ]
+                            ),
+                            widgets.VBox(
+                                [
+                                    widgets.Label("Y Coordinate (Signal)"),
+                                    slider_signal_center_y,
+                                ]
+                            ),
+                        ],
+                        layout=widgets.Layout(justify_content="space-around"),
+                    ),
+                    widgets.HBox(
+                        [slider_radius, save_button],
+                        layout=widgets.Layout(justify_content="center"),
+                    ),
+                ],
+                layout=widgets.Layout(padding="10px 60px"),
+            )
+
+            display(out, ui)
+
         else:
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
