@@ -37,7 +37,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _rgb_to_yuv, _to_grayscale
+from viqa.utils import _check_border_too_close, _rgb_to_yuv, _to_grayscale
 from viqa.visualization_utils import (
     FIGSIZE_SNR_2D,
     FIGSIZE_SNR_3D,
@@ -230,6 +230,24 @@ class SNR(NoReferenceMetricsInterface):
             ``signal_center``, and ``radius`` can be provided as starting points for the
             interactive center selection. If not provided, the center of the image is
             used as the starting point.
+
+        Warnings
+        --------
+        This method is only available in an IPython environment. If not in an IPython
+        environment, the method will try to visualize the centers in a non-interactive
+        environment.
+
+        Raises
+        ------
+        ImportError
+            If the visualization fails in a non-interactive environment.
+        ValueError
+            If the given signal_center is not in the same dimension as the image.
+            If the center is too close to the border.
+            If the image is not 2D or 3D.
+        TypeError
+            If the center is not a tuple of integers.
+            If the radius is not a positive integer.
         """
         if not is_ipython():
             try:
@@ -330,8 +348,13 @@ class SNR(NoReferenceMetricsInterface):
         # Check if background_center and signal_center are the right shape for 2d and 3d
         if len(glob_signal_center) != img.ndim:
             raise ValueError("Signal center has to be in the same dimension as img.")
-        # Check if signal_center is too close to the border
-        # TODO: Check if signal_center is too close to the border
+
+        # check if radius is an integer and positive
+        if not isinstance(glob_radius, int) or glob_radius <= 0:
+            raise TypeError("Radius has to be a positive integer.")
+
+        # check if signal_center is a tuple of integers and not too close to the border
+        _check_border_too_close(glob_signal_center, glob_radius)
 
         # Write values to attributes
         _save_values(None)

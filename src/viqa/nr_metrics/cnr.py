@@ -38,7 +38,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _to_grayscale
+from viqa.utils import _check_border_too_close, _to_grayscale
 from viqa.visualization_utils import (
     FIGSIZE_CNR_2D,
     FIGSIZE_CNR_3D,
@@ -257,6 +257,24 @@ class CNR(NoReferenceMetricsInterface):
             ``background_center``, ``signal_center``, and ``radius`` can be provided as
             starting points for the interactive center selection. If not provided, the
             center of the image is used as the starting point.
+
+        Warnings
+        --------
+        This method is only available in an IPython environment. If not in an IPython
+        environment, the method will try to visualize the centers in a non-interactive
+        environment.
+
+        Raises
+        ------
+        ImportError
+            If the visualization fails in a non-interactive environment.
+        ValueError
+            If the given centers are not in the same dimension as the image.
+            If the center is too close to the border.
+            If the image is not 2D or 3D.
+        TypeError
+            If the center is not a tuple of integers.
+            If the radius is not a positive integer.
         """
         if not is_ipython():
             try:
@@ -378,8 +396,15 @@ class CNR(NoReferenceMetricsInterface):
             glob_background_center
         ):
             raise ValueError("Centers have to be in the same dimension as img.")
-        # Check if signal_center is too close to the border
-        # TODO: Check if signal_center is too close to the border
+
+        # Check if radius is an integer and positive
+        if not isinstance(glob_radius, int) or glob_radius <= 0:
+            raise TypeError("Radius has to be an integer.")
+
+        # check if signal_center and background_center are tuples of integers and not
+        # too close to the border
+        _check_border_too_close(glob_signal_center, glob_radius)
+        _check_border_too_close(glob_background_center, glob_radius)
 
         # Write values to attributes
         _save_values(None)
