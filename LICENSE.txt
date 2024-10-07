@@ -12,19 +12,20 @@ Copyright:  2024 Michael Stidi
             2024 Lukas Behammer
 License:    BSD-3-Clause
 
-Function:   /src/viqa/metrics/ssim.py:structural_similarity
+Function:   /src/viqa/fr_metrics/ssim.py:structural_similarity
 Copyright:  2009-2022 the scikit-image team
             2024 Lukas Behammer
 License:    BSD-3-Clause
 
-Functions:  src/viqa/metrics/mad.py:most_apparent_disorder
-            src/viqa/metrics/mad.py:_high_quality
-            src/viqa/metrics/mad.py:_low_quality
-            src/viqa/metrics/mad.py:_pixel_to_lightness
-            src/viqa/metrics/mad.py:_contrast_sensitivity_function
+Functions:  src/viqa/fr_metrics/mad.py:most_apparent_disorder
+            src/viqa/fr_metrics/mad.py:_high_quality
+            src/viqa/fr_metrics/mad.py:_low_quality
+            src/viqa/fr_metrics/mad.py:_pixel_to_lightness
+            src/viqa/fr_metrics/mad.py:_contrast_sensitivity_function
 Copyright:  2008-2011 Eric Larson
             2024 Lukas Behammer
-License:    N/A
+License:    No License attached to the original code.
+            Permission to use the code was granted by Eric Larson.
 
 Functions:  src/viqa/utils.py:gabor_convolve
 Copyright:  2001-2010 Peter Kovesi
@@ -41,9 +42,9 @@ License:    By Peter Kovesi (www.peterkovesi.com):
 
             The Software is provided "as is", without warranty of any kind.
 
-Functions:  src/viqa/metrics/stat_utils/statisticsmodule.c:pymatrix_to_Carrayptrs
-            src/viqa/metrics/stat_utils/statisticsmodule.c:ptrvector
-            src/viqa/metrics/stat_utils/statisticsmodule.c:free_Carrayptrs
+Functions:  src/viqa/fr_metrics/stat_utils/statisticsmodule.c:pymatrix_to_Carrayptrs
+            src/viqa/fr_metrics/stat_utils/statisticsmodule.c:ptrvector
+            src/viqa/fr_metrics/stat_utils/statisticsmodule.c:free_Carrayptrs
 Copyright:  2001-2002 Enthought Inc.
             2003-2017 SciPy Developers
 License:    Redistribution and use in source and binary forms, with or without
