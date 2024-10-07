@@ -101,6 +101,8 @@ class SNR(NoReferenceMetricsInterface):
         **kwargs : optional
             Additional parameters for SNR calculation. The keyword arguments are passed
             to :py:func:`viqa.nr_metrics.snr.signal_to_noise_ratio`.
+            If ``signal_center`` and ``radius`` are not given the class attribute
+            :py:attr:`parameters` is used.
 
         Returns
         -------
@@ -111,7 +113,7 @@ class SNR(NoReferenceMetricsInterface):
 
         # check if signal_center and radius are provided
         if not {"signal_center", "radius"}.issubset(kwargs):
-            if not self._parameters["signal_center"] or not self._parameters["radius"]:
+            if not {"signal_center", "radius"}.issubset(self._parameters.keys()):
                 raise ValueError("No center or radius provided.")
 
             kwargs["signal_center"] = self._parameters["signal_center"]
@@ -157,8 +159,10 @@ class SNR(NoReferenceMetricsInterface):
         signal_center : Tuple(int), optional
             Center of the signal.
             Order is ``(x, y)`` for 2D images and ``(x, y, z)`` for 3D images.
+            If not given the class attribute :py:attr:`parameters` is used.
         radius : int, optional
             Width of the regions.
+            If not given the class attribute :py:attr:`parameters` is used.
         export_path : str or os.PathLike, optional
             Path to export the visualization to.
         **kwargs : optional
@@ -178,7 +182,7 @@ class SNR(NoReferenceMetricsInterface):
             If the radius is not a positive integer.
         """
         if not signal_center or not radius:
-            if not self._parameters["signal_center"] or not self._parameters["radius"]:
+            if not {"signal_center", "radius"}.issubset(self._parameters.keys()):
                 raise ValueError("No center or radius provided.")
 
             signal_center = self._parameters["signal_center"]
@@ -247,6 +251,10 @@ class SNR(NoReferenceMetricsInterface):
             ``signal_center``, and ``radius`` can be provided as starting points for the
             interactive center selection. If not provided, the center of the image is
             used as the starting point.
+
+            .. caution::
+                The class attribute :py:attr:`parameters` takes precedence over the
+                given parameters.
 
         Warnings
         --------
