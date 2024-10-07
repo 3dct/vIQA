@@ -664,10 +664,16 @@ def export_image(
 
     Raises
     ------
-    Exception
+    ValueError
         If the area to be plotted was not correctly specified.
         If the image is not 2D or 3D.
         If no axis or more than one axis was specified.
+        If the images have different number of dimensions.
+
+    Warns
+    -----
+    UserWarning
+        If no results are available to plot.
     """
     if len(results) == 0:
         warn("No results to plot. Only the images are plotted.", UserWarning)
@@ -676,6 +682,9 @@ def export_image(
 
     img_r = load_data(img_r)
     img_m = load_data(img_m)
+    # Check if images have the same no of dimensions
+    if not img_r.ndim == img_m.ndim:
+        raise ValueError("Images must have the same number of dimensions.")
     scaling_order = kwargs.pop("scaling_order", 1)
     img_m = _resize_image(img_r, img_m, scaling_order=scaling_order)
     img_r, img_m = _check_imgs(img_r, img_m)
@@ -686,9 +695,9 @@ def export_image(
         img_m_plot = np.flip(img_m, 1)
     elif img_r.ndim == 3:
         if {x, y, z} == {None}:
-            raise Exception("One axis must be specified")
+            raise ValueError("One axis must be specified")
         if len({x, y, z} - {None}) != 1:
-            raise Exception("Only one axis can be specified")
+            raise ValueError("Only one axis can be specified")
 
         # For 3D images, plot the specified area
         x_1, x_2 = 0, img_r.shape[0]
@@ -705,9 +714,9 @@ def export_image(
             img_r_plot = np.rot90(np.flip(img_r[x_1:x_2, y_1:y_2, z], 0), -1)
             img_m_plot = np.rot90(np.flip(img_m[x_1:x_2, y_1:y_2, z], 0), -1)
         else:
-            raise Exception("Area to be plotted was not correctly specified")
+            raise ValueError("Area to be plotted was not correctly specified")
     else:
-        raise Exception("Image must be 2D or 3D")
+        raise ValueError("Image must be 2D or 3D")
 
     fig, axs = plt.subplots(1, 2, dpi=dpi, **kwargs)
     axs[0].imshow(img_r_plot, cmap="gray")
