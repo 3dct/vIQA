@@ -164,6 +164,18 @@ class SNR(NoReferenceMetricsInterface):
         **kwargs : optional
             Additional parameters for visualization. The keyword arguments are passed to
             :py:func:`matplotlib.pyplot.subplots`.
+
+        Raises
+        ------
+        ImportError
+            If the visualization fails in a non-interactive environment.
+        ValueError
+            If the given signal_center is not in the same dimension as the image.
+            If the center is too close to the border.
+            If the image is not 2D or 3D.
+        TypeError
+            If the center is not a tuple of integers.
+            If the radius is not a positive integer.
         """
         if not signal_center or not radius:
             if not self._parameters["signal_center"] or not self._parameters["radius"]:
@@ -179,8 +191,13 @@ class SNR(NoReferenceMetricsInterface):
         else:
             if img.ndim != len(signal_center):
                 raise ValueError("Center has to be in the same dimension as img.")
-        # Check if signal_center is too close to the border
-        # TODO: Check if signal_center is too close to the border
+
+        # check if radius is an integer and positive
+        if not isinstance(radius, int) or radius <= 0:
+            raise TypeError("Radius has to be a positive integer.")
+
+        # check if signal_center is a tuple of integers and not too close to the border
+        _check_border_too_close(signal_center, radius)
 
         # Visualize centers
         if img.ndim == 3 and (img.shape[-1] != 3):  # 3D image
