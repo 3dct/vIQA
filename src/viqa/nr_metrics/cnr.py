@@ -65,6 +65,8 @@ class CNR(NoReferenceMetricsInterface):
     ----------
     score_val : float
         CNR score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for CNR calculation.
 
     Parameters
     ----------

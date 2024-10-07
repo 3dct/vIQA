@@ -72,6 +72,8 @@ class UQI(FullReferenceMetricsInterface):
     ----------
     score_val : float or None
         Score value of the UQI metric.
+    parameters : dict
+        Dictionary containing the parameters for UQI calculation.
 
     Parameters
     ----------

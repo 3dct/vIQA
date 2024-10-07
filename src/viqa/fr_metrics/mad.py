@@ -68,6 +68,8 @@ class MAD(FullReferenceMetricsInterface):
     ----------
     score_val : float
         MAD score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for MAD calculation.
 
     Parameters
     ----------

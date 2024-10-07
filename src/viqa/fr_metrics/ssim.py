@@ -68,6 +68,8 @@ class SSIM(FullReferenceMetricsInterface):
     ----------
     score_val : float or None
         Score value of the SSIM metric.
+    parameters : dict
+        Dictionary containing the parameters for SSIM calculation.
 
     Parameters
     ----------

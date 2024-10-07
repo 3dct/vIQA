@@ -46,6 +46,8 @@ class VIFp(FullReferenceMetricsInterface):
     ----------
     score_val : float
         VIFp score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for VIFp calculation.
 
     Parameters
     ----------

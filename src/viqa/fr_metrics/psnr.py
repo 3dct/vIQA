@@ -58,6 +58,8 @@ class PSNR(FullReferenceMetricsInterface):
     ----------
     score_val : float
         PSNR score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for PSNR calculation.
 
     Parameters
     ----------

@@ -47,6 +47,8 @@ class MSSSIM(FullReferenceMetricsInterface):
     ----------
     score_val : float
         MS-SSIM score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for MS-SSIM calculation.
 
     Parameters
     ----------

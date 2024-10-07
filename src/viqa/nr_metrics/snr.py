@@ -63,6 +63,8 @@ class SNR(NoReferenceMetricsInterface):
     ----------
     score_val : float
         SNR score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for SNR calculation.
 
     Parameters
     ----------

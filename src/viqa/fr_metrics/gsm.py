@@ -70,6 +70,8 @@ class GSM(FullReferenceMetricsInterface):
     ----------
     score_val : float
         GSM score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for GSM calculation.
 
     Parameters
     ----------

@@ -53,6 +53,8 @@ class QMeasure(NoReferenceMetricsInterface):
     ----------
     score_val : float
         Q-Measure value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for QMeasure calculation.
 
     Parameters
     ----------

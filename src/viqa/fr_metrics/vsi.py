@@ -44,6 +44,8 @@ class VSI(FullReferenceMetricsInterface):
     ----------
     score_val : float
         VSI score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for VSI calculation.
 
     Parameters
     ----------

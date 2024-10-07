@@ -58,6 +58,8 @@ class RMSE(FullReferenceMetricsInterface):
     ----------
     score_val : float
         RMSE score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for RMSE calculation.
 
     Parameters
     ----------

@@ -44,6 +44,8 @@ class FSIM(FullReferenceMetricsInterface):
     ----------
     score_val : float
         FSIM score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for FSIM calculation.
 
     Parameters
     ----------
