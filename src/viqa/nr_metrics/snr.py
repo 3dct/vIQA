@@ -37,7 +37,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _check_border_too_close, _rgb_to_yuv, _to_grayscale
+from viqa.utils import _check_border_too_close, _rgb_to_yuv, _to_grayscale, find_largest_white_spot_and_draw_box
 from viqa.visualization_utils import (
     FIGSIZE_SNR_2D,
     FIGSIZE_SNR_3D,
@@ -538,11 +538,12 @@ class SNR(NoReferenceMetricsInterface):
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
+def signal_to_noise_ratio(auto_center,img, signal_center, radius, yuv=True):
     """Calculate the signal-to-noise ratio (SNR) for an image.
 
     Parameters
     ----------
+    auto_center : Automatically find the center of the volume
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     signal_center : Tuple(int)
@@ -627,6 +628,12 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
     .. [1] https://en.wikipedia.org/wiki/YUV
     .. [2] https://www.imatest.com/docs/color-tone-esfriso-noise/#chromanoise
     """
+
+
+
+    if auto_center is True:
+        signal_center = find_largest_white_spot_and_draw_box(img)
+
     # check if signal_center is a tuple of integers and radius is an integer
     for center in signal_center:
         if not isinstance(center, int):

@@ -43,8 +43,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.fft as fft
 import skimage as ski
+import scipy.ndimage as ndi
 import torch
 from skimage.transform import resize
+from skimage import measure
 from torch import Tensor
 
 from viqa.load_utils import load_data
@@ -780,3 +782,48 @@ def export_image(
             plt.show()
     else:
         plt.show()
+
+
+def find_largest_white_spot_and_draw_box(volume_image):
+
+    lower_threshold = np.percentile(volume_image, 78)  
+    upper_threshold = np.percentile(volume_image, 99) 
+    binary_image = np.logical_and(volume_image > lower_threshold, volume_image <= upper_threshold)
+
+    str_3D = np.array([[[0, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 0]],
+
+                   [[0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0]],
+
+                   [[0, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 0]]], dtype='uint8')
+    
+    dilated_image = ndi.binary_dilation(binary_image, structure=str_3D,iterations=5)
+    eroded_image = ndi.binary_erosion(dilated_image, structure=str_3D,iterations=5)
+
+    labeled_image, num_features = ndi.label(eroded_image,str_3D)
+
+
+    if num_features == 0:
+        print("No white spots found")
+        return volume_image
+
+    sizes = ndi.sum(eroded_image, labeled_image, range(num_features + 1))
+
+
+    largest_label = np.argmax(sizes)
+    largest_region_image = np.zeros_like(labeled_image)
+    largest_region_image[labeled_image == largest_label] = largest_label
+
+
+    largest_region_mask = labeled_image == largest_label
+
+    region_props = measure.regionprops(labeled_image)
+    largest_region = region_props[largest_label - 1]  
+
+
+    return largest_region.centroid

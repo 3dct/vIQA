@@ -38,7 +38,7 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _check_border_too_close, _to_grayscale
+from viqa.utils import _check_border_too_close, _to_grayscale, find_largest_white_spot_and_draw_box
 from viqa.visualization_utils import (
     FIGSIZE_CNR_2D,
     FIGSIZE_CNR_3D,
@@ -660,11 +660,12 @@ class CNR(NoReferenceMetricsInterface):
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def contrast_to_noise_ratio(img, background_center, signal_center, radius):
+def contrast_to_noise_ratio(auto_center, img, background_center, signal_center, radius):
     """Calculate the contrast-to-noise ratio (CNR) for an image.
 
     Parameters
     ----------
+    auto_center : Automatically find the center of the volume
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     background_center : Tuple(int)
@@ -709,6 +710,9 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         image quality in computed radiographic (CR) imaging systems. Medical Imaging
         2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
     """
+    if auto_center is True:
+        signal_center = find_largest_white_spot_and_draw_box(img)
+
     # check if signal_center and background_center are tuples of integers and radius is
     # an integer
     for center in signal_center:
