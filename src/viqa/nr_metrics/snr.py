@@ -38,7 +38,13 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _check_border_too_close, _rgb_to_yuv, _to_grayscale, find_largest_white_spot_and_draw_box
+from viqa.utils import (
+    _check_border_too_close,
+    _get_binary,
+    _rgb_to_yuv,
+    _to_grayscale,
+    find_largest_cube,
+)
 from viqa.visualization_utils import (
     FIGSIZE_SNR_2D,
     FIGSIZE_SNR_3D,
@@ -630,11 +636,10 @@ def signal_to_noise_ratio(img, signal_center, radius, auto_center=False, yuv=Tru
     .. [1] https://en.wikipedia.org/wiki/YUV
     .. [2] https://www.imatest.com/docs/color-tone-esfriso-noise/#chromanoise
     """
-
-
-
+    # Auto detect center
     if auto_center is True:
-        signal_center = find_largest_white_spot_and_draw_box(img)
+        binary_foreground = _get_binary(img, lower_threshold=90, upper_threshold=99)
+        signal_center, radius = find_largest_cube(binary_foreground)
 
     # check if signal_center is a tuple of integers and radius is an integer
     for center in signal_center:
