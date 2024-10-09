@@ -26,6 +26,7 @@ Examples
 # -------------
 # Original code, 2024, Lukas Behammer
 # Add interactive center selection, 2024, Michael Stidi
+# Add automatic center detection, 2024, Michael Stidi
 #
 # License
 # -------
@@ -538,12 +539,11 @@ class SNR(NoReferenceMetricsInterface):
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def signal_to_noise_ratio(auto_center,img, signal_center, radius, yuv=True):
+def signal_to_noise_ratio(img, signal_center, radius, auto_center=False, yuv=True):
     """Calculate the signal-to-noise ratio (SNR) for an image.
 
     Parameters
     ----------
-    auto_center : Automatically find the center of the volume
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     signal_center : Tuple(int)
@@ -551,6 +551,8 @@ def signal_to_noise_ratio(auto_center,img, signal_center, radius, yuv=True):
         3D images.
     radius : int
         Width of the regions.
+    auto_center : bool, default False
+        Automatically find the center of the image
     yuv : bool, default True
 
         .. important::

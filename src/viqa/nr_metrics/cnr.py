@@ -27,6 +27,7 @@ Examples
 # -------------
 # Original code, 2024, Lukas Behammer
 # Add interactive center selection, 2024, Michael Stidi
+# Add automatic center detection, 2024, Michael Stidi
 #
 # License
 # -------
@@ -660,12 +661,11 @@ class CNR(NoReferenceMetricsInterface):
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def contrast_to_noise_ratio(auto_center, img, background_center, signal_center, radius):
+def contrast_to_noise_ratio(img, background_center, signal_center, radius, auto_center=False):
     """Calculate the contrast-to-noise ratio (CNR) for an image.
 
     Parameters
     ----------
-    auto_center : Automatically find the center of the volume
     img : np.ndarray or Tensor or str or os.PathLike
         Image to calculate score of.
     background_center : Tuple(int)
@@ -676,6 +676,8 @@ def contrast_to_noise_ratio(auto_center, img, background_center, signal_center, 
         3D images.
     radius : int
         Width of the regions.
+    auto_center : bool, default False
+        Automatically find the center of the volume
 
     Returns
     -------
