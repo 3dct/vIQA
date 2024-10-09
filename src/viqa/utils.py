@@ -26,6 +26,7 @@ Examples
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Add functions for automatic center detection, 2024, Michael Stidi
 #
 # License
 # -------
