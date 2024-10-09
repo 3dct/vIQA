@@ -26,6 +26,7 @@ Examples
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Add functions for automatic center detection, 2024, Michael Stidi
 #
 # License
 # -------
@@ -42,12 +43,15 @@ from warnings import warn
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.fft as fft
+import scipy.ndimage as ndi
 import skimage as ski
 import torch
+from scipy.ndimage import distance_transform_edt
 from skimage.transform import resize
 from torch import Tensor
 
 from viqa.load_utils import load_data
+from viqa.visualization_utils import visualize_2d, visualize_3d
 
 
 def _check_imgs(
@@ -780,3 +784,97 @@ def export_image(
             plt.show()
     else:
         plt.show()
+
+
+def _get_binary(img, lower_threshold, upper_threshold, show=False):
+    """Get the binary of an image.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Input image
+    lower_threshold : int
+        Lower threshold as percentile
+    upper_threshold : int
+        Upper threshold as percentile
+    show : bool, optional
+        If True, the binary image is visualized. Default is False.
+
+    Returns
+    -------
+    np.ndarray
+        Binary image
+    """
+    # Get the lower and upper threshold and convert to binary
+    lower_threshold_perc = np.percentile(img, lower_threshold)
+    upper_threshold_perc = np.percentile(img, upper_threshold)
+    binary_image = np.logical_and(
+        img > lower_threshold_perc, img <= upper_threshold_perc
+    )
+
+    # Visualize the binary image
+    if show:
+        if img.ndim == 2:  # 2D image
+            visualize_2d(binary_image)
+        elif img.ndim == 3 and img.shape[-1] == 3:  # 2D color image
+            img = _to_grayscale(img)
+            visualize_2d(binary_image)
+        elif img.ndim == 3 and img.shape[-1] > 3:  # 3D image
+            visualize_3d(binary_image)
+        else:
+            raise ValueError("Image must be 2D or 3D to visualize.")
+
+    return binary_image
+
+
+def find_largest_cube(img, iterations=5):
+    """Find the largest cube in a binary image.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Binary image
+    iterations : int, optional
+        Number of iterations for dilation and erosion. Default is 5.
+
+    Returns
+    -------
+    tuple
+        Coordinates of the largest cube
+    int
+        Radius of the largest cube
+    """
+    struct_3d = np.array(
+        [
+            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+            [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+        ],
+        dtype="uint8",
+    )
+
+    struct_2d = np.array(
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+        dtype="uint8",
+    )
+
+    if img.ndim == 2:
+        struct = struct_2d
+    elif img.ndim == 3 and img.shape[-1] == 3:  # 2D color image
+        struct = struct_2d
+    elif img.ndim == 3 and img.shape[-1] > 3:  # 3D image
+        struct = struct_3d
+    else:
+        raise ValueError("Image must be 2D or 3D.")
+
+    dilated_image = ndi.binary_dilation(img, structure=struct, iterations=iterations)
+    eroded_image = ndi.binary_erosion(
+        dilated_image, structure=struct, iterations=iterations
+    )
+
+    distance = distance_transform_edt(eroded_image)
+    center = np.unravel_index(np.argmax(distance), distance.shape)
+    center = tuple(int(coord) for coord in center)
+    radius = int(distance[*center])
+
+    return center, radius

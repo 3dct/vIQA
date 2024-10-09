@@ -27,6 +27,7 @@ Examples
 # -------------
 # Original code, 2024, Lukas Behammer
 # Add interactive center selection, 2024, Michael Stidi
+# Add automatic center detection, 2024, Michael Stidi
 #
 # License
 # -------
@@ -38,7 +39,12 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _check_border_too_close, _to_grayscale
+from viqa.utils import (
+    _check_border_too_close,
+    _get_binary,
+    _to_grayscale,
+    find_largest_cube,
+)
 from viqa.visualization_utils import (
     FIGSIZE_CNR_2D,
     FIGSIZE_CNR_3D,
@@ -660,7 +666,9 @@ class CNR(NoReferenceMetricsInterface):
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def contrast_to_noise_ratio(img, background_center, signal_center, radius):
+def contrast_to_noise_ratio(
+    img, background_center, signal_center, radius, auto_center=False
+):
     """Calculate the contrast-to-noise ratio (CNR) for an image.
 
     Parameters
@@ -675,6 +683,8 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         3D images.
     radius : int
         Width of the regions.
+    auto_center : bool, default False
+        Automatically find the center of the volume
 
     Returns
     -------
@@ -709,6 +719,14 @@ def contrast_to_noise_ratio(img, background_center, signal_center, radius):
         image quality in computed radiographic (CR) imaging systems. Medical Imaging
         2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
     """
+    if auto_center is True:
+        binary_foreground = _get_binary(img, lower_threshold=90, upper_threshold=100)
+        background_foreground = _get_binary(img, lower_threshold=0, upper_threshold=90)
+
+        signal_center, radius_signal = find_largest_cube(binary_foreground)
+        background_center, radius_background = find_largest_cube(background_foreground)
+        radius = max(radius_signal, radius_background)
+
     # check if signal_center and background_center are tuples of integers and radius is
     # an integer
     for center in signal_center:

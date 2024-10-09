@@ -26,6 +26,7 @@ Examples
 # -------------
 # Original code, 2024, Lukas Behammer
 # Add interactive center selection, 2024, Michael Stidi
+# Add automatic center detection, 2024, Michael Stidi
 #
 # License
 # -------
@@ -37,7 +38,13 @@ import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
 from viqa._module import check_interactive_vis_deps, is_ipython, try_import
-from viqa.utils import _check_border_too_close, _rgb_to_yuv, _to_grayscale
+from viqa.utils import (
+    _check_border_too_close,
+    _get_binary,
+    _rgb_to_yuv,
+    _to_grayscale,
+    find_largest_cube,
+)
 from viqa.visualization_utils import (
     FIGSIZE_SNR_2D,
     FIGSIZE_SNR_3D,
@@ -538,7 +545,7 @@ class SNR(NoReferenceMetricsInterface):
             raise ValueError("No visualization possible for non 2d or non 3d images.")
 
 
-def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
+def signal_to_noise_ratio(img, signal_center, radius, auto_center=False, yuv=True):
     """Calculate the signal-to-noise ratio (SNR) for an image.
 
     Parameters
@@ -550,6 +557,8 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
         3D images.
     radius : int
         Width of the regions.
+    auto_center : bool, default False
+        Automatically find the center of the image
     yuv : bool, default True
 
         .. important::
@@ -627,6 +636,11 @@ def signal_to_noise_ratio(img, signal_center, radius, yuv=True):
     .. [1] https://en.wikipedia.org/wiki/YUV
     .. [2] https://www.imatest.com/docs/color-tone-esfriso-noise/#chromanoise
     """
+    # Auto detect center
+    if auto_center is True:
+        binary_foreground = _get_binary(img, lower_threshold=90, upper_threshold=99)
+        signal_center, radius = find_largest_cube(binary_foreground)
+
     # check if signal_center is a tuple of integers and radius is an integer
     for center in signal_center:
         if not isinstance(center, int):
