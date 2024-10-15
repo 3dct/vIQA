@@ -826,4 +826,4 @@ def contrast_to_noise_ratio(
     else:
         cnr_val = (np.mean(signal) - np.mean(background)) / np.std(background)
 
-    return cnr_val
+    return np.float64(cnr_val)

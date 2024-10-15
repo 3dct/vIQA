@@ -732,21 +732,23 @@ def signal_to_noise_ratio(
 
         if yuv:
             snr_val = [
-                np.mean(signal[..., 0]) / sdev[i] if sdev[i] != 0 else 0
+                np.float64(np.mean(signal[..., 0]) / sdev[i]) if sdev[i] != 0 else 0
                 for i in range(3)
             ]
             return snr_val[0], snr_val[1], snr_val[2]
         else:
-            snr_lum = signal_to_noise_ratio(
-                _to_grayscale(img),
-                signal_center,
-                radius,
-                region_type,
-                auto_center=False,
-                yuv=False,
+            snr_lum = np.float64(
+                signal_to_noise_ratio(
+                    _to_grayscale(img),
+                    signal_center,
+                    radius,
+                    region_type,
+                    auto_center=False,
+                    yuv=False,
+                )
             )
             snr_val = [
-                np.mean(signal[..., i]) / sdev[i] if sdev[i] != 0 else 0
+                np.float64(np.mean(signal[..., i]) / sdev[i]) if sdev[i] != 0 else 0
                 for i in range(3)
             ]
 
@@ -770,4 +772,4 @@ def signal_to_noise_ratio(
     else:
         snr_val = np.mean(signal) / np.std(signal)
 
-    return snr_val
+    return np.float64(snr_val)
