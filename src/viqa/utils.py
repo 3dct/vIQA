@@ -820,7 +820,7 @@ def _get_binary(img, lower_threshold, upper_threshold, show=False):
             img = _to_grayscale(img)
             visualize_2d(binary_image)
         elif img.ndim == 3 and img.shape[-1] > 3:  # 3D image
-            visualize_3d(binary_image)
+            visualize_3d(binary_image, [img.shape[dim] // 2 for dim in range(3)])
         else:
             raise ValueError("Image must be 2D or 3D to visualize.")
 
