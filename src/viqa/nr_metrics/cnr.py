@@ -28,6 +28,7 @@ Examples
 # Original code, 2024, Lukas Behammer
 # Add interactive center selection, 2024, Michael Stidi
 # Add automatic center detection, 2024, Michael Stidi
+# Update automatic center detection, 2024, Lukas Behammer
 #
 # License
 # -------
@@ -42,8 +43,10 @@ from viqa._module import check_interactive_vis_deps, is_ipython, try_import
 from viqa.utils import (
     _check_border_too_close,
     _get_binary,
+    _to_cubic,
     _to_grayscale,
-    find_largest_cube,
+    _to_spherical,
+    find_largest_region,
 )
 from viqa.visualization_utils import (
     FIGSIZE_CNR_2D,
@@ -667,7 +670,13 @@ class CNR(NoReferenceMetricsInterface):
 
 
 def contrast_to_noise_ratio(
-    img, background_center, signal_center, radius, auto_center=False
+    img,
+    background_center,
+    signal_center,
+    radius,
+    region_type="cubic",
+    auto_center=False,
+    iterations=5,
 ):
     """Calculate the contrast-to-noise ratio (CNR) for an image.
 
@@ -683,8 +692,22 @@ def contrast_to_noise_ratio(
         3D images.
     radius : int
         Width of the regions.
+    region_type : {'cubic', 'spherical', 'full', 'original'}, optional
+        Type of region to calculate the SNR. Default is 'cubic'.
+        Gets passed to :py:func:`viqa.utils.find_largest_region` if `auto_center` is
+        True. If `auto_center` is False, the following options are available:
+        If 'full' or 'original' the original image is used as signal and background
+        region.
+        If 'cubic' a cubic region around the center is used. Alias for 'cubic' are
+        'cube' and 'square'.
+        If 'spherical' a spherical region around the center is used. Alias for
+        'spherical' are 'sphere' and 'circle'.
     auto_center : bool, default False
-        Automatically find the center of the volume
+        Automatically find the center of the image. `signal_center`,
+        `background_center` and `radius` are ignored if True.
+    iterations : int, optional
+        Number of iterations for morphological operations if `auto_center` is True.
+        Default is 5.
 
     Returns
     -------
@@ -694,10 +717,11 @@ def contrast_to_noise_ratio(
     Raises
     ------
     ValueError
-        If the input image is not 2D or 3D. \n
-        If the input center is not a tuple of integers. \n
-        If the input center is too close to the border. \n
+        If the input image is not 2D or 3D.
+        If the input center is not a tuple of integers.
+        If the input center is too close to the border.
         If the input radius is not an integer.
+        If the passed region type is not valid.
 
     Notes
     -----
@@ -720,12 +744,41 @@ def contrast_to_noise_ratio(
         2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
     """
     if auto_center is True:
-        binary_foreground = _get_binary(img, lower_threshold=90, upper_threshold=100)
-        background_foreground = _get_binary(img, lower_threshold=0, upper_threshold=90)
+        warn(
+            "Signal and background center are automatically detected. Parameters "
+            "signal_center, background_center and radius are ignored."
+        )
 
-        signal_center, radius_signal = find_largest_cube(binary_foreground)
-        background_center, radius_background = find_largest_cube(background_foreground)
-        radius = max(radius_signal, radius_background)
+        binary_foreground = _get_binary(
+            img, lower_threshold=90, upper_threshold=100, show=False
+        )
+        binary_background = _get_binary(
+            img, lower_threshold=0, upper_threshold=90, show=False
+        )
+
+        signal_center, signal_radius, signal_region = find_largest_region(
+            img=binary_foreground, region_type=region_type, iterations=iterations
+        )
+        background_center, background_radius, background_region = find_largest_region(
+            img=binary_background, region_type=region_type, iterations=iterations
+        )
+        radius = min(signal_radius, background_radius)
+
+        # Mask the original image with the regions
+        if region_type not in {
+            "original",
+            "cubic",
+            "cube",
+            "square",
+            "spherical",
+            "sphere",
+            "circle",
+        }:
+            signal = np.ma.array(img, mask=~signal_region, copy=True)
+            background = np.ma.array(img, mask=~background_region, copy=True)
+        elif region_type == "original":
+            signal = img
+            background = img
 
     # check if signal_center and background_center are tuples of integers and radius is
     # an integer
@@ -753,28 +806,19 @@ def contrast_to_noise_ratio(
         raise ValueError("Centers have to be in the same dimension as img.")
 
     # Define regions
-    if img.ndim == 2:  # 2D image
-        background = img[
-            background_center[0] - radius : background_center[0] + radius,
-            background_center[1] - radius : background_center[1] + radius,
-        ]
-        signal = img[
-            signal_center[0] - radius : signal_center[0] + radius,
-            signal_center[1] - radius : signal_center[1] + radius,
-        ]
-    elif img.ndim == 3:  # 3D image
-        background = img[
-            background_center[0] - radius : background_center[0] + radius,
-            background_center[1] - radius : background_center[1] + radius,
-            background_center[2] - radius : background_center[2] + radius,
-        ]
-        signal = img[
-            signal_center[0] - radius : signal_center[0] + radius,
-            signal_center[1] - radius : signal_center[1] + radius,
-            signal_center[2] - radius : signal_center[2] + radius,
-        ]
+    if region_type in {"full", "original"}:
+        if not auto_center:
+            signal = img
+            background = img
+    elif region_type in {"cubic", "cube", "square"}:
+        signal = _to_cubic(img, signal_center, radius)
+        background = _to_cubic(img, background_center, radius)
+    elif region_type in {"spherical", "sphere", "circle"}:
+        signal = _to_spherical(img, signal_center, radius)
+        background = _to_spherical(img, background_center, radius)
     else:
-        raise ValueError("Image has to be either 2D or 3D.")
+        if not auto_center:
+            raise ValueError("Region type not valid.")
 
     # Calculate CNR
     if np.std(background) == 0:

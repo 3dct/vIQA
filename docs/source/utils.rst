@@ -33,6 +33,7 @@ Utilities modules
     export_results
     export_metadata
     export_image
+    find_largest_region
 
 .. currentmodule:: viqa.visualization_utils
 

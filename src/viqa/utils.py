@@ -26,7 +26,8 @@ Examples
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
-# Add functions for automatic center detection, 2024, Michael Stidi
+# Add _get_binary and find_largest_region, 2024, Michael Stidi
+# Update _get_binary and find_largest_region, 2024, Lukas Behammer
 #
 # License
 # -------
@@ -827,8 +828,12 @@ def _get_binary(img, lower_threshold, upper_threshold, show=False):
     return binary_image
 
 
-def find_largest_cube(img, iterations=5):
-    """Find the largest cube in a binary image.
+def find_largest_region(img, iterations=5, region_type="cubic"):
+    """Find the largest region in a binary image.
+
+    The function finds the largest region in a binary region by calculating the exact
+    euclidean distance transform. The center and radius of the largest region are
+    returned, as well as the region itself based on the given region type.
 
     Parameters
     ----------
@@ -836,14 +841,36 @@ def find_largest_cube(img, iterations=5):
         Binary image
     iterations : int, optional
         Number of iterations for dilation and erosion. Default is 5.
+    region_type : {'cubic', 'spherical', 'full', 'original'}, optional
+        Type of region to be found. Default is 'cubic'.
+        If 'original' the original image is returned.
+        If 'full' the full region is returned (eroded twice after cleaning with dilation
+        and erosion).
+        If 'cubic' the region is returned as a cube. Alias for 'cubic' are 'cube' and
+        'square'.
+        If 'spherical' the region is returned as a sphere. Alias for 'spherical' are
+        'sphere' and 'circle'.
+        If other values are passed, the region is returned after dilation and erosion.
+
+        .. note::
+
+                This only influences the returned array, not the calculation of the
+                largest region.
 
     Returns
     -------
     tuple
-        Coordinates of the largest cube
+        Coordinates of the largest region
     int
-        Radius of the largest cube
+        Radius of the largest region
+    np.ndarray
+        Largest region as masked array
     """
+    # Check if image is binary
+    minimum, maximum = img.min(), img.max()
+    if img.dtype != "bool" or not (minimum == 0 and maximum == 1):
+        raise ValueError("Image must be binary.")
+
     struct_3d = np.array(
         [
             [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
@@ -867,14 +894,84 @@ def find_largest_cube(img, iterations=5):
     else:
         raise ValueError("Image must be 2D or 3D.")
 
-    dilated_image = ndi.binary_dilation(img, structure=struct, iterations=iterations)
-    eroded_image = ndi.binary_erosion(
-        dilated_image, structure=struct, iterations=iterations
+    # Clean the image
+    img_dilated = ndi.binary_dilation(img, structure=struct, iterations=iterations)
+    img_cleaned = ndi.binary_erosion(
+        img_dilated, structure=struct, iterations=iterations + 1
     )
 
-    distance = distance_transform_edt(eroded_image)
+    # Calculate the distance transform
+    distance = distance_transform_edt(img_cleaned)
     center = np.unravel_index(np.argmax(distance), distance.shape)
     center = tuple(int(coord) for coord in center)
     radius = int(distance[*center])
 
-    return center, radius
+    # Create the region
+    if region_type in {"cubic", "cube", "square"}:
+        region_masked = _to_cubic(img_cleaned, center, radius)
+    elif region_type in {"spherical", "sphere", "circle"}:
+        region_masked = _to_spherical(img_cleaned, center, radius)
+    elif region_type == "full":
+        img_eroded = ndi.binary_erosion(img_cleaned, structure=struct, iterations=2)
+        region_masked = np.ma.array(img_cleaned, mask=~img_eroded, copy=True)
+    elif region_type == "original":
+        region_masked = img
+    else:
+        region_masked = img_cleaned
+
+    return center, radius, region_masked
+
+
+def _to_spherical(img, center, radius):
+    """Create a sphere by masking an image."""
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
+        if len(center) != 2:
+            raise ValueError("Center must be 2D.")
+        x, y = np.ogrid[
+            -center[0] : img.shape[0] - center[0],
+            -center[1] : img.shape[1] - center[1],
+        ]
+        mask = x**2 + y**2 <= radius**2
+
+        if img.ndim == 3:  # 2D color image
+            mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
+    elif img.ndim == 3 and img.shape[-1] > 3:
+        if len(center) != 3:
+            raise ValueError("Center must be 3D.")
+        x, y, z = np.ogrid[
+            -center[0] : img.shape[0] - center[0],
+            -center[1] : img.shape[1] - center[1],
+            -center[2] : img.shape[2] - center[2],
+        ]
+        mask = x**2 + y**2 + z**2 <= radius**2
+    else:
+        raise ValueError("Center must be 2D or 3D.")
+    region = np.ma.array(img, mask=~mask, copy=True)
+    return region
+
+
+def _to_cubic(img, center, radius):
+    """Create a cube by masking an image."""
+    mask = np.zeros_like(img, dtype=bool)
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
+        if len(center) != 2:
+            raise ValueError("Center must be 2D.")
+        mask[
+            center[0] - radius : center[0] + radius,
+            center[1] - radius : center[1] + radius,
+        ] = 1
+
+        if img.ndim == 3:  # 2D color image
+            mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
+    elif img.ndim == 3 and img.shape[-1] > 3:
+        if len(center) != 3:
+            raise ValueError("Center must be 3D.")
+        mask[
+            center[0] - radius : center[0] + radius,
+            center[1] - radius : center[1] + radius,
+            center[2] - radius : center[2] + radius,
+        ] = 1
+    else:
+        raise ValueError("Image must be 2D or 3D.")
+    region = np.ma.array(img, mask=~mask, copy=True)
+    return region
