@@ -55,13 +55,13 @@ class MSSSIM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the MS-SSIM calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.load_utils.load_data`.
+        :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------

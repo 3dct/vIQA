@@ -87,9 +87,9 @@ class FullReferenceMetricsInterface(ABC, Metric):
         Returns
         -------
         img_r : viqa.ImageArray
-            The loaded reference image as an :py:class:`viqa.load_utils.ImageArray`.
+            The loaded reference image as an :py:class:`viqa.utils.ImageArray`.
         img_m : viqa.ImageArray
-            The loaded modified image as an :py:class:`viqa.load_utils.ImageArray`.
+            The loaded modified image as an :py:class:`viqa.utils.ImageArray`.
         """
         img_r, img_m = _check_imgs(
             img_r=img_r,
@@ -131,7 +131,7 @@ class NoReferenceMetricsInterface(ABC, Metric):
     def load_images(self, img):
         """Load the image.
 
-        Uses the :py:func:`.viqa.load_utils.load_data` function to load the image.
+        Uses the :py:func:`.viqa.utils.load_data` function to load the image.
 
         Parameters
         ----------
@@ -141,7 +141,7 @@ class NoReferenceMetricsInterface(ABC, Metric):
         Returns
         -------
         img : viqa.ImageArray
-            The loaded image as an :py:class:`viqa.load_utils.ImageArray`.
+            The loaded image as an :py:class:`viqa.utils.ImageArray`.
         """
         # Load image
         img = load_data(

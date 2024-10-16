@@ -79,13 +79,13 @@ class SNR(NoReferenceMetricsInterface):
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
-        ``normalize`` is True. Passed to :py:func:`viqa.load_utils.load_data`.
+        ``normalize`` is True. Passed to :py:func:`viqa.utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -599,7 +599,7 @@ def signal_to_noise_ratio(
         color space. If False, the input images are kept as RGB images.
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Returns
     -------

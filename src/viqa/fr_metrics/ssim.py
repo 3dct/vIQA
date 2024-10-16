@@ -76,14 +76,14 @@ class SSIM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the SSIM calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.utils.load_data` and
         :py:func:`viqa.fr_metrics.ssim.structural_similarity`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------

@@ -203,7 +203,7 @@ class BatchMetrics(_MultipleInterface):
         Parameters
         ----------
         kwargs : dict
-            Additional parameters. Passed to :py:func:`viqa.load_utils.load_data`.
+            Additional parameters. Passed to :py:func:`viqa.utils.load_data`.
 
         Other Parameters
         ----------------
@@ -447,7 +447,7 @@ class MultipleMetrics(_MultipleInterface):
         img_m : str or np.ndarray
             Path to the modified image or the image itself.
         kwargs : dict
-            Additional parameters. Passed to :py:func:`viqa.load_utils.load_data`.
+            Additional parameters. Passed to :py:func:`viqa.utils.load_data`.
 
         Other Parameters
         ----------------

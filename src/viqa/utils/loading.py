@@ -222,7 +222,7 @@ class ImageArray(np.ndarray):
             Path to the directory where the visualization should be saved
         **kwargs : dict
             Additional keyword arguments for visualization. See
-            :py:func:`.viqa.visualization_utils.visualize_3d`.
+            :py:func:`.viqa.utils.visualize_3d`.
 
         Raises
         ------
@@ -514,7 +514,7 @@ def load_data(
         Numpy array, ImageArray, tensor or file path
     data_range : int, optional, default=None
         Maximum value of the returned data. Passed to
-        :py:func:`viqa.load_utils.normalize_data`.
+        :py:func:`viqa.utils.normalize_data`.
     normalize : bool, default False
         If True, data is normalized to (0, ``data_range``) based on min and max of img.
     batch : bool, default False
@@ -534,8 +534,8 @@ def load_data(
     Returns
     -------
     img_arr : ImageArray or list[ImageArray]
-        :py:class:`viqa.load_utils.ImageArray` or list of
-        :py:class:`viqa.load_utils.ImageArray` containing the data
+        :py:class:`viqa.utils.ImageArray` or list of
+        :py:class:`viqa.utils.ImageArray` containing the data
 
     Raises
     ------
