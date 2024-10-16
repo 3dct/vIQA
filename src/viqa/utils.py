@@ -806,6 +806,9 @@ def _get_binary(img, lower_threshold, upper_threshold, show=False):
     np.ndarray
         Binary image
     """
+    if img.ndim == 3 and img.shape[-1] == 3:  # 2D color image
+        img = _to_grayscale(img)
+
     # Get the lower and upper threshold and convert to binary
     lower_threshold_perc = np.percentile(img, lower_threshold)
     upper_threshold_perc = np.percentile(img, upper_threshold)
@@ -816,9 +819,6 @@ def _get_binary(img, lower_threshold, upper_threshold, show=False):
     # Visualize the binary image
     if show:
         if img.ndim == 2:  # 2D image
-            visualize_2d(binary_image)
-        elif img.ndim == 3 and img.shape[-1] == 3:  # 2D color image
-            img = _to_grayscale(img)
             visualize_2d(binary_image)
         elif img.ndim == 3 and img.shape[-1] > 3:  # 3D image
             visualize_3d(binary_image, [img.shape[dim] // 2 for dim in range(3)])
