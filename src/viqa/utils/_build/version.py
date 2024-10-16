@@ -18,7 +18,7 @@
 
 import os
 
-viqa_init = os.path.join(os.path.dirname(__file__), "../__init__.py")
+viqa_init = os.path.join(os.path.dirname(__file__), "../../__init__.py")
 
 data = open(viqa_init).readlines()
 version_line = next(line for line in data if line.startswith("__version__"))

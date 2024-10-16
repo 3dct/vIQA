@@ -38,11 +38,19 @@ __all__ = [
 
 from .fr_metrics import *
 from .fusion import fuse_metrics_linear_combination
-from .load_utils import ImageArray, crop_image, load_data, normalize_data
 from .multiple import BatchMetrics, MultipleMetrics
 from .nr_metrics import *
-from .utils import export_image, export_metadata, export_results
-from .visualization_utils import visualize_2d, visualize_3d
+from .utils import (
+    ImageArray,
+    crop_image,
+    export_image,
+    export_metadata,
+    export_results,
+    load_data,
+    normalize_data,
+    visualize_2d,
+    visualize_3d,
+)
 
 
 def get_version():

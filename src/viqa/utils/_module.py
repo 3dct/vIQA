@@ -1,4 +1,4 @@
-"""Module for utility functions regarding importing."""
+"""Module for utility functions for importing."""
 
 # Authors
 # -------

@@ -20,8 +20,7 @@ This module contains the abstract classes for the metrics.
 
 from abc import ABC, abstractmethod
 
-from viqa.load_utils import load_data
-from viqa.utils import _check_imgs, export_results
+from viqa.utils import _check_imgs, export_results, load_data
 
 
 class Metric:

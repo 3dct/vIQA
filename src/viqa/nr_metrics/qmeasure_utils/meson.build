@@ -1,4 +1,4 @@
-incdir_numpy = run_command('python', '../../_build_utils/get_numpy_path.py', check: true).stdout().strip()
+incdir_numpy = run_command('python', '../../utils/_build/get_numpy_path.py', check: true).stdout().strip()
 incdir_qmeasure = './qmeasure/src'
 inc_dir = include_directories(incdir_numpy, incdir_qmeasure)
 

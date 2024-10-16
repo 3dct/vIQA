@@ -38,24 +38,22 @@ from warnings import warn
 import numpy as np
 
 from viqa._metrics import NoReferenceMetricsInterface
-from viqa._module import check_interactive_vis_deps, is_ipython, try_import
 from viqa.utils import (
+    FIGSIZE_SNR_2D,
+    FIGSIZE_SNR_3D,
     _check_border_too_close,
+    _create_slider_widget,
     _get_binary,
     _rgb_to_yuv,
     _to_cubic,
     _to_grayscale,
     _to_spherical,
+    _visualize_snr_2d,
+    _visualize_snr_3d,
     find_largest_region,
     load_data,
 )
-from viqa.visualization_utils import (
-    FIGSIZE_SNR_2D,
-    FIGSIZE_SNR_3D,
-    _create_slider_widget,
-    _visualize_snr_2d,
-    _visualize_snr_3d,
-)
+from viqa.utils._module import check_interactive_vis_deps, is_ipython, try_import
 
 widgets, has_ipywidgets = try_import("ipywidgets")
 display, has_ipython = try_import("IPython.display", "display")

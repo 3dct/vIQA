@@ -54,8 +54,13 @@ from warnings import warn
 from tqdm.autonotebook import tqdm
 
 from viqa._metrics import Metric
-from viqa.load_utils import load_data
-from viqa.utils import _check_imgs, _resize_image, export_image, export_metadata
+from viqa.utils import (
+    _check_imgs,
+    _resize_image,
+    export_image,
+    export_metadata,
+    load_data,
+)
 
 
 class _MultipleInterface(ABC):

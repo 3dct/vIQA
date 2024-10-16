@@ -1,4 +1,10 @@
-"""Module for visualization functions."""
+"""Module for visualization functions.
+
+Examples
+--------
+    # TODO: Add examples
+
+"""
 
 # Authors
 # -------
@@ -19,7 +25,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 
-from viqa._module import try_import
+from viqa.utils._module import try_import
 
 widgets, has_ipywidgets = try_import("ipywidgets")
 

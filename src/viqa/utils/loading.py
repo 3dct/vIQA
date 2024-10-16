@@ -47,7 +47,8 @@ from scipy.stats import kurtosis, skew
 from torch import Tensor
 from tqdm.autonotebook import tqdm
 
-from viqa.visualization_utils import visualize_2d, visualize_3d
+from .misc import _to_grayscale
+from .visualization import visualize_2d, visualize_3d
 
 
 class ImageArray(np.ndarray):
@@ -327,7 +328,7 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     Examples
     --------
-    >>> from viqa.load_utils import load_mhd  # doctest: +SKIP
+    >>> from viqa.utils import load_mhd  # doctest: +SKIP
     >>> img = load_raw("path/to/image.mhd")  # doctest: +SKIP
     """
     file_path = os.path.join(file_dir, file_name)  # Complete file path
@@ -397,7 +398,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     Examples
     --------
-    >>> from viqa.load_utils import load_raw  # doctest: +SKIP
+    >>> from viqa.utils import load_raw  # doctest: +SKIP
     >>> img = load_raw("path/to/image.raw")  # doctest: +SKIP
     """
     # Create file path components
@@ -462,7 +463,7 @@ def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
 
     Examples
     --------
-    >>> from viqa.load_utils import load_nifti  # doctest: +SKIP
+    >>> from viqa.utils import load_nifti  # doctest: +SKIP
     >>> img = load_nifti("path/to/image.nii.gz")  # doctest: +SKIP
 
     Notes
@@ -787,3 +788,69 @@ def crop_image(
     else:
         raise ValueError("Image must be 2D or 3D.")
     return img_crop
+
+
+def _check_imgs(
+    img_r: np.ndarray | Tensor | str | os.PathLike,
+    img_m: np.ndarray | Tensor | str | os.PathLike,
+    **kwargs,
+) -> Tuple[list | np.ndarray, list | np.ndarray]:
+    """Check if two images are of the same type and shape."""
+    chromatic = kwargs.pop("chromatic", False)
+    # load images
+    img_r_loaded = load_data(img_r, **kwargs)
+    img_m_loaded = load_data(img_m, **kwargs)
+
+    if isinstance(img_r_loaded, np.ndarray) and isinstance(
+        img_m_loaded, np.ndarray
+    ):  # If both images are numpy arrays
+        # Check if images are of the same type and shape
+        if img_r_loaded.dtype != img_m_loaded.dtype:  # If image types do not match
+            raise ValueError("Image types do not match")
+        if img_r_loaded.shape != img_m_loaded.shape:  # If image shapes do not match
+            raise ValueError("Image shapes do not match")
+    elif type(img_r_loaded) is not type(img_m_loaded):  # If image types do not match
+        raise ValueError(
+            "Image types do not match. img_r is of type {type(img_r_loaded)} and img_m "
+            "is of type {type("
+            "img_m_loaded)}"
+        )
+    elif isinstance(img_r, list) and isinstance(
+        img_m, list
+    ):  # If both images are lists or else
+        if len(img_r_loaded) != len(img_m_loaded):  # If number of images do not match
+            raise ValueError(
+                "Number of images do not match. img_r has {len(img_r_loaded)} images "
+                "and img_m has {len(img_m_loaded)} images"
+            )
+        for img_a, img_b in zip(
+            img_r_loaded, img_m_loaded, strict=False
+        ):  # For each image in the list
+            if img_a.dtype != img_b.dtype:  # If image types do not match
+                raise ValueError("Image types do not match")
+            if img_a.dtype != img_b.shape:  # If image shapes do not match
+                raise ValueError("Image shapes do not match")
+    else:
+        raise ValueError("Image format not supported.")
+
+    if not isinstance(img_r_loaded, list):
+        # Check if images are chromatic
+        if chromatic is False and img_r_loaded.shape[-1] == 3:
+            # Convert to grayscale as backup if falsely claimed to be non-chromatic
+            warn("Images are chromatic. Converting to grayscale.")
+            img_r_loaded = _to_grayscale(img_r_loaded)
+            img_m_loaded = _to_grayscale(img_m_loaded)
+        elif chromatic is True and img_r_loaded.shape[-1] != 3:
+            raise ValueError("Images are not chromatic.")
+
+    return img_r_loaded, img_m_loaded
+
+
+def _resize_image(img_r, img_m, scaling_order=1):
+    # Resize image if shapes unequal
+    if img_r.shape != img_m.shape:
+        img_m = ski.transform.resize(
+            img_m, img_r.shape, preserve_range=True, order=scaling_order
+        )
+        img_m = img_m.astype(img_r.dtype)
+    return img_m

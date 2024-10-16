@@ -44,9 +44,9 @@ from scipy.ndimage import convolve
 from tqdm.autonotebook import trange
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.deprecation import RemovedInNextVersionWarning
 from viqa.fr_metrics.stat_utils import statisticscalc
 from viqa.utils import (
+    RemovedInNextVersionWarning,
     _extract_blocks,
     _fft,
     _ifft,
