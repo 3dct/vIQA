@@ -47,6 +47,7 @@ from viqa.utils import (
     _to_grayscale,
     _to_spherical,
     find_largest_region,
+    load_data,
 )
 from viqa.visualization_utils import (
     FIGSIZE_CNR_2D,
@@ -122,7 +123,7 @@ class CNR(NoReferenceMetricsInterface):
         score_val : float
             CNR score value.
         """
-        img = super().score(img)
+        img = self.load_images(img)
 
         # check if signal_center, background_center and radius are provided
         if not {"signal_center", "background_center", "radius"}.issubset(kwargs):
@@ -207,6 +208,9 @@ class CNR(NoReferenceMetricsInterface):
             If the center is not a tuple of integers.
             If the radius is not a positive integer.
         """
+        # Load image
+        img = self.load_images(img)
+
         if not signal_center or not background_center or not radius:
             if not {"signal_center", "background_center", "radius"}.issubset(
                 self.parameters.keys()
@@ -324,6 +328,9 @@ class CNR(NoReferenceMetricsInterface):
                 ) from None
 
         check_interactive_vis_deps(has_ipywidgets, has_ipython)
+
+        # Load image
+        img = self.load_images(img)
 
         # Prepare visualization functions and widgets
 
@@ -677,6 +684,7 @@ def contrast_to_noise_ratio(
     region_type="cubic",
     auto_center=False,
     iterations=5,
+    **kwargs,
 ):
     """Calculate the contrast-to-noise ratio (CNR) for an image.
 
@@ -708,6 +716,9 @@ def contrast_to_noise_ratio(
     iterations : int, optional
         Number of iterations for morphological operations if `auto_center` is True.
         Default is 5.
+    **kwargs : optional
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`viqa.load_utils.load_data`.
 
     Returns
     -------
@@ -743,6 +754,8 @@ def contrast_to_noise_ratio(
         image quality in computed radiographic (CR) imaging systems. Medical Imaging
         2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
     """
+    img = load_data(img, **kwargs)
+
     if auto_center is True:
         warn(
             "Signal and background center are automatically detected. Parameters "

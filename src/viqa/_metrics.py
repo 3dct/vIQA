@@ -38,6 +38,16 @@ class Metric:
         if self.parameters["normalize"] and not self.parameters["data_range"]:
             raise ValueError("If normalize is True, data_range must be specified")
 
+    @abstractmethod
+    def score(self, *args):
+        """Calculate the score."""
+        pass
+
+    @abstractmethod
+    def print_score(self, *args):
+        """Print the score."""
+        pass
+
     def export_results(self, path, filename):
         """Export the score to a csv file.
 
@@ -60,8 +70,28 @@ class FullReferenceMetricsInterface(ABC, Metric):
         super().__init__(data_range, normalize, **kwargs)
         self.type = "full-reference"
 
-    @abstractmethod
-    def score(self, img_r, img_m):
+    def score(self, *args):
+        # TODO: remove this method
+        img_r, img_m = self.load_images(*args)
+        return img_r, img_m
+
+    def load_images(self, img_r, img_m):
+        """Load the images and perform checks.
+
+        Parameters
+        ----------
+        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
+            The reference image.
+        img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
+            The modified image.
+
+        Returns
+        -------
+        img_r : viqa.ImageArray
+            The loaded reference image as an :py:class:`viqa.load_utils.ImageArray`.
+        img_m : viqa.ImageArray
+            The loaded modified image as an :py:class:`viqa.load_utils.ImageArray`.
+        """
         img_r, img_m = _check_imgs(
             img_r=img_r,
             img_m=img_m,
@@ -71,10 +101,6 @@ class FullReferenceMetricsInterface(ABC, Metric):
             roi=self.parameters["roi"],
         )
         return img_r, img_m
-
-    @abstractmethod
-    def print_score(self):
-        pass
 
     def __eq__(self, other):
         return self.score_val == other.score_val
@@ -103,8 +129,21 @@ class NoReferenceMetricsInterface(ABC, Metric):
         super().__init__(data_range, normalize, **kwargs)
         self.type = "no-reference"
 
-    @abstractmethod
-    def score(self, img):
+    def load_images(self, img):
+        """Load the image.
+
+        Uses the :py:func:`.viqa.load_utils.load_data` function to load the image.
+
+        Parameters
+        ----------
+        img : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
+            The image to load.
+
+        Returns
+        -------
+        img : viqa.ImageArray
+            The loaded image as an :py:class:`viqa.load_utils.ImageArray`.
+        """
         # Load image
         img = load_data(
             img=img,
@@ -113,10 +152,6 @@ class NoReferenceMetricsInterface(ABC, Metric):
             roi=self.parameters["roi"],
         )
         return img
-
-    @abstractmethod
-    def print_score(self):
-        pass
 
     def __eq__(self, other):
         return self.score_val == other.score_val

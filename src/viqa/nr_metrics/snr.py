@@ -47,6 +47,7 @@ from viqa.utils import (
     _to_grayscale,
     _to_spherical,
     find_largest_region,
+    load_data,
 )
 from viqa.visualization_utils import (
     FIGSIZE_SNR_2D,
@@ -121,7 +122,7 @@ class SNR(NoReferenceMetricsInterface):
         score_val : float
             SNR score value.
         """
-        img = super().score(img)
+        img = self.load_images(img)
 
         # check if signal_center and radius are provided
         if not {"signal_center", "radius"}.issubset(kwargs):
@@ -193,6 +194,9 @@ class SNR(NoReferenceMetricsInterface):
             If the center is not a tuple of integers.
             If the radius is not a positive integer.
         """
+        # Load image
+        img = self.load_images(img)
+
         if not signal_center or not radius:
             if not {"signal_center", "radius"}.issubset(self.parameters.keys()):
                 raise ValueError("No center or radius provided.")
@@ -286,6 +290,9 @@ class SNR(NoReferenceMetricsInterface):
             If the center is not a tuple of integers.
             If the radius is not a positive integer.
         """
+        # Load image
+        img = self.load_images(img)
+
         if not is_ipython():
             try:
                 warn("Trying to visualize in a non-interactive environment.")
@@ -556,6 +563,7 @@ def signal_to_noise_ratio(
     auto_center=False,
     iterations=5,
     yuv=True,
+    **kwargs,
 ):
     """Calculate the signal-to-noise ratio (SNR) for an image.
 
@@ -591,6 +599,9 @@ def signal_to_noise_ratio(
 
         If True, the input images are expected to be RGB images and are converted to YUV
         color space. If False, the input images are kept as RGB images.
+    **kwargs : optional
+        Additional parameters for data loading. The keyword arguments are passed to
+        :py:func:`viqa.load_utils.load_data`.
 
     Returns
     -------
@@ -662,6 +673,8 @@ def signal_to_noise_ratio(
     .. [1] https://en.wikipedia.org/wiki/YUV
     .. [2] https://www.imatest.com/docs/color-tone-esfriso-noise/#chromanoise
     """
+    img = load_data(img, **kwargs)
+
     # Auto detect center
     if auto_center is True:
         warn(
