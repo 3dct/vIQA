@@ -600,8 +600,8 @@ def load_data(
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
-        .. attention::
-            This will be deprecated in version 4.0.x.
+        .. deprecated:: 4.0.0
+            This will be deprecated in version 4.0.0.
 
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
@@ -627,7 +627,7 @@ def load_data(
 
     Warnings
     --------
-    ``batch`` is currently not tested.
+    ``batch`` will be deprecated in version 4.0.0.
 
     Examples
     --------
