@@ -47,6 +47,7 @@ from scipy.stats import kurtosis, skew
 from torch import Tensor
 from tqdm.autonotebook import tqdm
 
+from .deprecation import RemovedInFutureVersionWarning
 from .misc import _to_grayscale
 from .visualization import visualize_2d, visualize_3d
 
@@ -520,12 +521,8 @@ def load_data(
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
-        .. caution::
-            Currently not tested.
-
-        .. todo::
-            Deprecate batch loading as this has no use with the current implementation
-            as BatchMetrics class.
+        .. attention::
+            This will be deprecated in version 4.0.x.
 
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
@@ -567,6 +564,11 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
+    if batch:
+        raise RemovedInFutureVersionWarning(
+            "Batch loading is deprecated and will be removed in ViQa 4.0.x."
+        )
+
     # exceptions and warning for data_range and normalize
     if normalize and data_range is None:
         raise ValueError("Parameter data_range must be set if normalize is True.")
