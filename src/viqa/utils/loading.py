@@ -9,13 +9,21 @@ Examples
         >>> img = load_data(img_path)
 
         >>> import numpy as np
-        >>> from viqa import normalize_data
+        >>> from viqa import ImageArray, crop_image, normalize_data
         >>> img = np.random.rand(128, 128)
         >>> img.dtype
         dtype('float64')
+        >>> type(img)
+        <class 'numpy.ndarray'>
+        >>> img = ImageArray(img)
+        >>> type(img)
+        <class 'viqa.utils.loading.ImageArray'>
         >>> img = normalize_data(img, data_range_output=(0, 255))
         >>> img.dtype
         dtype('uint8')
+        >>> img = crop_image(img, (0, 64), (0, 64))
+        >>> img.shape
+        (64, 64)
 """
 
 # Authors
@@ -763,7 +771,7 @@ def crop_image(
         Range for the x-axis
     y : Tuple[int, int]
         Range for the y-axis
-    z : Tuple[int, int]
+    z : Tuple[int, int] or None
         Range for the z-axis
 
     Returns

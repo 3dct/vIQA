@@ -1,10 +1,4 @@
-"""Module for miscellaneous utility functions.
-
-Examples
---------
-    # TODO: Add examples
-
-"""
+"""Module for miscellaneous utility functions."""
 
 # Authors
 # -------

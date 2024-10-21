@@ -2,8 +2,14 @@
 
 Examples
 --------
-    # TODO: Add examples
+    .. doctest-skip::
 
+    >>> import numpy as np
+    >>> from viqa.utils.visualization import visualize_2d, visualize_3d
+    >>> img = np.random.rand(100, 100)
+    >>> visualize_2d(img)
+    >>> img = np.random.rand(100, 100, 100)
+    >>> visualize_3d(img, (50, 50, 50))
 """
 
 # Authors

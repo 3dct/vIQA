@@ -2,8 +2,25 @@
 
 Examples
 --------
-    # TODO: Add examples
+    .. doctest-skip::
 
+        >>> from viqa import export_image, export_metadata, export_results, FSIM, PSNR
+        >>> metric1 = FSIM()
+        >>> metric2 = PSNR()
+        >>> metrics = [metric1, metric2]
+        >>> results_dict = export_results(
+        >>>    metrics,
+        >>>    "path/to/output",
+        >>>    "filename.csv",
+        >>>    return_dict=True,
+        >>> )
+        >>> export_metadata(metrics, [{"param1": 1}, {"param2": 2}], "path/to/output")
+        >>> export_image(
+        >>>    results_dict,
+        >>>    "path/to/reference/image",
+        >>>    "path/to/modified/image",
+        >>>    x=50,
+        >>> )
 """
 
 # Authors
