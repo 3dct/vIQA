@@ -115,22 +115,6 @@ class ImageArray(np.ndarray):
         """
         # Input array is an already formed ndarray instance
         obj = np.asarray(input_array).view(cls)
-        # FIXME: Only calculate statistics on method call
-        # Add attributes
-        obj.mean_value = np.mean(input_array)
-        obj.median = np.median(input_array)
-        obj.variance = np.var(input_array)
-        obj.standarddev = np.std(input_array)
-        obj.skewness = skew(input_array, axis=None)
-        obj.kurtosis = kurtosis(input_array, axis=None)
-        if input_array.dtype.kind in ["u", "i"]:
-            obj.histogram = np.histogram(
-                input_array, bins=np.iinfo(input_array.dtype).max
-            )
-        else:
-            obj.histogram = np.histogram(input_array, bins=255)
-        obj.minimum = np.min(input_array)
-        obj.maximum = np.max(input_array)
         return obj
 
     def __array_finalize__(self, obj):
@@ -145,15 +129,102 @@ class ImageArray(np.ndarray):
         if obj is None:
             return
         # Add attributes
-        self.mean_value = getattr(obj, "mean_value", None)
-        self.median = getattr(obj, "median", None)
-        self.variance = getattr(obj, "variance", None)
-        self.standarddev = getattr(obj, "standarddev", None)
-        self.skewness = getattr(obj, "skewness", None)
-        self.kurtosis = getattr(obj, "kurtosis", None)
-        self.histogram = getattr(obj, "histogram", None)
-        self.minimum = getattr(obj, "minimum", None)
-        self.maximum = getattr(obj, "maximum", None)
+        self.mean_value = getattr(
+            obj, "mean_value", "Not set. Run calculate_statistics() first."
+        )
+        self.median = getattr(
+            obj, "median", "Not set. Run calculate_statistics() first."
+        )
+        self.variance = getattr(
+            obj, "variance", "Not set. Run calculate_statistics() first."
+        )
+        self.standarddev = getattr(
+            obj, "standarddev", "Not set. Run calculate_statistics() first."
+        )
+        self.skewness = getattr(
+            obj, "skewness", "Not set. Run calculate_statistics() first."
+        )
+        self.kurtosis = getattr(
+            obj, "kurtosis", "Not set. Run calculate_statistics() first."
+        )
+        self.histogram = getattr(
+            obj, "histogram", "Not set. Run calculate_statistics() first."
+        )
+        self.minimum = getattr(
+            obj, "minimum", "Not set. Run calculate_statistics() first."
+        )
+        self.maximum = getattr(
+            obj, "maximum", "Not set. Run calculate_statistics() first."
+        )
+
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        """Make sure that an ImageArray is returned when a ufunc operation is performed
+        on the ImageArray class.
+        """
+        # Adapted code by @Thawn from
+        # https://stackoverflow.com/questions/51520630/subclassing-numpy-array-propagate-attributes
+
+        # convert inputs and outputs of class ImageArray to np.ndarray to prevent
+        # infinite recursion
+        args = (
+            (i.view(np.ndarray) if isinstance(i, ImageArray) else i) for i in inputs
+        )
+        outputs = kwargs.pop("out", None)
+        if outputs:
+            kwargs["out"] = tuple(
+                (o.view(np.ndarray) if isinstance(o, ImageArray) else o)
+                for o in outputs
+            )
+        else:
+            outputs = (None,) * ufunc.nout
+        # call numpys implementation of __array_ufunc__
+        results = super().__array_ufunc__(ufunc, method, *args, **kwargs)
+        if results is NotImplemented:
+            return NotImplemented
+        if method == "at":
+            # method == 'at' means that the operation is performed in-place. Therefore,
+            # we are done.
+            return
+        # now we need to make sure that outputs that where specified with the 'out'
+        # argument are handled correctly:
+        if ufunc.nout == 1:
+            results = (results,)
+        results = tuple(
+            (result.view(ImageArray) if output is None else output)
+            for result, output in zip(results, outputs, strict=False)
+        )
+        return results[0] if len(results) == 1 else results
+
+    def calculate_statistics(self):
+        """Calculate statistics of the image array.
+
+        .. admonition:: The following statistics are calculated:
+
+            * mean
+            * median
+            * variance
+            * standard deviation
+            * skewness
+            * kurtosis
+            * histogram
+            * minimum
+            * maximum
+        """
+        # Add attributes
+        self.mean_value = np.mean(self)
+        self.median = np.median(self.view())
+        self.variance = np.var(self.view())
+        self.standarddev = np.std(self.view())
+        self.skewness = skew(self.view(), axis=None)
+        self.kurtosis = kurtosis(self.view(), axis=None)
+        if self.view().dtype.kind in ["u", "i"]:
+            self.view().histogram = np.histogram(
+                self.view(), bins=np.iinfo(self.view().dtype).max
+            )
+        else:
+            self.histogram = np.histogram(self.view(), bins=255)
+        self.minimum = np.min(self.view())
+        self.maximum = np.max(self.view())
 
     def describe(
         self,
