@@ -124,9 +124,7 @@ def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.
             The txt file will be overwritten if it already exists.
     """
     if os.path.splitext(file_name)[1] != ".txt":
-        raise ValueError(
-            f"The file name {file_name} must have the " f"extension '.txt'."
-        )
+        raise ValueError(f"The file name {file_name} must have the extension '.txt'.")
     path = os.path.join(file_path, file_name)
     with open(path, mode="w") as txtfile:
         txtfile.write("vIQA_version: " + version("viqa") + "\n")
@@ -299,7 +297,10 @@ def export_image(
     axs[0].axis("off")
     axs[1].axis("off")
 
-    # TODO: add check for file_name ending
+    # Check if filename has the correct extension
+    if os.path.splitext(file_name)[1] != ".png":
+        raise ValueError(f"The file name {file_name} must have the extension '.png'.")
+
     if file_path:
         file_path = os.path.join(file_path, file_name)
         plt.savefig(file_path, bbox_inches="tight", pad_inches=0.5)
