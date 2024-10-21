@@ -104,7 +104,7 @@ class RMSE(FullReferenceMetricsInterface):
         score_val : float
             RMSE score value.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         # Calculate score
         score_val = np.sqrt(mean_squared_error(img_r, img_m))

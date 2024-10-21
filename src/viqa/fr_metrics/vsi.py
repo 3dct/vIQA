@@ -184,7 +184,7 @@ class VSI(FullReferenceMetricsInterface):
             method by combining simple priors. 2013 IEEE International Conference on
             Image Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3:
             if (

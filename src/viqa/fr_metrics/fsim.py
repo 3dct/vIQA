@@ -184,7 +184,7 @@ class FSIM(FullReferenceMetricsInterface):
         ----------
         .. [3] https://piq.readthedocs.io/en/latest/functions.html#piq.fsim
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (

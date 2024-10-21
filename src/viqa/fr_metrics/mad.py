@@ -175,7 +175,7 @@ class MAD(FullReferenceMetricsInterface):
         ``im_slice`` is given, the MAD is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:

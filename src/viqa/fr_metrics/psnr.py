@@ -117,7 +117,7 @@ class PSNR(FullReferenceMetricsInterface):
         score_val : float
             PSNR score value.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
         # Calculate score
         if np.array_equal(img_r, img_m):
             score_val = np.inf  # PSNR of identical images is infinity

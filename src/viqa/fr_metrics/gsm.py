@@ -189,7 +189,7 @@ class GSM(FullReferenceMetricsInterface):
         with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the
         Kernel `n` and :math:`\\pmb{X}` denoting an image block.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3:
             if (

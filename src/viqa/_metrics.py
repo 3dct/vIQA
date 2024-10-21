@@ -69,11 +69,6 @@ class FullReferenceMetricsInterface(ABC, Metric):
         super().__init__(data_range, normalize, **kwargs)
         self.type = "full-reference"
 
-    def score(self, *args):
-        # TODO: remove this method
-        img_r, img_m = self.load_images(*args)
-        return img_r, img_m
-
     def load_images(self, img_r, img_m):
         """Load the images and perform checks.
 

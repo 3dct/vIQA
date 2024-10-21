@@ -186,7 +186,7 @@ class MSSSIM(FullReferenceMetricsInterface):
             Asilomar Conference on Signals, Systems & Computers, 1298–1402.
             https://doi.org/10.1109/ACSSC.2003.1292216
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if "scale_weights" in kwargs and type(kwargs["scale_weights"]) is list:
             kwargs["scale_weights"] = tensor(kwargs["scale_weights"])

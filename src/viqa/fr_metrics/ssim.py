@@ -156,7 +156,7 @@ class SSIM(FullReferenceMetricsInterface):
         For color images, the metric is calculated channel-wise and the mean after
         weighting with the color weights is returned.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if self.parameters["chromatic"]:
             if color_weights is None:

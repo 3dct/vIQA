@@ -149,7 +149,7 @@ class UQI(FullReferenceMetricsInterface):
         In the original implementation `win_size` is set to 8, here it is set to 7 by
         default, but can be changed to other odd values.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         score_val = structural_similarity(
             img_r,

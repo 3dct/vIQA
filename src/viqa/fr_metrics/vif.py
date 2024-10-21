@@ -163,7 +163,7 @@ class VIFp(FullReferenceMetricsInterface):
             quality. IEEE Transactions on Image Processing, 15(2), 430–444.
             https://doi.org/10.1109/TIP.2005.859378
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (
