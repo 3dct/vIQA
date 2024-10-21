@@ -33,7 +33,7 @@ import numpy as np
 from .loading import _check_imgs, _resize_image, load_data
 
 
-def export_results(metrics, output_path, filename):
+def export_results(metrics, output_path, filename, return_dict=False):
     """Export data to a csv file.
 
     Parameters
@@ -44,6 +44,8 @@ def export_results(metrics, output_path, filename):
         Output path
     filename : str or os.PathLike
         Name of the file
+    return_dict : bool, optional
+        If True, the results are returned as a dictionary. Default is False.
 
     Notes
     -----
@@ -68,6 +70,7 @@ def export_results(metrics, output_path, filename):
     # Check if filename has the correct extension
     if not filename.lower().endswith(".csv"):
         filename += ".csv"
+    results_dict = {}
     # Create file path
     file_path = os.path.join(output_path, filename)
     with open(file_path, mode="w", newline="") as f:  # Open file
@@ -78,6 +81,9 @@ def export_results(metrics, output_path, filename):
                 metric.score_val = "n/a"
             else:
                 writer.writerow([metric._name, metric.score_val])
+            results_dict[metric._name] = metric.score_val
+    if return_dict:
+        return results_dict
 
 
 def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.txt"):
