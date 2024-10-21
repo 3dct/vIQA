@@ -47,9 +47,8 @@ __all__ = [
     "_visualize_snr_2d",
     "_visualize_snr_3d",
     "gabor_convolve",
-    "RemovedInViqa20Warning",
-    "RemovedInViqa30Warning",
     "RemovedInNextVersionWarning",
+    "RemovedInFutureVersionWarning",
     "load_mhd",
     "load_raw",
     "load_nifti",
@@ -60,6 +59,10 @@ __all__ = [
     "_is_even",
 ]
 
+from .deprecation import (
+    RemovedInFutureVersionWarning,
+    RemovedInNextVersionWarning,
+)
 from .export import export_image, export_metadata, export_results
 from .loading import (
     ImageArray,
@@ -104,19 +107,3 @@ from .visualization import (
     visualize_2d,
     visualize_3d,
 )
-
-
-# Warn about deprecated features
-class RemovedInViqa20Warning(DeprecationWarning):
-    """Warn about features that will be removed in ViQa 2.0.x."""
-
-    pass
-
-
-class RemovedInViqa30Warning(PendingDeprecationWarning):
-    """Warn about features that will be removed in ViQa 3.0.x."""
-
-    pass
-
-
-RemovedInNextVersionWarning = RemovedInViqa20Warning
