@@ -5,6 +5,7 @@ python_sources = [
     'loading.py',
     'misc.py',
     'visualization.py',
+    'deprecation.py',
 ]
 
 py.install_sources(
