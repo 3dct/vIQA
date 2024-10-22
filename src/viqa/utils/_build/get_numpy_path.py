@@ -21,8 +21,9 @@ import os
 try:
     import numpy
 except ImportError:
+    numpy = None
     print("numpy is not installed")
     exit(20)
 
-os.chdir("..")
+os.chdir("../..")
 print(numpy.get_include().replace("\\", "/"))

@@ -44,19 +44,21 @@ class VSI(FullReferenceMetricsInterface):
     ----------
     score_val : float
         VSI score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for VSI calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the VSI calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.load_utils.load_data`.
+        :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -182,7 +184,7 @@ class VSI(FullReferenceMetricsInterface):
             method by combining simple priors. 2013 IEEE International Conference on
             Image Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3:
             if (
@@ -194,36 +196,36 @@ class VSI(FullReferenceMetricsInterface):
                         img_r_tensor, img_m_tensor = _check_chromatic(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
-                            self._parameters["chromatic"],
+                            self.parameters["chromatic"],
                         )
                         score_val = vsi(
                             img_r_tensor,
                             img_m_tensor,
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         img_r_tensor, img_m_tensor = _check_chromatic(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
-                            self._parameters["chromatic"],
+                            self.parameters["chromatic"],
                         )
                         score_val = vsi(
                             img_r_tensor,
                             img_m_tensor,
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         img_r_tensor, img_m_tensor = _check_chromatic(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
-                            self._parameters["chromatic"],
+                            self.parameters["chromatic"],
                         )
                         score_val = vsi(
                             img_r_tensor,
                             img_m_tensor,
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case _:
@@ -240,12 +242,12 @@ class VSI(FullReferenceMetricsInterface):
                 img_r_tensor, img_m_tensor = _check_chromatic(
                     img_r,
                     img_m,
-                    self._parameters["chromatic"],
+                    self.parameters["chromatic"],
                 )
                 score_val = vsi(
                     img_r_tensor,
                     img_m_tensor,
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     **kwargs,
                 )
             else:
@@ -261,12 +263,12 @@ class VSI(FullReferenceMetricsInterface):
             img_r_tensor, img_m_tensor = _check_chromatic(
                 img_r,
                 img_m,
-                self._parameters["chromatic"],
+                self.parameters["chromatic"],
             )
             score_val = vsi(
                 img_r_tensor,
                 img_m_tensor,
-                data_range=self._parameters["data_range"],
+                data_range=self.parameters["data_range"],
                 **kwargs,
             )
         else:

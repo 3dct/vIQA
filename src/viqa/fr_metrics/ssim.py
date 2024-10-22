@@ -68,20 +68,22 @@ class SSIM(FullReferenceMetricsInterface):
     ----------
     score_val : float or None
         Score value of the SSIM metric.
+    parameters : dict
+        Dictionary containing the parameters for SSIM calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the SSIM calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.utils.load_data` and
         :py:func:`viqa.fr_metrics.ssim.structural_similarity`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -127,9 +129,9 @@ class SSIM(FullReferenceMetricsInterface):
 
         Parameters
         ----------
-        img_r : np.ndarray
+        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Reference image to calculate score against.
-        img_m : np.ndarray
+        img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Modified image to calculate score of.
         color_weights : np.ndarray, optional
             Weights for the color channels. The array must have the same length as the
@@ -154,9 +156,9 @@ class SSIM(FullReferenceMetricsInterface):
         For color images, the metric is calculated channel-wise and the mean after
         weighting with the color weights is returned.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
-        if self._parameters["chromatic"]:
+        if self.parameters["chromatic"]:
             if color_weights is None:
                 raise ValueError("Color weights must be set for chromatic images.")
             scores = []
@@ -164,14 +166,14 @@ class SSIM(FullReferenceMetricsInterface):
                 score = structural_similarity(
                     img_r[..., channel],
                     img_m[..., channel],
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     **kwargs,
                 )
                 scores.append(score)
             score_val = (color_weights * np.array(scores)).mean()
         else:
             score_val = structural_similarity(
-                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         self.score_val = score_val
         return score_val
@@ -216,8 +218,8 @@ def structural_similarity(
         Modified image to calculate score of.
     win_size : int or None, optional
         The side-length of the sliding window used in comparison. Must be an
-        odd value. If ``gaussian_weights`` is True, this is ignored and the
-        window size will depend on ``sigma``.
+        odd value. If `gaussian_weights` is True and `win_size` is None, the
+        window size will depend on `sigma`. Default is 7.
     data_range : int, default=None
         Data range of the input images.
     gaussian_weights : bool, default=True
@@ -311,17 +313,14 @@ def structural_similarity(
     if sigma < 0:
         raise ValueError("sigma must be positive")
 
-    if gaussian_weights:
-        # Set to give an 11-tap filter with the default sigma of 1.5 to match
-        # Wang et. al. 2004.
-        truncate = 3.5
-
     if win_size is None:
         if gaussian_weights:
+            # Set to give an 11-tap filter with the default sigma of 1.5 to match
+            # Wang et. al. 2004.
+            truncate = 3.5
             # set win_size used by crop to match the filter size
             r = int(truncate * sigma + 0.5)  # radius as in ndimage
             win_size = 2 * r + 1
-            cov_norm = 1.0  # population covariance to match Wang et. al. 2004
         else:
             win_size = 7  # backwards compatibility
 

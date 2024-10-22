@@ -1,20 +1,4 @@
-"""Module for utility functions.
-
-Examples
---------
-    .. doctest-skip::
-
-        >>> from viqa import load_data
-        >>> img_path = "path/to/image.mhd"
-        >>> img = load_data(img_path)
-
-        >>> from viqa import export_results, PSNR, RMSE
-        >>> metrics = [PSNR, RMSE]
-        >>> output_path = "path/to/output"
-        >>> filename = "metrics.csv"
-        >>> export_results(metrics, output_path, filename)
-
-"""
+"""Module for miscellaneous utility functions."""
 
 # Authors
 # -------
@@ -26,84 +10,23 @@ Examples
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Add _get_binary and find_largest_region, 2024, Michael Stidi
+# Update _get_binary and find_largest_region, 2024, Lukas Behammer
 #
 # License
 # -------
 # BSD-3-Clause License
 
-import csv
 import math
-import os
-from datetime import datetime
-from importlib.metadata import version
-from typing import Tuple
-from warnings import warn
 
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.fft as fft
+import scipy.ndimage as ndi
 import skimage as ski
 import torch
-from skimage.transform import resize
-from torch import Tensor
+from scipy.ndimage import distance_transform_edt
 
-from viqa.load_utils import load_data
-
-
-def _check_imgs(
-    img_r: np.ndarray | Tensor | str | os.PathLike,
-    img_m: np.ndarray | Tensor | str | os.PathLike,
-    **kwargs,
-) -> Tuple[list | np.ndarray, list | np.ndarray]:
-    """Check if two images are of the same type and shape."""
-    chromatic = kwargs.pop("chromatic", False)
-    # load images
-    img_r_loaded = load_data(img_r, **kwargs)
-    img_m_loaded = load_data(img_m, **kwargs)
-
-    if isinstance(img_r_loaded, np.ndarray) and isinstance(
-        img_m_loaded, np.ndarray
-    ):  # If both images are numpy arrays
-        # Check if images are of the same type and shape
-        if img_r_loaded.dtype != img_m_loaded.dtype:  # If image types do not match
-            raise ValueError("Image types do not match")
-        if img_r_loaded.shape != img_m_loaded.shape:  # If image shapes do not match
-            raise ValueError("Image shapes do not match")
-    elif type(img_r_loaded) is not type(img_m_loaded):  # If image types do not match
-        raise ValueError(
-            "Image types do not match. img_r is of type {type(img_r_loaded)} and img_m "
-            "is of type {type("
-            "img_m_loaded)}"
-        )
-    elif isinstance(img_r, list) and isinstance(
-        img_m, list
-    ):  # If both images are lists or else
-        if len(img_r_loaded) != len(img_m_loaded):  # If number of images do not match
-            raise ValueError(
-                "Number of images do not match. img_r has {len(img_r_loaded)} images "
-                "and img_m has {len(img_m_loaded)} images"
-            )
-        for img_a, img_b in zip(
-            img_r_loaded, img_m_loaded, strict=False
-        ):  # For each image in the list
-            if img_a.dtype != img_b.dtype:  # If image types do not match
-                raise ValueError("Image types do not match")
-            if img_a.dtype != img_b.shape:  # If image shapes do not match
-                raise ValueError("Image shapes do not match")
-    else:
-        raise ValueError("Image format not supported.")
-
-    if not isinstance(img_r_loaded, list):
-        # Check if images are chromatic
-        if chromatic is False and img_r_loaded.shape[-1] == 3:
-            # Convert to grayscale as backup if falsely claimed to be non-chromatic
-            warn("Images are chromatic. Converting to grayscale.")
-            img_r_loaded = _to_grayscale(img_r_loaded)
-            img_m_loaded = _to_grayscale(img_m_loaded)
-        elif chromatic is True and img_r_loaded.shape[-1] != 3:
-            raise ValueError("Images are not chromatic.")
-
-    return img_r_loaded, img_m_loaded
+from .visualization import visualize_2d, visualize_3d
 
 
 def _to_grayscale(img):
@@ -414,14 +337,19 @@ def gabor_convolve(
     # compute matrices of same size as im with values ranging from -0.5 to 0.5 (-1.0 to
     # 1.0) for horizontal and vertical
     #   directions each
-    if _is_even(cols):
-        x_range = np.linspace(-cols / 2, (cols - 2) / 2, cols) / (cols / 2)
-    else:
-        x_range = np.linspace(-cols / 2, cols / 2, cols) / (cols / 2)
-    if _is_even(rows):
-        y_range = np.linspace(-rows / 2, (rows - 2) / 2, rows) / (rows / 2)
-    else:
-        y_range = np.linspace(-rows / 2, rows / 2, rows) / (rows / 2)
+    def _get_range(cols_rows):
+        if _is_even(cols_rows):
+            range_ = np.linspace(-cols_rows / 2, (cols_rows - 2) / 2, cols_rows) / (
+                cols_rows / 2
+            )
+        else:
+            range_ = np.linspace(-cols_rows / 2, cols_rows / 2, cols_rows) / (
+                cols_rows / 2
+            )
+        return range_
+
+    x_range = _get_range(cols)
+    y_range = _get_range(rows)
     x, y = np.meshgrid(x_range, y_range)
 
     # filters have radial component (frequency band) and an angular component
@@ -511,253 +439,201 @@ def _check_chromatic(img_r, img_m, chromatic):
     return img_r_tensor, img_m_tensor
 
 
-def export_results(metrics, output_path, filename):
-    """Export data to a csv file.
+def _check_border_too_close(center, radius):
+    for center_coordinate in center:
+        if not isinstance(center_coordinate, int):
+            raise TypeError("Center has to be a tuple of integers.")
+        if abs(center_coordinate) - radius < 0:
+            raise ValueError(
+                "Center has to be at least the radius away from the border."
+            )
+
+
+def _get_binary(img, lower_threshold, upper_threshold, show=False):
+    """Get the binary of an image.
 
     Parameters
     ----------
-    metrics : list
-        List of metrics
-    output_path : str or os.PathLike
-        Output path
-    filename : str or os.PathLike
-        Name of the file
+    img : np.ndarray
+        Input image
+    lower_threshold : int
+        Lower threshold as percentile
+    upper_threshold : int
+        Upper threshold as percentile
+    show : bool, optional
+        If True, the binary image is visualized. Default is False.
 
-    Notes
-    -----
-    This function just writes the ``score_val`` attribute of instanced metrics
-    to a csv file. Therefore, the metrics must have been calculated before exporting and
-    no-reference metrics cannot be distinguished between reference and modified image.
-
-    .. attention::
-
-        The csv file will be overwritten if it already exists.
-
-    Examples
-    --------
-        .. doctest-skip::
-
-            >>> from viqa import export_results, FSIM, PSNR
-            >>> metric1 = FSIM()
-            >>> metric2 = PSNR()
-            >>> metrics = [metric1, metric2]
-            >>> export_results(metrics, "path/to/output", "filename.csv")
+    Returns
+    -------
+    np.ndarray
+        Binary image
     """
-    # Check if filename has the correct extension
-    if not filename.lower().endswith(".csv"):
-        filename += ".csv"
-    # Create file path
-    file_path = os.path.join(output_path, filename)
-    with open(file_path, mode="w", newline="") as f:  # Open file
-        writer = csv.writer(f)
-        writer.writerow(["Metric", "Value"])
-        for metric in metrics:
-            if metric.score_val is None:
-                metric.score_val = "n/a"
-            else:
-                writer.writerow([metric._name, metric.score_val])
+    if img.ndim == 3 and img.shape[-1] == 3:  # 2D color image
+        img = _to_grayscale(img)
 
+    # Get the lower and upper threshold and convert to binary
+    lower_threshold_perc = np.percentile(img, lower_threshold)
+    upper_threshold_perc = np.percentile(img, upper_threshold)
+    binary_image = np.logical_and(
+        img > lower_threshold_perc, img <= upper_threshold_perc
+    )
 
-def _resize_image(img_r, img_m, scaling_order=1):
-    # Resize image if shapes unequal
-    if img_r.shape != img_m.shape:
-        img_m = resize(img_m, img_r.shape, preserve_range=True, order=scaling_order)
-        img_m = img_m.astype(img_r.dtype)
-    return img_m
-
-
-def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.txt"):
-    """Export the metadata (custom parameters and package version) to a txt file.
-
-    Parameters
-    ----------
-    metrics : list
-        List of metric instances.
-    metrics_parameters : list
-        List of dictionaries containing the parameters for the metrics.
-    file_path : str
-        Path to the directory where the txt file should be saved.
-    file_name : str, default='metadata.txt'
-        Name of the txt file. Default is 'metadata.txt'.
-
-    Notes
-    -----
-        .. attention::
-
-            The txt file will be overwritten if it already exists.
-    """
-    if os.path.splitext(file_name)[1] != ".txt":
-        raise ValueError(
-            f"The file name {file_name} must have the " f"extension '.txt'."
-        )
-    path = os.path.join(file_path, file_name)
-    with open(path, mode="w") as txtfile:
-        txtfile.write("vIQA_version: " + version("viqa") + "\n")
-        txtfile.write("Time: " + datetime.today().strftime("%Y-%m-%d %H:%M:%S"))
-        txtfile.write("\n")
-        txtfile.write("\n")
-        txtfile.write("custom metric parameters: \n")
-        txtfile.write("========================= \n")
-        for metric_num, metric in enumerate(metrics):
-            txtfile.write(metric.__str__().split("(")[0])
-            txtfile.write("\n")
-            [txtfile.write("-") for char in metric.__str__().split("(")[0]]
-            txtfile.write("\n")
-            txtfile.write("data_range: " + str(metric._parameters["data_range"]) + "\n")
-            for key, value in metrics_parameters[metric_num].items():
-                txtfile.write(key + ": " + str(value))
-                txtfile.write("\n")
-            txtfile.write("\n")
-
-
-def export_image(
-    results,
-    img_r,
-    img_m,
-    x=None,
-    y=None,
-    z=None,
-    file_path=None,
-    file_name="image_comparison.png",
-    show_image=True,
-    **kwargs,
-):
-    """Print the reference and modified image side by side with the metric values.
-
-    Parameters
-    ----------
-    results : dict
-        Dictionary containing the metric values.
-    img_r : str or np.ndarray
-        Path to the reference image or the image itself.
-    img_m : str or np.ndarray
-        Path to the modified image or the image itself.
-    x, y, z : int, optional
-        The index of the slice to be plotted. Only one axis can be specified.
-    file_path : str, optional
-        Path to the directory where the image should be saved. If None, the image
-        will be displayed only.
-    file_name : str, optional
-        Name of the image file. Default is 'image_comparison.png'.
-    show_image : bool, optional
-        If True, the image will be displayed. Default is True.
-    kwargs : dict
-        Additional parameters. Passed to :py:func:`matplotlib.pyplot.subplots`.
-
-    Other Parameters
-    ----------------
-    dpi : int, default=300
-        Dots per inch of the figure.
-    scaling_order : int, default=1
-        Order of the spline interpolation used for image resizing. Default is 1.
-        Passed to :py:func:`skimage.transform.resize`
-
-    Raises
-    ------
-    Exception
-        If the area to be plotted was not correctly specified.
-        If the image is not 2D or 3D.
-        If no axis or more than one axis was specified.
-    """
-    if len(results) == 0:
-        warn("No results to plot. Only the images are plotted.", UserWarning)
-
-    dpi = kwargs.pop("dpi", 300)
-
-    img_r = load_data(img_r)
-    img_m = load_data(img_m)
-    scaling_order = kwargs.pop("scaling_order", 1)
-    img_m = _resize_image(img_r, img_m, scaling_order=scaling_order)
-    img_r, img_m = _check_imgs(img_r, img_m)
-
-    if img_r.ndim == 2 or (img_r.ndim == 3 and img_r.shape[-1] == 3):
-        # For 2D (color) images, flip the image to match the imshow orientation
-        img_r_plot = np.flip(img_r, 1)
-        img_m_plot = np.flip(img_m, 1)
-    elif img_r.ndim == 3:
-        if {x, y, z} == {None}:
-            raise Exception("One axis must be specified")
-        if len({x, y, z} - {None}) != 1:
-            raise Exception("Only one axis can be specified")
-
-        # For 3D images, plot the specified area
-        x_1, x_2 = 0, img_r.shape[0]
-        y_1, y_2 = 0, img_r.shape[1]
-        z_1, z_2 = 0, img_r.shape[2]
-
-        if x is not None:
-            img_r_plot = np.rot90(np.flip(img_r[x, y_1:y_2, z_1:z_2], 1))
-            img_m_plot = np.rot90(np.flip(img_m[x, y_1:y_2, z_1:z_2], 1))
-        elif y is not None:
-            img_r_plot = np.rot90(np.flip(img_r[x_1:x_2, y, z_1:z_2], 1))
-            img_m_plot = np.rot90(np.flip(img_m[x_1:x_2, y, z_1:z_2], 1))
-        elif z is not None:
-            img_r_plot = np.rot90(np.flip(img_r[x_1:x_2, y_1:y_2, z], 0), -1)
-            img_m_plot = np.rot90(np.flip(img_m[x_1:x_2, y_1:y_2, z], 0), -1)
+    # Visualize the binary image
+    if show:
+        if img.ndim == 2:  # 2D image
+            visualize_2d(binary_image)
+        elif img.ndim == 3 and img.shape[-1] > 3:  # 3D image
+            visualize_3d(binary_image, [img.shape[dim] // 2 for dim in range(3)])
         else:
-            raise Exception("Area to be plotted was not correctly specified")
+            raise ValueError("Image must be 2D or 3D to visualize.")
+
+    return binary_image
+
+
+def find_largest_region(img, iterations=5, region_type="cubic"):
+    """Find the largest region in a binary image.
+
+    The function finds the largest region in a binary region by calculating the exact
+    euclidean distance transform. The center and radius of the largest region are
+    returned, as well as the region itself based on the given region type.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Binary image
+    iterations : int, optional
+        Number of iterations for dilation and erosion. Default is 5.
+    region_type : {'cubic', 'spherical', 'full', 'original'}, optional
+        Type of region to be found. Default is 'cubic'.
+        If 'original' the original image is returned.
+        If 'full' the full region is returned (eroded twice after cleaning with dilation
+        and erosion).
+        If 'cubic' the region is returned as a cube. Alias for 'cubic' are 'cube' and
+        'square'.
+        If 'spherical' the region is returned as a sphere. Alias for 'spherical' are
+        'sphere' and 'circle'.
+        If other values are passed, the region is returned after dilation and erosion.
+
+        .. note::
+
+                This only influences the returned array, not the calculation of the
+                largest region.
+
+    Returns
+    -------
+    tuple
+        Coordinates of the largest region
+    int
+        Radius of the largest region
+    np.ndarray
+        Largest region as masked array
+    """
+    # Check if image is binary
+    minimum, maximum = img.min(), img.max()
+    if img.dtype != "bool" or not (minimum == 0 and maximum == 1):
+        raise ValueError("Image must be binary.")
+
+    struct_3d = np.array(
+        [
+            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+            [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+        ],
+        dtype="uint8",
+    )
+
+    struct_2d = np.array(
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+        dtype="uint8",
+    )
+
+    if img.ndim == 2:
+        struct = struct_2d
+    elif img.ndim == 3 and img.shape[-1] == 3:  # 2D color image
+        struct = struct_2d
+    elif img.ndim == 3 and img.shape[-1] > 3:  # 3D image
+        struct = struct_3d
     else:
-        raise Exception("Image must be 2D or 3D")
+        raise ValueError("Image must be 2D or 3D.")
 
-    fig, axs = plt.subplots(1, 2, dpi=dpi, **kwargs)
-    axs[0].imshow(img_r_plot, cmap="gray")
-    axs[0].invert_yaxis()
-    axs[1].imshow(img_m_plot, cmap="gray")
-    axs[1].invert_yaxis()
+    # Clean the image
+    img_dilated = ndi.binary_dilation(img, structure=struct, iterations=iterations)
+    img_cleaned = ndi.binary_erosion(
+        img_dilated, structure=struct, iterations=iterations + 1
+    )
 
-    fig.suptitle("Image Comparison and IQA metric values", y=0.92)
-    axs[0].set_title("Reference image")
-    axs[1].set_title("Modified image")
+    # Calculate the distance transform
+    distance = distance_transform_edt(img_cleaned)
+    center = np.unravel_index(np.argmax(distance), distance.shape)
+    center = tuple(int(coord) for coord in center)
+    radius = int(distance[*center])
 
-    num_full_reference = 0
-    num_no_reference = 0
-    for metric in results.keys():
-        if not (metric.endswith("_r") or metric.endswith("_m")):
-            num_full_reference += 1
-        else:
-            num_no_reference += 1
-
-    cols = ((num_full_reference - 1) // 4) + 1  # 4 metrics per column
-    if num_no_reference != 0:
-        cols += 1
-
-    # Split the results into full-reference and no-reference metrics
-    results_fr = {
-        k: v for k, v in results.items() if not (k.endswith("_r") or k.endswith("_m"))
-    }
-    results_nr = {
-        k: v for k, v in results.items() if k.endswith("_r") or k.endswith("_m")
-    }
-
-    # Plot full-reference metrics
-    counter = 0
-    for i in range(cols - 1):
-        x_pos = 1.0 / (cols + 1)
-        lines = 4  # 4 metrics per column
-        x_pos = x_pos * (i + 1)
-        for j in range(lines):
-            if counter < num_full_reference:
-                y_pos = 0.09 - 0.03 * j  # 0.09 is the top of the plot
-                metric, result = list(results_fr.items())[counter]
-                fig.text(
-                    x_pos, y_pos, f"{metric}: {result:.2f}", ha="center", fontsize=8
-                )
-                counter += 1
-    # Plot no-reference metrics
-    x_pos = 1.0 / (cols + 1) * cols  # last column
-    for j in range(num_no_reference):
-        y_pos = 0.09 - 0.03 * j
-        metric, result = list(results_nr.items())[j]
-        fig.text(x_pos, y_pos, f"{metric}: {result:.2f}", ha="center", fontsize=8)
-
-    axs[0].axis("off")
-    axs[1].axis("off")
-
-    # TODO: add check for file_name ending
-    if file_path:
-        file_path = os.path.join(file_path, file_name)
-        plt.savefig(file_path, bbox_inches="tight", pad_inches=0.5)
-        if show_image:
-            plt.show()
+    # Create the region
+    if region_type in {"cubic", "cube", "square"}:
+        region_masked = _to_cubic(img_cleaned, center, radius)
+    elif region_type in {"spherical", "sphere", "circle"}:
+        region_masked = _to_spherical(img_cleaned, center, radius)
+    elif region_type == "full":
+        img_eroded = ndi.binary_erosion(img_cleaned, structure=struct, iterations=2)
+        region_masked = np.ma.array(img_cleaned, mask=~img_eroded, copy=True)
+    elif region_type == "original":
+        region_masked = img
     else:
-        plt.show()
+        region_masked = img_cleaned
+
+    return center, radius, region_masked
+
+
+def _to_spherical(img, center, radius):
+    """Create a sphere by masking an image."""
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
+        if len(center) != 2:
+            raise ValueError("Center must be 2D.")
+        x, y = np.ogrid[
+            -center[0] : img.shape[0] - center[0],
+            -center[1] : img.shape[1] - center[1],
+        ]
+        mask = x**2 + y**2 <= radius**2
+
+        if img.ndim == 3:  # 2D color image
+            mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
+    elif img.ndim == 3 and img.shape[-1] > 3:
+        if len(center) != 3:
+            raise ValueError("Center must be 3D.")
+        x, y, z = np.ogrid[
+            -center[0] : img.shape[0] - center[0],
+            -center[1] : img.shape[1] - center[1],
+            -center[2] : img.shape[2] - center[2],
+        ]
+        mask = x**2 + y**2 + z**2 <= radius**2
+    else:
+        raise ValueError("Center must be 2D or 3D.")
+    region = np.ma.array(img, mask=~mask, copy=True)
+    return region
+
+
+def _to_cubic(img, center, radius):
+    """Create a cube by masking an image."""
+    mask = np.zeros_like(img, dtype=bool)
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
+        if len(center) != 2:
+            raise ValueError("Center must be 2D.")
+        mask[
+            center[0] - radius : center[0] + radius,
+            center[1] - radius : center[1] + radius,
+        ] = 1
+
+        if img.ndim == 3:  # 2D color image
+            mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
+    elif img.ndim == 3 and img.shape[-1] > 3:
+        if len(center) != 3:
+            raise ValueError("Center must be 3D.")
+        mask[
+            center[0] - radius : center[0] + radius,
+            center[1] - radius : center[1] + radius,
+            center[2] - radius : center[2] + radius,
+        ] = 1
+    else:
+        raise ValueError("Image must be 2D or 3D.")
+    region = np.ma.array(img, mask=~mask, copy=True)
+    return region

@@ -9,13 +9,21 @@ Examples
         >>> img = load_data(img_path)
 
         >>> import numpy as np
-        >>> from viqa import normalize_data
+        >>> from viqa import ImageArray, crop_image, normalize_data
         >>> img = np.random.rand(128, 128)
         >>> img.dtype
         dtype('float64')
+        >>> type(img)
+        <class 'numpy.ndarray'>
+        >>> img = ImageArray(img)
+        >>> type(img)
+        <class 'viqa.utils.loading.ImageArray'>
         >>> img = normalize_data(img, data_range_output=(0, 255))
         >>> img.dtype
         dtype('uint8')
+        >>> img = crop_image(img, (0, 64), (0, 64))
+        >>> img.shape
+        (64, 64)
 """
 
 # Authors
@@ -37,7 +45,7 @@ import csv
 import glob
 import os
 import re
-from typing import Tuple, Union
+from typing import Any, Tuple, Union
 from warnings import warn
 
 import nibabel as nib
@@ -47,7 +55,9 @@ from scipy.stats import kurtosis, skew
 from torch import Tensor
 from tqdm.autonotebook import tqdm
 
-from viqa.visualization_utils import visualize_2d, visualize_3d
+from .deprecation import RemovedInFutureVersionWarning
+from .misc import _to_grayscale
+from .visualization import visualize_2d, visualize_3d
 
 
 class ImageArray(np.ndarray):
@@ -105,22 +115,6 @@ class ImageArray(np.ndarray):
         """
         # Input array is an already formed ndarray instance
         obj = np.asarray(input_array).view(cls)
-        # FIXME: Only calculate statistics on method call
-        # Add attributes
-        obj.mean_value = np.mean(input_array)
-        obj.median = np.median(input_array)
-        obj.variance = np.var(input_array)
-        obj.standarddev = np.std(input_array)
-        obj.skewness = skew(input_array, axis=None)
-        obj.kurtosis = kurtosis(input_array, axis=None)
-        if input_array.dtype.kind in ["u", "i"]:
-            obj.histogram = np.histogram(
-                input_array, bins=np.iinfo(input_array.dtype).max
-            )
-        else:
-            obj.histogram = np.histogram(input_array, bins=255)
-        obj.minimum = np.min(input_array)
-        obj.maximum = np.max(input_array)
         return obj
 
     def __array_finalize__(self, obj):
@@ -135,15 +129,102 @@ class ImageArray(np.ndarray):
         if obj is None:
             return
         # Add attributes
-        self.mean_value = getattr(obj, "mean_value", None)
-        self.median = getattr(obj, "median", None)
-        self.variance = getattr(obj, "variance", None)
-        self.standarddev = getattr(obj, "standarddev", None)
-        self.skewness = getattr(obj, "skewness", None)
-        self.kurtosis = getattr(obj, "kurtosis", None)
-        self.histogram = getattr(obj, "histogram", None)
-        self.minimum = getattr(obj, "minimum", None)
-        self.maximum = getattr(obj, "maximum", None)
+        self.mean_value = getattr(
+            obj, "mean_value", "Not set. Run calculate_statistics() first."
+        )
+        self.median = getattr(
+            obj, "median", "Not set. Run calculate_statistics() first."
+        )
+        self.variance = getattr(
+            obj, "variance", "Not set. Run calculate_statistics() first."
+        )
+        self.standarddev = getattr(
+            obj, "standarddev", "Not set. Run calculate_statistics() first."
+        )
+        self.skewness = getattr(
+            obj, "skewness", "Not set. Run calculate_statistics() first."
+        )
+        self.kurtosis = getattr(
+            obj, "kurtosis", "Not set. Run calculate_statistics() first."
+        )
+        self.histogram = getattr(
+            obj, "histogram", "Not set. Run calculate_statistics() first."
+        )
+        self.minimum = getattr(
+            obj, "minimum", "Not set. Run calculate_statistics() first."
+        )
+        self.maximum = getattr(
+            obj, "maximum", "Not set. Run calculate_statistics() first."
+        )
+
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        """Make sure that an ImageArray is returned when a ufunc operation is performed
+        on the ImageArray class.
+        """
+        # Adapted code by @Thawn from
+        # https://stackoverflow.com/questions/51520630/subclassing-numpy-array-propagate-attributes
+
+        # convert inputs and outputs of class ImageArray to np.ndarray to prevent
+        # infinite recursion
+        args = (
+            (i.view(np.ndarray) if isinstance(i, ImageArray) else i) for i in inputs
+        )
+        outputs = kwargs.pop("out", [])
+        if outputs:
+            kwargs["out"] = tuple(
+                (o.view(np.ndarray) if isinstance(o, ImageArray) else o)
+                for o in outputs
+            )
+        else:
+            outputs = (None,) * ufunc.nout
+        # call numpys implementation of __array_ufunc__
+        results = super().__array_ufunc__(ufunc, method, *args, **kwargs)
+        if results is NotImplemented:
+            return NotImplemented
+        if method == "at":
+            # method == 'at' means that the operation is performed in-place. Therefore,
+            # we are done.
+            return
+        # now we need to make sure that outputs that where specified with the 'out'
+        # argument are handled correctly:
+        if ufunc.nout == 1:
+            results = (results,)
+        results = tuple(
+            (result.view(ImageArray) if output is None else output)
+            for result, output in zip(results, outputs, strict=False)
+        )
+        return results[0] if len(results) == 1 else results
+
+    def calculate_statistics(self):
+        """Calculate statistics of the image array.
+
+        .. admonition:: The following statistics are calculated:
+
+            * mean
+            * median
+            * variance
+            * standard deviation
+            * skewness
+            * kurtosis
+            * histogram
+            * minimum
+            * maximum
+        """
+        # Add attributes
+        self.mean_value = np.mean(self)
+        self.median = np.median(self.view())
+        self.variance = np.var(self.view())
+        self.standarddev = np.std(self.view())
+        self.skewness = skew(self.view(), axis=None)
+        self.kurtosis = kurtosis(self.view(), axis=None)
+        if self.view().dtype.kind in ["u", "i"]:
+            self.view().histogram = np.histogram(
+                self.view(), bins=np.iinfo(self.view().dtype).max
+            )
+        else:
+            self.histogram = np.histogram(self.view(), bins=255)
+        self.minimum = np.min(self.view())
+        self.maximum = np.max(self.view())
 
     def describe(
         self,
@@ -221,7 +302,7 @@ class ImageArray(np.ndarray):
             Path to the directory where the visualization should be saved
         **kwargs : dict
             Additional keyword arguments for visualization. See
-            :py:func:`.viqa.visualization_utils.visualize_3d`.
+            :py:func:`.viqa.utils.visualize_3d`.
 
         Raises
         ------
@@ -327,7 +408,7 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     Examples
     --------
-    >>> from viqa.load_utils import load_mhd  # doctest: +SKIP
+    >>> from viqa.utils import load_mhd  # doctest: +SKIP
     >>> img = load_raw("path/to/image.mhd")  # doctest: +SKIP
     """
     file_path = os.path.join(file_dir, file_name)  # Complete file path
@@ -347,22 +428,20 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     )  # Get data file path from header
 
     # Extract dimension
-    # Change DimSize to type int
-    file_header.update(
-        {"DimSize": [int(val) for val in file_header["DimSize"].split()]}  # type: ignore # TODO
-    )
-    dim_size = file_header["DimSize"]  # Get DimSize from header
+    # Get DimSize from header and change to type int
+    dim_size = [int(val) for val in file_header["DimSize"].split()]
 
     # Check bit depth
     bit_depth = file_header["ElementType"]  # Get ElementType from header
 
+    data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
     if bit_depth == "MET_USHORT":
         data_type = np.ushort  # Set data type to unsigned short
     elif bit_depth == "MET_UCHAR":
         data_type = np.ubyte  # Set data type to unsigned byte
     elif bit_depth == "MET_FLOAT":
-        data_type = np.float32  # type: ignore # Set data type to float32 # TODO
+        data_type = np.float32  # Set data type to float32
     else:
         raise ValueError(
             "Bit depth not supported"
@@ -397,7 +476,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     Examples
     --------
-    >>> from viqa.load_utils import load_raw  # doctest: +SKIP
+    >>> from viqa.utils import load_raw  # doctest: +SKIP
     >>> img = load_raw("path/to/image.raw")  # doctest: +SKIP
     """
     # Create file path components
@@ -462,7 +541,7 @@ def load_nifti(file_path: str | os.PathLike) -> np.ndarray:
 
     Examples
     --------
-    >>> from viqa.load_utils import load_nifti  # doctest: +SKIP
+    >>> from viqa.utils import load_nifti  # doctest: +SKIP
     >>> img = load_nifti("path/to/image.nii.gz")  # doctest: +SKIP
 
     Notes
@@ -513,18 +592,14 @@ def load_data(
         Numpy array, ImageArray, tensor or file path
     data_range : int, optional, default=None
         Maximum value of the returned data. Passed to
-        :py:func:`viqa.load_utils.normalize_data`.
+        :py:func:`viqa.utils.normalize_data`.
     normalize : bool, default False
         If True, data is normalized to (0, ``data_range``) based on min and max of img.
     batch : bool, default False
         If True, img is a file path and all files in the directory are loaded.
 
-        .. caution::
-            Currently not tested.
-
-        .. todo::
-            Deprecate batch loading as this has no use with the current implementation
-            as BatchMetrics class.
+        .. deprecated:: 4.0.0
+            This will be deprecated in version 4.0.0.
 
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
@@ -533,8 +608,8 @@ def load_data(
     Returns
     -------
     img_arr : ImageArray or list[ImageArray]
-        :py:class:`viqa.load_utils.ImageArray` or list of
-        :py:class:`viqa.load_utils.ImageArray` containing the data
+        :py:class:`viqa.utils.ImageArray` or list of
+        :py:class:`viqa.utils.ImageArray` containing the data
 
     Raises
     ------
@@ -550,7 +625,7 @@ def load_data(
 
     Warnings
     --------
-    ``batch`` is currently not tested.
+    ``batch`` will be deprecated in version 4.0.0.
 
     Examples
     --------
@@ -566,6 +641,11 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
+    if batch:
+        raise RemovedInFutureVersionWarning(
+            "Batch loading is deprecated and will be removed in ViQa 4.0.x."
+        )
+
     # exceptions and warning for data_range and normalize
     if normalize and data_range is None:
         raise ValueError("Parameter data_range must be set if normalize is True.")
@@ -651,29 +731,31 @@ def normalize_data(
     data_range_input: Union[Tuple[int, int], None] = None,
     automatic_data_range: bool = True,
 ) -> np.ndarray | ImageArray:
-    """Normalize a numpy array to a given data range.
+    """Normalize an image to a given data range.
 
     Parameters
     ----------
     img : np.ndarray or ImageArray
-        Input image
+        Input image.
     data_range_output : Tuple[int]
-        Data range of the returned data
+        Data range of the returned data.
     data_range_input : Tuple[int], default=None
-        Data range of the input data
+        Data range of the input data. Needs to be set if ``automatic_data_range`` is
+        False.
     automatic_data_range : bool, default=True
-        Automatically determine the input data range
+        Automatically determine the input data range.
 
     Returns
     -------
     img_arr : np.ndarray or ImageArray
-        Input image normalized to data_range
+        Input image normalized to data_range.
 
     Raises
     ------
     ValueError
-        If data type is not supported. \n
+        If data type is not supported.
         If ``data_range`` is not supported.
+        If ``automatic_data_range`` is False and ``data_range_input`` is not set.
 
     Warns
     -----
@@ -698,11 +780,12 @@ def normalize_data(
     >>> np.max(img_norm)
     255
     """
+    info: Union[np.iinfo, np.finfo]
     # Check data type
     if np.issubdtype(img.dtype, np.integer):  # If data type is integer
-        info = np.iinfo(img.dtype)  # type: ignore[assignment]
+        info = np.iinfo(img.dtype)
     elif np.issubdtype(img.dtype, np.floating):  # If data type is float
-        info = np.finfo(img.dtype)  # type: ignore[assignment]
+        info = np.finfo(img.dtype)
     else:
         raise ValueError("Data type not supported")
 
@@ -713,8 +796,13 @@ def normalize_data(
             img_min = np.min(img)  # Get minimum value of numpy array
             img_max = np.max(img)  # Get maximum value of numpy array
         else:
-            img_min = data_range_input[0]  # type: ignore # TODO
-            img_max = data_range_input[1]  # type: ignore # TODO
+            if data_range_input is None:
+                raise ValueError(
+                    "If automatic_data_range is False, data_range_input must be set."
+                )
+            else:
+                img_min = data_range_input[0]
+                img_max = data_range_input[1]
         # Normalize numpy array
         img = (
             (img - img_min)
@@ -760,7 +848,7 @@ def crop_image(
         Range for the x-axis
     y : Tuple[int, int]
         Range for the y-axis
-    z : Tuple[int, int]
+    z : Tuple[int, int] or None
         Range for the z-axis
 
     Returns
@@ -787,3 +875,69 @@ def crop_image(
     else:
         raise ValueError("Image must be 2D or 3D.")
     return img_crop
+
+
+def _check_imgs(
+    img_r: np.ndarray | Tensor | str | os.PathLike,
+    img_m: np.ndarray | Tensor | str | os.PathLike,
+    **kwargs,
+) -> Tuple[list | np.ndarray, list | np.ndarray]:
+    """Check if two images are of the same type and shape."""
+    chromatic = kwargs.pop("chromatic", False)
+    # load images
+    img_r_loaded = load_data(img_r, **kwargs)
+    img_m_loaded = load_data(img_m, **kwargs)
+
+    if isinstance(img_r_loaded, np.ndarray) and isinstance(
+        img_m_loaded, np.ndarray
+    ):  # If both images are numpy arrays
+        # Check if images are of the same type and shape
+        if img_r_loaded.dtype != img_m_loaded.dtype:  # If image types do not match
+            raise ValueError("Image types do not match")
+        if img_r_loaded.shape != img_m_loaded.shape:  # If image shapes do not match
+            raise ValueError("Image shapes do not match")
+    elif type(img_r_loaded) is not type(img_m_loaded):  # If image types do not match
+        raise ValueError(
+            "Image types do not match. img_r is of type {type(img_r_loaded)} and img_m "
+            "is of type {type("
+            "img_m_loaded)}"
+        )
+    elif isinstance(img_r, list) and isinstance(
+        img_m, list
+    ):  # If both images are lists or else
+        if len(img_r_loaded) != len(img_m_loaded):  # If number of images do not match
+            raise ValueError(
+                "Number of images do not match. img_r has {len(img_r_loaded)} images "
+                "and img_m has {len(img_m_loaded)} images"
+            )
+        for img_a, img_b in zip(
+            img_r_loaded, img_m_loaded, strict=False
+        ):  # For each image in the list
+            if img_a.dtype != img_b.dtype:  # If image types do not match
+                raise ValueError("Image types do not match")
+            if img_a.dtype != img_b.shape:  # If image shapes do not match
+                raise ValueError("Image shapes do not match")
+    else:
+        raise ValueError("Image format not supported.")
+
+    if not isinstance(img_r_loaded, list):
+        # Check if images are chromatic
+        if chromatic is False and img_r_loaded.shape[-1] == 3:
+            # Convert to grayscale as backup if falsely claimed to be non-chromatic
+            warn("Images are chromatic. Converting to grayscale.")
+            img_r_loaded = _to_grayscale(img_r_loaded)
+            img_m_loaded = _to_grayscale(img_m_loaded)
+        elif chromatic is True and img_r_loaded.shape[-1] != 3:
+            raise ValueError("Images are not chromatic.")
+
+    return img_r_loaded, img_m_loaded
+
+
+def _resize_image(img_r, img_m, scaling_order=1):
+    # Resize image if shapes unequal
+    if img_r.shape != img_m.shape:
+        img_m = ski.transform.resize(
+            img_m, img_r.shape, preserve_range=True, order=scaling_order
+        )
+        img_m = img_m.astype(img_r.dtype)
+    return img_m

@@ -1,4 +1,16 @@
-"""Module for visualization functions."""
+"""Module for visualization functions.
+
+Examples
+--------
+    .. doctest-skip::
+
+    >>> import numpy as np
+    >>> from viqa.utils.visualization import visualize_2d, visualize_3d
+    >>> img = np.random.rand(100, 100)
+    >>> visualize_2d(img)
+    >>> img = np.random.rand(100, 100, 100)
+    >>> visualize_3d(img, (50, 50, 50))
+"""
 
 # Authors
 # -------
@@ -19,14 +31,23 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 
+from viqa.utils._module import try_import
+
+widgets, has_ipywidgets = try_import("ipywidgets")
+
+FIGSIZE_CNR_2D = (10, 5.5)
+FIGSIZE_CNR_3D = (10, 8)
+FIGSIZE_SNR_2D = (7, 7)
+FIGSIZE_SNR_3D = (10, 4)
+
 
 def _visualize_cnr_2d(
-    img, signal_center, background_center, radius, export_path=None, **kwargs
+    img, signal_center, background_center, radius, export_path=None, show=True, **kwargs
 ):
-    figsize = kwargs.pop("figsize", (6, 12))
+    figsize = kwargs.pop("figsize", FIGSIZE_CNR_2D)
     dpi = kwargs.pop("dpi", 300)
 
-    fig, axs = plt.subplots(2, 1, figsize=figsize, dpi=dpi)
+    fig, axs = plt.subplots(1, 2, figsize=figsize, dpi=dpi)
     fig.suptitle("Regions for CNR Calculation", y=0.92)
     axs[0].imshow(img, cmap="gray")
     axs[0].set_title("Background")
@@ -41,7 +62,7 @@ def _visualize_cnr_2d(
         radius * 2,
         radius * 2,
         linewidth=1,
-        edgecolor="r",
+        edgecolor="#ca0020",
         facecolor="none",
     )
     axs[0].add_patch(rect_1)
@@ -59,19 +80,20 @@ def _visualize_cnr_2d(
         radius * 2,
         radius * 2,
         linewidth=1,
-        edgecolor="b",
+        edgecolor="#0571b0",
         facecolor="none",
     )
     axs[1].add_patch(rect_1)
-    plt.show()
+    if show:
+        plt.show()
     if export_path:
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
 def _visualize_cnr_3d(
-    img, signal_center, background_center, radius, export_path=None, **kwargs
+    img, signal_center, background_center, radius, export_path=None, show=True, **kwargs
 ):
-    figsize = kwargs.pop("figsize", (14, 10))
+    figsize = kwargs.pop("figsize", FIGSIZE_CNR_3D)
     dpi = kwargs.pop("dpi", 300)
 
     fig, axs = plt.subplots(2, 3, figsize=figsize, dpi=dpi, **kwargs)
@@ -199,13 +221,16 @@ def _visualize_cnr_3d(
     axs[1][2].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[1][2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
     axs[1][2].add_patch(rect_3)
-    plt.show()
+    if show:
+        plt.show()
     if export_path:
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_snr_2d(img, signal_center, radius, export_path=None, **kwargs):
-    figsize = kwargs.pop("figsize", (6, 6))
+def _visualize_snr_2d(
+    img, signal_center, radius, export_path=None, show=True, **kwargs
+):
+    figsize = kwargs.pop("figsize", FIGSIZE_SNR_2D)
     dpi = kwargs.pop("dpi", 300)
 
     fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
@@ -223,17 +248,20 @@ def _visualize_snr_2d(img, signal_center, radius, export_path=None, **kwargs):
         radius * 2,
         radius * 2,
         linewidth=1,
-        edgecolor="b",
+        edgecolor="#0571b0",
         facecolor="none",
     )
     ax.add_patch(rect_1)
-    plt.show()
+    if show:
+        plt.show()
     if export_path:
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
 
 
-def _visualize_snr_3d(img, signal_center, radius, export_path=None, **kwargs):
-    figsize = kwargs.pop("figsize", (14, 6))
+def _visualize_snr_3d(
+    img, signal_center, radius, export_path=None, show=True, **kwargs
+):
+    figsize = kwargs.pop("figsize", FIGSIZE_SNR_3D)
     dpi = kwargs.pop("dpi", 300)
 
     fig, axs = plt.subplots(1, 3, figsize=figsize, dpi=dpi)
@@ -298,9 +326,29 @@ def _visualize_snr_3d(img, signal_center, radius, export_path=None, **kwargs):
     axs[2].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
     axs[2].add_patch(rect_3)
-    plt.show()
+    if show:
+        plt.show()
     if export_path:
         plt.savefig(export_path, bbox_inches="tight", pad_inches=0.5)
+
+
+def _create_slider_widget(**kwargs):
+    if not has_ipywidgets:
+        raise ImportError(
+            "ipywidgets is not installed. Please install it to use " "this function."
+        )
+
+    min_val = kwargs.pop("min", 0)
+    step = kwargs.pop("step", 1)
+    continuous_update = kwargs.pop("continuous_update", False)
+
+    slider = widgets.IntSlider(
+        min=min_val,
+        step=step,
+        continuous_update=continuous_update,
+        **kwargs,
+    )
+    return slider
 
 
 def visualize_2d(img, export_path=None, **kwargs):

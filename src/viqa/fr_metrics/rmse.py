@@ -58,18 +58,20 @@ class RMSE(FullReferenceMetricsInterface):
     ----------
     score_val : float
         RMSE score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for RMSE calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Can be omitted if ``normalize``
-        is False. Passed to :py:func:`viqa.load_utils.load_data`.
+        is False. Passed to :py:func:`viqa.utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -82,7 +84,7 @@ class RMSE(FullReferenceMetricsInterface):
     def __init__(self, data_range=None, normalize=False, **kwargs) -> None:
         """Construct method."""
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
-        if self._parameters["chromatic"]:
+        if self.parameters["chromatic"]:
             self._name = "RMSEc"
         else:
             self._name = "RMSE"
@@ -102,7 +104,7 @@ class RMSE(FullReferenceMetricsInterface):
         score_val : float
             RMSE score value.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         # Calculate score
         score_val = np.sqrt(mean_squared_error(img_r, img_m))

@@ -58,19 +58,21 @@ class PSNR(FullReferenceMetricsInterface):
     ----------
     score_val : float
         PSNR score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for PSNR calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the PSNR calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -95,7 +97,7 @@ class PSNR(FullReferenceMetricsInterface):
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
-        if self._parameters["chromatic"]:
+        if self.parameters["chromatic"]:
             self._name = "PSNRc"
         else:
             self._name = "PSNR"
@@ -115,13 +117,13 @@ class PSNR(FullReferenceMetricsInterface):
         score_val : float
             PSNR score value.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
         # Calculate score
         if np.array_equal(img_r, img_m):
             score_val = np.inf  # PSNR of identical images is infinity
         else:
             score_val = peak_signal_noise_ratio(
-                img_r, img_m, data_range=self._parameters["data_range"]
+                img_r, img_m, data_range=self.parameters["data_range"]
             )
         self.score_val = score_val
         return score_val

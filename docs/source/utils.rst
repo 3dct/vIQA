@@ -7,7 +7,7 @@ Utilities modules
 
    utils/ImageArray
 
-.. currentmodule:: viqa.load_utils
+.. currentmodule:: viqa.utils
 
 .. autosummary::
 
@@ -22,22 +22,11 @@ Utilities modules
     load_nifti
     normalize_data
     crop_image
-
-.. currentmodule:: viqa.utils
-
-.. autosummary::
-   :toctree: generated
-
     correlate_convolve_abs
     gabor_convolve
     export_results
     export_metadata
     export_image
-
-.. currentmodule:: viqa.visualization_utils
-
-.. autosummary::
-   :toctree: generated
-
+    find_largest_region
     visualize_2d
     visualize_3d

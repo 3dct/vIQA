@@ -1,4 +1,4 @@
-"""Submodule for full-reference image quality assessment metrics."""
+"""Subpackage for full-reference image quality assessment metrics."""
 
 __all__ = ["FSIM", "GSM", "MAD", "MSSSIM", "PSNR", "UQI", "RMSE", "SSIM", "VIFp", "VSI"]
 

@@ -11,16 +11,16 @@ class TestInit:
     def test_init_with_default_parameters(self):
         snr = viqa.SNR()
         assert snr.score_val is None, 'Score value should be None'
-        assert snr._parameters['data_range'] == 255, 'Data range should be 255'
-        assert snr._parameters['normalize'] is False, 'Normalize should be False'
-        assert snr._parameters['chromatic'] is False, 'Chromatic should be False'
+        assert snr.parameters['data_range'] == 255, 'Data range should be 255'
+        assert snr.parameters['normalize'] is False, 'Normalize should be False'
+        assert snr.parameters['chromatic'] is False, 'Chromatic should be False'
 
     def test_init_with_custom_parameters(self):
         snr = viqa.SNR(data_range=1, normalize=True, chromatic=True)
         assert snr.score_val is None, 'Score value should be None'
-        assert snr._parameters['data_range'] == 1, 'Data range should be 1'
-        assert snr._parameters['normalize'] is True, 'Normalize should be True'
-        assert snr._parameters['chromatic'] is True, 'Chromatic should be True'
+        assert snr.parameters['data_range'] == 1, 'Data range should be 1'
+        assert snr.parameters['normalize'] is True, 'Normalize should be True'
+        assert snr.parameters['chromatic'] is True, 'Chromatic should be True'
 
 
 class TestScoring2D:

@@ -72,20 +72,22 @@ class UQI(FullReferenceMetricsInterface):
     ----------
     score_val : float or None
         Score value of the UQI metric.
+    parameters : dict
+        Dictionary containing the parameters for UQI calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the UQI calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.utils.load_data` and
         :py:func:`viqa.fr_metrics.ssim.structural_similarity`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -129,9 +131,9 @@ class UQI(FullReferenceMetricsInterface):
 
         Parameters
         ----------
-        img_r : np.ndarray
+        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Reference image to calculate score against.
-        img_m : np.ndarray
+        img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Modified image to calculate score of.
         **kwargs : optional
             Additional parameters for the UQI calculation. The keyword arguments are
@@ -147,12 +149,12 @@ class UQI(FullReferenceMetricsInterface):
         In the original implementation `win_size` is set to 8, here it is set to 7 by
         default, but can be changed to other odd values.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         score_val = structural_similarity(
             img_r,
             img_m,
-            data_range=self._parameters["data_range"],
+            data_range=self.parameters["data_range"],
             k_1=0,
             k_2=0,
             alpha=1,

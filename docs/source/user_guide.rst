@@ -19,7 +19,7 @@ The metrics are implemented to calculate the scores for an 8-bit data range (0-2
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
 data range should be used for all metrics. The data range can be changed by setting the parameter ``data_range`` for each
 metric. This parameter primarily affects the loading behaviour of the class instances when not using the
-:py:func:`~viqa.load_utils.load_data` function directly as described further below, but for some metrics setting the data range is
+:py:func:`~viqa.utils.load_data` function directly as described further below, but for some metrics setting the data range is
 necessary to calculate the score (e.g. PSNR).
 
 Examples
@@ -101,7 +101,7 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 
 .. tip::
 
-    It is recommended to load the images directly with the :py:func:`~viqa.load_utils.load_data` function first and then pass the image
+    It is recommended to load the images directly with the :py:func:`~viqa.utils.load_data` function first and then pass the image
     arrays to the metrics functions. You can also pass the image paths directly to the metrics functions. In this case,
     the images will be loaded with the given parameters. This workflow is only recommended if you want to calculate a
     single metric.

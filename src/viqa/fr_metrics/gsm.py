@@ -70,20 +70,22 @@ class GSM(FullReferenceMetricsInterface):
     ----------
     score_val : float
         GSM score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for GSM calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the GSM calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.utils.load_data` and
         :py:func:`viqa.fr_metrics.gsm.gradient_similarity`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.load_utils.load_data`.
+        :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -187,7 +189,7 @@ class GSM(FullReferenceMetricsInterface):
         with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the
         Kernel `n` and :math:`\\pmb{X}` denoting an image block.
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3:
             if (
@@ -199,21 +201,21 @@ class GSM(FullReferenceMetricsInterface):
                         score_val = gradient_similarity(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         score_val = gradient_similarity(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         score_val = gradient_similarity(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case _:
@@ -230,7 +232,7 @@ class GSM(FullReferenceMetricsInterface):
                 score_val = gradient_similarity_3d(
                     img_r,
                     img_m,
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     dim=dim,
                     **kwargs,
                 )
@@ -245,7 +247,7 @@ class GSM(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate GSM for 2D images
             score_val = gradient_similarity(
-                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")

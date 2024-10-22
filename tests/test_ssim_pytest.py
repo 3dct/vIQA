@@ -11,16 +11,16 @@ class TestInit:
     def test_init_with_default_parameters(self):
         ssim = viqa.SSIM()
         assert ssim.score_val is None, 'Score value should be None'
-        assert ssim._parameters['data_range'] == 255, 'Data range should be 255'
-        assert ssim._parameters['normalize'] is False, 'Normalize should be False'
-        assert ssim._parameters['chromatic'] is False, 'Chromatic should be False'
+        assert ssim.parameters['data_range'] == 255, 'Data range should be 255'
+        assert ssim.parameters['normalize'] is False, 'Normalize should be False'
+        assert ssim.parameters['chromatic'] is False, 'Chromatic should be False'
 
     def test_init_with_custom_parameters(self):
         ssim = viqa.SSIM(data_range=1, normalize=True, chromatic=True)
         assert ssim.score_val is None, 'Score value should be None'
-        assert ssim._parameters['data_range'] == 1, 'Data range should be 1'
-        assert ssim._parameters['normalize'] is True, 'Normalize should be True'
-        assert ssim._parameters['chromatic'] is True, 'Chromatic should be True'
+        assert ssim.parameters['data_range'] == 1, 'Data range should be 1'
+        assert ssim.parameters['normalize'] is True, 'Normalize should be True'
+        assert ssim.parameters['chromatic'] is True, 'Chromatic should be True'
 
     def test_init_without_data_range(self):
         with pytest.raises(ValueError, match=re.escape('Parameter data_range must be set.')):

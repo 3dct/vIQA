@@ -1,4 +1,4 @@
-"""Submodule for no-reference quality metrics."""
+"""Subpackage for no-reference quality metrics."""
 
 __all__ = ["CNR", "SNR", "QMeasure"]
 

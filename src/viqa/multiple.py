@@ -54,8 +54,13 @@ from warnings import warn
 from tqdm.autonotebook import tqdm
 
 from viqa._metrics import Metric
-from viqa.load_utils import load_data
-from viqa.utils import _check_imgs, _resize_image, export_image, export_metadata
+from viqa.utils import (
+    _check_imgs,
+    _resize_image,
+    export_image,
+    export_metadata,
+    load_data,
+)
 
 
 class _MultipleInterface(ABC):
@@ -198,7 +203,7 @@ class BatchMetrics(_MultipleInterface):
         Parameters
         ----------
         kwargs : dict
-            Additional parameters. Passed to :py:func:`viqa.load_utils.load_data`.
+            Additional parameters. Passed to :py:func:`viqa.utils.load_data`.
 
         Other Parameters
         ----------------
@@ -430,6 +435,7 @@ class MultipleMetrics(_MultipleInterface):
     """
 
     def __init__(self, metrics, metrics_parameters):
+        """Construct method."""
         super().__init__(metrics, metrics_parameters)
 
     def calculate(self, img_r, img_m, **kwargs):
@@ -442,7 +448,7 @@ class MultipleMetrics(_MultipleInterface):
         img_m : str or np.ndarray
             Path to the modified image or the image itself.
         kwargs : dict
-            Additional parameters. Passed to :py:func:`viqa.load_utils.load_data`.
+            Additional parameters. Passed to :py:func:`viqa.utils.load_data`.
 
         Other Parameters
         ----------------

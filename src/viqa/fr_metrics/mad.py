@@ -44,7 +44,6 @@ from scipy.ndimage import convolve
 from tqdm.autonotebook import trange
 
 from viqa._metrics import FullReferenceMetricsInterface
-from viqa.deprecation import RemovedInNextVersionWarning
 from viqa.fr_metrics.stat_utils import statisticscalc
 from viqa.utils import (
     _extract_blocks,
@@ -68,20 +67,22 @@ class MAD(FullReferenceMetricsInterface):
     ----------
     score_val : float
         MAD score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for MAD calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, optional
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the MAD calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and
+        :py:func:`viqa.utils.load_data` and
         :py:func:`viqa.fr_metrics.mad.most_apparent_distortion`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`viqa.load_utils.load_data`.
+        :py:func:`viqa.utils.load_data`.
 
 
     Other Parameters
@@ -174,7 +175,7 @@ class MAD(FullReferenceMetricsInterface):
         ``im_slice`` is given, the MAD is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:
@@ -187,21 +188,21 @@ class MAD(FullReferenceMetricsInterface):
                         score_val = most_apparent_distortion(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         score_val = most_apparent_distortion(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         score_val = most_apparent_distortion(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
-                            data_range=self._parameters["data_range"],
+                            data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case _:
@@ -218,7 +219,7 @@ class MAD(FullReferenceMetricsInterface):
                 score_val = most_apparent_distortion_3d(
                     img_r,
                     img_m,
-                    data_range=self._parameters["data_range"],
+                    data_range=self.parameters["data_range"],
                     dim=dim,
                     **kwargs,
                 )
@@ -237,7 +238,7 @@ class MAD(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
             score_val = most_apparent_distortion(
-                img_r, img_m, data_range=self._parameters["data_range"], **kwargs
+                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")
@@ -908,122 +909,3 @@ def _contrast_sensitivity_function(m: int, n: int, nfreq: int, **kwargs) -> np.n
     )
     csf[cond] = 0.9809
     return csf
-
-
-def _min_std(image: np.ndarray, block_size: int, stride: int) -> np.ndarray:
-    """Calculate the minimum standard deviation of blocks of a given image.
-
-    .. deprecated::
-        Will be removed in 2.0.0. Use :py:func:`viqa.fr_metrics.statisticscalc.minstd`
-        instead.
-
-    """
-    warn(
-        "This function will be deprecated in 2.0.0. "
-        "Use viqa.fr_metrics.statisticscalc.minstd instead.",
-        RemovedInNextVersionWarning,
-    )
-
-    # Preallocate arrays
-    tmp = np.empty(image.shape)
-    stdout = np.empty(image.shape)
-    # For each area of size stride x stride
-    for i in range(0, M - (block_size - 1), stride):
-        for j in range(0, N - (block_size - 1), stride):
-            # Calculate mean for each block
-            mean = 0.0
-            for u in range(i, i + (block_size // 2)):
-                for v in range(j, j + (block_size // 2)):
-                    mean += image[u, v]
-            mean /= 64
-
-            # Calculate standard deviation for each block
-            stdev = 0.0
-            for u in range(i, i + (block_size // 2)):
-                for v in range(j, j + (block_size // 2)):
-                    stdev += (image[u, v] - mean) ** 2
-            stdev = np.sqrt(stdev / 63)
-
-            # Assign values to temp array and output array
-            for u in range(i, i + stride):
-                for v in range(j, j + stride):
-                    tmp[u, v] = stdev
-                    stdout[u, v] = stdev  # preassign
-
-    # Calculate minimum standard deviation for each area
-    for i in range(0, M - (block_size - 1), stride):
-        for j in range(0, N - (block_size - 1), stride):
-            # Look for minimum standard deviation in blocks of size stride x stride
-            val = tmp[i, j]
-            for u in range(i, i + (block_size // 2), stride + 1):
-                for v in range(j, j + (block_size // 2), stride + 1):
-                    if tmp[u, v] < val:
-                        val = tmp[u, v]
-            # Assign minimum standard deviation to output array
-            for u in range(i, i + (block_size // 2)):
-                for v in range(j, j + (block_size // 2)):
-                    stdout[u, v] = val
-    return stdout
-
-
-def _get_statistics(image: np.ndarray, block_size: int, stride: int) -> tuple:
-    """Calculate the statistics of blocks of a given image.
-
-    .. deprecated::
-        Will be removed in 2.0.0. Use
-        :py:func:`viqa.fr_metrics.statisticscalc.getstatistics` instead.
-
-    """
-    warn(
-        "This function will be deprecated in 2.0.0. "
-        "Use viqa.fr_metrics.statisticscalc.getstatistics instead.",
-        RemovedInNextVersionWarning,
-    )
-
-    # Preallocate arrays
-    stdout = np.empty(image.shape)
-    skwout = np.empty(image.shape)
-    krtout = np.empty(image.shape)
-    # For each area of size stride x stride
-    for i in range(0, M - (block_size - 1), stride):
-        for j in range(0, N - (block_size - 1), stride):
-            # Calculate mean for each block
-            mean = 0.0
-            for u in range(i, i + block_size):
-                for v in range(j, j + block_size):
-                    mean += image[u, v]
-            mean /= block_size**2
-
-            # Calculate standard deviation, skewness and kurtosis for each block
-            std = 0.0
-            skw = 0.0
-            krt = 0.0
-            for u in range(i, i + block_size):
-                for v in range(j, j + block_size):
-                    # Calculate numerators
-                    tmp = image[u, v] - mean
-                    std += tmp**2
-                    skw += tmp**3
-                    krt += tmp**4
-            stmp = np.sqrt(
-                std / (block_size**2)
-            )  # temporary variable for denominator calculation
-            stdev = np.sqrt(
-                std / (block_size**2 - 1)
-            )  # no denominator needed for standard deviation
-
-            # Avoid division by zero
-            if stmp != 0:  # if denominator is not zero
-                # Calculate skewness and kurtosis by calculating the denominators
-                skw = skw / (block_size**2 * stmp**3)
-                krt = krt / (block_size**2 * stmp**4)
-                # krt -= 3  # original kurtosis definition not used by original code
-            else:
-                skw = 0
-                krt = 0
-
-            # Assign values to output arrays
-            stdout[i : i + stride, j : j + stride] = stdev
-            skwout[i : i + stride, j : j + stride] = skw
-            krtout[i : i + stride, j : j + stride] = krt
-    return stdout, skwout, krtout

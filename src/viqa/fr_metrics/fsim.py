@@ -44,19 +44,21 @@ class FSIM(FullReferenceMetricsInterface):
     ----------
     score_val : float
         FSIM score value of the last calculation.
+    parameters : dict
+        Dictionary containing the parameters for FSIM calculation.
 
     Parameters
     ----------
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the FSIM calculation. Passed to
-        :py:func:`viqa.load_utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
-        :py:func:`.viqa.load_utils.load_data`.
+        :py:func:`.viqa.utils.load_data`.
 
     Other Parameters
     ----------------
@@ -92,7 +94,7 @@ class FSIM(FullReferenceMetricsInterface):
         if data_range is None:
             raise ValueError("Parameter data_range must be set.")
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
-        if self._parameters["chromatic"]:
+        if self.parameters["chromatic"]:
             self._name = "FSIMc"
         else:
             self._name = "FSIM"
@@ -182,7 +184,7 @@ class FSIM(FullReferenceMetricsInterface):
         ----------
         .. [3] https://piq.readthedocs.io/en/latest/functions.html#piq.fsim
         """
-        img_r, img_m = super().score(img_r, img_m)
+        img_r, img_m = self.load_images(img_r, img_m)
 
         if img_r.ndim == 3 and img_r.shape[-1] != 3:
             if (
@@ -194,39 +196,39 @@ class FSIM(FullReferenceMetricsInterface):
                         img_r_tensor, img_m_tensor = _check_chromatic(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
-                            self._parameters["chromatic"],
+                            self.parameters["chromatic"],
                         )
                         score_val = fsim(
                             img_r_tensor,
                             img_m_tensor,
-                            data_range=self._parameters["data_range"],
-                            chromatic=self._parameters["chromatic"],
+                            data_range=self.parameters["data_range"],
+                            chromatic=self.parameters["chromatic"],
                             **kwargs,
                         )
                     case 1:
                         img_r_tensor, img_m_tensor = _check_chromatic(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
-                            self._parameters["chromatic"],
+                            self.parameters["chromatic"],
                         )
                         score_val = fsim(
                             img_r_tensor,
                             img_m_tensor,
-                            data_range=self._parameters["data_range"],
-                            chromatic=self._parameters["chromatic"],
+                            data_range=self.parameters["data_range"],
+                            chromatic=self.parameters["chromatic"],
                             **kwargs,
                         )
                     case 2:
                         img_r_tensor, img_m_tensor = _check_chromatic(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
-                            self._parameters["chromatic"],
+                            self.parameters["chromatic"],
                         )
                         score_val = fsim(
                             img_r_tensor,
                             img_m_tensor,
-                            data_range=self._parameters["data_range"],
-                            chromatic=self._parameters["chromatic"],
+                            data_range=self.parameters["data_range"],
+                            chromatic=self.parameters["chromatic"],
                             **kwargs,
                         )
                     case _:
@@ -243,13 +245,13 @@ class FSIM(FullReferenceMetricsInterface):
                 img_r_tensor, img_m_tensor = _check_chromatic(
                     img_r,
                     img_m,
-                    self._parameters["chromatic"],
+                    self.parameters["chromatic"],
                 )
                 score_val = fsim(
                     img_r_tensor,
                     img_m_tensor,
-                    data_range=self._parameters["data_range"],
-                    chromatic=self._parameters["chromatic"],
+                    data_range=self.parameters["data_range"],
+                    chromatic=self.parameters["chromatic"],
                     **kwargs,
                 )
             else:
@@ -265,13 +267,13 @@ class FSIM(FullReferenceMetricsInterface):
             img_r_tensor, img_m_tensor = _check_chromatic(
                 img_r,
                 img_m,
-                self._parameters["chromatic"],
+                self.parameters["chromatic"],
             )
             score_val = fsim(
                 img_r_tensor,
                 img_m_tensor,
-                data_range=self._parameters["data_range"],
-                chromatic=self._parameters["chromatic"],
+                data_range=self.parameters["data_range"],
+                chromatic=self.parameters["chromatic"],
                 **kwargs,
             )
         else:
