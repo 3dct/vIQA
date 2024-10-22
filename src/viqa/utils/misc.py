@@ -337,14 +337,19 @@ def gabor_convolve(
     # compute matrices of same size as im with values ranging from -0.5 to 0.5 (-1.0 to
     # 1.0) for horizontal and vertical
     #   directions each
-    if _is_even(cols):
-        x_range = np.linspace(-cols / 2, (cols - 2) / 2, cols) / (cols / 2)
-    else:
-        x_range = np.linspace(-cols / 2, cols / 2, cols) / (cols / 2)
-    if _is_even(rows):
-        y_range = np.linspace(-rows / 2, (rows - 2) / 2, rows) / (rows / 2)
-    else:
-        y_range = np.linspace(-rows / 2, rows / 2, rows) / (rows / 2)
+    def _get_range(cols_rows):
+        if _is_even(cols_rows):
+            range_ = np.linspace(-cols_rows / 2, (cols_rows - 2) / 2, cols_rows) / (
+                cols_rows / 2
+            )
+        else:
+            range_ = np.linspace(-cols_rows / 2, cols_rows / 2, cols_rows) / (
+                cols_rows / 2
+            )
+        return range_
+
+    x_range = _get_range(cols)
+    y_range = _get_range(rows)
     x, y = np.meshgrid(x_range, y_range)
 
     # filters have radial component (frequency band) and an angular component

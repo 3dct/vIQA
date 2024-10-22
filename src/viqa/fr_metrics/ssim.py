@@ -129,9 +129,9 @@ class SSIM(FullReferenceMetricsInterface):
 
         Parameters
         ----------
-        img_r : np.ndarray
+        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Reference image to calculate score against.
-        img_m : np.ndarray
+        img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Modified image to calculate score of.
         color_weights : np.ndarray, optional
             Weights for the color channels. The array must have the same length as the

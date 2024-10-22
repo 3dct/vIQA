@@ -136,7 +136,7 @@ def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.
         for metric_num, metric in enumerate(metrics):
             txtfile.write(metric.__str__().split("(")[0])
             txtfile.write("\n")
-            [txtfile.write("-") for char in metric.__str__().split("(")[0]]
+            [txtfile.write("-") for _ in metric.__str__().split("(")[0]]
             txtfile.write("\n")
             txtfile.write("data_range: " + str(metric.parameters["data_range"]) + "\n")
             for key, value in metrics_parameters[metric_num].items():

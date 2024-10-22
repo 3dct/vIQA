@@ -58,7 +58,7 @@ from viqa.utils._module import check_interactive_vis_deps, is_ipython, try_impor
 widgets, has_ipywidgets = try_import("ipywidgets")
 display, has_ipython = try_import("IPython.display", "display")
 
-glob_signal_center = None
+glob_signal_center = ()
 glob_radius = None
 
 FIGSIZE_SNR_2D_ = tuple(f"{val}in" for val in FIGSIZE_SNR_2D)
@@ -387,6 +387,7 @@ class SNR(NoReferenceMetricsInterface):
 
         _write_values_to_global(signal_start, radius_start)
 
+        global glob_signal_center, glob_radius
         # Check if background_center and signal_center are the right shape for 2d and 3d
         if len(glob_signal_center) != img.ndim:
             raise ValueError("Signal center has to be in the same dimension as img.")
@@ -430,6 +431,8 @@ class SNR(NoReferenceMetricsInterface):
                 value=signal_start[2],
             )
             slider_signal_center_z.style = {"handle_color": "#2c7bb6"}
+        else:
+            slider_signal_center_z = None
 
         # Update min and max values of sliders dynamically
         def _update_values(change):

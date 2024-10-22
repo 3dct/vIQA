@@ -1,5 +1,5 @@
-<h1 align="center">
-<img src="https://raw.githubusercontent.com/3dct/vIQA/main/branding/logo/Logo_vIQA_wo-text.svg" width="300">
+<h1 style="text-align: center;">
+<img src="https://raw.githubusercontent.com/3dct/vIQA/main/branding/logo/Logo_vIQA_wo-text.svg" width="300" alt="Logo for vIQA: A cube with three slices colored in red, green and blue in one direction and three slices colored in black, gray and white in another direction.">
 
 vIQA &mdash; volumetric Image Quality Assessment
 </h1><br>

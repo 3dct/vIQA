@@ -58,8 +58,8 @@ from viqa.utils._module import check_interactive_vis_deps, is_ipython, try_impor
 widgets, has_ipywidgets = try_import("ipywidgets")
 display, has_ipython = try_import("IPython.display", "display")
 
-glob_signal_center = None
-glob_background_center = None
+glob_signal_center = ()
+glob_background_center = ()
 glob_radius = None
 
 FIGSIZE_CNR_2D_ = tuple(f"{val}in" for val in FIGSIZE_CNR_2D)
@@ -431,6 +431,7 @@ class CNR(NoReferenceMetricsInterface):
 
         _write_values_to_global(signal_start, background_start, radius_start)
 
+        global glob_signal_center, glob_background_center, glob_radius
         # Check if background_center and signal_center are the right shape for 2d and 3d
         if img.ndim != len(glob_signal_center) or img.ndim != len(
             glob_background_center
@@ -750,7 +751,8 @@ def contrast_to_noise_ratio(
     ----------
     .. [1] Desai, N., Singh, A., & Valentino, D. J. (2010). Practical evaluation of
         image quality in computed radiographic (CR) imaging systems. Medical Imaging
-        2010: Physics of Medical Imaging, 7622, 76224Q. https://doi.org/10.1117/12.844640
+        2010: Physics of Medical Imaging, 7622, 76224Q.
+        https://doi.org/10.1117/12.844640
     """
     img = load_data(img, **kwargs)
 

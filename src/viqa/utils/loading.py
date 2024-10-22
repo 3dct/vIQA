@@ -169,7 +169,7 @@ class ImageArray(np.ndarray):
         args = (
             (i.view(np.ndarray) if isinstance(i, ImageArray) else i) for i in inputs
         )
-        outputs = kwargs.pop("out", None)
+        outputs = kwargs.pop("out", [])
         if outputs:
             kwargs["out"] = tuple(
                 (o.view(np.ndarray) if isinstance(o, ImageArray) else o)

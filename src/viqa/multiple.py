@@ -435,6 +435,7 @@ class MultipleMetrics(_MultipleInterface):
     """
 
     def __init__(self, metrics, metrics_parameters):
+        """Construct method."""
         super().__init__(metrics, metrics_parameters)
 
     def calculate(self, img_r, img_m, **kwargs):
