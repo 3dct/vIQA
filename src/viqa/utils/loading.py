@@ -45,7 +45,7 @@ import csv
 import glob
 import os
 import re
-from typing import Tuple, Union
+from typing import Any, Tuple, Union
 from warnings import warn
 
 import nibabel as nib
@@ -428,22 +428,20 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     )  # Get data file path from header
 
     # Extract dimension
-    # Change DimSize to type int
-    file_header.update(
-        {"DimSize": [int(val) for val in file_header["DimSize"].split()]}  # type: ignore # TODO
-    )
-    dim_size = file_header["DimSize"]  # Get DimSize from header
+    # Get DimSize from header and change to type int
+    dim_size = [int(val) for val in file_header["DimSize"].split()]
 
     # Check bit depth
     bit_depth = file_header["ElementType"]  # Get ElementType from header
 
+    data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
     if bit_depth == "MET_USHORT":
         data_type = np.ushort  # Set data type to unsigned short
     elif bit_depth == "MET_UCHAR":
         data_type = np.ubyte  # Set data type to unsigned byte
     elif bit_depth == "MET_FLOAT":
-        data_type = np.float32  # type: ignore # Set data type to float32 # TODO
+        data_type = np.float32  # Set data type to float32
     else:
         raise ValueError(
             "Bit depth not supported"
@@ -733,29 +731,31 @@ def normalize_data(
     data_range_input: Union[Tuple[int, int], None] = None,
     automatic_data_range: bool = True,
 ) -> np.ndarray | ImageArray:
-    """Normalize a numpy array to a given data range.
+    """Normalize an image to a given data range.
 
     Parameters
     ----------
     img : np.ndarray or ImageArray
-        Input image
+        Input image.
     data_range_output : Tuple[int]
-        Data range of the returned data
+        Data range of the returned data.
     data_range_input : Tuple[int], default=None
-        Data range of the input data
+        Data range of the input data. Needs to be set if ``automatic_data_range`` is
+        False.
     automatic_data_range : bool, default=True
-        Automatically determine the input data range
+        Automatically determine the input data range.
 
     Returns
     -------
     img_arr : np.ndarray or ImageArray
-        Input image normalized to data_range
+        Input image normalized to data_range.
 
     Raises
     ------
     ValueError
-        If data type is not supported. \n
+        If data type is not supported.
         If ``data_range`` is not supported.
+        If ``automatic_data_range`` is False and ``data_range_input`` is not set.
 
     Warns
     -----
@@ -780,11 +780,12 @@ def normalize_data(
     >>> np.max(img_norm)
     255
     """
+    info: Union[np.iinfo, np.finfo]
     # Check data type
     if np.issubdtype(img.dtype, np.integer):  # If data type is integer
-        info = np.iinfo(img.dtype)  # type: ignore[assignment]
+        info = np.iinfo(img.dtype)
     elif np.issubdtype(img.dtype, np.floating):  # If data type is float
-        info = np.finfo(img.dtype)  # type: ignore[assignment]
+        info = np.finfo(img.dtype)
     else:
         raise ValueError("Data type not supported")
 
@@ -795,8 +796,13 @@ def normalize_data(
             img_min = np.min(img)  # Get minimum value of numpy array
             img_max = np.max(img)  # Get maximum value of numpy array
         else:
-            img_min = data_range_input[0]  # type: ignore # TODO
-            img_max = data_range_input[1]  # type: ignore # TODO
+            if data_range_input is None:
+                raise ValueError(
+                    "If automatic_data_range is False, data_range_input must be set."
+                )
+            else:
+                img_min = data_range_input[0]
+                img_max = data_range_input[1]
         # Normalize numpy array
         img = (
             (img - img_min)
