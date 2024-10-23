@@ -2,6 +2,13 @@
 
 
 
+## v2.0.1 (2024-10-23)
+
+### Bug fixes
+
+* fix: revert commit 851521b2 ([`960957d`](https://github.com/3dct/vIQA/commit/960957d7b1f203dddaacc5847dd34baa6d836e9b))
+
+
 ## v2.0.0 (2024-10-22)
 
 ### Breaking
