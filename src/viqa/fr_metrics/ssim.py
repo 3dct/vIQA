@@ -218,8 +218,8 @@ def structural_similarity(
         Modified image to calculate score of.
     win_size : int or None, optional
         The side-length of the sliding window used in comparison. Must be an
-        odd value. If `gaussian_weights` is True and `win_size` is None, the
-        window size will depend on `sigma`. Default is 7.
+        odd value. If ``gaussian_weights`` is True, this is ignored and the
+        window size will depend on ``sigma``.
     data_range : int, default=None
         Data range of the input images.
     gaussian_weights : bool, default=True
@@ -313,14 +313,17 @@ def structural_similarity(
     if sigma < 0:
         raise ValueError("sigma must be positive")
 
+    if gaussian_weights:
+        # Set to give an 11-tap filter with the default sigma of 1.5 to match
+        # Wang et. al. 2004.
+        truncate = 3.5
+
     if win_size is None:
         if gaussian_weights:
-            # Set to give an 11-tap filter with the default sigma of 1.5 to match
-            # Wang et. al. 2004.
-            truncate = 3.5
             # set win_size used by crop to match the filter size
             r = int(truncate * sigma + 0.5)  # radius as in ndimage
             win_size = 2 * r + 1
+            cov_norm = 1.0  # population covariance to match Wang et. al. 2004
         else:
             win_size = 7  # backwards compatibility
 
