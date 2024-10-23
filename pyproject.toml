@@ -83,6 +83,8 @@ dev = [
 Repository = "https://github.com/3dct/vIQA"
 #Homepage
 Documentation = "https://3dct.github.io/vIQA/"
+Tracker = "https://github.com/3dct/vIQA/issues"
+Download = "https://pypi.org/project/vIQA/#files"
 
 [build-system]
 requires = ["meson-python>=0.16.0", "numpy<2.0.0"]
@@ -130,6 +132,7 @@ ignore = [
 "*.ipynb" = ["E501"]
 "gsm.py" = ["F403", "F405"]
 "kernels.py" = ["D103"]
+"tools/generate_requirements.py" = ["D103"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"  # Accepts: "google", "numpy", or "pep257".

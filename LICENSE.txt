@@ -6,6 +6,15 @@ Files:      /src/viqa/nr_metrics/qmeasure_utils/qmeasure/*
 Copyright:  open_iA contributors
 License:    GPL-3.0
 
+Files:      /tools/generate_requirements.py
+Copyright:  2009-2022 the scikit-image team
+License:    BSD-3-Clause
+
+Files:      /requirements/README.md
+Copyright:  2009-2022 the scikit-image team
+            2024 Lukas Behammer
+License:    BSD-3-Clause
+
 Methods:    /src/viqa/nr_metrics/cnr.py:CNR.set_centers
             /src/viqa/nr_metrics/snr.py:SNR.set_centers
 Copyright:  2024 Michael Stidi
