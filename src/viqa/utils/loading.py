@@ -601,6 +601,8 @@ def load_data(
         .. deprecated:: 4.0.0
             This will be deprecated in version 4.0.0.
 
+        .. todo:: Deprecate in version 4.0.0
+
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
         with the ranges for the x, y and z axis. If not set, the whole image is loaded.
@@ -627,6 +629,8 @@ def load_data(
     --------
     ``batch`` will be deprecated in version 4.0.0.
 
+    .. todo:: Deprecate in version 4.0.0
+
     Examples
     --------
         .. doctest-skip::
@@ -641,6 +645,7 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
+    # TODO: Deprecate in version 4.0.0
     if batch:
         raise RemovedInFutureVersionWarning(
             "Batch loading is deprecated and will be removed in ViQa 4.0.x."
@@ -686,10 +691,7 @@ def load_data(
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
         case [np.ndarray()]:  # If input is a list
-            # FIXME: This should never get called as the input should not be a list
-            #  according to the type hint.
-            #  Either add support for list input (and add case [ImageArray()]) or remove
-            #  this case.
+            # TODO: Deprecate in version 4.0.0
             img_arr = img  # Use input as list of ImageArrays
             batch = True  # Set batch to True to normalize list of numpy arrays
         case _:
