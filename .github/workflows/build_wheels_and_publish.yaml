@@ -239,6 +239,6 @@ jobs:
             ./dist/*.whl
 
       - name: Publish package distributions to GitHub Releases
-        uses: python-semantic-release/upload-to-gh-release@main
+        uses: python-semantic-release/publish-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
