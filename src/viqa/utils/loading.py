@@ -129,32 +129,32 @@ class ImageArray(np.ndarray):
         if obj is None:
             return
         # Add attributes
-        self.mean_value = getattr(
+        self.__mean_value = getattr(
             obj, "mean_value", "Not set. Run calculate_statistics() first."
         )
-        self.median = getattr(
+        self.__median = getattr(
             obj, "median", "Not set. Run calculate_statistics() first."
         )
-        self.variance = getattr(
+        self.__variance = getattr(
             obj, "variance", "Not set. Run calculate_statistics() first."
         )
-        self.standarddev = getattr(
+        self.__standarddev = getattr(
             obj, "standarddev", "Not set. Run calculate_statistics() first."
         )
-        self.skewness = getattr(
+        self.__skewness = getattr(
             obj, "skewness", "Not set. Run calculate_statistics() first."
         )
-        self.kurtosis = getattr(
+        self.__kurtosis = getattr(
             obj, "kurtosis", "Not set. Run calculate_statistics() first."
         )
-        self.histogram = getattr(
+        self.__histogram = getattr(
             obj, "histogram", "Not set. Run calculate_statistics() first."
         )
-        self.minimum = getattr(
-            obj, "minimum", "Not set. Run calculate_statistics() first."
+        self.__min_value = getattr(
+            obj, "min_value", "Not set. Run calculate_statistics() first."
         )
-        self.maximum = getattr(
-            obj, "maximum", "Not set. Run calculate_statistics() first."
+        self.__max_value = getattr(
+            obj, "max_value", "Not set. Run calculate_statistics() first."
         )
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
@@ -195,6 +195,51 @@ class ImageArray(np.ndarray):
         )
         return results[0] if len(results) == 1 else results
 
+    @property
+    def mean_value(self):
+        """Return the mean of the image array."""
+        return self.__mean_value
+
+    @property
+    def median(self):
+        """Return the median of the image array."""
+        return self.__median
+
+    @property
+    def variance(self):
+        """Return the variance of the image array."""
+        return self.__variance
+
+    @property
+    def standarddev(self):
+        """Return the standard deviation of the image array."""
+        return self.__standarddev
+
+    @property
+    def skewness(self):
+        """Return the skewness of the image array."""
+        return self.__skewness
+
+    @property
+    def kurtosis(self):
+        """Return the kurtosis of the image array."""
+        return self.__kurtosis
+
+    @property
+    def histogram(self):
+        """Return the histogram of the image array."""
+        return self.__histogram
+
+    @property
+    def minimum(self):
+        """Return the minimum value of the image array."""
+        return self.__min_value
+
+    @property
+    def maximum(self):
+        """Return the maximum value of the image array."""
+        return self.__max_value
+
     def calculate_statistics(self):
         """Calculate statistics of the image array.
 
@@ -211,20 +256,18 @@ class ImageArray(np.ndarray):
             * maximum
         """
         # Add attributes
-        self.mean_value = np.mean(self)
-        self.median = np.median(self.view())
-        self.variance = np.var(self.view())
-        self.standarddev = np.std(self.view())
-        self.skewness = skew(self.view(), axis=None)
-        self.kurtosis = kurtosis(self.view(), axis=None)
-        if self.view().dtype.kind in ["u", "i"]:
-            self.view().histogram = np.histogram(
-                self.view(), bins=np.iinfo(self.view().dtype).max
-            )
+        self.__mean_value = np.mean(self)
+        self.__median = np.median(self)
+        self.__variance = np.var(self)
+        self.__standarddev = np.std(self)
+        self.__skewness = skew(self, axis=None)
+        self.__kurtosis = kurtosis(self, axis=None)
+        if self.dtype.kind in ["u", "i"]:
+            self.__histogram = np.histogram(self, bins=np.iinfo(self.dtype).max)
         else:
-            self.histogram = np.histogram(self.view(), bins=255)
-        self.minimum = np.min(self.view())
-        self.maximum = np.max(self.view())
+            self.__histogram = np.histogram(self, bins=255)
+        self.__min_value = np.min(self)
+        self.__max_value = np.max(self)
 
     def describe(
         self,
@@ -259,6 +302,11 @@ class ImageArray(np.ndarray):
         >>> img = ImageArray(img)
         >>> img.describe(path="path/to", filename="image_statistics")
         """
+        # This should catch all statistics, since a single statistic cannot be
+        # calculated without the others.
+        if self.mean_value == "Not set. Run calculate_statistics() first.":
+            self.calculate_statistics()
+
         stats = {
             "mean": self.mean_value,
             "median": self.median,

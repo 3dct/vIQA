@@ -10,7 +10,7 @@ Examples
         >>> img_m = np.ones((256, 256))
         >>> psnr = PSNR(data_range=1, normalize=False)
         >>> psnr
-        PSNR(score_val=None)
+        PSNR(result=None)
         >>> score = psnr.score(img_r, img_m)
         >>> score
         0.0
@@ -56,8 +56,7 @@ class PSNR(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
-        PSNR score value of the last calculation.
+    result
     parameters : dict
         Dictionary containing the parameters for PSNR calculation.
 
@@ -114,19 +113,19 @@ class PSNR(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             PSNR score value.
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
         # Calculate score
         if np.array_equal(img_r, img_m):
-            score_val = np.inf  # PSNR of identical images is infinity
+            result = np.inf  # PSNR of identical images is infinity
         else:
-            score_val = peak_signal_noise_ratio(
+            result = peak_signal_noise_ratio(
                 img_r, img_m, data_range=self.parameters["data_range"]
             )
-        self.score_val = score_val
-        return score_val
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the PSNR score value of the last calculation.
@@ -139,9 +138,9 @@ class PSNR(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("PSNR: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("PSNR: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for PSNR. Run score() first.", RuntimeWarning)

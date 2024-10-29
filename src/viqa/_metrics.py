@@ -24,7 +24,15 @@ from viqa.utils import _check_imgs, export_results, load_data
 
 
 class Metric:
+    """Abstract class for the metrics.
+
+    Attributes
+    ----------
+    parameters : dict
+    """
+
     def __init__(self, data_range, normalize, **kwargs):
+        """Construct method."""
         self.parameters = {
             "data_range": data_range,
             "normalize": normalize,
@@ -32,10 +40,26 @@ class Metric:
             "roi": None,
             **kwargs,
         }
-        self.score_val = None
+        self._score_val = None
         self._name = None
+        self._type = None
         if self.parameters["normalize"] and not self.parameters["data_range"]:
             raise ValueError("If normalize is True, data_range must be specified")
+
+    @property
+    def result(self):
+        """Return the score."""
+        return self._score_val
+
+    @property
+    def name(self):
+        """Return the name of the metric."""
+        return self._name
+
+    @property
+    def type(self):
+        """Return the type of the metric."""
+        return self._type
 
     @abstractmethod
     def score(self, *args):
@@ -45,6 +69,11 @@ class Metric:
     @abstractmethod
     def print_score(self, *args):
         """Print the score."""
+        pass
+
+    @abstractmethod
+    def _load_data(self, *args):
+        """Load the data."""
         pass
 
     def export_results(self, path, filename):
@@ -63,13 +92,38 @@ class Metric:
         """
         export_results([self], path, filename)
 
+    # TODO: Check if other is a Metric object or a number
+    def __eq__(self, other):
+        return self.result == other.result
+
+    def __lt__(self, other):
+        return self.result < other.result
+
+    def __gt__(self, other):
+        return self.result > other.result
+
+    def __le__(self, other):
+        return self.result <= other.result
+
+    def __ge__(self, other):
+        return self.result >= other.result
+
+    def __ne__(self, other):
+        return self.result != other.result
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(result={self.result})"
+
 
 class FullReferenceMetricsInterface(ABC, Metric):
-    def __init__(self, data_range, normalize, **kwargs):
-        super().__init__(data_range, normalize, **kwargs)
-        self.type = "full-reference"
+    """Abstract class for the full-reference metrics."""
 
-    def load_images(self, img_r, img_m):
+    def __init__(self, data_range, normalize, **kwargs):
+        """Construct method."""
+        super().__init__(data_range, normalize, **kwargs)
+        self._type = "full-reference"
+
+    def _load_data(self, img_r, img_m):
         """Load the images and perform checks.
 
         Parameters
@@ -96,34 +150,16 @@ class FullReferenceMetricsInterface(ABC, Metric):
         )
         return img_r, img_m
 
-    def __eq__(self, other):
-        return self.score_val == other.score_val
-
-    def __lt__(self, other):
-        return self.score_val < other.score_val
-
-    def __gt__(self, other):
-        return self.score_val > other.score_val
-
-    def __le__(self, other):
-        return self.score_val <= other.score_val
-
-    def __ge__(self, other):
-        return self.score_val >= other.score_val
-
-    def __ne__(self, other):
-        return self.score_val != other.score_val
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(score_val={self.score_val})"
-
 
 class NoReferenceMetricsInterface(ABC, Metric):
-    def __init__(self, data_range, normalize, **kwargs):
-        super().__init__(data_range, normalize, **kwargs)
-        self.type = "no-reference"
+    """Abstract class for the no-reference metrics."""
 
-    def load_images(self, img):
+    def __init__(self, data_range, normalize, **kwargs):
+        """Construct method."""
+        super().__init__(data_range, normalize, **kwargs)
+        self._type = "no-reference"
+
+    def _load_data(self, img):
         """Load the image.
 
         Uses the :py:func:`.viqa.utils.load_data` function to load the image.
@@ -146,24 +182,3 @@ class NoReferenceMetricsInterface(ABC, Metric):
             roi=self.parameters["roi"],
         )
         return img
-
-    def __eq__(self, other):
-        return self.score_val == other.score_val
-
-    def __lt__(self, other):
-        return self.score_val < other.score_val
-
-    def __gt__(self, other):
-        return self.score_val > other.score_val
-
-    def __le__(self, other):
-        return self.score_val <= other.score_val
-
-    def __ge__(self, other):
-        return self.score_val >= other.score_val
-
-    def __ne__(self, other):
-        return self.score_val != other.score_val
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(score_val={self.score_val})"

@@ -22,10 +22,10 @@ def fuse_metrics_linear_combination(metrics, weights):
     --------
     >>> from viqa import fuse_metrics_linear_combination, PSNR, SSIM
     >>> metrics = [PSNR, SSIM]
-    >>> PSNR.score_val = 20.0
-    >>> SSIM.score_val = 0.5
+    >>> PSNR._score_val = 20.0
+    >>> SSIM._score_val = 0.5
     >>> weights = [0.5, 0.5]
     >>> fuse_metrics_linear_combination(metrics, weights)
     10.25
     """
-    return sum(m.score_val * w for m, w in zip(metrics, weights, strict=True))
+    return sum(m.result * w for m, w in zip(metrics, weights, strict=True))

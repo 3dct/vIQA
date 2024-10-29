@@ -66,7 +66,7 @@ def export_results(metrics, output_path, filename, return_dict=False):
 
     Notes
     -----
-    This function just writes the ``score_val`` attribute of instanced metrics
+    This function just writes the ``result`` attribute of instanced metrics
     to a csv file. Therefore, the metrics must have been calculated before exporting and
     no-reference metrics cannot be distinguished between reference and modified image.
 
@@ -94,11 +94,9 @@ def export_results(metrics, output_path, filename, return_dict=False):
         writer = csv.writer(f)
         writer.writerow(["Metric", "Value"])
         for metric in metrics:
-            if metric.score_val is None:
-                metric.score_val = "n/a"
-            else:
-                writer.writerow([metric._name, metric.score_val])
-            results_dict[metric._name] = metric.score_val
+            result = metric.result if metric.result is not None else "n/a"
+            writer.writerow([metric.name, result])
+            results_dict[metric.name] = result
     if return_dict:
         return results_dict
 

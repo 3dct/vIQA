@@ -9,7 +9,7 @@ Examples
         >>> img = np.random.rand(256, 256)
         >>> cnr = CNR(data_range=1, normalize=False)
         >>> cnr
-        CNR(score_val=None)
+        CNR(result=None)
         >>> score = cnr.score(img,
         ...                   background_center=(128, 128),
         ...                   signal_center=(32, 32),
@@ -71,7 +71,7 @@ class CNR(NoReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         CNR score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for CNR calculation.
@@ -118,10 +118,10 @@ class CNR(NoReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             CNR score value.
         """
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         # check if signal_center, background_center and radius are provided
         if not {"signal_center", "background_center", "radius"}.issubset(kwargs):
@@ -137,9 +137,9 @@ class CNR(NoReferenceMetricsInterface):
         # write kwargs to .parameters attribute
         self.parameters.update(kwargs)
 
-        score_val = contrast_to_noise_ratio(img, **kwargs)
-        self.score_val = score_val
-        return score_val
+        result = contrast_to_noise_ratio(img, **kwargs)
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the CNR score value of the last calculation.
@@ -152,10 +152,10 @@ class CNR(NoReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("CNR: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("CNR: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for CNR. Run score() first.", RuntimeWarning)
 
@@ -207,7 +207,7 @@ class CNR(NoReferenceMetricsInterface):
             If the radius is not a positive integer.
         """
         # Load image
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         if not signal_center or not background_center or not radius:
             if not {"signal_center", "background_center", "radius"}.issubset(
@@ -328,7 +328,7 @@ class CNR(NoReferenceMetricsInterface):
         check_interactive_vis_deps(has_ipywidgets, has_ipython)
 
         # Load image
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         # Prepare visualization functions and widgets
 
@@ -721,7 +721,7 @@ def contrast_to_noise_ratio(
 
     Returns
     -------
-    score_val : float
+    result : float
         CNR score value.
 
     Raises
@@ -838,5 +838,5 @@ def contrast_to_noise_ratio(
         cnr_val = 0
     else:
         cnr_val = (np.mean(signal) - np.mean(background)) / np.std(background)
-
-    return np.float64(cnr_val)
+    result = np.float64(cnr_val)
+    return result

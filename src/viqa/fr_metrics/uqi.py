@@ -24,7 +24,7 @@ Examples
         >>> img_m = np.ones((256, 256))
         >>> uqi = UQI(data_range=1, normalize=False)
         >>> uqi
-        UQI(score_val=None)
+        UQI(result=None)
         >>> score = uqi.score(img_r, img_m)
         >>> score
         0.0
@@ -70,7 +70,7 @@ class UQI(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float or None
+    result : float or None
         Score value of the UQI metric.
     parameters : dict
         Dictionary containing the parameters for UQI calculation.
@@ -141,7 +141,7 @@ class UQI(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             UQI score value.
 
         Notes
@@ -149,9 +149,9 @@ class UQI(FullReferenceMetricsInterface):
         In the original implementation `win_size` is set to 8, here it is set to 7 by
         default, but can be changed to other odd values.
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
-        score_val = structural_similarity(
+        result = structural_similarity(
             img_r,
             img_m,
             data_range=self.parameters["data_range"],
@@ -163,8 +163,8 @@ class UQI(FullReferenceMetricsInterface):
             gaussian_weights=False,
             **kwargs,
         )
-        self.score_val = score_val
-        return score_val
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the UQI score value of the last calculation.
@@ -177,9 +177,9 @@ class UQI(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("UQI: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("UQI: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for UQI. Run score() first.", RuntimeWarning)

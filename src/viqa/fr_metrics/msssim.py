@@ -45,7 +45,7 @@ class MSSSIM(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         MS-SSIM score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for MS-SSIM calculation.
@@ -76,13 +76,6 @@ class MSSSIM(FullReferenceMetricsInterface):
     ------
     ValueError
         If ``data_range`` is not set.
-
-    Warnings
-    --------
-    This metric is not yet tested. The metric should be only used for experimental
-    purposes.
-
-    .. todo:: test
 
     Notes
     -----
@@ -152,7 +145,7 @@ class MSSSIM(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             MS-SSIM score value.
 
         Raises
@@ -186,7 +179,7 @@ class MSSSIM(FullReferenceMetricsInterface):
             Asilomar Conference on Signals, Systems & Computers, 1298–1402.
             https://doi.org/10.1109/ACSSC.2003.1292216
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
         if "scale_weights" in kwargs and type(kwargs["scale_weights"]) is list:
             kwargs["scale_weights"] = tensor(kwargs["scale_weights"])
@@ -203,7 +196,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                             img_m[im_slice, :, :],
                             self.parameters["chromatic"],
                         )
-                        score_val = multi_scale_ssim(
+                        result = multi_scale_ssim(
                             img_r_tensor,
                             img_m_tensor,
                             data_range=self.parameters["data_range"],
@@ -215,7 +208,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                             img_m[:, im_slice, :],
                             self.parameters["chromatic"],
                         )
-                        score_val = multi_scale_ssim(
+                        result = multi_scale_ssim(
                             img_r_tensor,
                             img_m_tensor,
                             data_range=self.parameters["data_range"],
@@ -227,7 +220,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                             img_m[:, :, im_slice],
                             self.parameters["chromatic"],
                         )
-                        score_val = multi_scale_ssim(
+                        result = multi_scale_ssim(
                             img_r_tensor,
                             img_m_tensor,
                             data_range=self.parameters["data_range"],
@@ -250,7 +243,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                     img_m,
                     self.parameters["chromatic"],
                 )
-                score_val = multi_scale_ssim(
+                result = multi_scale_ssim(
                     img_r_tensor,
                     img_m_tensor,
                     data_range=self.parameters["data_range"],
@@ -271,7 +264,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                 img_m,
                 self.parameters["chromatic"],
             )
-            score_val = multi_scale_ssim(
+            result = multi_scale_ssim(
                 img_r_tensor,
                 img_m_tensor,
                 data_range=self.parameters["data_range"],
@@ -280,8 +273,8 @@ class MSSSIM(FullReferenceMetricsInterface):
         else:
             raise ValueError("Images must be 2D or 3D.")
 
-        self.score_val = float(score_val)
-        return score_val
+        self._score_val = float(result)
+        return result
 
     def print_score(self, decimals=2):
         """Print the MSSSIM score value of the last calculation.
@@ -294,9 +287,9 @@ class MSSSIM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("MS-SSIM: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("MS-SSIM: {}".format(np.round(self._score_val, decimals)))
         else:
             print("No score value for MS-SSIM. Run score() first.")

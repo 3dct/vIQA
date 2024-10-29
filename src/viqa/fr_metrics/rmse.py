@@ -10,7 +10,7 @@ Examples
         >>> img_m = np.ones((256, 256))
         >>> rmse = RMSE()
         >>> rmse
-        RMSE(score_val=None)
+        RMSE(result=None)
         >>> score = rmse.score(img_r, img_m)
         >>> score
         1.0
@@ -56,7 +56,7 @@ class RMSE(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         RMSE score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for RMSE calculation.
@@ -101,15 +101,15 @@ class RMSE(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             RMSE score value.
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
         # Calculate score
-        score_val = np.sqrt(mean_squared_error(img_r, img_m))
-        self.score_val = score_val
-        return score_val
+        result = np.sqrt(mean_squared_error(img_r, img_m))
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the RMSE score value of the last calculation.
@@ -122,9 +122,9 @@ class RMSE(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("RMSE: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("RMSE: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for RMSE. Run score() first.", RuntimeWarning)

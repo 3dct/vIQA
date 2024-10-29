@@ -5,22 +5,22 @@ Internal Metrics module
    :exclude-members: Metric, FullReferenceMetricsInterface, NoReferenceMetricsInterface
 
 .. autoclass:: Metric
+   :exclude-members: __annotations__, __dict__, __hash__, __module__, __weakref__
    :members:
    :undoc-members:
    :private-members:
+   :special-members:
 
 .. autoclass:: FullReferenceMetricsInterface
-   :exclude-members: _abc_impl, __abstractmethods__, __annotations__, __dict__, __hash__, __module__, __slots__, __weakref__
+   :exclude-members: _abc_impl
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
-   :special-members:
 
 .. autoclass:: NoReferenceMetricsInterface
-   :exclude-members: _abc_impl, __abstractmethods__, __annotations__, __dict__, __hash__, __module__, __slots__, __weakref__
+   :exclude-members: _abc_impl
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
-   :special-members:

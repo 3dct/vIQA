@@ -17,7 +17,7 @@ Examples
         >>> img = np.random.rand(256, 256)
         >>> qm = QMeasure()
         >>> qm
-        QMeasure(score_val=None)
+        QMeasure(result=None)
         >>> score = qm.score(img, hist_bins=128, num_peaks=2)
 """
 
@@ -51,7 +51,7 @@ class QMeasure(NoReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         Q-Measure value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for QMeasure calculation.
@@ -125,10 +125,10 @@ class QMeasure(NoReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             Q-Measure value.
         """
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         if img.ndim < 3:
             raise ValueError("Q-Measure is only defined for 3D CT volumes.")
@@ -149,9 +149,9 @@ class QMeasure(NoReferenceMetricsInterface):
         num_peaks = kwargs.pop("num_peaks", 2)
 
         # Calculate score
-        score_val = qmeasurecalc.qmeasure(img, img_min, img_max, hist_bins, num_peaks)
-        self.score_val = score_val
-        return score_val
+        result = qmeasurecalc.qmeasure(img, img_min, img_max, hist_bins, num_peaks)
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the Q-Measure value of the last calculation.
@@ -164,9 +164,9 @@ class QMeasure(NoReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("Q-Measure: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("Q-Measure: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for Q-Measure. Run score() first.", RuntimeWarning)

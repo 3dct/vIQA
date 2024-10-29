@@ -64,7 +64,18 @@ from viqa.utils import (
 
 
 class _MultipleInterface(ABC):
+    """Abstract class for multiple metrics.
+
+    Attributes
+    ----------
+    metrics : list
+        A list of metric instances.
+    metrics_parameters : list
+        A list of dictionaries containing the parameters for the metrics.
+    """
+
     def __init__(self, metrics, metrics_parameters):
+        """Construct method."""
         if len(metrics) != len(metrics_parameters):
             raise ValueError(
                 "The number of metrics and metric parameters must be equal."
@@ -75,18 +86,26 @@ class _MultipleInterface(ABC):
             raise ValueError("Parameters list contains non-dictionary objects.")
         self.metrics = metrics
         self.metrics_parameters = metrics_parameters
-        self.results = {}
+        self._results = {}
+
+    @property
+    def results(self):
+        """Return the results."""
+        return self._results
 
     @abstractmethod
     def calculate(self, *args, **kwargs):
+        """Calculate the metrics."""
         pass
 
     @abstractmethod
     def report(self, csv, metadata, *args):
+        """Report the results and metadata."""
         pass
 
     @abstractmethod
     def export_results(self, file_path, file_name):
+        """Export the results to a csv file."""
         pass
 
     def export_metadata(self, file_path=".", file_name="metadata.txt"):
@@ -195,7 +214,7 @@ class BatchMetrics(_MultipleInterface):
 
         self.file_dir = file_dir
         self.pairs_csv = pairs_csv
-        self.pairs = _read_csv(self.pairs_csv)
+        self.__pairs = _read_csv(self.pairs_csv)
 
     def calculate(self, **kwargs):
         """Calculate the metrics in batch mode.
@@ -226,12 +245,12 @@ class BatchMetrics(_MultipleInterface):
         modified_img = None
         prev_mod_path = None
         metric_results = None
-        for pair_num, pair in enumerate(tqdm(self.pairs)):
+        for pair_num, pair in enumerate(tqdm(self.__pairs)):
             reference_path = os.path.join(self.file_dir, pair["reference_image"])
             modified_path = os.path.join(self.file_dir, pair["modified_image"])
             # Skip calculation if the images are the same as in the previous pair
             if reference_path == prev_ref_path and modified_path == prev_mod_path:
-                self.results[str(pair_num)] = metric_results
+                self._results[str(pair_num)] = metric_results
                 warn("Skipping calculation for identical image pair.", UserWarning)
                 continue
             # Load the images only once if it is the same for multiple pairs
@@ -257,7 +276,7 @@ class BatchMetrics(_MultipleInterface):
                 prev_result_modified=prev_result_modified,
                 **kwargs,
             )
-            self.results[str(pair_num)] = metric_results
+            self._results[str(pair_num)] = metric_results
         return self.results
 
     def report(
@@ -319,7 +338,7 @@ class BatchMetrics(_MultipleInterface):
                 ),
             )
         if image:
-            for pair_num, pair in enumerate(tqdm(self.pairs)):
+            for pair_num, pair in enumerate(tqdm(self.__pairs)):
                 img_r = os.path.join(self.file_dir, pair["reference_image"])
                 img_m = os.path.join(self.file_dir, pair["modified_image"])
                 export_image(
@@ -372,8 +391,8 @@ class BatchMetrics(_MultipleInterface):
             for pair_num, results in self.results.items():
                 writer.writerow(
                     [pair_num]
-                    + [self.pairs[int(pair_num)]["reference_image"]]
-                    + [self.pairs[int(pair_num)]["modified_image"]]
+                    + [self.__pairs[int(pair_num)]["reference_image"]]
+                    + [self.__pairs[int(pair_num)]["modified_image"]]
                     + list(results.values())
                 )
 
@@ -464,7 +483,7 @@ class MultipleMetrics(_MultipleInterface):
         metric_results = _calc(
             self.metrics, self.metrics_parameters, img_r, img_m, leave=True, **kwargs
         )
-        self.results = metric_results
+        self._results = metric_results
         return self.results
 
     def report(
@@ -649,20 +668,18 @@ def _calc(metrics, metrics_parameters, img_r, img_m, **kwargs):
             if prev_result_reference is not None and isinstance(
                 prev_result_reference, dict
             ):
-                metric_results[name] = prev_result_reference[
-                    name := metric._name + "_r"
-                ]
+                metric_results[name] = prev_result_reference[name := metric.name + "_r"]
             else:
                 result_r = metric.score(img_r, **parameters)
-                metric_results[metric._name + "_r"] = float(result_r)
+                metric_results[metric.name + "_r"] = float(result_r)
             if prev_result_modified is not None and isinstance(
                 prev_result_modified, dict
             ):
-                metric_results[name] = prev_result_modified[name := metric._name + "_m"]
+                metric_results[name] = prev_result_modified[name := metric.name + "_m"]
             else:
                 result_m = metric.score(img_m, **parameters)
-                metric_results[metric._name + "_m"] = float(result_m)
+                metric_results[metric.name + "_m"] = float(result_m)
         elif metric.type == "full-reference":
             result = metric.score(img_r, img_m, **parameters)
-            metric_results[metric._name] = float(result)
+            metric_results[metric.name] = float(result)
     return metric_results

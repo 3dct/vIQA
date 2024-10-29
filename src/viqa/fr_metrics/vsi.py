@@ -42,7 +42,7 @@ class VSI(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         VSI score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for VSI calculation.
@@ -74,8 +74,6 @@ class VSI(FullReferenceMetricsInterface):
     --------
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
-
-    .. todo:: test
 
     Notes
     -----
@@ -148,7 +146,7 @@ class VSI(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             VSI score value.
 
         Raises
@@ -184,7 +182,7 @@ class VSI(FullReferenceMetricsInterface):
             method by combining simple priors. 2013 IEEE International Conference on
             Image Processing, 171–175. https://api.semanticscholar.org/CorpusID:6028723
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
         if img_r.ndim == 3:
             if (
@@ -198,7 +196,7 @@ class VSI(FullReferenceMetricsInterface):
                             img_m[im_slice, :, :],
                             self.parameters["chromatic"],
                         )
-                        score_val = vsi(
+                        result = vsi(
                             img_r_tensor,
                             img_m_tensor,
                             data_range=self.parameters["data_range"],
@@ -210,7 +208,7 @@ class VSI(FullReferenceMetricsInterface):
                             img_m[:, im_slice, :],
                             self.parameters["chromatic"],
                         )
-                        score_val = vsi(
+                        result = vsi(
                             img_r_tensor,
                             img_m_tensor,
                             data_range=self.parameters["data_range"],
@@ -222,7 +220,7 @@ class VSI(FullReferenceMetricsInterface):
                             img_m[:, :, im_slice],
                             self.parameters["chromatic"],
                         )
-                        score_val = vsi(
+                        result = vsi(
                             img_r_tensor,
                             img_m_tensor,
                             data_range=self.parameters["data_range"],
@@ -244,7 +242,7 @@ class VSI(FullReferenceMetricsInterface):
                     img_m,
                     self.parameters["chromatic"],
                 )
-                score_val = vsi(
+                result = vsi(
                     img_r_tensor,
                     img_m_tensor,
                     data_range=self.parameters["data_range"],
@@ -265,7 +263,7 @@ class VSI(FullReferenceMetricsInterface):
                 img_m,
                 self.parameters["chromatic"],
             )
-            score_val = vsi(
+            result = vsi(
                 img_r_tensor,
                 img_m_tensor,
                 data_range=self.parameters["data_range"],
@@ -274,8 +272,8 @@ class VSI(FullReferenceMetricsInterface):
         else:
             raise ValueError("Images must be 2D or 3D.")
 
-        self.score_val = float(score_val)
-        return score_val
+        self._score_val = float(result)
+        return result
 
     def print_score(self, decimals=2):
         """Print the VSI score value of the last calculation.
@@ -288,9 +286,9 @@ class VSI(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("VSI: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("VSI: {}".format(np.round(self._score_val, decimals)))
         else:
             print("No score value for VSI. Run score() first.")

@@ -9,7 +9,7 @@ Examples
         >>> img = np.random.rand(256, 256)
         >>> snr = SNR(data_range=1, normalize=False)
         >>> snr
-        SNR(score_val=None)
+        SNR(result=None)
         >>> score = snr.score(img,
         ...                   signal_center=(32, 32),
         ...                   radius=16)
@@ -70,7 +70,7 @@ class SNR(NoReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         SNR score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for SNR calculation.
@@ -117,10 +117,10 @@ class SNR(NoReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             SNR score value.
         """
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         # check if signal_center and radius are provided
         if not {"signal_center", "radius"}.issubset(kwargs):
@@ -133,9 +133,9 @@ class SNR(NoReferenceMetricsInterface):
         # write kwargs to .parameters attribute
         self.parameters.update(kwargs)
 
-        score_val = signal_to_noise_ratio(img, **kwargs)
-        self.score_val = score_val
-        return score_val
+        result = signal_to_noise_ratio(img, **kwargs)
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the SNR score value of the last calculation.
@@ -148,10 +148,10 @@ class SNR(NoReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("SNR: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("SNR: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for SNR. Run score() first.", RuntimeWarning)
 
@@ -193,7 +193,7 @@ class SNR(NoReferenceMetricsInterface):
             If the radius is not a positive integer.
         """
         # Load image
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         if not signal_center or not radius:
             if not {"signal_center", "radius"}.issubset(self.parameters.keys()):
@@ -289,7 +289,7 @@ class SNR(NoReferenceMetricsInterface):
             If the radius is not a positive integer.
         """
         # Load image
-        img = self.load_images(img)
+        img = self._load_data(img)
 
         if not is_ipython():
             try:

@@ -19,7 +19,7 @@ Examples
         >>> img_m = np.ones((256, 256))
         >>> ssim = SSIM(data_range=1, normalize=False)
         >>> ssim
-        SSIM(score_val=None)
+        SSIM(result=None)
         >>> score = ssim.score(img_r, img_m)
         >>> score
         0.0
@@ -66,7 +66,7 @@ class SSIM(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float or None
+    result : float or None
         Score value of the SSIM metric.
     parameters : dict
         Dictionary containing the parameters for SSIM calculation.
@@ -143,7 +143,7 @@ class SSIM(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             SSIM score value.
 
         Raises
@@ -156,7 +156,7 @@ class SSIM(FullReferenceMetricsInterface):
         For color images, the metric is calculated channel-wise and the mean after
         weighting with the color weights is returned.
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
         if self.parameters["chromatic"]:
             if color_weights is None:
@@ -170,13 +170,13 @@ class SSIM(FullReferenceMetricsInterface):
                     **kwargs,
                 )
                 scores.append(score)
-            score_val = (color_weights * np.array(scores)).mean()
+            result = (color_weights * np.array(scores)).mean()
         else:
-            score_val = structural_similarity(
+            result = structural_similarity(
                 img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
-        self.score_val = score_val
-        return score_val
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the SSIM score value of the last calculation.
@@ -189,10 +189,10 @@ class SSIM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("SSIM: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("SSIM: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for SSIM. Run score() first.", RuntimeWarning)
 
@@ -219,7 +219,7 @@ def structural_similarity(
     win_size : int or None, optional
         The side-length of the sliding window used in comparison. Must be an
         odd value. If ``gaussian_weights`` is True, this is ignored and the
-        window size will depend on ``sigma``.
+        window size will depend on ``sigma``. Default is 7.
     data_range : int, default=None
         Data range of the input images.
     gaussian_weights : bool, default=True

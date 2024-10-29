@@ -68,7 +68,7 @@ class GSM(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         GSM score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for GSM calculation.
@@ -102,8 +102,6 @@ class GSM(FullReferenceMetricsInterface):
     --------
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
-
-    .. todo:: test
 
     Notes
     -----
@@ -152,7 +150,7 @@ class GSM(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             GSM score value.
 
         Raises
@@ -189,7 +187,7 @@ class GSM(FullReferenceMetricsInterface):
         with :math:`\\pmb{I}` denoting the Image, :math:`\\mathcal{K}_{n}` denoting the
         Kernel `n` and :math:`\\pmb{X}` denoting an image block.
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
         if img_r.ndim == 3:
             if (
@@ -198,21 +196,21 @@ class GSM(FullReferenceMetricsInterface):
                 # Calculate GSM for given slice of given dimension
                 match dim:
                     case 0:
-                        score_val = gradient_similarity(
+                        result = gradient_similarity(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
-                        score_val = gradient_similarity(
+                        result = gradient_similarity(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
-                        score_val = gradient_similarity(
+                        result = gradient_similarity(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
                             data_range=self.parameters["data_range"],
@@ -229,7 +227,7 @@ class GSM(FullReferenceMetricsInterface):
                     "im_slice is not given. Calculating GSM for full volume.",
                     RuntimeWarning,
                 )
-                score_val = gradient_similarity_3d(
+                result = gradient_similarity_3d(
                     img_r,
                     img_m,
                     data_range=self.parameters["data_range"],
@@ -246,14 +244,14 @@ class GSM(FullReferenceMetricsInterface):
             if dim or im_slice:
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate GSM for 2D images
-            score_val = gradient_similarity(
+            result = gradient_similarity(
                 img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")
 
-        self.score_val = score_val
-        return score_val
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the GSM score value of the last calculation.
@@ -266,10 +264,10 @@ class GSM(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("GSM: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("GSM: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for GSM. Run score() first.", RuntimeWarning)
 
@@ -311,8 +309,6 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
     --------
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
-
-    .. todo:: test
 
     See Also
     --------
@@ -391,8 +387,6 @@ def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
     --------
     This metric is not yet tested. The metric should be only used for experimental
     purposes.
-
-    .. todo:: test
 
     See Also
     --------

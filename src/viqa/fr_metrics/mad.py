@@ -65,7 +65,7 @@ class MAD(FullReferenceMetricsInterface):
 
     Attributes
     ----------
-    score_val : float
+    result : float
         MAD score value of the last calculation.
     parameters : dict
         Dictionary containing the parameters for MAD calculation.
@@ -149,7 +149,7 @@ class MAD(FullReferenceMetricsInterface):
 
         Returns
         -------
-        score_val : float
+        result : float
             MAD score value.
 
         Raises
@@ -175,7 +175,7 @@ class MAD(FullReferenceMetricsInterface):
         ``im_slice`` is given, the MAD is calculated for the given slice of the given
         dimension (represents a 2D metric of the given slice).
         """
-        img_r, img_m = self.load_images(img_r, img_m)
+        img_r, img_m = self._load_data(img_r, img_m)
 
         # Check if images are 2D or 3D
         if img_r.ndim == 3:
@@ -185,21 +185,21 @@ class MAD(FullReferenceMetricsInterface):
                 # Calculate MAD for given slice of given dimension
                 match dim:
                     case 0:
-                        score_val = most_apparent_distortion(
+                        result = most_apparent_distortion(
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
-                        score_val = most_apparent_distortion(
+                        result = most_apparent_distortion(
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
-                        score_val = most_apparent_distortion(
+                        result = most_apparent_distortion(
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
                             data_range=self.parameters["data_range"],
@@ -216,7 +216,7 @@ class MAD(FullReferenceMetricsInterface):
                     "im_slice is not given. Calculating MAD for full volume.",
                     RuntimeWarning,
                 )
-                score_val = most_apparent_distortion_3d(
+                result = most_apparent_distortion_3d(
                     img_r,
                     img_m,
                     data_range=self.parameters["data_range"],
@@ -237,14 +237,14 @@ class MAD(FullReferenceMetricsInterface):
             if dim or im_slice:
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
-            score_val = most_apparent_distortion(
+            result = most_apparent_distortion(
                 img_r, img_m, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")
 
-        self.score_val = score_val
-        return score_val
+        self._score_val = result
+        return result
 
     def print_score(self, decimals=2):
         """Print the MAD score value of the last calculation.
@@ -257,10 +257,10 @@ class MAD(FullReferenceMetricsInterface):
         Warns
         -----
         RuntimeWarning
-            If :py:attr:`score_val` is not available.
+            If :py:attr:`result` is not available.
         """
-        if self.score_val is not None:
-            print("MAD: {}".format(np.round(self.score_val, decimals)))
+        if self._score_val is not None:
+            print("MAD: {}".format(np.round(self._score_val, decimals)))
         else:
             warn("No score value for MAD. Run score() first.", RuntimeWarning)
 
@@ -284,7 +284,7 @@ def most_apparent_distortion_3d(
 
     Returns
     -------
-    score_val : float
+    mad_index : float
         MAD score value as mean of MAD values of all slices of the given dimension.
 
     Raises
@@ -335,7 +335,8 @@ def most_apparent_distortion_3d(
                 )
         case _:
             raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
-    return np.mean(np.array(scores))
+    mad_index = np.mean(np.array(scores))
+    return mad_index
 
 
 def most_apparent_distortion(
