@@ -92,24 +92,41 @@ class Metric:
         """
         export_results([self], path, filename)
 
-    # TODO: Check if other is a Metric object or a number
     def __eq__(self, other):
-        return self.result == other.result
+        if isinstance(other, Metric):
+            return self.result == other.result
+        else:
+            return self.result == other
 
     def __lt__(self, other):
-        return self.result < other.result
+        if isinstance(other, Metric):
+            return self.result < other.result
+        else:
+            return self.result < other
 
     def __gt__(self, other):
-        return self.result > other.result
+        if isinstance(other, Metric):
+            return self.result > other.result
+        else:
+            return self.result > other
 
     def __le__(self, other):
-        return self.result <= other.result
+        if isinstance(other, Metric):
+            return self.result <= other.result
+        else:
+            return self.result <= other
 
     def __ge__(self, other):
-        return self.result >= other.result
+        if isinstance(other, Metric):
+            return self.result >= other.result
+        else:
+            return self.result >= other
 
     def __ne__(self, other):
-        return self.result != other.result
+        if isinstance(other, Metric):
+            return self.result != other.result
+        else:
+            return self.result != other
 
     def __repr__(self):
         return f"{self.__class__.__name__}(result={self.result})"
