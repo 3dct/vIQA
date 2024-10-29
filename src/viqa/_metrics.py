@@ -63,6 +63,45 @@ class Metric:
         """
         export_results([self], path, filename)
 
+    def __eq__(self, other):
+        if isinstance(other, Metric):
+            return self.score_val == other.score_val
+        else:
+            return self.score_val == other
+
+    def __lt__(self, other):
+        if isinstance(other, Metric):
+            return self.score_val < other.score_val
+        else:
+            return self.score_val < other
+
+    def __gt__(self, other):
+        if isinstance(other, Metric):
+            return self.score_val > other.score_val
+        else:
+            return self.score_val > other
+
+    def __le__(self, other):
+        if isinstance(other, Metric):
+            return self.score_val <= other.score_val
+        else:
+            return self.score_val <= other
+
+    def __ge__(self, other):
+        if isinstance(other, Metric):
+            return self.score_val >= other.score_val
+        else:
+            return self.score_val >= other
+
+    def __ne__(self, other):
+        if isinstance(other, Metric):
+            return self.score_val != other.score_val
+        else:
+            return self.score_val != other
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(result={self.score_val})"
+
 
 class FullReferenceMetricsInterface(ABC, Metric):
     def __init__(self, data_range, normalize, **kwargs):
@@ -96,27 +135,6 @@ class FullReferenceMetricsInterface(ABC, Metric):
         )
         return img_r, img_m
 
-    def __eq__(self, other):
-        return self.score_val == other.score_val
-
-    def __lt__(self, other):
-        return self.score_val < other.score_val
-
-    def __gt__(self, other):
-        return self.score_val > other.score_val
-
-    def __le__(self, other):
-        return self.score_val <= other.score_val
-
-    def __ge__(self, other):
-        return self.score_val >= other.score_val
-
-    def __ne__(self, other):
-        return self.score_val != other.score_val
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(score_val={self.score_val})"
-
 
 class NoReferenceMetricsInterface(ABC, Metric):
     def __init__(self, data_range, normalize, **kwargs):
@@ -146,24 +164,3 @@ class NoReferenceMetricsInterface(ABC, Metric):
             roi=self.parameters["roi"],
         )
         return img
-
-    def __eq__(self, other):
-        return self.score_val == other.score_val
-
-    def __lt__(self, other):
-        return self.score_val < other.score_val
-
-    def __gt__(self, other):
-        return self.score_val > other.score_val
-
-    def __le__(self, other):
-        return self.score_val <= other.score_val
-
-    def __ge__(self, other):
-        return self.score_val >= other.score_val
-
-    def __ne__(self, other):
-        return self.score_val != other.score_val
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(score_val={self.score_val})"
