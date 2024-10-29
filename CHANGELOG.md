@@ -2,6 +2,13 @@
 
 
 
+## v2.0.2 (2024-10-29)
+
+### Bug fixes
+
+* fix(qmeasure): fix image loading in score method ([`5f589c1`](https://github.com/3dct/vIQA/commit/5f589c1b13c8584e1f1ee618b5b9ee46533206dc))
+
+
 ## v2.0.1 (2024-10-23)
 
 ### Bug fixes
