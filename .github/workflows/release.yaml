@@ -269,5 +269,5 @@ jobs:
     uses: ./.github/workflows/documentation.yaml
     needs: [prepare_docs_input]
     if: always() && !cancelled() && github.repository == '3dct/viqa'
-    # with:
-    #   published: ${{ needs.prepare_docs_input.outputs.published }}
+    with:
+      published: ${{ needs.prepare_docs_input.outputs.published }}

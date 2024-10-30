@@ -10,11 +10,11 @@ on:
   #   types:
   #     - completed
   workflow_call:
-  #  inputs:
-  #    published:
-  #      description: 'Has the release been published?'
-  #      required: true
-  #      type: boolean
+    inputs:
+      published:
+        description: 'Has the release been published?'
+        required: true
+        type: boolean
 
 permissions:
   contents: write
@@ -48,7 +48,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        # if: ${{ github.event_name == 'workflow_dispatch' || inputs.published == true }}
+        if: ${{ github.event_name == 'workflow_dispatch' || inputs.published == true }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
