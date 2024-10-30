@@ -22,12 +22,14 @@ jobs:
       - name: Ruff Check
         id: ruff
         uses: astral-sh/ruff-action@v1.1.1
+        with:
+          args: "check --config pyproject.toml"
 
       - name: Ruff Format Check
         id: ruff-format
         uses: astral-sh/ruff-action@v1.1.1
         with:
-          args: "format --check"
+          args: "format --check --config pyproject.toml"
 
       - name: Mypy
         id: mypy
