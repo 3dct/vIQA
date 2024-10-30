@@ -1,6 +1,6 @@
 ---
 name: Release
-run-name: Release pipeline
+run-name: Release pipeline for ${{ github.sha }} on ${{ github.ref }}
 
 on:
   workflow_dispatch:
