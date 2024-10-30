@@ -10,9 +10,13 @@ on:
       - dev
 
 jobs:
+  lint:
+    uses: ./.github/workflows/lint.yaml
+
   semantic_release:
     name: Semantic Release
     runs-on: ubuntu-latest
+    needs: [lint]
     if: github.ref == 'refs/heads/main' && github.repository == '3dct/viqa'
     permissions:
       id-token: write
