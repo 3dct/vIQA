@@ -5,7 +5,7 @@ The package provides a set of metrics to assess the quality of volumetric images
 It can be used for 2D and 3D images.
 """
 
-__version__ = "2.0.2"
+__version__ = "2.0.3"
 __author__ = "Lukas Behammer"
 __all__ = [
     "FSIM",

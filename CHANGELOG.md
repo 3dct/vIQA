@@ -2,6 +2,13 @@
 
 
 
+## v2.0.3 (2024-10-30)
+
+### Bug fixes
+
+* fix: fix comparison operators and move them to Metric class ([`1af2e31`](https://github.com/3dct/vIQA/commit/1af2e31df5f4938dec9993c7663692fb6a105bb1))
+
+
 ## v2.0.2 (2024-10-29)
 
 ### Bug fixes
