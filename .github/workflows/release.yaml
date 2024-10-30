@@ -34,7 +34,7 @@ jobs:
           files_yaml: |
             build:
               - src/viqa/utils/_build/**
-              - **/meson.build
+              - */meson.build
               - pyproject.toml
             ci:
               - .github/workflows/**
