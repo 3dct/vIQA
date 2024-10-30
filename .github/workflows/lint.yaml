@@ -42,6 +42,6 @@ jobs:
         id: mypy
         uses: python/mypy@v1.13.0
         with:
-          options: "--config-file=pyprject.toml"
+          options: "--config-file=pyproject.toml"
           paths: "src/viqa"
           install_project_dependencies: 'no'
