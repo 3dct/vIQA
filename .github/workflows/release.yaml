@@ -267,7 +267,7 @@ jobs:
   docs:
     name: Build and deploy documentation
     uses: ./.github/workflows/documentation.yaml
-    needs: [prepare_docs_input]
-    if: github.repository == '3dct/viqa'
-    with:
-      published: ${{ needs.prepare_docs_input.outputs.published }}
+    # needs: [prepare_docs_input]
+    # if: github.repository == '3dct/viqa'
+    # with:
+    #   published: ${{ needs.prepare_docs_input.outputs.published }}
