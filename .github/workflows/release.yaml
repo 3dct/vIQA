@@ -250,6 +250,7 @@ jobs:
   prepare_docs_input:
     name: Check if published
     runs-on: ubuntu-latest
+    if: ${{ always() && !cancelled() }}
     outputs:
       published: ${{ steps.check_published.outputs.published }}
     needs: [upload_github, upload_pypi]
