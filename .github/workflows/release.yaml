@@ -247,11 +247,26 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy_docs:
+  prepare_docs_input:
+    name: Check if published
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.check_published.outputs.published }}
+    needs: [upload_github, upload_pypi]
+    steps:
+      - name: Check if published
+        id: check_published
+        run: |
+          if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
+  docs:
     name: Build and deploy documentation
     uses: ./.github/workflows/documentation.yaml
-    needs: [semantic_release, upload_github, upload_pypi]
+    needs: [prepare_docs_input]
     if: github.repository == '3dct/viqa'
     with:
-      released: ${{ needs.semantic_release.outputs.released }}
-      published: ${{ needs.upload_github.result == 'success' || needs.upload_pypi.result == 'success' }}
+      published: ${{ needs.prepare_docs_input.outputs.published }}

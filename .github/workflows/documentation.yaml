@@ -11,10 +11,6 @@ on:
   #     - completed
   workflow_call:
     inputs:
-      released:
-        description: 'Has a new release been made?'
-        required: true
-        type: boolean
       published:
         description: 'Has the release been published?'
         required: true
@@ -25,7 +21,6 @@ permissions:
 
 jobs:
   Docs:
-    name: Build and deploy documentation
     runs-on: ubuntu-latest
     concurrency: Docs
     if: |
@@ -53,7 +48,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.event_name == 'workflow_dispatch' || (inputs.released == true && inputs.published == true) }}
+        if: ${{ github.event_name == 'workflow_dispatch' || inputs.published == true }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
