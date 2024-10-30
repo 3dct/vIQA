@@ -24,6 +24,11 @@ jobs:
         with:
           python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
 
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Ruff Check
         id: ruff
         uses: astral-sh/ruff-action@v1.1.1
