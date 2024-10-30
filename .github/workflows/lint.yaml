@@ -19,6 +19,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Set up Python ${{ vars.MINIMAL_PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
+
       - name: Ruff Check
         id: ruff
         uses: astral-sh/ruff-action@v1.1.1
