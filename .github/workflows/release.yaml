@@ -17,7 +17,6 @@ jobs:
     permissions:
       id-token: write
       contents: write
-      checks: write
     outputs:
       tag: ${{ steps.release.outputs.tag }}
       released: ${{ steps.release.outputs.released }}
