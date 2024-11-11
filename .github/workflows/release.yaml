@@ -10,10 +10,82 @@ on:
       - dev
 
 jobs:
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    outputs:
+      any-changes: ${{ steps.all-changes.outputs.any_changed }}
+      build-changes: ${{ steps.changed-files.outputs.build_any_changed }}
+      ci-changes: ${{ steps.changed-files.outputs.ci_any_changed }}
+      doc-changes: ${{ steps.changed-files.outputs.docs_any_changed }}
+      src-changes: ${{ steps.changed-files.outputs.src_any_changed }}
+      test-changes: ${{ steps.changed-files.outputs.tests_any_changed }}
+      lint-changes: ${{ steps.changed-files.outputs.lint_any_changed }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check specific file types for changes
+        id: changed-files
+        uses: tj-actions/changed-files@v45.0.2
+        with:
+          files_yaml: |
+            build:
+              - src/viqa/utils/_build/**
+              - ./**/meson.build
+              - pyproject.toml
+            ci:
+              - .github/workflows/**
+            docs:
+              - .github/workflows/documentation.yaml
+              - docs/**
+              - src/viqa/**
+            src:
+              - src/viqa/**
+              - pyproject.toml
+            tests:
+              - .github/workflows/test.yaml
+              - tests/**
+              - pyproject.toml
+            lint:
+              - .github/workflows/lint.yaml
+              - src/**
+              - notebooks/**
+
+      - name: Detect if any of the combinations of file sets have changed
+        id: all-changes
+        run: |
+          printf '%s\n' "any_changed=false" >> $GITHUB_OUTPUT
+          if [ "${{ steps.changed-files.outputs.build_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.ci_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.docs_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.src_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.tests_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.lint_any_changed }}" == "true" ]; then
+             printf '%s\n' "any_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+  lint:
+    name: Lint Code
+    uses: ./.github/workflows/lint.yaml
+    needs: [changes]
+    if: ${{ needs.changes.outputs.lint-changes == 'true' }}
+
+  # test:
+  #   uses: ./.github/workflows/test.yaml
+  #   needs: [changes, lint]
+  #   if: |
+  #     needs.changes.outputs.test-changes == 'true' ||
+  #     needs.changes.outputs.src-changes == 'true' ||
+  #     needs.changes.outputs.ci-changes == 'true'
+
   semantic_release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.repository == '3dct/viqa'
+    needs: [lint]
+    if: github.ref == 'refs/heads/main' && github.repository == '3dct/viqa' && always()
     permissions:
       id-token: write
       contents: write
@@ -42,8 +114,11 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: [semantic_release]
-    if: ${{ always() && !cancelled() }}
+    needs: [changes, semantic_release]
+    if: |
+      (needs.changes.outputs.build-changes == 'true' ||
+      needs.changes.outputs.src-changes == 'true' ||
+      needs.changes.outputs.ci-changes == 'true') && always()
     strategy:
       fail-fast: false
       matrix:
@@ -87,8 +162,11 @@ jobs:
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-24.04
-    needs: [semantic_release]
-    if: ${{ always() && !cancelled() }}
+    needs: [changes, semantic_release]
+    if: |
+      (needs.changes.outputs.build-changes == 'true' ||
+      needs.changes.outputs.src-changes == 'true' ||
+      needs.changes.outputs.ci-changes == 'true') && always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -249,10 +327,10 @@ jobs:
   prepare_docs_input:
     name: Check if published
     runs-on: ubuntu-latest
-    if: ${{ always() && !cancelled() }}
+    if: needs.changes.outputs.doc-changes == 'true' && always()
     outputs:
       published: ${{ steps.check_published.outputs.published }}
-    needs: [upload_github, upload_pypi]
+    needs: [changes, upload_github, upload_pypi]
     steps:
       - name: Check if published
         id: check_published
@@ -266,7 +344,7 @@ jobs:
   docs:
     name: Build and deploy documentation
     uses: ./.github/workflows/documentation.yaml
-    needs: [prepare_docs_input]
-    if: always() && !cancelled() && github.repository == '3dct/viqa'
+    needs: [changes, prepare_docs_input]
+    if: github.repository == '3dct/viqa' && needs.changes.outputs.doc-changes == 'true'
     with:
       published: ${{ needs.prepare_docs_input.outputs.published }}

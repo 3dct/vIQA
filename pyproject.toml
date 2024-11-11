@@ -95,12 +95,8 @@ build-backend = "mesonpy"
 [tool.ruff]
 extend-include = ["*.ipynb"]
 extend-exclude = [
-    ".git",
     "data",
     "docs",
-    "build",
-    "dist",
-    "_private_tests",
     "tests",
 ]
 target-version = "py311"
@@ -117,14 +113,19 @@ select = [
     "I",
     "N",
     "W",
-    "C901",
+#    "C901", # temporarily disable complexity TODO: rewrite functions
 ]
 ignore = [
-    "D205",
-    "D301",
     "B028",
+    "D205",
+    "D206",
+    "D300",
+    "D301",
     "E203",
-    "C901", # temporarily disable complexity TODO: rewrite functions
+    "E111",
+    "E114",
+    "E117",
+    "W191",
 ]
 
 [tool.ruff.lint.per-file-ignores]
