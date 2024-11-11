@@ -2,6 +2,19 @@
 
 
 
+## v2.0.4 (2024-11-11)
+
+### Bug fixes
+
+* fix(multiple.py): fix delimiter sniffing
+
+fix csv delimiter sniffing, add support for tsv and txt files during loading of pairs in BatchMetrics ([`dbd60ee`](https://github.com/3dct/vIQA/commit/dbd60ee36e1eaff8f6e026ec0ab71493595a5064))
+
+### Documentation
+
+* docs: update README.md badge ([`b5d0713`](https://github.com/3dct/vIQA/commit/b5d0713e0096892a8a6645a0b641bfc76ff2e661))
+
+
 ## v2.0.3 (2024-10-30)
 
 ### Bug fixes
