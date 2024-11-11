@@ -126,8 +126,8 @@ class BatchMetrics(_MultipleInterface):
         List of metric instances.
     metrics_parameters : list
         List of dictionaries containing the parameters for the metrics.
-    pairs_csv : str
-        Path to the csv file containing the image pairs.
+    pairs_file : str
+        Path to the file containing the image pairs.
     pairs : list
         List of dictionaries containing the image pairs.
 
@@ -135,10 +135,11 @@ class BatchMetrics(_MultipleInterface):
     ----------
     file_dir : str
         Directory where the images are stored.
-    pairs_csv : str
-        Path to the csv file containing the image pairs.
+    pairs_file : str
+        Path to the file containing the image pairs.
+        Accepted delimiter characters are ',', ';', and '\t'.
 
-        .. admonition:: CSV file layout
+        .. admonition:: CSV/TSV file layout
 
             +-----------------+----------------+
             | reference_image | modified_image |
@@ -159,13 +160,13 @@ class BatchMetrics(_MultipleInterface):
         If the number of metrics and metric parameters is not equal.
         If the metric list contains non-metric objects.
         If the parameters list contains non-dictionary objects
-        If the CSV file does not contain the columns 'reference_image' and
+        If the pairs file does not contain the columns 'reference_image' and
         'modified_image'.
 
     Notes
     -----
-    Make sure to use a well-structured CSV file as performance is better with e.g. the
-    same reference image in multiple consecutive rows.
+    Make sure to use a well-structured CSV/TSV file as performance is better with e.g.
+    the same reference image in multiple consecutive rows.
 
     .. attention::
 
@@ -181,7 +182,7 @@ class BatchMetrics(_MultipleInterface):
         >>> metrics_parameters = [{}, {'hist_bins': 16, 'num_peaks': 2}]
         >>> batch = BatchMetrics(
         ...     file_dir='path/to/images',
-        ...     pairs_csv='path/to/pairs.csv',
+        ...     pairs_file='path/to/pairs.csv',
         ...     metrics=metrics,
         ...     metrics_parameters=metrics_parameters
         ... )
@@ -189,13 +190,13 @@ class BatchMetrics(_MultipleInterface):
         >>> batch.export_results(file_path='path/to/results', file_name='results.csv')
     """
 
-    def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
+    def __init__(self, file_dir, pairs_file, metrics, metrics_parameters):
         """Construct method."""
         super().__init__(metrics, metrics_parameters)
 
         self.file_dir = file_dir
-        self.pairs_csv = pairs_csv
-        self.pairs = _read_csv(self.pairs_csv)
+        self.pairs_file = pairs_file
+        self.pairs = _read_pairs(self.pairs_file)
 
     def calculate(self, **kwargs):
         """Calculate the metrics in batch mode.
@@ -612,11 +613,11 @@ class MultipleMetrics(_MultipleInterface):
             writer.writerow(list(self.results.values()))
 
 
-def _read_csv(file_path):
-    with open(file_path, newline="") as csvfile:
-        dialect = csv.Sniffer().sniff(csvfile.read(1024))
-        csvfile.seek(0)
-        reader = csv.DictReader(csvfile, dialect=dialect)
+def _read_pairs(file_path):
+    with open(file_path, newline="") as file:
+        dialect = csv.Sniffer().sniff(file.readline(), ",;\t")
+        file.seek(0)
+        reader = csv.DictReader(file, dialect=dialect)
         if (
             "reference_image" not in reader.fieldnames
             or "modified_image" not in reader.fieldnames
