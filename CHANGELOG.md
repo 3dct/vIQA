@@ -2,6 +2,19 @@
 
 
 
+## v2.0.5 (2024-11-18)
+
+### Bug fixes
+
+* fix(crop_image): add checks if cropping is smaller than original image or image is already cropped ([`bb930b0`](https://github.com/3dct/vIQA/commit/bb930b04115fad7d550da58320aafbfad6bf4774))
+
+* fix: prevent forwarding of roi parameter in BatchMetrics.calculate ([`ea35048`](https://github.com/3dct/vIQA/commit/ea35048338ec2f1c0f46b115b5b392455d83ebe6))
+
+### Unknown
+
+* books: update report exporting in batch mode notebook ([`86c70b4`](https://github.com/3dct/vIQA/commit/86c70b432793cdd6e1da3e45c7bc5624ce8a93a3))
+
+
 ## v2.0.4 (2024-11-11)
 
 ### Bug fixes
