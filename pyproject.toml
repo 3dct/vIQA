@@ -48,17 +48,14 @@ book = [
     "jupyter",
     "ipywidgets",
 ]
-
 tests = [
     "pytest",
     "pytest-cov",
     "pytest-doctestplus",
-    "tox",
 ]
 lint = [
     "mypy",
     "ruff",
-    "pre-commit",
 ]
 docs = [
     "sphinx",
@@ -66,17 +63,23 @@ docs = [
     "sphinxcontrib-email",
     "sphinx_copybutton",
     "sphinx_github_changelog",
-    "sphinx-autobuild",
     "sphinx-last-updated-by-git",
-    "sphinx-hoverxref",
+    # "sphinx-hoverxref",  # works only on readthedocs
     "viqa[tests]",
 ]
-dev = [
-    "viqa[lint, docs]",
-    "meson-python>=0.16.0",
-    "build",
+cd = [
     "python-semantic-release",
     "cibuildwheel",
+]
+build = [
+    "meson-python>=0.16.0",
+    "build",
+]
+dev = [
+    "viqa[tests, lint, docs, cd, build]",
+    "pre-commit",
+    "sphinx-autobuild",
+    # "tox",  # currently not implemented
 ]
 
 [project.urls]
