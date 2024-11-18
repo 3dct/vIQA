@@ -11,8 +11,8 @@ on:
   #     - completed
   workflow_call:
     inputs:
-      published:
-        description: 'Has the release been published?'
+      publish:
+        description: 'Should the Documentation be published?'
         required: true
         type: string
 
@@ -38,9 +38,7 @@ jobs:
           python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
       - name: Install dependencies
         run: |
-          pip install sphinx furo sphinx-copybutton pytest-doctestplus \
-          sphinx_github_changelog piq scipy scikit-image matplotlib nibabel tqdm \
-          sphinxcontrib-email sphinx-last-updated-by-git sphinx-hoverxref
+          pip install -r ./requirements/docs.txt piq scipy scikit-image matplotlib nibabel tqdm
       - name: Sphinx build
         run: |
           sphinx-build docs/source _build
@@ -48,7 +46,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.event_name == 'workflow_dispatch' || inputs.published == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || inputs.publish == 'true' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -53,6 +53,7 @@ jobs:
               - .github/workflows/lint.yaml
               - src/**
               - notebooks/**
+              - pyproject.toml
 
       - name: Detect if any of the combinations of file sets have changed
         id: all-changes
@@ -329,16 +330,22 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.changes.outputs.doc-changes == 'true' && always()
     outputs:
-      published: ${{ steps.check_published.outputs.published }}
+      publish: ${{ steps.check_publish.outputs.publish }}
     needs: [changes, upload_github, upload_pypi]
     steps:
-      - name: Check if published
-        id: check_published
+      - name: Check if documentation should be published
+        id: check_publish
         run: |
+          # If either the PyPI or GitHub release was successful, publish the docs
           if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
-            echo "published=true" >> $GITHUB_OUTPUT
+            echo "publish=true" >> $GITHUB_OUTPUT
           else
-            echo "published=false" >> $GITHUB_OUTPUT
+            # If the docs have changed, publish them anyway
+            if ${{ needs.changes.outputs.doc-changes == 'true' }}; then
+              echo "publish=true" >> $GITHUB_OUTPUT
+            else
+              echo "publish=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
   docs:
@@ -347,4 +354,4 @@ jobs:
     needs: [changes, prepare_docs_input]
     if: github.repository == '3dct/viqa' && needs.changes.outputs.doc-changes == 'true'
     with:
-      published: ${{ needs.prepare_docs_input.outputs.published }}
+      publish: ${{ needs.prepare_docs_input.outputs.publish }}
