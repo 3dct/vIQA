@@ -136,7 +136,8 @@ class BatchMetrics(_MultipleInterface):
     file_dir : str
         Directory where the images are stored.
     pairs_file : str
-        Path to the file containing the image pairs.
+        Path to the file containing the image pairs. The path should be given as a
+        relative path to the ``file_dir`` parameter.
         Accepted delimiter characters are ',', ';', and '\t'.
 
         .. admonition:: CSV/TSV file layout
@@ -150,7 +151,7 @@ class BatchMetrics(_MultipleInterface):
             +-----------------+----------------+
 
     metrics : list
-        List of metric instances.
+        List of metric instances. Each instance must be of type :py:class:`Metric`.
     metrics_parameters : list
         List of dictionaries containing the parameters for the metrics.
 
@@ -222,6 +223,7 @@ class BatchMetrics(_MultipleInterface):
         UserWarning
             If the images are the same as in the previous pair.
         """
+        scaling_order = kwargs.pop("scaling_order", 1)
         reference_img = None
         prev_ref_path = None
         modified_img = None
@@ -249,6 +251,7 @@ class BatchMetrics(_MultipleInterface):
             else:
                 prev_result_modified = metric_results
 
+            _ = kwargs.pop("roi")  # Remove roi parameter to avoid conflicts
             metric_results = _calc(
                 self.metrics,
                 self.metrics_parameters,
@@ -256,6 +259,7 @@ class BatchMetrics(_MultipleInterface):
                 modified_img,
                 prev_result_reference=prev_result_reference,
                 prev_result_modified=prev_result_modified,
+                scaling_order=scaling_order,
                 **kwargs,
             )
             self.results[str(pair_num)] = metric_results
