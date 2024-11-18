@@ -13,6 +13,9 @@ authors:
     email: lukas.behammer@fh-wels.at
     affiliation: University of Applied Sciences Upper Austria
     orcid: 'https://orcid.org/0009-0008-5081-0753'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.14178631
 repository-code: 'https://github.com/3dct/vIQA'
 url: 'https://3dct.github.io/vIQA/'
 repository-artifact: 'https://pypi.org/project/vIQA/'
