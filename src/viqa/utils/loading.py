@@ -605,7 +605,9 @@ def load_data(
 
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
-        with the ranges for the x, y and z axis. If not set, the whole image is loaded.
+        with the ranges for the x, y (and z) axis. First value in the tuple denotes the
+        start and the second value the end of the range. If not set, the whole image is
+        loaded.
 
     Returns
     -------
@@ -648,7 +650,7 @@ def load_data(
     # TODO: Deprecate in version 4.0.0
     if batch:
         raise RemovedInFutureVersionWarning(
-            "Batch loading is deprecated and will be removed in ViQa 4.0.x."
+            "Batch loading is deprecated and will be removed in vIQA 4.0.x."
         )
 
     # exceptions and warning for data_range and normalize
@@ -661,12 +663,13 @@ def load_data(
             RuntimeWarning,
         )
 
-    img_arr: list[np.ndarray] | np.ndarray
+    img_arr: list[np.ndarray] | np.ndarray  # TODO: list can be removed in version 4.0.0
     # Check input type
     match img:
         case str() | os.PathLike():  # If input is a file path
             # Check if batch
             if batch:
+                # TODO: Deprecate in version 4.0.0
                 # Get all files in directory
                 files = glob.glob(img)  # type: ignore[type-var]
                 img_arr = []  # Initialize list for numpy arrays
@@ -701,6 +704,7 @@ def load_data(
 
     # Normalize data
     if normalize and data_range:
+        # TODO: Deprecate in version 4.0.0
         if batch:
             img_arr = [
                 normalize_data(img=img, data_range_output=(0, data_range))
@@ -712,6 +716,7 @@ def load_data(
     if roi:
         # Crop image
         if batch:
+            # TODO: Deprecate in version 4.0.0
             img_arr = [crop_image(img, *roi) for img in img_arr]
         elif not isinstance(img_arr, list):
             img_arr = crop_image(img_arr, *roi)
@@ -720,6 +725,7 @@ def load_data(
     if isinstance(img_arr, ImageArray):
         img_final = img_arr
     elif isinstance(img_arr, list):
+        # TODO: Deprecate in version 4.0.0
         img_final = [ImageArray(img) for img in img_arr]
     else:
         img_final = ImageArray(img_arr)
@@ -756,7 +762,7 @@ def normalize_data(
     ------
     ValueError
         If data type is not supported.
-        If ``data_range`` is not supported.
+        If ``data_range_output`` is not supported.
         If ``automatic_data_range`` is False and ``data_range_input`` is not set.
 
     Warns
@@ -862,19 +868,37 @@ def crop_image(
     ------
     ValueError
         If the image is not 2D or 3D.
+        If the cropped image shape is larger than the original image shape.
 
     Warns
     -----
     RuntimeWarning
         If the image is 2D, the parameter z will be ignored.
     """
-    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
-        if z is not None:
-            warn("Image is 2D. Parameter z will be ignored.", RuntimeWarning)
-        img_crop = img[x[0] : x[1], y[0] : y[1]]
-    elif img.ndim == 3 and z is not None:
-        img_crop = img[x[0] : x[1], y[0] : y[1], z[0] : z[1]]
-    else:
+    # Get original shape to check if image is already cropped
+    img_shape = np.array(img.shape)
+
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):  # If image is 2D
+        crop_shape = np.array((x[1] - x[0], y[1] - y[0]))
+        if (crop_shape < img_shape).all():  # If cropping is smaller than original image
+            if z is not None:
+                warn("Image is 2D. Parameter z will be ignored.", RuntimeWarning)
+            img_crop = img[x[0] : x[1], y[0] : y[1]]
+        elif crop_shape == img_shape:  # If image is already cropped
+            warn("Image is already cropped.", RuntimeWarning)
+            img_crop = img
+        else:  # If cropping is larger than original image
+            raise ValueError("Cropped image shape must be smaller than original image.")
+    elif img.ndim == 3 and z is not None:  # If image is 3D
+        crop_shape = np.array((x[1] - x[0], y[1] - y[0], z[1] - z[0]))
+        if (crop_shape < img_shape).all():  # If cropping is smaller than original image
+            img_crop = img[x[0] : x[1], y[0] : y[1], z[0] : z[1]]
+        elif crop_shape == img_shape:  # If image is already cropped
+            warn("Image is already cropped.", RuntimeWarning)
+            img_crop = img
+        else:  # If cropping is larger than original image
+            raise ValueError("Cropped image shape must be smaller than original image.")
+    else:  # If image is not 2D or 3D
         raise ValueError("Image must be 2D or 3D.")
     return img_crop
 
