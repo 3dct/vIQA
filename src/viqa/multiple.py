@@ -57,6 +57,7 @@ from viqa._metrics import Metric
 from viqa.utils import (
     _check_imgs,
     _resize_image,
+    crop_image,
     export_image,
     export_metadata,
     load_data,
@@ -238,6 +239,7 @@ class BatchMetrics(_MultipleInterface):
                 warn("Skipping calculation for identical image pair.", UserWarning)
                 continue
             # Load the images only once if it is the same for multiple pairs
+            roi = kwargs.pop("roi", None)  # Remove roi parameter to avoid conflicts
             if reference_path != prev_ref_path:
                 reference_img = load_data(reference_path, **kwargs)
                 prev_ref_path = reference_path
@@ -251,7 +253,6 @@ class BatchMetrics(_MultipleInterface):
             else:
                 prev_result_modified = metric_results
 
-            _ = kwargs.pop("roi")  # Remove roi parameter to avoid conflicts
             metric_results = _calc(
                 self.metrics,
                 self.metrics_parameters,
@@ -260,6 +261,7 @@ class BatchMetrics(_MultipleInterface):
                 prev_result_reference=prev_result_reference,
                 prev_result_modified=prev_result_modified,
                 scaling_order=scaling_order,
+                roi=roi,
                 **kwargs,
             )
             self.results[str(pair_num)] = metric_results
@@ -638,11 +640,16 @@ def _calc(metrics, metrics_parameters, img_r, img_m, **kwargs):
     leave = kwargs.pop("leave", False)
     prev_result_reference = kwargs.pop("prev_result_reference", None)
     prev_result_modified = kwargs.pop("prev_result_modified", None)
+    roi = kwargs.pop("roi", None)
 
     img_r = load_data(img_r, **kwargs)
     img_m = load_data(img_m, **kwargs)
 
     img_m = _resize_image(img_r, img_m, scaling_order)
+
+    if roi is not None:
+        img_r = crop_image(img_r, *roi)
+        img_m = crop_image(img_m, *roi)
 
     img_r, img_m = _check_imgs(img_r, img_m, **kwargs)
 

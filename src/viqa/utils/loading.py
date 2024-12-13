@@ -287,7 +287,10 @@ class ImageArray(np.ndarray):
         return stats
 
     def visualize(
-        self, slices: Tuple[int, int, int], export_path=None, **kwargs
+        self,
+        slices: Union[Tuple[int, int, int], None] = None,
+        export_path: Union[str, os.PathLike, None] = None,
+        **kwargs,
     ) -> None:
         """
         Visualize the image array.
@@ -308,6 +311,7 @@ class ImageArray(np.ndarray):
         ------
         ValueError
             If the image is not 2D or 3D.
+            If parameter slices is not provided for 3D images.
 
         Warns
         -----
@@ -322,10 +326,13 @@ class ImageArray(np.ndarray):
         >>> img = ImageArray(img)
         >>> img.visualize(slices=(64, 64, 64))
         """
-        if self.ndim == 3:
+        if self.ndim == 3 and self.shape[-1] != 3:
+            if not slices:
+                raise ValueError("Parameter slices must be set for 3D images.")
             visualize_3d(self, slices, export_path, **kwargs)
-        elif self.ndim == 2:
-            warn("Image is 2D. Parameter slices will be ignored.", RuntimeWarning)
+        elif self.ndim == 2 or (self.ndim == 3 and self.shape[-1] == 3):
+            if slices:
+                warn("Image is 2D. Parameter slices will be ignored.", RuntimeWarning)
             visualize_2d(self, export_path, **kwargs)
         else:
             raise ValueError("Image must be 2D or 3D.")
@@ -843,7 +850,7 @@ def crop_image(
     img: np.ndarray | ImageArray,
     x: Tuple[int, int],
     y: Tuple[int, int],
-    z: Union[Tuple[int, int], None],
+    z: Union[Tuple[int, int], None] = None,
 ) -> np.ndarray | ImageArray:
     """
     Crop the image array.
@@ -884,7 +891,7 @@ def crop_image(
             if z is not None:
                 warn("Image is 2D. Parameter z will be ignored.", RuntimeWarning)
             img_crop = img[x[0] : x[1], y[0] : y[1]]
-        elif crop_shape == img_shape:  # If image is already cropped
+        elif (crop_shape == img_shape).all():  # If image is already cropped
             warn("Image is already cropped.", RuntimeWarning)
             img_crop = img
         else:  # If cropping is larger than original image
