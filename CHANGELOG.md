@@ -2,6 +2,15 @@
 
 
 
+## v2.0.6 (2024-12-13)
+
+### Bug fixes
+
+* fix: fix bug when using batch mode
+
+batch mode couldn't be used without the parameter `roi` give ([`3693e64`](https://github.com/3dct/vIQA/commit/3693e64d0b9f81c40cbfc574287b3759c2a919d6))
+
+
 ## v2.0.5 (2024-11-18)
 
 ### Bug fixes
