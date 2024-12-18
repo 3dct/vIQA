@@ -12,9 +12,9 @@ Workflow
 --------
 Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data
 range (if the parameter ``normalize=True`` is set) and then compared. The scores are then calculated and can be printed.
-If using paths file names need to be given with the bit depth denoted as a suffix (e.g. ``_8bit.raw``, ``_16bit.raw``) and
-the dimensions of the images need to be given in the file name (e.g. ``512x512x512``). The images are assumed to be
-grayscale. Treatment of color images is planned for later versions.
+If using paths file names need to be given with the bit depth denoted as a suffix (e.g. ``_8ubit.raw``, ``_16fbit.raw``;
+``u`` and ``f`` denoting unsigned integer or float respectively) and the dimensions of the images need to be given in the file
+name (e.g. ``512x512x512``). The images are assumed to be grayscale. Treatment of color images is planned for later versions.
 The metrics are implemented to calculate the scores for an 8-bit data range (0-255) per default. For some metrics the
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
 data range should be used for all metrics. The data range can be changed by setting the parameter ``data_range`` for each
@@ -33,8 +33,8 @@ Better:
     from viqa.utils import normalize_data
 
     ## load images
-    file_path_img_r = 'path/to/reference_image_8bit_512x512x512.raw'
-    file_path_img_m = 'path/to/modified_image_8bit_512x512x512.raw'
+    file_path_img_r = 'path/to/reference_image_8ubit_512x512x512.raw'
+    file_path_img_m = 'path/to/modified_image_8ubit_512x512x512.raw'
     img_r = load_data(
       file_path_img_r,
       data_range=1,
@@ -81,8 +81,8 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 
     import viqa
 
-    file_path_img_r = 'path/to/reference_image_512x512x512_16bit.raw'
-    file_path_img_m = 'path/to/modified_image_512x512x512_16bit.raw'
+    file_path_img_r = 'path/to/reference_image_512x512x512_16ubit.raw'
+    file_path_img_m = 'path/to/modified_image_512x512x512_16ubit.raw'
 
     load_parameters = {'data_range': 1, 'normalize': True}
     # data_range is set to 1 to normalize the images

@@ -45,7 +45,7 @@ The metrics used are:
 - Peak Signal to Noise Ratio (PSNR)
 - Root Mean Square Error (RMSE)
 - Universal Quality Index (UQI) [^1]
-- Structured Similarity (SSIM) [^2]
+- Structural Similarity (SSIM) [^2]
 - Multi-Scale Structural Similarity (MS-SSIM) [^3]
 - Feature Similarity Index (FSIM) [^4]
 - Visual Information Fidelity in *pixel* domain (VIFp) [^5]
@@ -77,7 +77,7 @@ The metrics used are:
 | PSNR      | Peak Signal to Noise Ratio                    | FR   | 3D native             | ✔️               | $[0, \infty)$                            | ✔️     | ✔️        | &mdash;   |
 | RMSE      | Root Mean Square Error                        | FR   | 3D native             | ✔️               | $(\infty, 0]$                            | ✔️     | ✔️        | &mdash;   |
 | UQI [^a]  | Universal Quality Index                       | FR   | 3D native             | (✔️) [^b]        | $[-1, 1]$                                | ❌      | (✔️) [^c] | [^1]      |
-| SSIM      | Structured Similarity                         | FR   | 3D native             | (✔️) [^b]        | $[-1, 1]$ [^d]                           | ✔️     | ✔️        | [^2]      |
+| SSIM      | Structural Similarity                         | FR   | 3D native             | (✔️) [^b]        | $[-1, 1]$ [^d]                           | ✔️     | ✔️        | [^2]      |
 | MS-SSIM   | Multi-Scale Structural Similarity             | FR   | 3D slicing            | ❓                | $[0, 1]$                                 | ❌      | ✔️        | [^3]      |
 | FSIM      | Feature Similarity Index                      | FR   | 3D slicing            | ✔️               | $[0, 1]$                                 | ✔️     | ✔️        | [^4]      |
 | VIFp      | Visual Information Fidelity in *pixel* domain | FR   | 3D slicing            | ❓                | $[0, \infty)$ [^e]                       | ❌      | ❌         | [^5]      |
@@ -134,13 +134,13 @@ conda install -c conda-forge viqa
 ### Workflow
 Images are first loaded from .raw files or .mhd files and their corresponding .raw file, normalized to the chosen data
 range (if the parameter `normalize=True` is set) and then compared. The scores are then calculated and can be printed.
-If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8bit.raw`, `_16bit.mhd`) and
-the dimensions of the images need to be given in the file name (e.g. `512x512x512`). The images are assumed to be
-grayscale. Treatment of color images is planned for later versions.
+If using paths file names need to be given with the bit depth denoted as a suffix (e.g. `_8ubit.raw`, `_16fbit.mhd`;
+``u`` and ``f`` denoting unsigned integer or float respectively) and the dimensions of the images need to be given in the file
+name (e.g. `512x512x512`). The images are assumed to be grayscale. Treatment of color images is planned for later versions.
 The metrics are implemented to calculate the scores for an 8-bit data range (0-255) per default. For some metrics the
 resulting score is different for different data ranges. When calculating several metrics for the same image, the same
 data range should be used for all metrics. The data range can be changed by setting the parameter `data_range` for each
-metric. This parameter primarily affects the loading behaviour of the class instances when not using the
+metric. This parameter primarily affects the loading behavior of the class instances when not using the
 `vIQA.utils.load_data` function directly as described further below, but for some metrics setting the data range is
 necessary to calculate the score (e.g. PSNR).
 
@@ -152,8 +152,8 @@ import viqa
 from viqa import load_data, normalize_data
 
 ## load images
-file_path_img_r = 'path/to/reference_image_8bit_512x512x512.raw'
-file_path_img_m = 'path/to/modified_image_8bit_512x512x512.raw'
+file_path_img_r = 'path/to/reference_image_8ubit_512x512x512.raw'
+file_path_img_m = 'path/to/modified_image_8ubit_512x512x512.raw'
 img_r = load_data(
   file_path_img_r,
   data_range=1,
@@ -199,8 +199,8 @@ Possible, but worse (recommended only if you want to calculate a single metric):
 ```python
 import viqa
 
-file_path_img_r = 'path/to/reference_image_512x512x512_16bit.raw'
-file_path_img_m = 'path/to/modified_image_512x512x512_16bit.raw'
+file_path_img_r = 'path/to/reference_image_512x512x512_16ubit.raw'
+file_path_img_m = 'path/to/modified_image_512x512x512_16ubit.raw'
 
 load_parameters = {'data_range': 1, 'normalize': True}
 # data_range is set to 1 to normalize the images
