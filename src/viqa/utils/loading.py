@@ -408,6 +408,15 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     img_arr : np.ndarray
         Numpy array containing the data
 
+    Notes
+    -----
+    Currently supported bit depths are:
+    - 8 bit unsigned integer (MET_UCHAR)
+    - 16 bit unsigned integer (MET_USHORT)
+    - 32 bit unsigned integer (MET_UINT)
+    - 32 bit float (MET_FLOAT)
+    - 64 bit float (MET_DOUBLE)
+
     Raises
     ------
     ValueError
@@ -443,12 +452,16 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
-    if bit_depth == "MET_USHORT":
-        data_type = np.ushort  # Set data type to unsigned short
-    elif bit_depth == "MET_UCHAR":
+    if bit_depth == "MET_UCHAR":  # 8 bit
         data_type = np.ubyte  # Set data type to unsigned byte
+    elif bit_depth == "MET_USHORT":  # 16 bit
+        data_type = np.ushort  # Set data type to unsigned short
+    elif bit_depth == "MET_UINT":  # 32 bit
+        data_type = np.uintc  # Set data type to unsigned int
     elif bit_depth == "MET_FLOAT":
         data_type = np.float32  # Set data type to float32
+    elif bit_depth == "MET_DOUBLE":
+        data_type = np.float64  # Set data type to float64
     else:
         raise ValueError(
             "Bit depth not supported"
@@ -473,6 +486,26 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     -------
     img_arr : np.ndarray
         Numpy array containing the data
+
+    Notes
+    -----
+    The file name must contain the dimension and the bit depth in the following format:
+    ``DimSizeXxDimSizeYxDimSizeZ`` and ``_BitDepth.raw``. The bit depth must be one of
+    the following:
+    - 8ubit
+    - 16ubit
+    - 32ubit
+    for unsigned integer and
+    - 16fbit
+    - 32fbit
+    - 64fbit
+    for floating point numbers.
+
+    The following are used for backwards compatibility and denote the respective
+    unsigned integer bit depths:
+    - 8bit
+    - 16bit
+    - 32bit
 
     Raises
     ------
@@ -507,7 +540,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     # Check bit depth
     bit_depth_search_result = re.search(
-        r"(\d{1,2}bit)", file_name_head
+        r"(\d{1,2}[fu]?(?=bit[s]?))", file_name_head
     )  # Search for the bit depth in file name
     if bit_depth_search_result is not None:  # If the bit depth was found
         bit_depth = bit_depth_search_result.group(1)  # Get the bit depth from file name
@@ -516,15 +549,25 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
             "No bit depth found"
         )  # Raise exception if no bit depth was found
 
+    data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
-    if bit_depth == "16bit":
-        data_type = np.ushort  # Set data type to unsigned short
-    elif bit_depth == "8bit":
-        data_type = np.ubyte  # Set data type to unsigned byte
-    else:
-        raise ValueError(
-            "Bit depth not supported"
-        )  # Raise exception if the bit depth is not supported
+    match bit_depth:
+        case "8u" | "8":  # "8" is for backwards compatibility
+            data_type = np.ubyte  # Set data type to unsigned byte
+        case "16u" | "16":  # "16" is for backwards compatibility
+            data_type = np.ushort  # Set data type to unsigned short
+        case "32u" | "32":  # "32" is for backwards compatibility
+            data_type = np.uintc  # Set data type to unsigned int
+        case "16f":
+            data_type = np.half  # Set data type to half precision float
+        case "32f":
+            data_type = np.float32  # Set data type to float32
+        case "64f":
+            data_type = np.float64  # Set data type to float64
+        case _:
+            raise ValueError(
+                "Bit depth not supported"
+            )  # Raise exception if the bit depth is not supported
 
     data_file_path = os.path.join(file_dir, file_name)  # Get data file path
 
