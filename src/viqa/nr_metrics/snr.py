@@ -60,9 +60,11 @@ display, has_ipython = try_import("IPython.display", "display")
 
 glob_signal_center = ()
 glob_radius = None
-
-FIGSIZE_SNR_2D_ = tuple(f"{val}in" for val in FIGSIZE_SNR_2D)
-FIGSIZE_SNR_3D_ = tuple(f"{val}in" for val in FIGSIZE_SNR_3D)
+glob_region_type = None
+glob_iterations = None
+glob_lower_threshold = None
+glob_upper_threshold = None
+glob_signal = None
 
 
 class SNR(NoReferenceMetricsInterface):
@@ -82,6 +84,8 @@ class SNR(NoReferenceMetricsInterface):
         ``normalize`` is True. Passed to :py:func:`viqa.utils.load_data`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
+    name : str, default="SNR"
+        Name of the metric.
 
     **kwargs : optional
         Additional parameters for data loading. The keyword arguments are passed to
@@ -97,10 +101,11 @@ class SNR(NoReferenceMetricsInterface):
 
     """
 
-    def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
+    def __init__(self, data_range=255, normalize=False, name="SNR", **kwargs) -> None:
         """Construct method."""
-        super().__init__(data_range=data_range, normalize=normalize, **kwargs)
-        self._name = "SNR"
+        super().__init__(
+            data_range=data_range, normalize=normalize, name=name, **kwargs
+        )
 
     def score(self, img, **kwargs):
         """Calculate the signal-to-noise ratio (SNR) for an image.
@@ -120,6 +125,8 @@ class SNR(NoReferenceMetricsInterface):
         score_val : float
             SNR score value.
         """
+        # TODO: Check this function: maybe other parameters from attribute;
+        #  what happens when auto_center is True but region_type != "full"
         img = self.load_images(img)
 
         # check if signal_center and radius are provided
@@ -129,6 +136,9 @@ class SNR(NoReferenceMetricsInterface):
 
             kwargs["signal_center"] = self.parameters["signal_center"]
             kwargs["radius"] = self.parameters["radius"]
+
+        # TODO: Write standard params of signal to noise ratio to .parameters attribute
+        #  if not already done
 
         # write kwargs to .parameters attribute
         self.parameters.update(kwargs)
@@ -156,7 +166,14 @@ class SNR(NoReferenceMetricsInterface):
             warn("No score value for SNR. Run score() first.", RuntimeWarning)
 
     def visualize_centers(
-        self, img, signal_center=None, radius=None, export_path=None, **kwargs
+        self,
+        img,
+        signal_center=None,
+        radius=None,
+        region_type=None,
+        signal=None,
+        export_path=None,
+        **kwargs,
     ):
         """Visualize the centers for SNR calculation.
 
@@ -174,6 +191,17 @@ class SNR(NoReferenceMetricsInterface):
         radius : int, optional
             Width of the regions.
             If not given the class attribute :py:attr:`parameters` is used.
+        region_type : {'cubic', 'spherical', 'full', 'original'}, optional
+            Type of region to visualize.
+            If not given the class attribute :py:attr:`parameters` is used.
+
+            .. note::
+                See :py:func:`viqa.utils.find_largest_region` for more information on
+                the possible region types.
+
+        signal : np.ndarray, optional
+            Region to visualize. If not given, the region is visualized based on the
+            given parameters.
         export_path : str or os.PathLike, optional
             Path to export the visualization to.
         **kwargs : optional
@@ -188,6 +216,10 @@ class SNR(NoReferenceMetricsInterface):
             If the given signal_center is not in the same dimension as the image.
             If the center is too close to the border.
             If the image is not 2D or 3D.
+            If no region type is provided.
+            If the passed region type is not valid.
+            If no center or radius is provided when region type is not 'full' or
+            'original'.
         TypeError
             If the center is not a tuple of integers.
             If the radius is not a positive integer.
@@ -195,27 +227,53 @@ class SNR(NoReferenceMetricsInterface):
         # Load image
         img = self.load_images(img)
 
-        if not signal_center or not radius:
-            if not {"signal_center", "radius"}.issubset(self.parameters.keys()):
-                raise ValueError("No center or radius provided.")
+        # Check if parameters are provided
+        if not region_type:
+            try:
+                region_type = self.parameters["region_type"]
+            except KeyError:
+                raise ValueError("No region type provided.") from None
+        if not signal:
+            try:
+                signal = self._region
+            except AttributeError:
+                signal = None
 
-            signal_center = self.parameters["signal_center"]
-            radius = self.parameters["radius"]
+        if signal is None and region_type not in {"full", "original"}:
+            if not signal_center:
+                try:
+                    signal_center = self.parameters["signal_center"]
+                except KeyError:
+                    raise ValueError("No center provided.") from None
+                if signal_center is None:
+                    raise ValueError("No center provided.")
+            if not radius:
+                try:
+                    radius = self.parameters["radius"]
+                except KeyError:
+                    raise ValueError("No radius provided.") from None
+                if radius is None:
+                    raise ValueError("No radius provided.")
 
-        # Check if img and signal_center have the same dimension
-        if img.shape[-1] == 3:
-            if img.ndim != len(signal_center) + 1:
-                raise ValueError("Center has to be in the same dimension as img.")
+            # Check if img and signal_center have the same dimension
+            if img.shape[-1] == 3:
+                if img.ndim != len(signal_center) + 1:
+                    raise ValueError("Center has to be in the same dimension as img.")
+            else:
+                if img.ndim != len(signal_center):
+                    raise ValueError("Center has to be in the same dimension as img.")
+
+            # check if radius is an integer and positive
+            if not isinstance(radius, int) or radius <= 0:
+                raise TypeError("Radius has to be a positive integer.")
+
+            # check if signal_center is a tuple of integers
+            # and not too close to the border
+            _check_border_too_close(signal_center, radius)
         else:
-            if img.ndim != len(signal_center):
-                raise ValueError("Center has to be in the same dimension as img.")
-
-        # check if radius is an integer and positive
-        if not isinstance(radius, int) or radius <= 0:
-            raise TypeError("Radius has to be a positive integer.")
-
-        # check if signal_center is a tuple of integers and not too close to the border
-        _check_border_too_close(signal_center, radius)
+            if not signal_center:
+                # Center of image
+                signal_center = tuple(val // 2 for val in img.shape)
 
         # Visualize centers
         if img.ndim == 3 and (img.shape[-1] != 3):  # 3D image
@@ -223,6 +281,8 @@ class SNR(NoReferenceMetricsInterface):
                 img=img,
                 signal_center=signal_center,
                 radius=radius,
+                region_type=region_type,
+                signal=signal,
                 export_path=export_path,
                 **kwargs,
             )
@@ -232,6 +292,8 @@ class SNR(NoReferenceMetricsInterface):
                 img=img,
                 signal_center=signal_center,
                 radius=radius,
+                region_type=region_type,
+                signal=signal,
                 export_path=export_path,
                 **kwargs,
             )
@@ -240,6 +302,8 @@ class SNR(NoReferenceMetricsInterface):
                 img=img,
                 signal_center=signal_center,
                 radius=radius,
+                region_type=region_type,
+                signal=signal,
                 export_path=export_path,
                 **kwargs,
             )
@@ -249,6 +313,7 @@ class SNR(NoReferenceMetricsInterface):
     def set_centers(
         self,
         img,
+        vis_kwargs=None,
         **kwargs,
     ):
         """Visualize and set the centers for SNR calculation interactively.
@@ -259,16 +324,27 @@ class SNR(NoReferenceMetricsInterface):
         ----------
         img : np.ndarray or Tensor or str or os.PathLike
             Image to visualize.
-        **kwargs : optional
+        vis_kwargs: dict, optional
             Additional parameters for visualization. The keyword arguments are passed to
             :py:meth:`visualize_centers` and :py:func:`matplotlib.pyplot.subplots`.
-            ``signal_center``, and ``radius`` can be provided as starting points for the
-            interactive center selection. If not provided, the center of the image is
-            used as the starting point.
+        **kwargs : optional
+            Additional parameters as starting points for the interactive center
+            selection. ``signal_center``, ``radius`` and ``region_type`` can be provided
+            as starting points for the interactive center selection. If not provided,
+            the center of the image is used as the starting point.
+            If the region should be calculated automatically, the following parameters
+            can also be given as starting points:
+            - ``iterations``: Number of iterations for morphological operations.
+            - ``lower_threshold``: Lower threshold for the binary image.
+            - ``upper_threshold``: Upper threshold for the binary image.
 
-            .. caution::
-                The class attribute :py:attr:`parameters` takes precedence over the
-                given parameters.
+            If not provided, the class attribute :py:attr:`parameters` is used.
+            If the class attribute is not set, default values are used.
+
+        Notes
+        -----
+        To calculate the region automatically takes some time after clicking the
+        ``Calculate Full Region`` button until the image is updated.
 
         Warnings
         --------
@@ -284,6 +360,7 @@ class SNR(NoReferenceMetricsInterface):
             If the given signal_center is not in the same dimension as the image.
             If the center is too close to the border.
             If the image is not 2D or 3D.
+            If region type is not valid.
         TypeError
             If the center is not a tuple of integers.
             If the radius is not a positive integer.
@@ -291,10 +368,17 @@ class SNR(NoReferenceMetricsInterface):
         # Load image
         img = self.load_images(img)
 
+        # Remove parameters from kwargs
+        _ = kwargs.pop("auto_center", None)
+        _ = kwargs.pop("yuv", None)
+
+        if vis_kwargs is None:
+            vis_kwargs = {}
+
         if not is_ipython():
             try:
                 warn("Trying to visualize in a non-interactive environment.")
-                self.visualize_centers(img, **kwargs)
+                self.visualize_centers(img, **vis_kwargs)
                 return
             except Exception:
                 raise ImportError(
@@ -308,8 +392,10 @@ class SNR(NoReferenceMetricsInterface):
         # Prepare visualization functions and widgets
 
         # Define output layout
-        def _output_layout(out, figsize_variable):
-            figsize = kwargs.get("figsize", figsize_variable)
+        def _output_layout(out, figsize):
+            figsize = list(vis_kwargs.get("figsize", figsize))
+            figsize[1] += 2
+            figsize = tuple(f"{val}in" for val in figsize)
             width = figsize[0]
             height = figsize[1]
             out.layout = {
@@ -319,36 +405,111 @@ class SNR(NoReferenceMetricsInterface):
 
         # Define function to save values from global variables to .parameters attribute
         def _save_values(_):
-            global glob_signal_center, glob_radius
-            self.parameters.update(
-                {
+            global \
+                glob_signal, \
+                glob_signal_center, \
+                glob_radius, \
+                glob_region_type, \
+                glob_iterations, \
+                glob_lower_threshold, \
+                glob_upper_threshold
+            if glob_region_type == "full":
+                parameters = {
+                    "region_type": glob_region_type,
+                    "iterations": glob_iterations,
+                    "lower_threshold": glob_lower_threshold,
+                    "upper_threshold": glob_upper_threshold,
+                    "auto_center": True,
+                    "signal_center": None,
+                    "radius": None,
+                }
+                self._region = glob_signal
+            elif glob_region_type in ["cubic", "spherical"]:
+                parameters = {
                     "signal_center": glob_signal_center,
                     "radius": glob_radius,
+                    "region_type": glob_region_type,
+                    "auto_center": False,
+                    "iterations": None,
+                    "lower_threshold": None,
+                    "upper_threshold": None,
                 }
+            else:
+                parameters = {
+                    "region_type": glob_region_type,
+                    "auto_center": False,
+                    "iterations": None,
+                    "lower_threshold": None,
+                    "upper_threshold": None,
+                    "signal_center": None,
+                    "radius": None,
+                }
+
+            self.parameters.update(parameters)
+
+            # if glob_signal is not None and glob_region_type == "full":
+            #     parameters["signal"] = glob_signal
+            #
+            # return parameters
+
+        # Calculate region
+        def _calculate_region(_):
+            global \
+                glob_region_type, \
+                glob_signal, \
+                glob_iterations, \
+                glob_lower_threshold, \
+                glob_upper_threshold
+
+            binary_foreground = _get_binary(
+                img,
+                lower_threshold=lower_threshold_slider.value,
+                upper_threshold=upper_threshold_slider.value,
+                show=False,
             )
 
+            _, _, signal_region = find_largest_region(
+                img=binary_foreground,
+                region_type=glob_region_type,
+                iterations=iterations_slider.value,
+            )
+
+            glob_signal = np.ma.array(img, mask=~signal_region, copy=True)
+            glob_iterations = iterations_slider.value
+            glob_lower_threshold = lower_threshold_slider.value
+            glob_upper_threshold = upper_threshold_slider.value
+            # TODO: Change to automatic visualization update
+            dropdown_region_type.value = "full"
+
         # Define function to save values to global variables
-        def _write_values_to_global(signal_value, radius_value):
+        def _write_values_to_global(signal_value, radius_value, region_type):
             # Set global variables
-            global glob_signal_center, glob_radius
+            global glob_signal_center, glob_radius, glob_region_type
             glob_signal_center = signal_value
             glob_radius = radius_value
+            glob_region_type = region_type
 
         # Define functions for visualization
         def _update_visualization_2d(
             signal_center_x,
             signal_center_y,
             radius,
+            region_type,
         ):
             signal_center = (signal_center_x, signal_center_y)
+            figsize = vis_kwargs.get("figsize", FIGSIZE_SNR_2D)
+            kwargs.update({"figsize": figsize})
 
-            _write_values_to_global(signal_center, radius)
+            _write_values_to_global(signal_center, radius, region_type)
 
+            global glob_signal
             _visualize_snr_2d(
                 img=img,
                 signal_center=signal_center,
                 radius=radius,
-                **kwargs,
+                region_type=region_type,
+                signal=glob_signal,
+                **vis_kwargs,
             )
 
         def _update_visualization_3d(
@@ -356,20 +517,26 @@ class SNR(NoReferenceMetricsInterface):
             signal_center_y,
             signal_center_z,
             radius,
+            region_type,
         ):
             signal_center = (
                 signal_center_x,
                 signal_center_y,
                 signal_center_z,
             )
+            figsize = vis_kwargs.get("figsize", FIGSIZE_SNR_3D)
+            kwargs.update({"figsize": figsize})
 
-            _write_values_to_global(signal_center, radius)
+            _write_values_to_global(signal_center, radius, region_type)
 
+            global glob_signal
             _visualize_snr_3d(
                 img=img,
                 signal_center=signal_center,
                 radius=radius,
-                **kwargs,
+                region_type=region_type,
+                signal=glob_signal,
+                **vis_kwargs,
             )
 
         # Check if img is 2D RGB image
@@ -377,30 +544,84 @@ class SNR(NoReferenceMetricsInterface):
             img = _to_grayscale(img)
 
         center_point = tuple(val // 2 for val in img.shape)
-        # Check if background_center and signal_center are provided
-        if {"signal_center", "radius"}.issubset(self.parameters.keys()):
-            signal_start = self.parameters["signal_center"]
-            radius_start = self.parameters["radius"]
+
+        # Check if starting parameters are provided
+        if "signal_center" not in kwargs.keys():
+            try:
+                signal_start = self.parameters["signal_center"]
+            except KeyError:
+                signal_start = center_point
         else:
-            signal_start = kwargs.pop("signal_center", center_point)
-            radius_start = kwargs.pop("radius", 1)
+            signal_start = kwargs.pop("signal_center")
+        if "radius" not in kwargs.keys():
+            try:
+                radius_start = self.parameters["radius"]
+            except KeyError:
+                radius_start = 1
+        else:
+            radius_start = kwargs.pop("radius")
+        if "region_type" not in kwargs.keys():
+            try:
+                region_type_start = self.parameters["region_type"]
+            except KeyError:
+                region_type_start = "cubic"
+        else:
+            region_type_start = kwargs.pop("region_type")
+        if "iterations" not in kwargs.keys():
+            try:
+                iterations_start = self.parameters["iterations"]
+            except KeyError:
+                iterations_start = 2
+        else:
+            iterations_start = kwargs.pop("iterations")
+        if "lower_threshold" not in kwargs.keys():
+            try:
+                lower_threshold_start = self.parameters["lower_threshold"]
+            except KeyError:
+                lower_threshold_start = 90
+        else:
+            lower_threshold_start = kwargs.pop("lower_threshold")
+        if "upper_threshold" not in kwargs.keys():
+            try:
+                upper_threshold_start = self.parameters["upper_threshold"]
+            except KeyError:
+                upper_threshold_start = 99
+        else:
+            upper_threshold_start = kwargs.pop("upper_threshold")
 
-        _write_values_to_global(signal_start, radius_start)
+        _write_values_to_global(signal_start, radius_start, region_type_start)
 
-        global glob_signal_center, glob_radius
+        global glob_signal_center, glob_radius, glob_region_type
         # Check if background_center and signal_center are the right shape for 2d and 3d
         if len(glob_signal_center) != img.ndim:
             raise ValueError("Signal center has to be in the same dimension as img.")
 
-        # check if radius is an integer and positive
+        # Check if radius is an integer and positive
         if not isinstance(glob_radius, int) or glob_radius <= 0:
             raise TypeError("Radius has to be a positive integer.")
 
-        # check if signal_center is a tuple of integers and not too close to the border
+        # Check if region_type is valid
+        if glob_region_type not in {
+            "full",
+            "original",
+            "cubic",
+            "spherical",
+        }:
+            raise ValueError("Region type not valid.")
+
+        # Check if signal_center is a tuple of integers and not too close to the border
         _check_border_too_close(glob_signal_center, glob_radius)
 
         # Write values to attributes
         _save_values(None)
+
+        # Create dropdown for region type
+        dropdown_region_type = widgets.Dropdown(
+            options=["cubic", "spherical", "full", "original"],
+            value=region_type_start,
+            description="Region Type:",
+        )
+        dropdown_region_type.style = {"description_width": "initial"}
 
         # Create slider for radius
         slider_radius = _create_slider_widget(
@@ -448,8 +669,47 @@ class SNR(NoReferenceMetricsInterface):
 
         slider_radius.observe(_update_values, "value")
 
+        lower_threshold_slider = _create_slider_widget(
+            min=0,
+            max=100,
+            value=lower_threshold_start,
+            description="Lower Threshold",
+        )
+        lower_threshold_slider.style = {
+            "handle_color": "#f7f7f7",
+            "description_width": "initial",
+        }
+
+        upper_threshold_slider = _create_slider_widget(
+            min=0,
+            max=100,
+            value=upper_threshold_start,
+            description="Upper Threshold",
+        )
+        upper_threshold_slider.style = {
+            "handle_color": "#f7f7f7",
+            "description_width": "initial",
+        }
+
+        iterations_slider = _create_slider_widget(
+            min=1,
+            max=10,
+            value=iterations_start,
+            description="Iterations",
+        )
+        iterations_slider.style = {
+            "handle_color": "#f7f7f7",
+            "description_width": "initial",
+        }
+
+        # Create button to calculate region
+        calc_button = widgets.Button(description="Calculate Full Region")
+        calc_button.on_click(_calculate_region)
+
         # Create button to save values
-        save_button = widgets.Button(description="Save Current Values")
+        save_button = widgets.Button(
+            description="Save Current Values", button_style="success"
+        )
         save_button.on_click(_save_values)
 
         # Visualize centers
@@ -466,9 +726,10 @@ class SNR(NoReferenceMetricsInterface):
                     "signal_center_y": slider_signal_center_y,
                     "signal_center_z": slider_signal_center_z,
                     "radius": slider_radius,
+                    "region_type": dropdown_region_type,
                 },
             )
-            _output_layout(out, FIGSIZE_SNR_3D_)
+            _output_layout(out, FIGSIZE_SNR_3D)
 
             # Create UI
             ui = widgets.VBox(
@@ -494,11 +755,33 @@ class SNR(NoReferenceMetricsInterface):
                                 ]
                             ),
                         ],
-                        layout=widgets.Layout(justify_content="space-around"),
+                        layout=widgets.Layout(
+                            justify_content="space-around", padding="20px 0px"
+                        ),
                     ),
                     widgets.HBox(
-                        [slider_radius, save_button],
-                        layout=widgets.Layout(justify_content="center"),
+                        [slider_radius, dropdown_region_type],
+                        layout=widgets.Layout(
+                            justify_content="space-around",
+                            padding="20px 0px",
+                        ),
+                    ),
+                    widgets.HBox(
+                        [
+                            lower_threshold_slider,
+                            upper_threshold_slider,
+                            iterations_slider,
+                            calc_button,
+                        ],
+                        layout=widgets.Layout(
+                            justify_content="space-around", padding="20px 0px"
+                        ),
+                    ),
+                    widgets.HBox(
+                        [save_button],
+                        layout=widgets.Layout(
+                            justify_content="center", padding="20px 0px"
+                        ),
                     ),
                 ],
                 layout=widgets.Layout(padding="10px 60px"),
@@ -518,9 +801,10 @@ class SNR(NoReferenceMetricsInterface):
                     "signal_center_x": slider_signal_center_x,
                     "signal_center_y": slider_signal_center_y,
                     "radius": slider_radius,
+                    "region_type": dropdown_region_type,
                 },
             )
-            _output_layout(out, FIGSIZE_SNR_2D_)
+            _output_layout(out, FIGSIZE_SNR_2D)
 
             # Create UI
             ui = widgets.VBox(
@@ -543,8 +827,27 @@ class SNR(NoReferenceMetricsInterface):
                         layout=widgets.Layout(justify_content="space-around"),
                     ),
                     widgets.HBox(
-                        [slider_radius, save_button],
-                        layout=widgets.Layout(justify_content="center"),
+                        [slider_radius, dropdown_region_type],
+                        layout=widgets.Layout(
+                            justify_content="space-around", padding="20px 0px"
+                        ),
+                    ),
+                    widgets.HBox(
+                        [
+                            lower_threshold_slider,
+                            upper_threshold_slider,
+                            iterations_slider,
+                            calc_button,
+                        ],
+                        layout=widgets.Layout(
+                            justify_content="space-around", padding="20px 0px"
+                        ),
+                    ),
+                    widgets.HBox(
+                        [save_button],
+                        layout=widgets.Layout(
+                            justify_content="center", padding="20px 0px"
+                        ),
                     ),
                 ],
                 layout=widgets.Layout(padding="10px 60px"),
@@ -563,6 +866,8 @@ def signal_to_noise_ratio(
     region_type="cubic",
     auto_center=False,
     iterations=5,
+    lower_threshold=90,
+    upper_threshold=99,
     yuv=True,
     **kwargs,
 ):
@@ -593,6 +898,10 @@ def signal_to_noise_ratio(
     iterations : int, optional
         Number of iterations for morphological operations if `auto_center` is True.
         Default is 5.
+    lower_threshold : int, optional
+        Lower threshold for the binary image if `auto_center` is True. Default is 90.
+    upper_threshold : int, optional
+        Upper threshold for the binary image if `auto_center` is True. Default is 99.
     yuv : bool, default True
 
         .. important::
@@ -684,7 +993,10 @@ def signal_to_noise_ratio(
         )
 
         binary_foreground = _get_binary(
-            img, lower_threshold=90, upper_threshold=99, show=False
+            img,
+            lower_threshold=lower_threshold,
+            upper_threshold=upper_threshold,
+            show=False,
         )
 
         signal_center, radius, signal_region = find_largest_region(
@@ -705,7 +1017,7 @@ def signal_to_noise_ratio(
         elif region_type == "original":
             signal = img
 
-    # check if signal_center is a tuple of integers and radius is an integer
+    # Check if signal_center is a tuple of integers and radius is an integer
     for center in signal_center:
         if not isinstance(center, int):
             raise TypeError("Center has to be a tuple of integers.")
@@ -786,4 +1098,27 @@ def signal_to_noise_ratio(
     else:
         snr_val = np.mean(signal) / np.std(signal)
 
-    return np.float64(snr_val)
+    parameters = {}
+    match region_type:
+        case "full" if auto_center:
+            parameters.update(
+                {
+                    "iterations": iterations,
+                    "lower_threshold": lower_threshold,
+                    "upper_threshold": upper_threshold,
+                }
+            )
+        case "full" if not auto_center:
+            region_type = "original"
+        case "original":
+            pass
+        case _:
+            parameters.update(
+                {
+                    "signal_center": signal_center,
+                    "radius": radius,
+                }
+            )
+    parameters.update({"region_type": region_type, "signal": signal})
+
+    return np.float64(snr_val), parameters

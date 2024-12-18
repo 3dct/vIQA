@@ -42,7 +42,14 @@ FIGSIZE_SNR_3D = (10, 4)
 
 
 def _visualize_cnr_2d(
-    img, signal_center, background_center, radius, export_path=None, show=True, **kwargs
+    img,
+    signal_center,
+    background_center,
+    radius,
+    region_type,
+    export_path=None,
+    show=True,
+    **kwargs,
 ):
     figsize = kwargs.pop("figsize", FIGSIZE_CNR_2D)
     dpi = kwargs.pop("dpi", 300)
@@ -54,36 +61,61 @@ def _visualize_cnr_2d(
     axs[0].set_xlabel("x")
     axs[0].set_ylabel("y")
     axs[0].invert_yaxis()
-    rect_1 = patches.Rectangle(
-        (
-            background_center[0] - radius,
-            background_center[1] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ca0020",
-        facecolor="none",
-    )
-    axs[0].add_patch(rect_1)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_1 = patches.Rectangle(
+            (
+                background_center[0] - radius,
+                background_center[1] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ca0020",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_1 = patches.Circle(
+            (background_center[0], background_center[1]),
+            radius,
+            linewidth=1,
+            edgecolor="#ca0020",
+            facecolor="none",
+        )
+
+    if patch_1:
+        axs[0].add_patch(patch_1)
 
     axs[1].imshow(img[..., ::-1], cmap="gray")
     axs[1].set_title("Signal")
     axs[1].set_xlabel("x")
     axs[1].set_ylabel("y")
     axs[1].invert_yaxis()
-    rect_1 = patches.Rectangle(
-        (
-            signal_center[0] - radius,
-            signal_center[1] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#0571b0",
-        facecolor="none",
-    )
-    axs[1].add_patch(rect_1)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_2 = patches.Rectangle(
+            (
+                signal_center[0] - radius,
+                signal_center[1] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#0571b0",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_2 = patches.Circle(
+            (signal_center[0], signal_center[1]),
+            radius,
+            linewidth=1,
+            edgecolor="#0571b0",
+            facecolor="none",
+        )
+
+    if patch_2:
+        axs[1].add_patch(patch_2)
+
     if show:
         plt.show()
     if export_path:
@@ -91,7 +123,14 @@ def _visualize_cnr_2d(
 
 
 def _visualize_cnr_3d(
-    img, signal_center, background_center, radius, export_path=None, show=True, **kwargs
+    img,
+    signal_center,
+    background_center,
+    radius,
+    region_type,
+    export_path=None,
+    show=True,
+    **kwargs,
 ):
     figsize = kwargs.pop("figsize", FIGSIZE_CNR_3D)
     dpi = kwargs.pop("dpi", 300)
@@ -106,60 +145,96 @@ def _visualize_cnr_3d(
     axs[0][0].set_xlabel("y")
     axs[0][0].set_ylabel("z")
     axs[0][0].invert_yaxis()
-    rect_1 = patches.Rectangle(
-        (
-            background_center[1] - radius,
-            background_center[2] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ffffbf",
-        facecolor="none",
-    )
     axs[0][0].axvline(x=background_center[1], color="#fdae61", linestyle="--")
     axs[0][0].axhline(y=background_center[2], color="#2c7bb6", linestyle="--")
-    axs[0][0].add_patch(rect_1)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_1 = patches.Rectangle(
+            (
+                background_center[1] - radius,
+                background_center[2] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_1 = patches.Circle(
+            (background_center[1], background_center[2]),
+            radius,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+
+    if patch_1:
+        axs[0][0].add_patch(patch_1)
 
     axs[0][1].imshow(np.rot90(img[:, background_center[1], ::-1]), cmap="gray")
     axs[0][1].set_title(f"y-axis, slice: {background_center[1]}", c="#fdae61")
     axs[0][1].set_xlabel("x")
     axs[0][1].set_ylabel("z")
     axs[0][1].invert_yaxis()
-    rect_2 = patches.Rectangle(
-        (
-            background_center[0] - radius,
-            background_center[2] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ffffbf",
-        facecolor="none",
-    )
     axs[0][1].axvline(x=background_center[0], color="#d7191c", linestyle="--")
     axs[0][1].axhline(y=background_center[2], color="#2c7bb6", linestyle="--")
-    axs[0][1].add_patch(rect_2)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_2 = patches.Rectangle(
+            (
+                background_center[0] - radius,
+                background_center[2] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_2 = patches.Circle(
+            (background_center[0], background_center[2]),
+            radius,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+
+    if patch_2:
+        axs[0][1].add_patch(patch_2)
 
     axs[0][2].imshow(np.rot90(img[::-1, :, background_center[2]], -1), cmap="gray")
     axs[0][2].set_title(f"z-axis, slice: {background_center[2]}", c="#2c7bb6")
     axs[0][2].set_xlabel("x")
     axs[0][2].set_ylabel("y")
     axs[0][2].invert_yaxis()
-    rect_3 = patches.Rectangle(
-        (
-            background_center[0] - radius,
-            background_center[1] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ffffbf",
-        facecolor="none",
-    )
     axs[0][2].axvline(x=background_center[0], color="#d7191c", linestyle="--")
     axs[0][2].axhline(y=background_center[1], color="#fdae61", linestyle="--")
-    axs[0][2].add_patch(rect_3)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_3 = patches.Rectangle(
+            (
+                background_center[0] - radius,
+                background_center[1] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_3 = patches.Circle(
+            (background_center[0], background_center[1]),
+            radius,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+
+    if patch_3:
+        axs[0][2].add_patch(patch_3)
 
     # Signal Region
     axs[1][0].imshow(np.rot90(img[signal_center[0], :, ::-1]), cmap="gray")
@@ -167,60 +242,97 @@ def _visualize_cnr_3d(
     axs[1][0].set_xlabel("y")
     axs[1][0].set_ylabel("z")
     axs[1][0].invert_yaxis()
-    rect_1 = patches.Rectangle(
-        (
-            signal_center[1] - radius,
-            signal_center[2] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#abd9e9",
-        facecolor="none",
-    )
     axs[1][0].axvline(x=signal_center[1], color="#fdae61", linestyle="--")
     axs[1][0].axhline(y=signal_center[2], color="#2c7bb6", linestyle="--")
-    axs[1][0].add_patch(rect_1)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_4 = patches.Rectangle(
+            (
+                signal_center[1] - radius,
+                signal_center[2] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#abd9e9",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_4 = patches.Circle(
+            (signal_center[1], signal_center[2]),
+            radius,
+            linewidth=1,
+            edgecolor="#abd9e9",
+            facecolor="none",
+        )
+
+    if patch_4:
+        axs[1][0].add_patch(patch_4)
 
     axs[1][1].imshow(np.rot90(img[:, signal_center[1], ::-1]), cmap="gray")
     axs[1][1].set_title(f"y-axis, slice: {signal_center[1]}", c="#fdae61")
     axs[1][1].set_xlabel("x")
     axs[1][1].set_ylabel("z")
     axs[1][1].invert_yaxis()
-    rect_2 = patches.Rectangle(
-        (
-            signal_center[0] - radius,
-            signal_center[2] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#abd9e9",
-        facecolor="none",
-    )
     axs[1][1].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[1][1].axhline(y=signal_center[2], color="#2c7bb6", linestyle="--")
-    axs[1][1].add_patch(rect_2)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_5 = patches.Rectangle(
+            (
+                signal_center[0] - radius,
+                signal_center[2] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#abd9e9",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_5 = patches.Circle(
+            (signal_center[0], signal_center[2]),
+            radius,
+            linewidth=1,
+            edgecolor="#abd9e9",
+            facecolor="none",
+        )
+
+    if patch_5:
+        axs[1][1].add_patch(patch_5)
 
     axs[1][2].imshow(np.rot90(img[::-1, :, signal_center[2]], -1), cmap="gray")
     axs[1][2].set_title(f"z-axis, slice: {signal_center[2]}", c="#2c7bb6")
     axs[1][2].set_xlabel("x")
     axs[1][2].set_ylabel("y")
     axs[1][2].invert_yaxis()
-    rect_3 = patches.Rectangle(
-        (
-            signal_center[0] - radius,
-            signal_center[1] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#abd9e9",
-        facecolor="none",
-    )
     axs[1][2].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[1][2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
-    axs[1][2].add_patch(rect_3)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_6 = patches.Rectangle(
+            (
+                signal_center[0] - radius,
+                signal_center[1] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#abd9e9",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_6 = patches.Circle(
+            (signal_center[0], signal_center[1]),
+            radius,
+            linewidth=1,
+            edgecolor="#abd9e9",
+            facecolor="none",
+        )
+
+    if patch_6:
+        axs[1][2].add_patch(patch_6)
+
     if show:
         plt.show()
     if export_path:
@@ -228,8 +340,32 @@ def _visualize_cnr_3d(
 
 
 def _visualize_snr_2d(
-    img, signal_center, radius, export_path=None, show=True, **kwargs
+    img,
+    signal_center,
+    radius,
+    region_type,
+    signal=None,
+    export_path=None,
+    show=True,
+    **kwargs,
 ):
+    if region_type not in [
+        "cubic",
+        "cube",
+        "square",
+        "spherical",
+        "sphere",
+        "circle",
+        "full",
+        "original",
+    ]:
+        raise ValueError("Invalid region type.")
+    elif region_type == "full":
+        if signal is None:
+            region_type = "original"
+        elif signal.shape != img.shape:
+            raise ValueError("The signal must have the same shape as the image.")
+
     figsize = kwargs.pop("figsize", FIGSIZE_SNR_2D)
     dpi = kwargs.pop("dpi", 300)
 
@@ -237,21 +373,40 @@ def _visualize_snr_2d(
     fig.suptitle("Signal Region for SNR Calculation", y=0.92)
 
     ax.imshow(img[..., ::-1], cmap="gray")
+
+    if region_type == "full":
+        ax.imshow(signal, cmap="viridis", alpha=0.5)
+
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.invert_yaxis()
-    rect_1 = patches.Rectangle(
-        (
-            signal_center[0] - radius,
-            signal_center[1] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#0571b0",
-        facecolor="none",
-    )
-    ax.add_patch(rect_1)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch = patches.Rectangle(
+            (
+                signal_center[0] - radius,
+                signal_center[1] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#0571b0",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch = patches.Circle(
+            (signal_center[0], signal_center[1]),
+            radius,
+            linewidth=1,
+            edgecolor="#0571b0",
+            facecolor="none",
+        )
+    else:
+        patch = None
+
+    if patch:
+        ax.add_patch(patch)
+
     if show:
         plt.show()
     if export_path:
@@ -259,8 +414,32 @@ def _visualize_snr_2d(
 
 
 def _visualize_snr_3d(
-    img, signal_center, radius, export_path=None, show=True, **kwargs
+    img,
+    signal_center,
+    radius,
+    region_type,
+    signal=None,
+    export_path=None,
+    show=True,
+    **kwargs,
 ):
+    if region_type not in [
+        "cubic",
+        "cube",
+        "square",
+        "spherical",
+        "sphere",
+        "circle",
+        "full",
+        "original",
+    ]:
+        raise ValueError("Invalid region type.")
+    elif region_type == "full":
+        if signal is None:
+            region_type = "original"
+        elif signal.shape != img.shape:
+            raise ValueError("The signal must have the same shape as the image.")
+
     figsize = kwargs.pop("figsize", FIGSIZE_SNR_3D)
     dpi = kwargs.pop("dpi", 300)
 
@@ -268,64 +447,125 @@ def _visualize_snr_3d(
     fig.suptitle("Signal Region for SNR Calculation", y=0.92)
 
     axs[0].imshow(np.rot90(img[signal_center[0], :, ::-1]), cmap="gray")
+
+    if region_type == "full":
+        axs[0].imshow(
+            np.rot90(signal[signal_center[0], :, ::-1]), cmap="viridis", alpha=0.5
+        )
+
     axs[0].set_title(f"x-axis, slice: {signal_center[0]}", c="#d7191c")
     axs[0].set_xlabel("y")
     axs[0].set_ylabel("z")
     axs[0].invert_yaxis()
-    rect_1 = patches.Rectangle(
-        (
-            signal_center[1] - radius,
-            signal_center[2] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ffffbf",
-        facecolor="none",
-    )
     axs[0].axvline(x=signal_center[1], color="#fdae61", linestyle="--")
     axs[0].axhline(y=signal_center[2], color="#2c7bb6", linestyle="--")
-    axs[0].add_patch(rect_1)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_1 = patches.Rectangle(
+            (
+                signal_center[1] - radius,
+                signal_center[2] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_1 = patches.Circle(
+            (signal_center[1], signal_center[2]),
+            radius,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    else:
+        patch_1 = None
+
+    if patch_1:
+        axs[0].add_patch(patch_1)
 
     axs[1].imshow(np.rot90(img[:, signal_center[1], ::-1]), cmap="gray")
+
+    if region_type == "full":
+        axs[1].imshow(
+            np.rot90(signal[:, signal_center[1], ::-1]), cmap="viridis", alpha=0.5
+        )
+
     axs[1].set_title(f"y-axis, slice: {signal_center[1]}", c="#fdae61")
     axs[1].set_xlabel("x")
     axs[1].set_ylabel("z")
     axs[1].invert_yaxis()
-    rect_2 = patches.Rectangle(
-        (
-            signal_center[0] - radius,
-            signal_center[2] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ffffbf",
-        facecolor="none",
-    )
     axs[1].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[1].axhline(y=signal_center[2], color="#2c7bb6", linestyle="--")
-    axs[1].add_patch(rect_2)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_2 = patches.Rectangle(
+            (
+                signal_center[0] - radius,
+                signal_center[2] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_2 = patches.Circle(
+            (signal_center[0], signal_center[2]),
+            radius,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    else:
+        patch_2 = None
+
+    if patch_2:
+        axs[1].add_patch(patch_2)
 
     axs[2].imshow(np.rot90(img[::-1, :, signal_center[2]], -1), cmap="gray")
+
+    if region_type == "full":
+        axs[2].imshow(
+            np.rot90(signal[::-1, :, signal_center[2]], -1), cmap="viridis", alpha=0.5
+        )
+
     axs[2].set_title(f"z-axis, slice: {signal_center[2]}", c="#2c7bb6")
     axs[2].set_xlabel("x")
     axs[2].set_ylabel("y")
     axs[2].invert_yaxis()
-    rect_3 = patches.Rectangle(
-        (
-            signal_center[0] - radius,
-            signal_center[1] - radius,
-        ),
-        radius * 2,
-        radius * 2,
-        linewidth=1,
-        edgecolor="#ffffbf",
-        facecolor="none",
-    )
     axs[2].axvline(x=signal_center[0], color="#d7191c", linestyle="--")
     axs[2].axhline(y=signal_center[1], color="#fdae61", linestyle="--")
-    axs[2].add_patch(rect_3)
+
+    if region_type in ["cubic", "cube", "square"]:
+        patch_3 = patches.Rectangle(
+            (
+                signal_center[0] - radius,
+                signal_center[1] - radius,
+            ),
+            radius * 2,
+            radius * 2,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    elif region_type in ["spherical", "sphere", "circle"]:
+        patch_3 = patches.Circle(
+            (signal_center[0], signal_center[1]),
+            radius,
+            linewidth=1,
+            edgecolor="#ffffbf",
+            facecolor="none",
+        )
+    else:
+        patch_3 = None
+
+    if patch_3:
+        axs[2].add_patch(patch_3)
+
     if show:
         plt.show()
     if export_path:
