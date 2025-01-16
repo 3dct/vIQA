@@ -482,6 +482,8 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     file_name : str or os.PathLike
         Name of the file with extension
 
+    .. todo:: Add support to overwrite size and bit depth.
+
     Returns
     -------
     img_arr : np.ndarray
@@ -551,23 +553,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
-    match bit_depth:
-        case "8u" | "8":  # "8" is for backwards compatibility
-            data_type = np.ubyte  # Set data type to unsigned byte
-        case "16u" | "16":  # "16" is for backwards compatibility
-            data_type = np.ushort  # Set data type to unsigned short
-        case "32u" | "32":  # "32" is for backwards compatibility
-            data_type = np.uintc  # Set data type to unsigned int
-        case "16f":
-            data_type = np.half  # Set data type to half precision float
-        case "32f":
-            data_type = np.float32  # Set data type to float32
-        case "64f":
-            data_type = np.float64  # Set data type to float64
-        case _:
-            raise ValueError(
-                "Bit depth not supported"
-            )  # Raise exception if the bit depth is not supported
+    data_type = _parse_bitdepth(bit_depth)
 
     data_file_path = os.path.join(file_dir, file_name)  # Get data file path
 
@@ -1017,3 +1003,25 @@ def _resize_image(img_r, img_m, scaling_order=1):
         )
         img_m = img_m.astype(img_r.dtype)
     return img_m
+
+
+def _parse_bitdepth(bitdepth):
+    # Set data type according to bit depth
+    match bitdepth:
+        case "8ubit" | "8bit":  # "8" is for backwards compatibility
+            data_type = np.ubyte  # Set data type to unsigned byte
+        case "16ubit" | "16bit":  # "16" is for backwards compatibility
+            data_type = np.ushort  # Set data type to unsigned short
+        case "32ubit" | "32bit":  # "32" is for backwards compatibility
+            data_type = np.uintc  # Set data type to unsigned int
+        case "16fbit":
+            data_type = np.half  # Set data type to half precision float
+        case "32fbit":
+            data_type = np.float32  # Set data type to float32
+        case "64fbit":
+            data_type = np.float64  # Set data type to float64
+        case _:
+            raise ValueError(
+                "Bit depth not supported"
+            )  # Raise exception if the bit depth is not supported
+    return data_type
