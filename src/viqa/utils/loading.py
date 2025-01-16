@@ -596,7 +596,7 @@ def _load_binary(data_file_path, data_type, dim_size):
             file=f, dtype=data_type
         )  # Read data file into numpy array according to data type
 
-    if img_arr_orig.size != np.prod(dim_size):
+    if img_arr_orig.size != np.prod(np.array(dim_size).astype(np.int64)):
         raise ValueError(
             "Size of data file ("
             + data_file_path
