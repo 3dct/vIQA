@@ -229,6 +229,9 @@ psnr.print_score(decimals=2)
 
 For more examples, see the provided Jupyter notebooks and the documentation under [API Reference](https://3dct.github.io/vIQA/api_reference.html).
 
+## Container Images
+Container images to use this package in a JupyterHub or Daskhub environment as a single user notebook can be found under [./containers](./containers).
+
 <!-- ## Benchmark TODO: add benchmark results and instructions -->
 
 ## TODO

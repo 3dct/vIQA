@@ -21,6 +21,7 @@ jobs:
       src-changes: ${{ steps.changed-files.outputs.src_any_changed }}
       test-changes: ${{ steps.changed-files.outputs.tests_any_changed }}
       lint-changes: ${{ steps.changed-files.outputs.lint_any_changed }}
+      docker-changes: ${{ steps.changed-files.outputs.docker_any_changed }}
 
     steps:
       - uses: actions/checkout@v4
@@ -54,6 +55,11 @@ jobs:
               - src/**
               - notebooks/**
               - pyproject.toml
+            docker:
+              - .github/workflows/build_and_push_docker_images.yaml
+              - containers/**
+              - notebooks/**
+              - src/**
 
       - name: Detect if any of the combinations of file sets have changed
         id: all-changes
@@ -64,7 +70,8 @@ jobs:
              [ "${{ steps.changed-files.outputs.docs_any_changed }}" == "true" ] || \
              [ "${{ steps.changed-files.outputs.src_any_changed }}" == "true" ] || \
              [ "${{ steps.changed-files.outputs.tests_any_changed }}" == "true" ] || \
-             [ "${{ steps.changed-files.outputs.lint_any_changed }}" == "true" ]; then
+             [ "${{ steps.changed-files.outputs.lint_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.docker_any_changed }}" == "true" ]; then
              printf '%s\n' "any_changed=true" >> $GITHUB_OUTPUT
           fi
 
@@ -325,16 +332,18 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-  prepare_docs_input:
+  prepare_publish_input:
     name: Check if published
     runs-on: ubuntu-latest
-    if: needs.changes.outputs.doc-changes == 'true' && always()
+    if: (needs.changes.outputs.doc-changes == 'true' || needs.changes.outputs.docker-changes == 'true') && always()
     outputs:
-      publish: ${{ steps.check_publish.outputs.publish }}
+      docs_publish: ${{ steps.check_docs_publish.outputs.publish }}
+      image_publish: ${{ steps.check_image_publish.outputs.publish }}
     needs: [changes, upload_github, upload_pypi]
     steps:
       - name: Check if documentation should be published
-        id: check_publish
+        id: check_docs_publish
+        if: needs.changes.outputs.doc-changes == 'true'
         run: |
           # If either the PyPI or GitHub release was successful, publish the docs
           if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
@@ -347,11 +356,28 @@ jobs:
               echo "publish=false" >> $GITHUB_OUTPUT
             fi
           fi
+      - name: Check if Docker images should be published
+        id: check_image_publish
+        if: needs.changes.outputs.docker-changes == 'true'
+        run: |
+          # If either the PyPI or GitHub release was successful, publish the Docker images
+          if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
 
   docs:
     name: Build and deploy documentation
     uses: ./.github/workflows/documentation.yaml
-    needs: [changes, prepare_docs_input]
+    needs: [changes, prepare_publish_input]
     if: github.repository == '3dct/viqa' && needs.changes.outputs.doc-changes == 'true'
     with:
-      publish: ${{ needs.prepare_docs_input.outputs.publish }}
+      publish: ${{ needs.prepare_publish_input.outputs.docs_publish }}
+
+  build_and_push_docker_images:
+    name: Build and push Docker Images
+    uses: ./.github/workflows/build_and_push_docker_images.yaml
+    needs: [changes, semantic_release, prepare_publish_input]
+    if: github.repository == '3dct/viqa' && needs.changes.outputs.docker-changes == 'true'
+    with:
+      version: ${{ needs.semantic_release.outputs.version }}
+      publish: ${{ needs.prepare_publish_input.outputs.image_publish }}

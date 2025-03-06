@@ -1,0 +1,33 @@
+---
+# This is the config for the jupyter_app_launcher extension to launch the vIQA notebooks
+# The notebooks are available under https://github.com/3dct/vIQA/tree/master/Notebooks
+# and have to be copied to the shared folder which might have to be mounted to the
+# singleuser pod
+- title: vIQA Documentation
+  description: Example of opening a URL in a tab
+  source: https://3dct.github.io/vIQA/
+  type: url
+  args:
+    sandbox:
+      - 'allow-same-origin'
+      - 'allow-scripts'
+      - 'allow-downloads'
+      - 'allow-modals'
+      - 'allow-popups'
+    referrerPolicy: ['no-referrer']
+    createNewWindow: false
+  catalog: vIQA
+
+- title: vIQA Notebook
+  description: vIQA template notebook
+  source: /usr/share/jupyter/jupyter_app_launcher/notebooks/Image_Comparison.ipynb
+  cwd: /usr/share/jupyter/jupyter_app_launcher/notebooks
+  type: notebook
+  catalog: vIQA
+
+- title: vIQA batch Notebook
+  description: vIQA template notebook for batch mode
+  source: /usr/share/jupyter/jupyter_app_launcher/notebooks/Image_Comparison_batch.ipynb
+  cwd: /usr/share/jupyter/jupyter_app_launcher/notebooks
+  type: notebook
+  catalog: vIQA

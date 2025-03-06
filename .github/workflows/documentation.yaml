@@ -20,7 +20,8 @@ permissions:
   contents: write
 
 jobs:
-  Docs:
+  docs:
+    name: Build and deploy documentation
     runs-on: ubuntu-latest
     concurrency: Docs
     # if: |
@@ -41,7 +42,7 @@ jobs:
           pip install -r ./requirements/docs.txt piq scipy scikit-image matplotlib nibabel tqdm
       - name: Sphinx build
         run: |
-          sphinx-build docs/source _build
+          sphinx-build docs/source docs/build/html
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GitHub Pages
@@ -50,5 +51,5 @@ jobs:
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
+          publish_dir: docs/build/html
           force_orphan: true

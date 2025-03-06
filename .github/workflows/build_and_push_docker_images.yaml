@@ -1,0 +1,88 @@
+---
+name: Build and push Docker Images
+run-name: Build and push Docker Images for ${{ github.sha }} on ${{ github.ref }}
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Which version of the Docker image should be built?'
+        required: true
+        type: string
+      publish:
+        description: 'Should the Docker image be published to the registry?'
+        required: true
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/3dct/image-quality-notebook
+  AUTHORS: Lukas Behammer, lukas.behammer@fh-wels.at
+  LICENSES: GPL-3.0-or-later
+  URL: https://github.com/3dct/vIQA
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dockerfile: ./containers/dh-image-quality-notebook/Dockerfile
+            title: volumetric Image Quality Assessment Notebook - Daskhub
+            description: This is a custom image for volumetric image quality assessment in daskhub.
+            source: https://github.com/3dct/vIQA/tree/main/containers/dh-image-quality-notebook/Dockerfile
+            documentation: https://github.com/3dct/vIQA/tree/main/containers/dh-image-quality-notebook/README.md
+            prefix: dh
+          - dockerfile: ./containers/jh-image-quality-notebook/Dockerfile
+            title: volumetric Image Quality Assessment Notebook - JupyterHub
+            description: This is a custom image for volumetric image quality assessment in jupyterhub.
+            source: https://github.com/3dct/vIQA/tree/main/containers/jh-image-quality-notebook/Dockerfile
+            documentation: https://github.com/3dct/vIQA/tree/main/containers/jh-image-quality-notebook/README.md
+            prefix: jh
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=pep440,pattern={{version}},value=${{ inputs.version }}
+            type=pep440,pattern={{major}},value=${{ inputs.version }}
+            type=pep440,pattern={{major}}.{{minor}},value=${{ inputs.version }}
+          labels: |
+            org.opencontainers.image.created={{commit_date 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'}}
+            org.opencontainers.image.title=${{ matrix.title }}
+            org.opencontainers.image.description=${{ matrix.description }}
+            org.opencontainers.image.source=${{ matrix.source }}
+            org.opencontainers.image.documentation=${{ matrix.documentation }}
+            org.opencontainers.image.authors=${{ env.AUTHORS }}
+            org.opencontainers.image.licenses=${{ env.LICENSES }}
+            org.opencontainers.image.url=${{ env.URL }}
+            org.opencontainers.image.version=${{ inputs.version }}
+          flavor: |
+            latest=true
+            prefix=${{ matrix.prefix }},onlatest=true
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        if: ${{ inputs.publish }}
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
