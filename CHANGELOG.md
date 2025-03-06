@@ -2,6 +2,31 @@
 
 
 
+## v2.1.0 (2025-03-06)
+
+### Bug fixes
+
+* fix: add function _parse_bitdepth to utils.loading.__init__.py
+
+update docs for export_metadata ([`4cc8e5a`](https://github.com/3dct/vIQA/commit/4cc8e5aaa0520f930e90ac87b37d7ac055d72344))
+
+* fix: fix integer overflow when loading large binary images ([`567d0d7`](https://github.com/3dct/vIQA/commit/567d0d7a74463d33af0eba89a83ad464b3878c78))
+
+### Documentation
+
+* docs: update for new loading options
+
+fix name "Structural Similarity" ([`16de59d`](https://github.com/3dct/vIQA/commit/16de59db2aa88ecda067965afc6bc33604ec2122))
+
+### Features
+
+* feat: add more .raw loading options ([`598a5a6`](https://github.com/3dct/vIQA/commit/598a5a6b4a4a653dd6a1665cd1bd335f54c54ddd))
+
+* feat: add visualization for different region types
+
+add return of parameters for signal_to_noise_ratio ([`6ea333a`](https://github.com/3dct/vIQA/commit/6ea333adc9f8c9ec0dc10f0e803d6215f69cb866))
+
+
 ## v2.0.6 (2024-12-13)
 
 ### Bug fixes
