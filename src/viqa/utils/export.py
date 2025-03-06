@@ -119,10 +119,14 @@ def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.
 
     Notes
     -----
+        The timestamp, added to the txt file, is the current time when the report is
+        generated.
+
         .. attention::
 
             The txt file will be overwritten if it already exists.
     """
+    # TODO: Change this to use the class attribute parameter
     if os.path.splitext(file_name)[1] != ".txt":
         raise ValueError(f"The file name {file_name} must have the extension '.txt'.")
     path = os.path.join(file_path, file_name)
