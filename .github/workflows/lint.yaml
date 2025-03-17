@@ -31,17 +31,17 @@ jobs:
 
       - name: Ruff Check
         id: ruff
-        uses: astral-sh/ruff-action@v1.1.1
+        uses: astral-sh/ruff-action@v3
         with:
           args: "check --config pyproject.toml"
-          src: './src/viqa'
+          src: '.'
 
       - name: Ruff Format Check
         id: ruff-format
-        uses: astral-sh/ruff-action@v1.1.1
+        uses: astral-sh/ruff-action@v3
         with:
           args: "format --check --config pyproject.toml"
-          src: './src/viqa'
+          src: '.'
 
 # - name: Mypy
 #   id: mypy
