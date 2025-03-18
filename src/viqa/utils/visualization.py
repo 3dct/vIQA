@@ -575,7 +575,7 @@ def _visualize_snr_3d(
 def _create_slider_widget(**kwargs):
     if not has_ipywidgets:
         raise ImportError(
-            "ipywidgets is not installed. Please install it to use " "this function."
+            "ipywidgets is not installed. Please install it to use this function."
         )
 
     min_val = kwargs.pop("min", 0)

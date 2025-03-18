@@ -363,7 +363,7 @@ class BatchMetrics(_MultipleInterface):
         """
         if os.path.splitext(file_name)[1] != ".csv":
             raise ValueError(
-                f"The file name {file_name} must have the " f"extension '.csv'."
+                f"The file name {file_name} must have the extension '.csv'."
             )
         path = os.path.join(file_path, file_name)
         with open(path, mode="w", newline="") as csvfile:
@@ -608,7 +608,7 @@ class MultipleMetrics(_MultipleInterface):
         """
         if os.path.splitext(file_name)[1] != ".csv":
             raise ValueError(
-                f"The file name {file_name} must have the " f"extension '.csv'."
+                f"The file name {file_name} must have the extension '.csv'."
             )
         path = os.path.join(file_path, file_name)
         with open(path, mode="w", newline="") as csvfile:
