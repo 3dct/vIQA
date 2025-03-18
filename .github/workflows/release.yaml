@@ -335,7 +335,9 @@ jobs:
   prepare_publish_input:
     name: Check if published
     runs-on: ubuntu-latest
-    if: (needs.changes.outputs.doc-changes == 'true' || needs.changes.outputs.docker-changes == 'true') && always()
+    if: |
+      (needs.changes.outputs.doc-changes == 'true' ||
+      needs.changes.outputs.docker-changes == 'true') && always()
     outputs:
       docs_publish: ${{ steps.check_docs_publish.outputs.publish }}
       image_publish: ${{ steps.check_image_publish.outputs.publish }}
