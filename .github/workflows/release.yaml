@@ -363,6 +363,8 @@ jobs:
           # If either the PyPI or GitHub release was successful, publish the Docker images
           if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
             echo "publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "publish=false" >> $GITHUB_OUTPUT
           fi
 
   docs:
