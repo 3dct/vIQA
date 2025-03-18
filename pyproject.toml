@@ -36,8 +36,8 @@ dependencies = [
     "scipy >=1.10.0",
     "numpy <2.0.0, >=1.24.0",
     "torch >=1.13.0",
-    "piq >= 0.8.0",
-    "scikit-image >= 0.19.0",
+    "piq >=0.8.0",
+    "scikit-image >=0.19.0",
     "nibabel >=5.0.0",
     "matplotlib >=3.5.0",
     "tqdm >=4.65.0",
@@ -45,40 +45,40 @@ dependencies = [
 
 [project.optional-dependencies]
 book = [
-    "jupyter",
-    "ipywidgets",
+    "jupyter >=1.0.0",
+    "ipywidgets >=8.1.2",
 ]
 tests = [
-    "pytest",
-    "pytest-cov",
-    "pytest-doctestplus",
+    "pytest >=8.2.1",
+    "pytest-cov >=5.0.0",
+    "pytest-doctestplus >=1.2.1",
 ]
 lint = [
-    "mypy",
-    "ruff",
+    "mypy ==1.14.1",
+    "ruff ==0.11.0",
 ]
 docs = [
-    "sphinx",
-    "furo",
-    "sphinxcontrib-email",
-    "sphinx_copybutton",
-    "sphinx_github_changelog",
-    "sphinx-last-updated-by-git",
+    "sphinx >=7.3.7",
+    "furo >=2024.5.6",
+    "sphinxcontrib-email >=0.3.6",
+    "sphinx_copybutton >=0.5.2",
+    "sphinx_github_changelog >=1.4.0",
+    "sphinx-last-updated-by-git >=0.3.8",
     # "sphinx-hoverxref",  # works only on readthedocs
     "viqa[tests]",
 ]
 cd = [
-    "python-semantic-release",
-    "cibuildwheel",
+    "python-semantic-release ==9.12.0",
+    "cibuildwheel ==2.19.2",
 ]
 build = [
-    "meson-python>=0.16.0",
-    "build",
+    "meson-python >=0.16.0",
+    "build >=1.2.1",
 ]
 dev = [
     "viqa[tests, lint, docs, cd, build]",
-    "pre-commit",
-    "sphinx-autobuild",
+    "pre-commit >=3.8.0",
+    "sphinx-autobuild >=2024.4.16",
     # "tox",  # currently not implemented
 ]
 
@@ -98,7 +98,6 @@ build-backend = "mesonpy"
 [tool.ruff]
 extend-include = ["*.ipynb"]
 extend-exclude = [
-    "data",
     "docs",
     "tests",
 ]
@@ -155,7 +154,12 @@ exclude = [
     "docs",
     "build",
     "dist",
-    "data",
+    "notebooks",
+    "tools",
+    "templates",
+    "containers",
+    "notebooks",
+    "branding",
 ]
 strict = false
 pretty = true
@@ -184,11 +188,17 @@ addopts = "--doctest-plus --doctest-continue-on-failure --cov=viqa --cov-append 
 # Coverage
 [tool.coverage.run]
 omit = [
-    "src/viqa/_private_tests/*",
-    "src/viqa/tests/*",
+    "src/scripts/*",
     "*/sphinxext/*",
     "*/tmp/tmp*.py",
     "docs/*",
+    "notebooks/*",
+    "tools/*",
+    "build/*",
+    "dist/*",
+    "branding/*",
+    "containers/*",
+    "templates/*",
 ]
 
 ######################################################################
