@@ -34,18 +34,20 @@ jobs:
         uses: astral-sh/ruff-action@v3
         with:
           args: "check --config pyproject.toml"
-          src: '.'
+          src: "."
+          version: "0.11.0"
 
       - name: Ruff Format Check
         id: ruff-format
         uses: astral-sh/ruff-action@v3
         with:
           args: "format --check --config pyproject.toml"
-          src: '.'
+          src: "."
+          version: "0.11.0"
 
 # - name: Mypy
 #   id: mypy
-#   uses: python/mypy@v1.13.0
+#   uses: python/mypy@v1.14.1
 #   with:
 #     options: "--config-file=pyproject.toml"
 #     paths: "src/viqa"
