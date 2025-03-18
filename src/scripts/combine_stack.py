@@ -21,6 +21,7 @@ import os
 import sys
 
 import numpy as np
+
 from viqa.utils.loading import _load_binary, _parse_bitdepth
 
 
