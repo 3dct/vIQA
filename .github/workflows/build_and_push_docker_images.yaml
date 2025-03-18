@@ -12,7 +12,7 @@ on:
       publish:
         description: 'Should the Docker image be published to the registry?'
         required: true
-        type: boolean
+        type: string
 
 env:
   REGISTRY: ghcr.io
