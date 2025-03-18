@@ -44,8 +44,10 @@ repos:
     hooks:
       # Run the linter.
       - id: ruff
+        args: [--config=pyproject.toml]
       # Run the formatter.
       - id: ruff-format
+        args: [--config=pyproject.toml]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.23
