@@ -2,6 +2,23 @@
 
 
 
+## v2.2.0 (2025-03-31)
+
+### Features
+
+* feat: add script to crop images
+
+update script to reduce projections, refactor scripts to comply with ruff linting rules ([`8a84d44`](https://github.com/3dct/vIQA/commit/8a84d441211b83cb52d3fb99ba7ec2c7ea5f1b4e))
+
+### Unknown
+
+* notebook: update notebook documentation ([`779f7e7`](https://github.com/3dct/vIQA/commit/779f7e779a4ea1d82e3cdd0a882ad3ad4f8462b9))
+
+* notebook: update notebooks
+
+refactor notebooks to comply with ruff rules ([`0de8543`](https://github.com/3dct/vIQA/commit/0de8543236f1ac17c9d6a41b95b1f6983a0ac51c))
+
+
 ## v2.1.0 (2025-03-06)
 
 ### Bug fixes
