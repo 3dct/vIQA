@@ -279,7 +279,7 @@ def export_image(
 
     # Plot full-reference metrics
     counter = 0
-    for i in range(cols - 1):
+    for i in range(cols):
         x_pos = 1.0 / (cols + 1)
         lines = 4  # 4 metrics per column
         x_pos = x_pos * (i + 1)
