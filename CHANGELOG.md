@@ -2,6 +2,13 @@
 
 
 
+## v2.2.1 (2025-04-02)
+
+### Bug fixes
+
+* fix: last column of metrics will now be printed in export_image ([`2ab6643`](https://github.com/3dct/vIQA/commit/2ab6643084ff92cd16bd72584021a2c1be38eba6))
+
+
 ## v2.2.0 (2025-03-31)
 
 ### Features
