@@ -17,7 +17,7 @@ USER ${NB_UID}
 RUN pip install viqa
 RUN pip install jupyter_app_launcher
 RUN pip install jupyterlab-git
-RUN pip install pexpect>4.8.0
+RUN pip install pexpect==4.9.0
 
 COPY notebooks /usr/share/jupyter/jupyter_app_launcher/notebooks
 COPY containers/config/jp_app_launcher/jp_app_launcher.yaml /usr/share/jupyter/jupyter_app_launcher/jp_app_launcher.yaml

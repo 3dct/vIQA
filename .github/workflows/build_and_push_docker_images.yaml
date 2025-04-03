@@ -33,13 +33,13 @@ jobs:
             description: This is a custom image for volumetric image quality assessment in daskhub.
             source: https://github.com/3dct/vIQA/tree/main/containers/dh-image-quality-notebook/Dockerfile
             documentation: https://github.com/3dct/vIQA/tree/main/containers/dh-image-quality-notebook/README.md
-            prefix: dh
+            prefix: dh-
           - dockerfile: ./containers/jh-image-quality-notebook/Dockerfile
             title: volumetric Image Quality Assessment Notebook - JupyterHub
             description: This is a custom image for volumetric image quality assessment in jupyterhub.
             source: https://github.com/3dct/vIQA/tree/main/containers/jh-image-quality-notebook/Dockerfile
             documentation: https://github.com/3dct/vIQA/tree/main/containers/jh-image-quality-notebook/README.md
-            prefix: jh
+            prefix: jh-
 
     permissions:
       contents: read
