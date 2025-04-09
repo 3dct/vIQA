@@ -739,15 +739,18 @@ def load_data(
             )  # Raise exception if input type is not supported
 
     if batch:
+        # TODO: Deprecate in version 4.0.0
         for img_num, img in enumerate(img_arr):
             if len(img.shape) > 3 or len(img.shape) < 2:
                 raise ValueError(
-                    f"Number of dimensions of input image should be 2 or 3, got {len(img.shape)} for image number {img_num} in img_arr."
+                    f"Number of dimensions of input image should be 2 or 3, got "
+                    f"{len(img.shape)} for image number {img_num} in img_arr."
                 )
     elif not isinstance(img_arr, list):
         if len(img_arr.shape) > 3 or len(img_arr.shape) < 2:
             raise ValueError(
-                f"Number of dimensions of input image should be 2 or 3, got {len(img_arr.shape)}."
+                f"Number of dimensions of input image should be 2 or 3, got "
+                f"{len(img_arr.shape)}."
             )
 
     # Normalize data
