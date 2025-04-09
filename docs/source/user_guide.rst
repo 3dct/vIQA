@@ -111,4 +111,4 @@ Possible, but worse (recommended only if you want to calculate a single metric):
     The current recommended usage files are the Jupyter Notebooks on the `Github page`_.
     Additional information can be found in the documentation of the individual metrics under :doc:`api_reference`.
 
-.. _Github page: https://github.com/3dct/vIQA
+    .. _Github page: https://github.com/3dct/vIQA
