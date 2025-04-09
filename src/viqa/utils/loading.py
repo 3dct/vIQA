@@ -655,7 +655,8 @@ def load_data(
     ------
     ValueError
         If input type is not supported \n
-        If ``data_range=None`` and ``normalize=True``
+        If ``data_range=None`` and ``normalize=True`` \n
+        If number of dimensions not 2 or 3
 
     Warns
     -----
