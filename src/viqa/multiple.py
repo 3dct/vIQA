@@ -357,7 +357,7 @@ class BatchMetrics(_MultipleInterface):
             for pair_num, pair in enumerate(tqdm(self.pairs)):
                 img_r = os.path.join(self.file_dir, pair["reference_image"])
                 img_m = os.path.join(self.file_dir, pair["modified_image"])
-                if self.global_roi is not None:
+                if self.global_roi is None and self.rois is not None:
                     roi = self.rois[pair_num]
                 export_image(
                     results=self.results[str(pair_num)],
