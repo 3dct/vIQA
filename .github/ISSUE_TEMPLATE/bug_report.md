@@ -37,6 +37,5 @@ Please search on the [issue tracker](https://github.com/3dct/vIQA/issues) before
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
 * Version used:
-* Browser Name and version:
-* Operating System and version (desktop or mobile):
+* Operating System and version:
 * Link to your project:
