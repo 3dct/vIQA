@@ -207,16 +207,16 @@ omit = [
 build = [
     "cp311-manylinux_x86_64",
     "cp312-manylinux_x86_64",
-#    "cp313-manylinux_x86_64",
+    "cp313-manylinux_x86_64",
     "cp311-musllinux_x86_64",
     "cp312-musllinux_x86_64",
-#    "cp313-musllinux_x86_64",
+    "cp313-musllinux_x86_64",
     "cp311-win_*64",
     "cp312-win_*64",
-#    "cp313-win_*64",
+    "cp313-win_*64",
     "cp311-macosx*",
     "cp312-macosx*",
-#    "cp313-macosx_x86_64",
+    "cp313-macosx*",
 #    "cp313-macosx_arm64",
 
 ]
