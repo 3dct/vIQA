@@ -2,6 +2,13 @@
 
 
 
+## v2.2.3 (2025-04-10)
+
+### Bug fixes
+
+* fix: fix using Class attribute rois when not using the same roi for all images in BatchMetrics ([`e98b15a`](https://github.com/3dct/vIQA/commit/e98b15a1de544022061c4643a95a84f8c9d5dc3e))
+
+
 ## v2.2.2 (2025-04-09)
 
 ### Bug fixes
