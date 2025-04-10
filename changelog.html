@@ -1,0 +1,1186 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="article:modified_time" content="2024-08-20T15:09:52+00:00" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Internal API Reference" href="internal_api_reference.html" /><link rel="prev" title="viqa.multiple.MultipleMetrics" href="generated/viqa.multiple.MultipleMetrics.html" />
+
+    <link rel="shortcut icon" href="_static/Logo_vIQA_wo-text.svg"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>Release History - vIQA documentation v2.2.3</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">vIQA documentation v2.2.3</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">vIQA documentation v2.2.3</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_reference.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="fr_metrics.html">Full Reference Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Full Reference Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/psnr.html">Peak Signal-to-Noise Ratio (PSNR)</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Peak Signal-to-Noise Ratio (PSNR)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.psnr.PSNR.html">viqa.fr_metrics.psnr.PSNR</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/rmse.html">Root Mean Squared Error (RMSE)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Root Mean Squared Error (RMSE)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.rmse.RMSE.html">viqa.fr_metrics.rmse.RMSE</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/uqi.html">Universal Quality Index (UQI)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Universal Quality Index (UQI)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.uqi.UQI.html">viqa.fr_metrics.uqi.UQI</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/ssim.html">Structural Similarity (SSIM)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Structural Similarity (SSIM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.ssim.structural_similarity.html">viqa.fr_metrics.ssim.structural_similarity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.ssim.SSIM.html">viqa.fr_metrics.ssim.SSIM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/msssim.html">Multiscale Structural Similarity Index (MSSSIM)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Multiscale Structural Similarity Index (MSSSIM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.msssim.MSSSIM.html">viqa.fr_metrics.msssim.MSSSIM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/fsim.html">Feature Similarity (FSIM)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Feature Similarity (FSIM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.fsim.FSIM.html">viqa.fr_metrics.fsim.FSIM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/vif.html">Visual Information Fidelity (VIF)</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Visual Information Fidelity (VIF)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.vif.VIFp.html">viqa.fr_metrics.vif.VIFp</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/vsi.html">Visual Saliency-based Index (VSI)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Visual Saliency-based Index (VSI)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.vsi.VSI.html">viqa.fr_metrics.vsi.VSI</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/gsm.html">Gradient Similarity (GSM)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Gradient Similarity (GSM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.gsm.gradient_similarity.html">viqa.fr_metrics.gsm.gradient_similarity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.gsm.gradient_similarity_3d.html">viqa.fr_metrics.gsm.gradient_similarity_3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.gsm.GSM.html">viqa.fr_metrics.gsm.GSM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fr_metrics/mad.html">Most Apparent Distortion (MAD)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Most Apparent Distortion (MAD)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.mad.most_apparent_distortion.html">viqa.fr_metrics.mad.most_apparent_distortion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.mad.most_apparent_distortion_3d.html">viqa.fr_metrics.mad.most_apparent_distortion_3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fr_metrics/generated/viqa.fr_metrics.mad.MAD.html">viqa.fr_metrics.mad.MAD</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="nr_metrics.html">No Reference Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of No Reference Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="nr_metrics/snr.html">Signal to Noise Ratio (SNR)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Signal to Noise Ratio (SNR)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="nr_metrics/generated/viqa.nr_metrics.snr.signal_to_noise_ratio.html">viqa.nr_metrics.snr.signal_to_noise_ratio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nr_metrics/generated/viqa.nr_metrics.snr.SNR.html">viqa.nr_metrics.snr.SNR</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="nr_metrics/cnr.html">Contrast to Noise Ratio (CNR)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Contrast to Noise Ratio (CNR)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="nr_metrics/generated/viqa.nr_metrics.cnr.contrast_to_noise_ratio.html">viqa.nr_metrics.cnr.contrast_to_noise_ratio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nr_metrics/generated/viqa.nr_metrics.cnr.CNR.html">viqa.nr_metrics.cnr.CNR</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="nr_metrics/qmeasure.html">Q-Measure</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Q-Measure</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="nr_metrics/generated/viqa.nr_metrics.qmeasure.QMeasure.html">viqa.nr_metrics.qmeasure.QMeasure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="utils.html">Utilities modules</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Utilities modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils/generated/viqa.utils.ImageArray.html">viqa.utils.ImageArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.load_data.html">viqa.utils.load_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.load_mhd.html">viqa.utils.load_mhd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.load_raw.html">viqa.utils.load_raw</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.load_nifti.html">viqa.utils.load_nifti</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.normalize_data.html">viqa.utils.normalize_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.crop_image.html">viqa.utils.crop_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.correlate_convolve_abs.html">viqa.utils.correlate_convolve_abs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.gabor_convolve.html">viqa.utils.gabor_convolve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.export_results.html">viqa.utils.export_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.export_metadata.html">viqa.utils.export_metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.export_image.html">viqa.utils.export_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.find_largest_region.html">viqa.utils.find_largest_region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.visualize_2d.html">viqa.utils.visualize_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.utils.visualize_3d.html">viqa.utils.visualize_3d</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="fusion.html">Fusion module</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Fusion module</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.fusion.fuse_metrics_linear_combination.html">viqa.fusion.fuse_metrics_linear_combination</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="multiple.html">Multiple module</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of Multiple module</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.multiple.BatchMetrics.html">viqa.multiple.BatchMetrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/viqa.multiple.MultipleMetrics.html">viqa.multiple.MultipleMetrics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Release History</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="internal_api_reference.html">Internal API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of Internal API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="_metrics.html">Internal Metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_multiple.html">Multiple module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/3dct/vIQA">Github</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/changelog.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="release-history">
+<h1>Release History<a class="headerlink" href="#release-history" title="Link to this heading">¶</a></h1>
+<section id="release-v2-2-3">
+<h2>v2.2.3<a class="headerlink" href="#release-v2-2-3" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-04-10 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.2.3">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.2.3/">PyPI</a></em></p>
+<h2>v2.2.3 (2025-04-10)</h2>
+<p><em>This release is published under the BSD-3-Clause License.</em></p>
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fix using Class attribute rois when not using the same roi for all images in BatchMetrics (<a href="https://github.com/3dct/vIQA/commit/e98b15a1de544022061c4643a95a84f8c9d5dc3e"><code>e98b15a</code></a>)</li>
+</ul>
+<hr>
+<p><strong>Detailed Changes</strong>: <a href="https://github.com/3dct/vIQA/compare/v2.2.2...v2.2.3">v2.2.2...v2.2.3</a></p></section>
+<section id="release-v2-2-2">
+<h2>v2.2.2<a class="headerlink" href="#release-v2-2-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-04-09 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.2.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.2.2/">PyPI</a></em></p>
+<h2>v2.2.2 (2025-04-09)</h2>
+<p><em>This release is published under the BSD-3-Clause License.</em></p>
+<h3>Bug Fixes</h3>
+<ul>
+<li>Add check for image dimensions during loading (<a href="https://github.com/3dct/vIQA/pull/15" data-hovercard-type="pull_request" data-hovercard-url="/3dct/vIQA/pull/15/hovercard">#15</a>, <a href="https://github.com/3dct/vIQA/commit/a120adea9a19fa1e19b4f82cbf95232482fa7be4"><code>a120ade</code></a>)</li>
+</ul>
+<ul>
+<li>fix: add check for image dimensions during loading</li>
+</ul>
+<p>closes <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2982037603" data-permission-text="Title is private" data-url="https://github.com/3dct/vIQA/issues/14" data-hovercard-type="issue" data-hovercard-url="/3dct/vIQA/issues/14/hovercard" href="https://github.com/3dct/vIQA/issues/14">#14</a></p>
+<ul>
+<li>[pre-commit.ci] auto fixes from pre-commit.com hooks</li>
+</ul>
+<p>for more information, see <a href="https://pre-commit.ci" rel="nofollow">https://pre-commit.ci</a></p>
+<ul>
+<li>
+<p>refactor: refactor to comply with ruff</p>
+</li>
+<li>
+<p>docs(load_data): add Exception to function docstring</p>
+</li>
+</ul>
+<hr>
+<p>Co-authored-by: Lukas Nepelius <a href="mailto:p42940@fhooe.at">p42940@fhooe.at</a></p>
+<p>Co-authored-by: pre-commit-ci[bot] &lt;66853113+pre-commit-ci[bot]@users.noreply.github.com&gt;</p>
+<p>Co-authored-by: lukasbehammer <a href="mailto:lukas.behammer@fh-wels.at">lukas.behammer@fh-wels.at</a></p>
+<ul>
+<li>Enable rois in BatchMetrics (<a href="https://github.com/3dct/vIQA/commit/c2b0ce5102aec6ee9ce9434bfc9d3ea8eabdbc12"><code>c2b0ce5</code></a>)</li>
+</ul>
+<p>closes <a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2672583551" data-permission-text="Title is private" data-url="https://github.com/3dct/vIQA/issues/11" data-hovercard-type="issue" data-hovercard-url="/3dct/vIQA/issues/11/hovercard" href="https://github.com/3dct/vIQA/issues/11">#11</a></p>
+<ul>
+<li>
+<p>Fix rois in BatchMetrics.report when exporting images (<a href="https://github.com/3dct/vIQA/commit/88c89317ae9735685f16953a5b2338e72fe2a74c"><code>88c8931</code></a>)</p>
+</li>
+<li>
+<p>Fix semantic release exclude commit pattern (<a href="https://github.com/3dct/vIQA/commit/b24070ec67f74d68d0915524d77bfa11a828bcc3"><code>b24070e</code></a>)</p>
+</li>
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li>Refactor user guide (<a href="https://github.com/3dct/vIQA/commit/c423f573db92326e4e96f815690ce50866a59a01"><code>c423f57</code></a>)</li>
+</ul>
+<hr>
+<p><strong>Detailed Changes</strong>: <a href="https://github.com/3dct/vIQA/compare/v2.2.1...v2.2.2">v2.2.1...v2.2.2</a></p></section>
+<section id="release-v2-2-1">
+<h2>v2.2.1<a class="headerlink" href="#release-v2-2-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-04-02 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.2.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.2.1/">PyPI</a></em></p>
+<h2>v2.2.1 (2025-04-02)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix: last column of metrics will now be printed in export_image (<a href="https://github.com/3dct/vIQA/commit/2ab6643084ff92cd16bd72584021a2c1be38eba6"><code>2ab6643</code></a>)</li>
+</ul></section>
+<section id="release-v2-2-0">
+<h2>v2.2.0<a class="headerlink" href="#release-v2-2-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-03-31 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.2.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.2.0/">PyPI</a></em></p>
+<h2>v2.2.0 (2025-03-31)</h2>
+<h3>Features</h3>
+<ul>
+<li>feat: add script to crop images</li>
+</ul>
+<p>update script to reduce projections, refactor scripts to comply with ruff linting rules (<a href="https://github.com/3dct/vIQA/commit/8a84d441211b83cb52d3fb99ba7ec2c7ea5f1b4e"><code>8a84d44</code></a>)</p>
+<h3>Unknown</h3>
+<ul>
+<li>
+<p>notebook: update notebook documentation (<a href="https://github.com/3dct/vIQA/commit/779f7e779a4ea1d82e3cdd0a882ad3ad4f8462b9"><code>779f7e7</code></a>)</p>
+</li>
+<li>
+<p>notebook: update notebooks</p>
+</li>
+</ul>
+<p>refactor notebooks to comply with ruff rules (<a href="https://github.com/3dct/vIQA/commit/0de8543236f1ac17c9d6a41b95b1f6983a0ac51c"><code>0de8543</code></a>)</p></section>
+<section id="release-v2-1-0">
+<h2>v2.1.0<a class="headerlink" href="#release-v2-1-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2025-03-06 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.1.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.1.0/">PyPI</a></em></p>
+<h2>v2.1.0 (2025-03-06)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix: add function _parse_bitdepth to utils.loading.<strong>init</strong>.py</li>
+</ul>
+<p>update docs for export_metadata (<a href="https://github.com/3dct/vIQA/commit/4cc8e5aaa0520f930e90ac87b37d7ac055d72344"><code>4cc8e5a</code></a>)</p>
+<ul>
+<li>fix: fix integer overflow when loading large binary images (<a href="https://github.com/3dct/vIQA/commit/567d0d7a74463d33af0eba89a83ad464b3878c78"><code>567d0d7</code></a>)</li>
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li>docs: update for new loading options</li>
+</ul>
+<p>fix name "Structural Similarity" (<a href="https://github.com/3dct/vIQA/commit/16de59db2aa88ecda067965afc6bc33604ec2122"><code>16de59d</code></a>)</p>
+<h3>Features</h3>
+<ul>
+<li>
+<p>feat: add more .raw loading options (<a href="https://github.com/3dct/vIQA/commit/598a5a6b4a4a653dd6a1665cd1bd335f54c54ddd"><code>598a5a6</code></a>)</p>
+</li>
+<li>
+<p>feat: add visualization for different region types</p>
+</li>
+</ul>
+<p>add return of parameters for signal_to_noise_ratio (<a href="https://github.com/3dct/vIQA/commit/6ea333adc9f8c9ec0dc10f0e803d6215f69cb866"><code>6ea333a</code></a>)</p></section>
+<section id="release-v2-0-6">
+<h2>v2.0.6<a class="headerlink" href="#release-v2-0-6" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-12-13 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.6">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.6/">PyPI</a></em></p>
+<h2>v2.0.6 (2024-12-13)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix: fix bug when using batch mode</li>
+</ul>
+<p>batch mode couldn't be used without the parameter <code>roi</code> give (<a href="https://github.com/3dct/vIQA/commit/3693e64d0b9f81c40cbfc574287b3759c2a919d6"><code>3693e64</code></a>)</p></section>
+<section id="release-v2-0-5">
+<h2>v2.0.5<a class="headerlink" href="#release-v2-0-5" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-11-18 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.5">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.5/">PyPI</a></em></p>
+<h2>v2.0.5 (2024-11-18)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>
+<p>fix(crop_image): add checks if cropping is smaller than original image or image is already cropped (<a href="https://github.com/3dct/vIQA/commit/bb930b04115fad7d550da58320aafbfad6bf4774"><code>bb930b0</code></a>)</p>
+</li>
+<li>
+<p>fix: prevent forwarding of roi parameter in BatchMetrics.calculate (<a href="https://github.com/3dct/vIQA/commit/ea35048338ec2f1c0f46b115b5b392455d83ebe6"><code>ea35048</code></a>)</p>
+</li>
+</ul>
+<h3>Unknown</h3>
+<ul>
+<li>books: update report exporting in batch mode notebook (<a href="https://github.com/3dct/vIQA/commit/86c70b432793cdd6e1da3e45c7bc5624ce8a93a3"><code>86c70b4</code></a>)</li>
+</ul></section>
+<section id="release-v2-0-4">
+<h2>v2.0.4<a class="headerlink" href="#release-v2-0-4" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-11-11 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.4">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.4/">PyPI</a></em></p>
+<h2>v2.0.4 (2024-11-11)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix(multiple.py): fix delimiter sniffing</li>
+</ul>
+<p>fix csv delimiter sniffing, add support for tsv and txt files during loading of pairs in BatchMetrics (<a href="https://github.com/3dct/vIQA/commit/dbd60ee36e1eaff8f6e026ec0ab71493595a5064"><code>dbd60ee</code></a>)</p>
+<h3>Documentation</h3>
+<ul>
+<li>docs: update README.md badge (<a href="https://github.com/3dct/vIQA/commit/b5d0713e0096892a8a6645a0b641bfc76ff2e661"><code>b5d0713</code></a>)</li>
+</ul></section>
+<section id="release-v2-0-3">
+<h2>v2.0.3<a class="headerlink" href="#release-v2-0-3" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-10-30 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.3">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.3/">PyPI</a></em></p>
+<h2>v2.0.3 (2024-10-30)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix: fix comparison operators and move them to Metric class (<a href="https://github.com/3dct/vIQA/commit/1af2e31df5f4938dec9993c7663692fb6a105bb1"><code>1af2e31</code></a>)</li>
+</ul></section>
+<section id="release-v2-0-2">
+<h2>v2.0.2<a class="headerlink" href="#release-v2-0-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-10-29 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.2/">PyPI</a></em></p>
+<h2>v2.0.2 (2024-10-29)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix(qmeasure): fix image loading in score method (<a href="https://github.com/3dct/vIQA/commit/5f589c1b13c8584e1f1ee618b5b9ee46533206dc"><code>5f589c1</code></a>)</li>
+</ul></section>
+<section id="release-v2-0-1">
+<h2>v2.0.1<a class="headerlink" href="#release-v2-0-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-10-23 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.1/">PyPI</a></em></p>
+<h2>v2.0.1 (2024-10-23)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fix: revert commit <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/851521b2c355226b38995b9daf247018f24a002f/hovercard" href="https://github.com/3dct/vIQA/commit/851521b2c355226b38995b9daf247018f24a002f"><tt>851521b</tt></a> (<a href="https://github.com/3dct/vIQA/commit/960957d7b1f203dddaacc5847dd34baa6d836e9b"><code>960957d</code></a>)</li>
+</ul></section>
+<section id="release-v2-0-0">
+<h2>v2.0.0<a class="headerlink" href="#release-v2-0-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-10-22 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v2.0.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v2.0.0/">PyPI</a></em></p>
+<h2>v2.0.0 (2024-10-22)</h2>
+<h3>Breaking</h3>
+<ul>
+<li>refactor!: move utility modules to utils subpackage</li>
+</ul>
+<p>BREAKING CHANGE: major refactoring of utility functions (<a href="https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552"><code>d3945b4</code></a>)</p>
+<h3>Bug Fixes</h3>
+<ul>
+<li>
+<p>fix: convert rgb images to grayscale before binarization (<a href="https://github.com/3dct/vIQA/commit/f258f96d38efd6acc56fca9f1dcd823987703058"><code>f258f96</code></a>)</p>
+</li>
+<li>
+<p>fix: convert snr and cnr results to np.float64 (<a href="https://github.com/3dct/vIQA/commit/3589350e8f9457358a774b9ec199612ef3f9990a"><code>3589350</code></a>)</p>
+</li>
+<li>
+<p>fix(utils.py): fix visualization in _get_binary</p>
+</li>
+</ul>
+<p>add slices to image visualization for 3d data (<a href="https://github.com/3dct/vIQA/commit/3afad3af0cbff193c43a904c720bb330a4549802"><code>3afad3a</code></a>)</p>
+<ul>
+<li>fix: change condition to check for provided snr and cnr parameters</li>
+</ul>
+<p>fixes a NameError when calling snr or cnr methods without providing the center or radius parameters (Lookup in _parameter attribute fails when entries have not been created there before) (<a href="https://github.com/3dct/vIQA/commit/a6b3ec2d0875c2064a8ea1592f3b20740af0a521"><code>a6b3ec2</code></a>)</p>
+<ul>
+<li>
+<p>fix: add additional checks for snr and cnr visualization (<a href="https://github.com/3dct/vIQA/commit/accaf510536bd2788e14b27f830bdf2f85eb2ecd"><code>accaf51</code></a>)</p>
+</li>
+<li>
+<p>fix(utils.py): add check for image dimensions in export_image (<a href="https://github.com/3dct/vIQA/commit/960b833b0f708f2b38ddf3d667cbb39ff45ebd4a"><code>960b833</code></a>)</p>
+</li>
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li>
+<p>docs(load_data): update deprecation warning in docstring (<a href="https://github.com/3dct/vIQA/commit/b3838f66835fe9e40c5057b72b73b0847d1d1ca1"><code>b3838f6</code></a>)</p>
+</li>
+<li>
+<p>docs: update docs to exclude deprecation warning (<a href="https://github.com/3dct/vIQA/commit/0a645f6c09dfac3e351e3d0f5ef5ebd04631baa3"><code>0a645f6</code></a>)</p>
+</li>
+<li>
+<p>docs(utils): add examples in module docstrings (<a href="https://github.com/3dct/vIQA/commit/dd590f630adce349637c9111cf678e59aad24788"><code>dd590f6</code></a>)</p>
+</li>
+<li>
+<p>docs: update docs according to <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552/hovercard" href="https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552"><tt>d3945b4</tt></a> (<a href="https://github.com/3dct/vIQA/commit/772f43084c8c7cd06f4a5903cc61632b27d71945"><code>772f430</code></a>)</p>
+</li>
+<li>
+<p>docs: add public attribute parameters to class documentation (<a href="https://github.com/3dct/vIQA/commit/1b2b00c8afe794a680fc67b7ea43806a81f120e2"><code>1b2b00c</code></a>)</p>
+</li>
+</ul>
+<h3>Features</h3>
+<ul>
+<li>
+<p>feat(export_image): add check for file extension (<a href="https://github.com/3dct/vIQA/commit/977b7c8c0153120c323b22b51498b612f0e735cc"><code>977b7c8</code></a>)</p>
+</li>
+<li>
+<p>feat(utils/export.py): add feature to return dict in export_results (<a href="https://github.com/3dct/vIQA/commit/c30d3683457391b5a74029a357c726966ca66f33"><code>c30d368</code></a>)</p>
+</li>
+<li>
+<p>feat: add functionality for different region types for snr and cnr</p>
+</li>
+</ul>
+<p>add find_largest_region to docs (<a href="https://github.com/3dct/vIQA/commit/7495cd1a5258c10a60cb798b16aa112d7a4fd1a1"><code>7495cd1</code></a>)</p>
+<ul>
+<li>
+<p>feat: add automatic background and signal center detection for cnr and snr (<a href="https://github.com/3dct/vIQA/commit/1ea9310922ba0541a909f5b6fffcf1f0484f58b8"><code>1ea9310</code></a>)</p>
+</li>
+<li>
+<p>feat: interactive centers for snr and cnr (<a href="https://github.com/3dct/vIQA/commit/bfa5364912a5d259edc07238c8496baa74be07ed"><code>bfa5364</code></a>)</p>
+</li>
+</ul>
+<h3>Performance Improvements</h3>
+<ul>
+<li>perf: update SSIM</li>
+</ul>
+<p>update documentation, refactor definition of variable truncate (<a href="https://github.com/3dct/vIQA/commit/851521b2c355226b38995b9daf247018f24a002f"><code>851521b</code></a>)</p>
+<ul>
+<li>perf(ImageArray): calculate statistics only on method call</li>
+</ul>
+<p>make sure that an ImageArray is returned via numpy ufunc (<a href="https://github.com/3dct/vIQA/commit/31524fbff81ff0cf52c9be7dc2e22b116c7dd286"><code>31524fb</code></a>)</p></section>
+<section id="release-v1-13-0">
+<h2>v1.13.0<a class="headerlink" href="#release-v1-13-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-09-24 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.13.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.13.0/">PyPI</a></em></p>
+<h1>v1.13.0 (2024-09-24)</h1>
+<h2>Documentation</h2>
+<ul>
+<li>
+<p>docs: add internal API reference (<a href="https://github.com/3dct/vIQA/commit/81a5950f0a9df294441c25aebfdca5a1b6998ce8"><code>81a5950</code></a>)</p>
+</li>
+<li>
+<p>docs: update docs</p>
+</li>
+</ul>
+<p>add visualize_2d to docs, fix cross-link for parameter image in MultipleMetrics.report (<a href="https://github.com/3dct/vIQA/commit/25f4e92773d7b6b03e6964c5d08d74c0e51fa20a"><code>25f4e92</code></a>)</p>
+<h2>Feature</h2>
+<ul>
+<li>
+<p>feat(BatchMetrics): add image export in report method (<a href="https://github.com/3dct/vIQA/commit/432c31e39a20c1e27c88eda86b1f8c6da7203b0e"><code>432c31e</code></a>)</p>
+</li>
+<li>
+<p>feat(export_image): add parameter show_image</p>
+</li>
+</ul>
+<p>add option to select if image should be printed when exporting images (<a href="https://github.com/3dct/vIQA/commit/5dff6a461a648e75c940177ff6392499b7108e39"><code>5dff6a4</code></a>)</p>
+<ul>
+<li>feat: add parameter project_name to report methods</li>
+</ul>
+<p>filename is constructed of project_name and default filename if project_name is given (<a href="https://github.com/3dct/vIQA/commit/07541a6167b50dd39fc9a847218e5f3fee6912c0"><code>07541a6</code></a>)</p></section>
+<section id="release-v1-12-0">
+<h2>v1.12.0<a class="headerlink" href="#release-v1-12-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-09-04 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.12.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.12.0/">PyPI</a></em></p>
+<h1>v1.12.0 (2024-09-04)</h1>
+<h2>Feature</h2>
+<ul>
+<li>feat: add function to create image report</li>
+</ul>
+<p>move print_image method to utils.py as function and rename to export_image, add parameter to change filename, fix bug when number of fr-metrics is not a multiple of four (<a href="https://github.com/3dct/vIQA/commit/cc8b4ff654f8721a552c13b9c9e26d8a6697fecd"><code>cc8b4ff</code></a>)</p></section>
+<section id="release-v1-11-1">
+<h2>v1.11.1<a class="headerlink" href="#release-v1-11-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-09-04 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.11.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.11.1/">PyPI</a></em></p>
+<h1>v1.11.1 (2024-09-04)</h1>
+<h2>Documentation</h2>
+<ul>
+<li>
+<p>docs: add pre-commit usage in developer guide (<a href="https://github.com/3dct/vIQA/commit/4c313ab31a66b5dd9369ad2ec8d226b9c46279b9"><code>4c313ab</code></a>)</p>
+</li>
+<li>
+<p>docs: Update docs</p>
+</li>
+</ul>
+<p>update developer guide regarding docs generation, rename pages for utility modules and usage (<a href="https://github.com/3dct/vIQA/commit/4f35dd3d1a51f54035640ce7cb6c2b9115c85e48"><code>4f35dd3</code></a>)</p>
+<h2>Performance</h2>
+<ul>
+<li>perf: improve performance of load_data</li>
+</ul>
+<p>call ImageArray only at the end of load_data function and only if necessary (<a href="https://github.com/3dct/vIQA/commit/b3fdecdad190ab8a8831d4885bbe5e0f5e96c420"><code>b3fdecd</code></a>)</p>
+<ul>
+<li>perf: improve performance of BatchMetrics</li>
+</ul>
+<p>add checks to load images only if not already in memory, add function to calculate no-reference metrics only if not already calculated (<a href="https://github.com/3dct/vIQA/commit/a0f3a267cf132c35e4416b9f5ae5be097e7dc162"><code>a0f3a26</code></a>)</p></section>
+<section id="release-v1-11-0">
+<h2>v1.11.0<a class="headerlink" href="#release-v1-11-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-09-02 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.11.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.11.0/">PyPI</a></em></p>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p>Package has wrong version number (1.11.0dev0 instead of 1.11.0)</p>
+</div>
+<h1>v1.11.0 (2024-09-02)</h1>
+<h2>Chore</h2>
+<ul>
+<li>chore: update .pre-commit-config.yaml</li>
+</ul>
+<p>add submodule checkout, add custom autoupdate commit message, change sphinx building stage to pre-push (<a href="https://github.com/3dct/vIQA/commit/8998a736ea1883835139af88df2652888e7813d8"><code>8998a73</code></a>)</p>
+<ul>
+<li>chore: update LICENSE.txt</li>
+</ul>
+<p>include License statement for qmeasure submodule, fix file paths, update style (<a href="https://github.com/3dct/vIQA/commit/4ec7e1739c46d27e4cdc4f085b66882d53e2ecf7"><code>4ec7e17</code></a>)</p>
+<h2>Ci</h2>
+<ul>
+<li>
+<p>ci: add recursive checkout (<a href="https://github.com/3dct/vIQA/commit/ef72c4a11196a925d8aaf04933ca533a1f1a7640"><code>ef72c4a</code></a>)</p>
+</li>
+<li>
+<p>ci: make checkout branch variable for wheel and sdist building</p>
+</li>
+</ul>
+<p>set checkout branch for semantic_release to main (<a href="https://github.com/3dct/vIQA/commit/59d037557cfb899eb6191e61aad331a6afe4bbf6"><code>59d0375</code></a>)</p>
+<ul>
+<li>ci: remove sleep step in job test_install (<a href="https://github.com/3dct/vIQA/commit/fde39baa64fa830d35451c35dd905de7f2affc04"><code>fde39ba</code></a>)</li>
+</ul>
+<h2>Feature</h2>
+<ul>
+<li>feat: add function to crop images</li>
+</ul>
+<p>cal cropping function during loading if parameter roi is given (<a href="https://github.com/3dct/vIQA/commit/140d101ace4ffa3dbd97ecc11db8ada3dba0ae6b"><code>140d101</code></a>)</p>
+<h2>Refactor</h2>
+<ul>
+<li>refactor: add warning to visualize method in class ImageArray</li>
+</ul>
+<p>add warning that parameter slices will be ignored if method is called on a 2D image (<a href="https://github.com/3dct/vIQA/commit/cd496be36ed3ad8ba638ba4de04c942ff53ec5f4"><code>cd496be</code></a>)</p>
+<ul>
+<li>refactor: handle data loading in interface classes</li>
+</ul>
+<p>move data loading and checking to score methods of metrics interface classes (<a href="https://github.com/3dct/vIQA/commit/1ad011bea42b52c94d3e17f26b750e21394f3e1b"><code>1ad011b</code></a>)</p>
+<ul>
+<li>refactor: use qmeasure submodule (<a href="https://github.com/3dct/vIQA/commit/1c1ae61dc8b061fe21c29fba69e705274eb07897"><code>1c1ae61</code></a>)</li>
+</ul></section>
+<section id="release-v1-10-0">
+<h2>v1.10.0<a class="headerlink" href="#release-v1-10-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-27 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.10.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.10.0/">PyPI</a></em></p>
+<h1>v1.10.0 (2024-08-27)</h1>
+<h2>Chore</h2>
+<ul>
+<li>
+<p>chore: update docs config to autodocument inherited members (<a href="https://github.com/3dct/vIQA/commit/9bc640f86e3b01997ca27920b46a5e900da83e93"><code>9bc640f</code></a>)</p>
+</li>
+<li>
+<p>chore: update documentation build</p>
+</li>
+</ul>
+<p>add dependencies for Sphinx in GitHub Actions job (<a href="https://github.com/3dct/vIQA/commit/4596169db77fc0c3f5940e5607e0e8e9baab25a0"><code>4596169</code></a>)</p>
+<ul>
+<li>chore: update release process</li>
+</ul>
+<p>build only after semantic_release job ran (<a href="https://github.com/3dct/vIQA/commit/5fe798c625e00786938a8bc0dbec272c0bd6799b"><code>5fe798c</code></a>)</p>
+<h2>Documentation</h2>
+<ul>
+<li>docs: update docs</li>
+</ul>
+<p>remove sphinx-notfound-page, temporarily disable hoverxref (<a href="https://github.com/3dct/vIQA/commit/614d52aa0a05e87c664ed99fb8f7e76b43b9c589"><code>614d52a</code></a>)</p>
+<ul>
+<li>docs: add sphinx-autobuild to developer_guide.rst (<a href="https://github.com/3dct/vIQA/commit/59381a4910dfbf2b4386c3766241dd54a4d42349"><code>59381a4</code></a>)</li>
+</ul>
+<h2>Feature</h2>
+<ul>
+<li>feat: add function to compute multiple metrics at once</li>
+</ul>
+<p>rename batch_mode.py to multiple.py, add MultipleMetrics class, move export_metadata to it's own function in utils.py, add base class for classes of type multiple, update class BatchMetrics (<a href="https://github.com/3dct/vIQA/commit/6f4f8a7765078a322e12cfca6720f3d8e0842082"><code>6f4f8a7</code></a>)</p>
+<h2>Refactor</h2>
+<ul>
+<li>refactor: add new parent class metric</li>
+</ul>
+<p>rename export_csv to export_results, restructure abstract base classes for metrics (<a href="https://github.com/3dct/vIQA/commit/4bc3bef3c85b9e21c4bf0b2259fb9a957c193e4b"><code>4bc3bef</code></a>)</p>
+<h2>Unknown</h2>
+<ul>
+<li>book: update Image_Comparison.ipynb accordingly to <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/6f4f8a7765078a322e12cfca6720f3d8e0842082/hovercard" href="https://github.com/3dct/vIQA/commit/6f4f8a7765078a322e12cfca6720f3d8e0842082"><tt>6f4f8a7</tt></a> (<a href="https://github.com/3dct/vIQA/commit/8ac53e8d7a9d3fa193fade7cc295f5b581e917fb"><code>8ac53e8</code></a>)</li>
+</ul></section>
+<section id="release-v1-9-1">
+<h2>v1.9.1<a class="headerlink" href="#release-v1-9-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-23 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.9.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.9.1/">PyPI</a></em></p>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p>Package has wrong version number (1.9.0 instead of 1.9.1)</p>
+</div>
+<h1>v1.9.1 (2024-08-23)</h1>
+<h2>Chore</h2>
+<ul>
+<li>chore: change GitHub emojis to emoji characters in README.md</li>
+</ul>
+<p>improve rendering for PyPI (<a href="https://github.com/3dct/vIQA/commit/0a048118e9b9587d5cf498e914436559efb99d3d"><code>0a04811</code></a>)</p>
+<ul>
+<li>chore: update automatic build process in build_wheels_and_publish.yaml (<a href="https://github.com/3dct/vIQA/commit/bcdc3b13a365f63db2a5e1eee27a358e197c186a"><code>bcdc3b1</code></a>)</li>
+</ul>
+<h2>Documentation</h2>
+<ul>
+<li>docs: update docs</li>
+</ul>
+<p>multiple changes to docstrings and docs rendering and docs building (<a href="https://github.com/3dct/vIQA/commit/080045f19703513633d6a18a7da26e44b2b8f7eb"><code>080045f</code></a>)</p>
+<h2>Fix</h2>
+<ul>
+<li>fix: use ImageArray instead of np.ndarray</li>
+</ul>
+<p>update according to <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/40f0d029ad416747135f79e8716de040335da592/hovercard" href="https://github.com/3dct/vIQA/commit/40f0d029ad416747135f79e8716de040335da592"><tt>40f0d02</tt></a>, fixes mypy (<a href="https://github.com/3dct/vIQA/commit/4ecfc8627321d7eee39e3ab0656bb155cfc56307"><code>4ecfc86</code></a>)</p></section>
+<section id="release-v1-9-0">
+<h2>v1.9.0<a class="headerlink" href="#release-v1-9-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-22 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.9.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.9.0/">PyPI</a></em></p>
+<h1>v1.9.0 (2024-08-22)</h1>
+<h2>Build</h2>
+<ul>
+<li>
+<p>build: set specific meson and meson-python versions (<a href="https://github.com/3dct/vIQA/commit/e395ba2591718aef853d6de8136c7422b7a0262e"><code>e395ba2</code></a>)</p>
+</li>
+<li>
+<p>build: remove support for Python 3.13 until in stable</p>
+</li>
+</ul>
+<p>Python 3.13 build takes too long or fails, add specific dependency version for meson-python (<a href="https://github.com/3dct/vIQA/commit/d6dd0e67c9c54458ca3bae15158f611ebab91236"><code>d6dd0e6</code></a>)</p>
+<h2>Chore</h2>
+<ul>
+<li>chore: update .gitignore</li>
+</ul>
+<p>remove docs/source/**/generated/ files (<a href="https://github.com/3dct/vIQA/commit/be86072bec3ff1d1df010d17466cf2cc51c4802c"><code>be86072</code></a>)</p>
+<h2>Feature</h2>
+<ul>
+<li>
+<p>feat(batch_mode.py): add parameter data_range to export_metadata (<a href="https://github.com/3dct/vIQA/commit/00cb4c427ae4cf17db83a006397dca7aaf3ef0cc"><code>00cb4c4</code></a>)</p>
+</li>
+<li>
+<p>feat: add parameter to set order of scaling in batch_mode.py (<a href="https://github.com/3dct/vIQA/commit/0c3886c8d00e25b9400ce87eb801a4d3be3b0ac9"><code>0c3886c</code></a>)</p>
+</li>
+</ul>
+<h2>Fix</h2>
+<ul>
+<li>fix: add Exception and warning to handle non 3D volumes in qmeasure.py (<a href="https://github.com/3dct/vIQA/commit/33e288ae032a1ed127c23c65412d084ae6054f8b"><code>33e288a</code></a>)</li>
+</ul></section>
+<section id="release-v1-8-0">
+<h2>v1.8.0<a class="headerlink" href="#release-v1-8-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-22 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.8.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.8.0/">PyPI</a></em></p>
+<h1>v1.8.0 (2024-08-22)</h1>
+<h2>Build</h2>
+<ul>
+<li>build: update numpy dependency for build to be lower than 2.0.0 (<a href="https://github.com/3dct/vIQA/commit/54ac725020e2394baa9188774fce5f45ce49cfb7"><code>54ac725</code></a>)</li>
+</ul>
+<h2>Chore</h2>
+<ul>
+<li>
+<p>chore: remove check install job from build_wheels_and_publish.yaml (<a href="https://github.com/3dct/vIQA/commit/235cd1c572ab37ac48ec1b12eb559d7d3f788beb"><code>235cd1c</code></a>)</p>
+</li>
+<li>
+<p>chore: use pip instead of pip3 in check_import job (<a href="https://github.com/3dct/vIQA/commit/d739e83c02972c61ca87410c4ef4b7f405bfa8d7"><code>d739e83</code></a>)</p>
+</li>
+<li>
+<p>chore: add Set up Python step check_import job (<a href="https://github.com/3dct/vIQA/commit/70448e36fec50348c5c6904b15e9a119e8efba42"><code>70448e3</code></a>)</p>
+</li>
+<li>
+<p>chore: add -vv argument in check_import job for debugging (<a href="https://github.com/3dct/vIQA/commit/03e50b128bc1d1904166213feb4bad7ac362de86"><code>03e50b1</code></a>)</p>
+</li>
+<li>
+<p>chore: fix check_import job to use non-editable install (<a href="https://github.com/3dct/vIQA/commit/e772e8ff51cacf7a525efd85d002f00c1daf6860"><code>e772e8f</code></a>)</p>
+</li>
+<li>
+<p>chore: move isort config from ruff.isort to ruff.lint.isort (<a href="https://github.com/3dct/vIQA/commit/8d7f21be7a8164d9310837fea7f8e248c18fbdc5"><code>8d7f21b</code></a>)</p>
+</li>
+<li>
+<p>chore: update release process in build_wheels_and_publish.yaml</p>
+</li>
+</ul>
+<p>add check for import to catch non-importable releases, add upload to TestPyPI and check installing from there before real upload (<a href="https://github.com/3dct/vIQA/commit/53d69e9edc82c6e0f896fe0e79e4039e904b39f4"><code>53d69e9</code></a>)</p>
+<h2>Documentation</h2>
+<ul>
+<li>docs: update Tuple order for visualization methods in snr.py and cnr.py</li>
+</ul>
+<p>change Tuple order according to <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923/hovercard" href="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923"><tt>4d7c3e0</tt></a> and <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/0bab2b8534a320b18780f9a131c6384bf79c6303/hovercard" href="https://github.com/3dct/vIQA/commit/0bab2b8534a320b18780f9a131c6384bf79c6303"><tt>0bab2b8</tt></a> (<a href="https://github.com/3dct/vIQA/commit/3aef76d95204a3fb3fdc736aaafbdc62e85cb0c4"><code>3aef76d</code></a>)</p>
+<h2>Feature</h2>
+<ul>
+<li>
+<p>feat: add 2D visualization for class ImageArray (<a href="https://github.com/3dct/vIQA/commit/d09dfad695470fea67b01a9e38f05154e31c21d1"><code>d09dfad</code></a>)</p>
+</li>
+<li>
+<p>feat: add parameter to export image in visualization functions (<a href="https://github.com/3dct/vIQA/commit/6e418e2769a8168b2b9ba67a467c8175368e4851"><code>6e418e2</code></a>)</p>
+</li>
+</ul>
+<h2>Fix</h2>
+<ul>
+<li>fix: update 2D visualization for snr and cnr</li>
+</ul>
+<p>fix visualization based on <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923/hovercard" href="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923"><tt>4d7c3e0</tt></a> (<a href="https://github.com/3dct/vIQA/commit/0bab2b8534a320b18780f9a131c6384bf79c6303"><code>0bab2b8</code></a>)</p></section>
+<section id="release-v1-7-0">
+<h2>v1.7.0<a class="headerlink" href="#release-v1-7-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-22 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.7.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.7.0/">PyPI</a></em></p>
+<h1>v1.7.0 (2024-08-22)</h1>
+<h2>Chore</h2>
+<ul>
+<li>chore: update version to 1.6.1</li>
+</ul>
+<p>fix versioning for python-semantic-release (<a href="https://github.com/3dct/vIQA/commit/6d0025588954ea20f28f316d768e222a00756eca"><code>6d00255</code></a>)</p>
+<h2>Ci</h2>
+<ul>
+<li>ci: add commit type book to python semantic release (<a href="https://github.com/3dct/vIQA/commit/ec50245c91e763a2ec705fb688b4b2017a08e227"><code>ec50245</code></a>)</li>
+</ul>
+<h2>Documentation</h2>
+<ul>
+<li>docs: update docstring for load_utils.py:load_raw</li>
+</ul>
+<p>add periods to sentences in the "Raises" section of docstring (<a href="https://github.com/3dct/vIQA/commit/c3f35911c7bd86e0860db92659115e7a41de33c9"><code>c3f3591</code></a>)</p>
+<ul>
+<li>docs: add pre-commit.ci status badge (<a href="https://github.com/3dct/vIQA/commit/b02ca8b7820f9333d0f3456905cd14c641693131"><code>b02ca8b</code></a>)</li>
+</ul>
+<h2>Feature</h2>
+<ul>
+<li>feat: add custom visualization</li>
+</ul>
+<p>add method for class ImageArray and function visualize_3d for custom visualization of slices of 3d volumes, update documentation for the respective method and function (<a href="https://github.com/3dct/vIQA/commit/8423592d1e691b72550b5c2d915e1491db9056b1"><code>8423592</code></a>)</p>
+<h2>Fix</h2>
+<ul>
+<li>fix: change orientation of loaded image array</li>
+</ul>
+<p>add rotation and flip when loading from binary, update visualization functions for cnr and snr (<a href="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923"><code>4d7c3e0</code></a>)</p>
+<h2>Performance</h2>
+<ul>
+<li>perf: use attribute of class ImageArray for method describe</li>
+</ul>
+<p>attribute mean_value in method describe is now used, fix documentation for class ImageArray (<a href="https://github.com/3dct/vIQA/commit/b0830cf2ede2e20a5349775ab23649557ca72f85"><code>b0830cf</code></a>)</p>
+<h2>Unknown</h2>
+<ul>
+<li>book: update visualization in jupyter notebooks</li>
+</ul>
+<p>visualization now reflects the changes in commit <a class="commit-link" data-hovercard-type="commit" data-hovercard-url="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923/hovercard" href="https://github.com/3dct/vIQA/commit/4d7c3e025a40e4a61d911ad9aeda75bd96ca2923"><tt>4d7c3e0</tt></a> (<a href="https://github.com/3dct/vIQA/commit/7d94131d0c7a9a0296dcb819d0fb3c72f652f6ab"><code>7d94131</code></a>)</p></section>
+<section id="release-v1-6-1">
+<h2>v1.6.1<a class="headerlink" href="#release-v1-6-1" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-20 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.6.1">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.6.1/">PyPI</a></em></p>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p>Package has wrong version number (1.6.0dev0 instead of 1.6.1)</p>
+</div>
+<h1>v1.6.1 (2024-08-20)</h1>
+<h2>Ci</h2>
+<ul>
+<li>
+<p>ci: add Setup Python step before Test install from PyPI (<a href="https://github.com/3dct/vIQA/commit/4471af61882190b62e9db019e5054caf16915409"><code>4471af6</code></a>)</p>
+</li>
+<li>
+<p>ci: skip build-docs and mypy on pre-commit.ci (<a href="https://github.com/3dct/vIQA/commit/32654c58e0c6331452fbc5a5b22239e9e08d0db8"><code>32654c5</code></a>)</p>
+</li>
+</ul>
+<h2>Fix</h2>
+<ul>
+<li>fix: remove <strong>init</strong>.py files for C extensions</li>
+</ul>
+<p>import of the package is now possible again (<a href="https://github.com/3dct/vIQA/commit/e747cf7f184b43b67bf3024d0a7bdd3cd0129546"><code>e747cf7</code></a>)</p></section>
+<section id="release-v1-6-0">
+<h2>v1.6.0 BROKEN<a class="headerlink" href="#release-v1-6-0" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-20 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.6.0">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.6.0/">PyPI</a></em></p>
+<div class="markdown-alert markdown-alert-caution"><p class="markdown-alert-title"><svg class="octicon octicon-stop mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p><p>Import not working due to <strong>init</strong>.py files for C extensions</p>
+</div>
+<h1>v1.6.0 (2024-08-20)</h1>
+<h2>Ci</h2>
+<ul>
+<li>ci: update .pre-commit-config.yaml</li>
+</ul>
+<p>exclude CHANGELOG.md and CODE_OF_CONDUCT.md from codespell hook, activate sphinx hook for push only, remove stage commit from validate-pyproject hook, add exclude for conda recipes for check-yaml hook (<a href="https://github.com/3dct/vIQA/commit/d84c21f12072d6341f7282249d95c11f81b121cc"><code>d84c21f</code></a>)</p>
+<ul>
+<li>ci: update build_wheels_and_publish.yaml</li>
+</ul>
+<p>remove vcs_release="false" argument from semantic_release job, update test install (<a href="https://github.com/3dct/vIQA/commit/2eae29ec52fe36a546b08340c0d47f9262520f1a"><code>2eae29e</code></a>)</p>
+<ul>
+<li>ci: add specific code checkout to build_wheels_and_publish.yaml</li>
+</ul>
+<p>add "ref: main" to checkout step to ensure checking out the latest commit, temporarily deactivate conditions for jobs to release last version (<a href="https://github.com/3dct/vIQA/commit/9e8b5ce5de64b8194b5cc6856fa2c4f96a38db60"><code>9e8b5ce</code></a>)</p>
+<h2>Documentation</h2>
+<ul>
+<li>
+<p>docs: change title of Changelog page to Release History (<a href="https://github.com/3dct/vIQA/commit/ef913a6d0671ac1d7de26184ce2f7aadd6f1e2d2"><code>ef913a6</code></a>)</p>
+</li>
+<li>
+<p>docs: add changelog page (<a href="https://github.com/3dct/vIQA/commit/730ecf17b6b4932479aee3ceebeeb40a42352c53"><code>730ecf1</code></a>)</p>
+</li>
+<li>
+<p>docs: add contributor covenant shield (<a href="https://github.com/3dct/vIQA/commit/1ab08c166fae1de6005d278ef83f75b71f6084b8"><code>1ab08c1</code></a>)</p>
+</li>
+</ul>
+<h2>Feature</h2>
+<ul>
+<li>feat(load_utils.py): add support for .tiff files (<a href="https://github.com/3dct/vIQA/commit/a7c8b74d01c4ed4a2476a3eef71b385651b15389"><code>a7c8b74</code></a>)</li>
+</ul>
+<h2>Unknown</h2>
+<ul>
+<li>Create CODE_OF_CONDUCT.md (<a href="https://github.com/3dct/vIQA/commit/3860e91f7fbd0bb6117d909185686c989bfa5437"><code>3860e91</code></a>)</li>
+</ul></section>
+<section id="release-v1-5-2">
+<h2>v1.5.2 BROKEN<a class="headerlink" href="#release-v1-5-2" title="Link to this heading">¶</a></h2>
+<p><em>Released on 2024-08-16 - <a class="reference external" href="https://github.com/3dct/vIQA/releases/tag/v1.5.2">GitHub</a> - <a class="reference external" href="https://pypi.org/project/viqa/v1.5.2/">PyPI</a></em></p>
+<div class="markdown-alert markdown-alert-caution"><p class="markdown-alert-title"><svg class="octicon octicon-stop mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p><p>Import not working due to <strong>init</strong>.py files for C extensions</p>
+</div>
+<h1>v1.5.2 (2024-08-16)</h1>
+<h2>Build</h2>
+<ul>
+<li>
+<p>build: add stub files and <strong>init</strong>.py files for C extensions to build process (<a href="https://github.com/3dct/vIQA/commit/6251b981d92874a22b7a927c9aecb8196a0ae8b9"><code>6251b98</code></a>)</p>
+</li>
+<li>
+<p>build: update build_wheels_and_publish.yaml</p>
+</li>
+</ul>
+<p>add fetch_depth for code checkout (<a href="https://github.com/3dct/vIQA/commit/1fd84d21edfeee91a297056164bebac220713753"><code>1fd84d2</code></a>)</p>
+<ul>
+<li>build: update workflows</li>
+</ul>
+<p>add pull_request trigger for Build, add concurrency for Documentation, add event trigger for Documentation (<a href="https://github.com/3dct/vIQA/commit/6e8bc98ababa3264667651bed4913c3102be424e"><code>6e8bc98</code></a>)</p>
+<ul>
+<li>build: fix build_wheels_and_publish.yaml</li>
+</ul>
+<p>add code checkout to github release job (<a href="https://github.com/3dct/vIQA/commit/e2c9a39b7ba22b522502db637e822097a85a5c62"><code>e2c9a39</code></a>)</p>
+<h2>Chore</h2>
+<ul>
+<li>
+<p>chore: update PyPI classifiers (<a href="https://github.com/3dct/vIQA/commit/21a199410b03f9e5f3705fe9304175a2dd49469e"><code>21a1994</code></a>)</p>
+</li>
+<li>
+<p>chore: add CONTRIBUTING.md (<a href="https://github.com/3dct/vIQA/commit/8491e64759385c1881b3bffe7e31409161792483"><code>8491e64</code></a>)</p>
+</li>
+<li>
+<p>chore: update dev dependencies (<a href="https://github.com/3dct/vIQA/commit/ac22ca6d17ddaaf3a3a585a9f3d7895eb88c0c53"><code>ac22ca6</code></a>)</p>
+</li>
+<li>
+<p>chore: remove sphinx from pre-commit (<a href="https://github.com/3dct/vIQA/commit/2372f99bc475fc16d6e320fed4474dc06c7e17cd"><code>2372f99</code></a>)</p>
+</li>
+<li>
+<p>chore: update args for pre-commit-sphinx (<a href="https://github.com/3dct/vIQA/commit/c672fa576512dfc2ae6833b6b0e3d7a3e4dbe2e5"><code>c672fa5</code></a>)</p>
+</li>
+<li>
+<p>chore: update dev dependencies (<a href="https://github.com/3dct/vIQA/commit/d769aabe8b4bf1b8eebf258e21abcfa63e614188"><code>d769aab</code></a>)</p>
+</li>
+<li>
+<p>chore: add pre-commit (<a href="https://github.com/3dct/vIQA/commit/83c300ca39606ba4253bc665271a5dd39e13748b"><code>83c300c</code></a>)</p>
+</li>
+<li>
+<p>chore: add lint rules to ignore</p>
+</li>
+</ul>
+<p>ignore E203 and C901 (<a href="https://github.com/3dct/vIQA/commit/1372c605b226fb56dd3d76af9e7f1a2c5a8b019b"><code>1372c60</code></a>)</p>
+<h2>Ci</h2>
+<ul>
+<li>ci: update build_wheels_and_publish.yaml</li>
+</ul>
+<p>perform jobs only if condition released == true is met, add explicit tag for upload_github job (<a href="https://github.com/3dct/vIQA/commit/c941bd9f04a85d4c856b6399f1d31d4f9e4de34c"><code>c941bd9</code></a>)</p>
+<h2>Documentation</h2>
+<ul>
+<li>docs: update README.md</li>
+</ul>
+<p>update Project Status badge to Active, clear todo list, add contributing, improve documentation (<a href="https://github.com/3dct/vIQA/commit/503e4f744876cf8810f35c6e4ce077b4e2bd9a62"><code>503e4f7</code></a>)</p>
+<ul>
+<li>docs: rename batch mode page</li>
+</ul>
+<p>make "Module" lowercase as all other modules (<a href="https://github.com/3dct/vIQA/commit/e1105e12c183d619aa43642787423e21f151d35e"><code>e1105e1</code></a>)</p>
+<ul>
+<li>
+<p>docs: restructure docs into api reference and usage page (<a href="https://github.com/3dct/vIQA/commit/0dad6dfbf8a1748745704247df95f55c5d4f9d64"><code>0dad6df</code></a>)</p>
+</li>
+<li>
+<p>docs: add developer guide (<a href="https://github.com/3dct/vIQA/commit/5282655f1d7d399861dd16f61846b9deef6b3ef2"><code>5282655</code></a>)</p>
+</li>
+<li>
+<p>docs: add favicon (<a href="https://github.com/3dct/vIQA/commit/f2b6ee1018e7e798be75587f954764e20200c0a8"><code>f2b6ee1</code></a>)</p>
+</li>
+</ul>
+<h2>Fix</h2>
+<ul>
+<li>fix(mad.py): update check for im_slice</li>
+</ul>
+<p>in (int or None) int can always be evaluated as true (<a href="https://github.com/3dct/vIQA/commit/a245fe98e5290c49253a651f8e93d0fe30eb1bc4"><code>a245fe9</code></a>)</p>
+<h2>Refactor</h2>
+<ul>
+<li>refactor: update test assertion</li>
+</ul>
+<p>change is 255 to == 255 (<a href="https://github.com/3dct/vIQA/commit/df39f345890cb280594b849f4f009d1c52f2b166"><code>df39f34</code></a>)</p>
+<h2>Style</h2>
+<ul>
+<li>
+<p>style: update end of file new line (<a href="https://github.com/3dct/vIQA/commit/3c89f863cd94c2ad84d21549a27641f9080177a6"><code>3c89f86</code></a>)</p>
+</li>
+<li>
+<p>style: format files</p>
+</li>
+</ul>
+<p>remove trailing whitespace, adjust end of files (<a href="https://github.com/3dct/vIQA/commit/1cc275c4de2933e9b7365280f006013902e8c507"><code>1cc275c</code></a>)</p>
+<ul>
+<li>style: add mypy check</li>
+</ul>
+<p>implement mypy check, update files for mypy, add stub files qmeasurecalc.pyi and statisticscalc.pyi (<a href="https://github.com/3dct/vIQA/commit/19975166b487609775126bb2fff5dce06ab2f8ef"><code>1997516</code></a>)</p>
+<ul>
+<li>style: add yamllint</li>
+</ul>
+<p>implement yamllint and refactor .yaml files (<a href="https://github.com/3dct/vIQA/commit/6c46ace37acc9285445b3e7467dabccbb04757af"><code>6c46ace</code></a>)</p>
+<ul>
+<li>style: add rst check</li>
+</ul>
+<p>implement rst check and refactor .rst files (<a href="https://github.com/3dct/vIQA/commit/92f2dbdf89d19b877bb5e4e2f37049eda1b2ec3c"><code>92f2dbd</code></a>)</p>
+<ul>
+<li>style: update formatting</li>
+</ul>
+<p>use ruff formater to format codebase (<a href="https://github.com/3dct/vIQA/commit/dc48022d93f3c478a460e5545d1a39ad93e2075c"><code>dc48022</code></a>)</p>
+<ul>
+<li>style: update linting</li>
+</ul>
+<p>fix and update ruff config, fix lint errors (<a href="https://github.com/3dct/vIQA/commit/452b6fcf3da3e7aefa8ff5eae965dbcc1a9a533a"><code>452b6fc</code></a>)</p>
+<h2>Unknown</h2>
+<ul>
+<li>Merge remote-tracking branch 'github/main' (<a href="https://github.com/3dct/vIQA/commit/609891d6f1114dd15bd33bd85ee8f0e1029dfedf"><code>609891d</code></a>)</li>
+</ul></section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="internal_api_reference.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Internal API Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="generated/viqa.multiple.MultipleMetrics.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">viqa.multiple.MultipleMetrics</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Lukas Behammer
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on Aug 20, 2024</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Release History</a><ul>
+<li><a class="reference internal" href="#release-v2-2-3">v2.2.3</a></li>
+<li><a class="reference internal" href="#release-v2-2-2">v2.2.2</a></li>
+<li><a class="reference internal" href="#release-v2-2-1">v2.2.1</a></li>
+<li><a class="reference internal" href="#release-v2-2-0">v2.2.0</a></li>
+<li><a class="reference internal" href="#release-v2-1-0">v2.1.0</a></li>
+<li><a class="reference internal" href="#release-v2-0-6">v2.0.6</a></li>
+<li><a class="reference internal" href="#release-v2-0-5">v2.0.5</a></li>
+<li><a class="reference internal" href="#release-v2-0-4">v2.0.4</a></li>
+<li><a class="reference internal" href="#release-v2-0-3">v2.0.3</a></li>
+<li><a class="reference internal" href="#release-v2-0-2">v2.0.2</a></li>
+<li><a class="reference internal" href="#release-v2-0-1">v2.0.1</a></li>
+<li><a class="reference internal" href="#release-v2-0-0">v2.0.0</a></li>
+<li><a class="reference internal" href="#release-v1-13-0">v1.13.0</a></li>
+<li><a class="reference internal" href="#release-v1-12-0">v1.12.0</a></li>
+<li><a class="reference internal" href="#release-v1-11-1">v1.11.1</a></li>
+<li><a class="reference internal" href="#release-v1-11-0">v1.11.0</a></li>
+<li><a class="reference internal" href="#release-v1-10-0">v1.10.0</a></li>
+<li><a class="reference internal" href="#release-v1-9-1">v1.9.1</a></li>
+<li><a class="reference internal" href="#release-v1-9-0">v1.9.0</a></li>
+<li><a class="reference internal" href="#release-v1-8-0">v1.8.0</a></li>
+<li><a class="reference internal" href="#release-v1-7-0">v1.7.0</a></li>
+<li><a class="reference internal" href="#release-v1-6-1">v1.6.1</a></li>
+<li><a class="reference internal" href="#release-v1-6-0">v1.6.0 BROKEN</a></li>
+<li><a class="reference internal" href="#release-v1-5-2">v1.5.2 BROKEN</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=85e56e6b"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>

@@ -1,0 +1,578 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <link rel="shortcut icon" href="../../../_static/Logo_vIQA_wo-text.svg"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>viqa.fr_metrics.uqi - vIQA documentation v2.2.3</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">vIQA documentation v2.2.3</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">vIQA documentation v2.2.3</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api_reference.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../fr_metrics.html">Full Reference Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Full Reference Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/psnr.html">Peak Signal-to-Noise Ratio (PSNR)</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Peak Signal-to-Noise Ratio (PSNR)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.psnr.PSNR.html">viqa.fr_metrics.psnr.PSNR</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/rmse.html">Root Mean Squared Error (RMSE)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Root Mean Squared Error (RMSE)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.rmse.RMSE.html">viqa.fr_metrics.rmse.RMSE</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/uqi.html">Universal Quality Index (UQI)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Universal Quality Index (UQI)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.uqi.UQI.html">viqa.fr_metrics.uqi.UQI</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/ssim.html">Structural Similarity (SSIM)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Structural Similarity (SSIM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.ssim.structural_similarity.html">viqa.fr_metrics.ssim.structural_similarity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.ssim.SSIM.html">viqa.fr_metrics.ssim.SSIM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/msssim.html">Multiscale Structural Similarity Index (MSSSIM)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Multiscale Structural Similarity Index (MSSSIM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.msssim.MSSSIM.html">viqa.fr_metrics.msssim.MSSSIM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/fsim.html">Feature Similarity (FSIM)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Feature Similarity (FSIM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.fsim.FSIM.html">viqa.fr_metrics.fsim.FSIM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/vif.html">Visual Information Fidelity (VIF)</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Visual Information Fidelity (VIF)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.vif.VIFp.html">viqa.fr_metrics.vif.VIFp</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/vsi.html">Visual Saliency-based Index (VSI)</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Visual Saliency-based Index (VSI)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.vsi.VSI.html">viqa.fr_metrics.vsi.VSI</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/gsm.html">Gradient Similarity (GSM)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Gradient Similarity (GSM)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.gsm.gradient_similarity.html">viqa.fr_metrics.gsm.gradient_similarity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.gsm.gradient_similarity_3d.html">viqa.fr_metrics.gsm.gradient_similarity_3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.gsm.GSM.html">viqa.fr_metrics.gsm.GSM</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../fr_metrics/mad.html">Most Apparent Distortion (MAD)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Most Apparent Distortion (MAD)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.mad.most_apparent_distortion.html">viqa.fr_metrics.mad.most_apparent_distortion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.mad.most_apparent_distortion_3d.html">viqa.fr_metrics.mad.most_apparent_distortion_3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../fr_metrics/generated/viqa.fr_metrics.mad.MAD.html">viqa.fr_metrics.mad.MAD</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../nr_metrics.html">No Reference Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of No Reference Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../nr_metrics/snr.html">Signal to Noise Ratio (SNR)</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of Signal to Noise Ratio (SNR)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../nr_metrics/generated/viqa.nr_metrics.snr.signal_to_noise_ratio.html">viqa.nr_metrics.snr.signal_to_noise_ratio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../nr_metrics/generated/viqa.nr_metrics.snr.SNR.html">viqa.nr_metrics.snr.SNR</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../nr_metrics/cnr.html">Contrast to Noise Ratio (CNR)</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of Contrast to Noise Ratio (CNR)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../nr_metrics/generated/viqa.nr_metrics.cnr.contrast_to_noise_ratio.html">viqa.nr_metrics.cnr.contrast_to_noise_ratio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../nr_metrics/generated/viqa.nr_metrics.cnr.CNR.html">viqa.nr_metrics.cnr.CNR</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../nr_metrics/qmeasure.html">Q-Measure</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of Q-Measure</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../nr_metrics/generated/viqa.nr_metrics.qmeasure.QMeasure.html">viqa.nr_metrics.qmeasure.QMeasure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../utils.html">Utilities modules</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Utilities modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../utils/generated/viqa.utils.ImageArray.html">viqa.utils.ImageArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.load_data.html">viqa.utils.load_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.load_mhd.html">viqa.utils.load_mhd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.load_raw.html">viqa.utils.load_raw</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.load_nifti.html">viqa.utils.load_nifti</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.normalize_data.html">viqa.utils.normalize_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.crop_image.html">viqa.utils.crop_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.correlate_convolve_abs.html">viqa.utils.correlate_convolve_abs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.gabor_convolve.html">viqa.utils.gabor_convolve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.export_results.html">viqa.utils.export_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.export_metadata.html">viqa.utils.export_metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.export_image.html">viqa.utils.export_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.find_largest_region.html">viqa.utils.find_largest_region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.visualize_2d.html">viqa.utils.visualize_2d</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.utils.visualize_3d.html">viqa.utils.visualize_3d</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../fusion.html">Fusion module</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of Fusion module</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.fusion.fuse_metrics_linear_combination.html">viqa.fusion.fuse_metrics_linear_combination</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../multiple.html">Multiple module</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of Multiple module</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.multiple.BatchMetrics.html">viqa.multiple.BatchMetrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/viqa.multiple.MultipleMetrics.html">viqa.multiple.MultipleMetrics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release History</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../internal_api_reference.html">Internal API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of Internal API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../_metrics.html">Internal Metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_multiple.html">Multiple module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/3dct/vIQA">Github</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for viqa.fr_metrics.uqi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for the Universal Quality Index (UQI) metric.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">The Universal Quality Index [1]_ is a special case of the Structural Similarity Index</span>
+<span class="sd">(SSIM) [2]_. Therefore, SSIM is used for calculating it.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] Wang, Z., Bovik, A. C., Sheikh, H. R., &amp; Simoncelli, E. P. (2004). Image</span>
+<span class="sd">    quality assessment: From error visibility to structural similarity. IEEE</span>
+<span class="sd">    Transactions on Image Processing, 13(4), 600–612.</span>
+<span class="sd">    https://doi.org/10.1109/TIP.2003.819861</span>
+<span class="sd">.. [2] Wang, Z., &amp; Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL</span>
+<span class="sd">    PROCESSING LETTERS, 9(3). https://doi.org/10.1109/97.995823</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">    .. doctest-requires:: numpy</span>
+
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from viqa import UQI</span>
+<span class="sd">        &gt;&gt;&gt; img_r = np.zeros((256, 256))</span>
+<span class="sd">        &gt;&gt;&gt; img_m = np.ones((256, 256))</span>
+<span class="sd">        &gt;&gt;&gt; uqi = UQI(data_range=1, normalize=False)</span>
+<span class="sd">        &gt;&gt;&gt; uqi</span>
+<span class="sd">        UQI(score_val=None)</span>
+<span class="sd">        &gt;&gt;&gt; score = uqi.score(img_r, img_m)</span>
+<span class="sd">        &gt;&gt;&gt; score</span>
+<span class="sd">        0.0</span>
+<span class="sd">        &gt;&gt;&gt; uqi.print_score()</span>
+<span class="sd">        UQI: 1.0</span>
+<span class="sd">        &gt;&gt;&gt; img_r = np.zeros((256, 256))</span>
+<span class="sd">        &gt;&gt;&gt; img_m = np.zeros((256, 256))</span>
+<span class="sd">        &gt;&gt;&gt; uqi.score(img_r, img_m)</span>
+<span class="sd">        1.0</span>
+<span class="sd">        &gt;&gt;&gt; img_r = np.random.rand(256, 256)</span>
+<span class="sd">        &gt;&gt;&gt; img_m = np.random.rand(128, 128)</span>
+<span class="sd">        &gt;&gt;&gt; uqi.score(img_r, img_m)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">            ...</span>
+<span class="sd">        ValueError: Image shapes do not match</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors</span>
+<span class="c1"># -------</span>
+<span class="c1"># Author: Lukas Behammer</span>
+<span class="c1"># Research Center Wels</span>
+<span class="c1"># University of Applied Sciences Upper Austria, 2023</span>
+<span class="c1"># CT Research Group</span>
+<span class="c1">#</span>
+<span class="c1"># Modifications</span>
+<span class="c1"># -------------</span>
+<span class="c1"># Original code, 2024, Lukas Behammer</span>
+<span class="c1">#</span>
+<span class="c1"># License</span>
+<span class="c1"># -------</span>
+<span class="c1"># BSD-3-Clause License</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">viqa._metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">FullReferenceMetricsInterface</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">viqa.fr_metrics.ssim</span><span class="w"> </span><span class="kn">import</span> <span class="n">structural_similarity</span>
+
+
+<div class="viewcode-block" id="UQI">
+<a class="viewcode-back" href="../../../fr_metrics/generated/viqa.fr_metrics.uqi.UQI.html#viqa.fr_metrics.uqi.UQI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UQI</span><span class="p">(</span><span class="n">FullReferenceMetricsInterface</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the universal quality index (UQI) between two images.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    score_val : float or None</span>
+<span class="sd">        Score value of the UQI metric.</span>
+<span class="sd">    parameters : dict</span>
+<span class="sd">        Dictionary containing the parameters for UQI calculation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_range : {1, 255, 65535}, optional</span>
+<span class="sd">        Data range of the returned data in data loading. Is used for image loading when</span>
+<span class="sd">        ``normalize`` is True and for the UQI calculation. Passed to</span>
+<span class="sd">        :py:func:`viqa.utils.load_data` and</span>
+<span class="sd">        :py:func:`viqa.fr_metrics.ssim.structural_similarity`.</span>
+<span class="sd">    normalize : bool, default False</span>
+<span class="sd">        If True, the input images are normalized to the ``data_range`` argument.</span>
+
+<span class="sd">    **kwargs : optional</span>
+<span class="sd">        Additional parameters for data loading. The keyword arguments are passed to</span>
+<span class="sd">        :py:func:`viqa.utils.load_data`.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    chromatic : bool, default False</span>
+<span class="sd">        If True, the input images are expected to be RGB images.</span>
+<span class="sd">        If False, the input images are converted to grayscale images if necessary.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``data_range`` is not set.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    ``data_range`` for image loading is also used for the UQI calculation if the image</span>
+<span class="sd">    type is integer and therefore must be set. The parameter is set through the</span>
+<span class="sd">    constructor of the class and is passed to :py:meth:`score`. UQI [1]_ is a</span>
+<span class="sd">    full-reference IQA metric. It is based on the human visual system and is designed to</span>
+<span class="sd">    predict the perceived quality of an image.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    viqa.fr_metrics.ssim.SSIM : Structural similarity index.</span>
+<span class="sd">    viqa.fr_metrics.msssim.MSSSIM : Multi-scale structural similarity index.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wang, Z., &amp; Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL</span>
+<span class="sd">        PROCESSING LETTERS, 9(3). https://doi.org/10.1109/97.995823</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_range</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct method.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Parameter data_range must be set.&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_range</span><span class="o">=</span><span class="n">data_range</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;UQI&quot;</span>
+
+<div class="viewcode-block" id="UQI.score">
+<a class="viewcode-back" href="../../../fr_metrics/generated/viqa.fr_metrics.uqi.UQI.html#viqa.fr_metrics.uqi.UQI.score">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_r</span><span class="p">,</span> <span class="n">img_m</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the universal quality index (UQI) between two images.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike</span>
+<span class="sd">            Reference image to calculate score against.</span>
+<span class="sd">        img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike</span>
+<span class="sd">            Modified image to calculate score of.</span>
+<span class="sd">        **kwargs : optional</span>
+<span class="sd">            Additional parameters for the UQI calculation. The keyword arguments are</span>
+<span class="sd">            passed to :py:func:`viqa.fr_metrics.ssim.structural_similarity`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        score_val : float</span>
+<span class="sd">            UQI score value.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        In the original implementation `win_size` is set to 8, here it is set to 7 by</span>
+<span class="sd">        default, but can be changed to other odd values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">img_r</span><span class="p">,</span> <span class="n">img_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="n">img_r</span><span class="p">,</span> <span class="n">img_m</span><span class="p">)</span>
+
+        <span class="n">score_val</span> <span class="o">=</span> <span class="n">structural_similarity</span><span class="p">(</span>
+            <span class="n">img_r</span><span class="p">,</span>
+            <span class="n">img_m</span><span class="p">,</span>
+            <span class="n">data_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;data_range&quot;</span><span class="p">],</span>
+            <span class="n">k_1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">k_2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">gaussian_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_val</span> <span class="o">=</span> <span class="n">score_val</span>
+        <span class="k">return</span> <span class="n">score_val</span></div>
+
+
+<div class="viewcode-block" id="UQI.print_score">
+<a class="viewcode-back" href="../../../fr_metrics/generated/viqa.fr_metrics.uqi.UQI.html#viqa.fr_metrics.uqi.UQI.print_score">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the UQI score value of the last calculation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        decimals : int, default=2</span>
+<span class="sd">            Number of decimal places to print the score value.</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        RuntimeWarning</span>
+<span class="sd">            If :py:attr:`score_val` is not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UQI: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">score_val</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No score value for UQI. Run score() first.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Lukas Behammer
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=85e56e6b"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>
