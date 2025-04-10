@@ -167,8 +167,6 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.2
-        env:
-          CIBW_PRERELEASE_PYTHONS: true
         with:
           package-dir: .
           output-dir: wheelhouse
@@ -288,6 +286,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{
+        (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true') &&
         needs.semantic_release.outputs.released == 'true' &&
         needs.semantic_release.outputs.is_prerelease == 'false' &&
         needs.test_install.outputs.tested == 'true' &&
@@ -317,6 +316,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{
+        (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true') &&
         needs.semantic_release.outputs.released == 'true' &&
         needs.semantic_release.outputs.is_prerelease == 'false' &&
         needs.test_install.outputs.tested == 'true' &&
