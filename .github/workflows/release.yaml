@@ -1,0 +1,406 @@
+---
+name: Release
+run-name: Release pipeline for ${{ github.sha }} on ${{ github.ref }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - .github/*
+
+jobs:
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    outputs:
+      any-changes: ${{ steps.all-changes.outputs.any_changed }}
+      build-changes: ${{ steps.changed-files.outputs.build_any_changed }}
+      ci-changes: ${{ steps.changed-files.outputs.ci_any_changed }}
+      doc-changes: ${{ steps.changed-files.outputs.docs_any_changed }}
+      src-changes: ${{ steps.changed-files.outputs.src_any_changed }}
+      test-changes: ${{ steps.changed-files.outputs.tests_any_changed }}
+      lint-changes: ${{ steps.changed-files.outputs.lint_any_changed }}
+      docker-changes: ${{ steps.changed-files.outputs.docker_any_changed }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check specific file types for changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46.0.1
+        with:
+          files_yaml: |
+            build:
+              - src/viqa/utils/_build/**
+              - ./**/meson.build
+              - pyproject.toml
+            ci:
+              - .github/workflows/**
+            docs:
+              - .github/workflows/documentation.yaml
+              - docs/**
+              - src/viqa/**
+            src:
+              - src/viqa/**
+              - pyproject.toml
+            tests:
+              - .github/workflows/test.yaml
+              - tests/**
+              - pyproject.toml
+            lint:
+              - .github/workflows/lint.yaml
+              - src/**
+              - notebooks/**
+              - pyproject.toml
+            docker:
+              - .github/workflows/build_and_push_docker_images.yaml
+              - containers/**
+              - notebooks/**
+              - src/**
+
+      - name: Detect if any of the combinations of file sets have changed
+        id: all-changes
+        run: |
+          printf '%s\n' "any_changed=false" >> $GITHUB_OUTPUT
+          if [ "${{ steps.changed-files.outputs.build_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.ci_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.docs_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.src_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.tests_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.lint_any_changed }}" == "true" ] || \
+             [ "${{ steps.changed-files.outputs.docker_any_changed }}" == "true" ]; then
+             printf '%s\n' "any_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+  lint:
+    name: Lint Code
+    uses: ./.github/workflows/lint.yaml
+    needs: [changes]
+    if: ${{ needs.changes.outputs.lint-changes == 'true' }}
+
+  # test:
+  #   uses: ./.github/workflows/test.yaml
+  #   needs: [changes, lint]
+  #   if: |
+  #     needs.changes.outputs.test-changes == 'true' ||
+  #     needs.changes.outputs.src-changes == 'true' ||
+  #     needs.changes.outputs.ci-changes == 'true'
+
+  semantic_release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: >-
+      ${{
+        github.ref == 'refs/heads/main' &&
+        github.repository == '3dct/viqa' &&
+        github.event_name != 'pull_request' && !cancelled()
+      }}
+    permissions:
+      id-token: write
+      contents: write
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
+      is_prerelease: ${{ steps.release.outputs.is_prerelease }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+          submodules: recursive
+
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.21.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_name: "github-actions"
+          git_committer_email: "actions@users.noreply.github.com"
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [changes, semantic_release]
+    if: >-
+      ${{
+        (needs.changes.outputs.build-changes == 'true' ||
+        needs.changes.outputs.src-changes == 'true' ||
+        needs.changes.outputs.ci-changes == 'true') && !cancelled()
+      }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-24.04, windows-latest, macos-14]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ref: ${{ github.ref }}
+
+      - name: Select Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          clang -v
+        if: ${{ matrix.os == 'macos-14-large'}}
+
+      - name: Select Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          clang -v
+        if: ${{ matrix.os == 'macos-14'}}
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.19.2
+        env:
+          CIBW_PRERELEASE_PYTHONS: true
+        with:
+          package-dir: .
+          output-dir: wheelhouse
+          config-file: "pyproject.toml"
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-24.04
+    needs: [changes, semantic_release]
+    if: >-
+      ${{
+        (needs.changes.outputs.build-changes == 'true' ||
+        needs.changes.outputs.src-changes == 'true' ||
+        needs.changes.outputs.ci-changes == 'true') && !cancelled()
+      }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ref: ${{ github.ref }}
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
+  upload_testpypi:
+    name: Upload to Test PyPI
+    needs: [semantic_release, build_wheels, build_sdist]
+    if: >-
+      ${{
+        (github.ref == 'refs/heads/dev' && startsWith(github.ref, 'refs/tags/v')) ||
+        (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true')
+      }}
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/vIQA/
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish on Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  test_install:
+    name: Test install from Test PyPI on ${{ matrix.os }}
+    # This job is not necessary, but it's a good idea to test the package
+    needs: [semantic_release, upload_testpypi]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-24.04, windows-latest, macos-14]
+    outputs:
+      tested: ${{ steps.test_install_others.outputs.tested }}
+      tested_windows: ${{ steps.test_install_windows.outputs.tested }}
+
+    steps:
+      - name: Set up Python ${{ vars.MINIMAL_PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
+
+      - name: Pause for 120 seconds
+        run: sleep 120
+
+      - name: Test install from Test PyPI
+        if: ${{ matrix.os == 'macos-14' || matrix.os == 'ubuntu-24.04' }}
+        id: test_install_others
+        run: |
+            python -m pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple viqa==$VERSION
+            python -c "import viqa; print(viqa.__version__)"
+            echo "vIQA installed successfully"
+            echo "tested=true" >> $GITHUB_OUTPUT
+        env:
+          VERSION: ${{ needs.semantic_release.outputs.version }}
+
+      - name: Test install from Test PyPI
+        if: ${{ matrix.os == 'windows-latest' }}
+        id: test_install_windows
+        run: |
+            python -m pip install --index-url https://test.pypi.org/simple/ `
+            --extra-index-url https://pypi.org/simple viqa==${{ env.VERSION }}
+            python -c "import viqa; print(viqa.__version__)"
+            echo "vIQA installed successfully"
+            echo "tested=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+        env:
+          VERSION: ${{ needs.semantic_release.outputs.version }}
+
+  upload_pypi:
+    name: Upload to PyPI
+    needs: [semantic_release, build_wheels, build_sdist, upload_testpypi, test_install]
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        needs.semantic_release.outputs.released == 'true' &&
+        needs.semantic_release.outputs.is_prerelease == 'false' &&
+        needs.test_install.outputs.tested == 'true' &&
+        needs.test_install.outputs.tested_windows == 'true'
+      }}
+    environment:
+      name: pypi
+      url: https://pypi.org/project/vIQA/
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish on PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  upload_github:
+    name: Upload to GitHub Releases
+    needs: [semantic_release, build_wheels, build_sdist, test_install]
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        needs.semantic_release.outputs.released == 'true' &&
+        needs.semantic_release.outputs.is_prerelease == 'false' &&
+        needs.test_install.outputs.tested == 'true' &&
+        needs.test_install.outputs.tested_windows == 'true'
+      }}
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - name: Sign the dists with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v3.0.0
+        with:
+          inputs: >-
+            ./dist/*.tar.gz
+            ./dist/*.whl
+
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/publish-action@v9.21.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  prepare_publish_input:
+    name: Check if published
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    outputs:
+      docs_publish: ${{ steps.check_docs_publish.outputs.publish }}
+      image_publish: ${{ steps.check_image_publish.outputs.publish }}
+    needs: [changes, upload_github, upload_pypi]
+    steps:
+      - name: Check if documentation should be published
+        id: check_docs_publish
+        if: ${{ needs.changes.outputs.doc-changes == 'true' }}
+        run: |
+          # If either the PyPI or GitHub release was successful, publish the docs
+          if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
+            echo "publish=true" >> $GITHUB_OUTPUT
+          else
+            # If the docs have changed, publish them anyway
+            if ${{ needs.changes.outputs.doc-changes == 'true' }}; then
+              echo "publish=true" >> $GITHUB_OUTPUT
+            else
+              echo "publish=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+      - name: Check if Docker images should be published
+        id: check_image_publish
+        if: ${{ needs.changes.outputs.docker-changes == 'true' }}
+        run: |
+          # If either the PyPI or GitHub release was successful, publish the Docker images
+          if ${{ needs.upload_github.result }} == 'success' || ${{ needs.upload_pypi.result }} == 'success'; then
+            echo "publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "publish=false" >> $GITHUB_OUTPUT
+          fi
+
+  docs:
+    name: Build and deploy documentation
+    uses: ./.github/workflows/documentation.yaml
+    needs: [changes, prepare_publish_input]
+    if: ${{ github.repository == '3dct/viqa' && needs.changes.outputs.doc-changes == 'true' }}
+    with:
+      publish: ${{ needs.prepare_publish_input.outputs.docs_publish }}
+
+  build_and_push_docker_images:
+    name: Build and push Docker Images
+    uses: ./.github/workflows/build_and_push_docker_images.yaml
+    needs: [changes, semantic_release, prepare_publish_input]
+    if: ${{ github.repository == '3dct/viqa' && needs.changes.outputs.docker-changes == 'true' }}
+    with:
+      version: ${{ needs.semantic_release.outputs.version }}
+      publish: ${{ needs.prepare_publish_input.outputs.image_publish }}

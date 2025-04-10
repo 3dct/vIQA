@@ -47,7 +47,7 @@ from warnings import warn
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .loading import _check_imgs, _resize_image, load_data
+from .loading import _check_imgs, _resize_image, crop_image, load_data
 
 
 def export_results(metrics, output_path, filename, return_dict=False):
@@ -117,10 +117,14 @@ def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.
 
     Notes
     -----
+        The timestamp, added to the txt file, is the current time when the report is
+        generated.
+
         .. attention::
 
             The txt file will be overwritten if it already exists.
     """
+    # TODO: Change this to use the class attribute parameter
     if os.path.splitext(file_name)[1] != ".txt":
         raise ValueError(f"The file name {file_name} must have the extension '.txt'.")
     path = os.path.join(file_path, file_name)
@@ -202,6 +206,7 @@ def export_image(
         warn("No results to plot. Only the images are plotted.", UserWarning)
 
     dpi = kwargs.pop("dpi", 300)
+    roi = kwargs.pop("roi", None)
 
     img_r = load_data(img_r)
     img_m = load_data(img_m)
@@ -210,6 +215,9 @@ def export_image(
         raise ValueError("Images must have the same number of dimensions.")
     scaling_order = kwargs.pop("scaling_order", 1)
     img_m = _resize_image(img_r, img_m, scaling_order=scaling_order)
+    if roi is not None:
+        img_r = crop_image(img_r, *roi)
+        img_m = crop_image(img_m, *roi)
     img_r, img_m = _check_imgs(img_r, img_m)
 
     if img_r.ndim == 2 or (img_r.ndim == 3 and img_r.shape[-1] == 3):
@@ -273,7 +281,7 @@ def export_image(
 
     # Plot full-reference metrics
     counter = 0
-    for i in range(cols - 1):
+    for i in range(cols):
         x_pos = 1.0 / (cols + 1)
         lines = 4  # 4 metrics per column
         x_pos = x_pos * (i + 1)

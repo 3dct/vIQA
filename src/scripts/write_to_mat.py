@@ -21,8 +21,9 @@ import os
 import sys
 
 import scipy.io as sio
-import viqa
 from tqdm import tqdm
+
+import viqa
 
 
 def write_to_mat(data_dir, filename="volume.mhd"):

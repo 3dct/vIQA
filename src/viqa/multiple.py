@@ -57,6 +57,7 @@ from viqa._metrics import Metric
 from viqa.utils import (
     _check_imgs,
     _resize_image,
+    crop_image,
     export_image,
     export_metadata,
     load_data,
@@ -145,8 +146,8 @@ class BatchMetrics(_MultipleInterface):
         List of metric instances.
     metrics_parameters : list
         List of dictionaries containing the parameters for the metrics.
-    pairs_csv : str
-        Path to the csv file containing the image pairs.
+    pairs_file : str
+        Path to the file containing the image pairs.
     pairs : list
         List of dictionaries containing the image pairs.
 
@@ -154,10 +155,12 @@ class BatchMetrics(_MultipleInterface):
     ----------
     file_dir : str
         Directory where the images are stored.
-    pairs_csv : str
-        Path to the csv file containing the image pairs.
+    pairs_file : str
+        Path to the file containing the image pairs. The path should be given as a
+        relative path to the ``file_dir`` parameter.
+        Accepted delimiter characters are ',', ';', and '\t'.
 
-        .. admonition:: CSV file layout
+        .. admonition:: CSV/TSV file layout
 
             +-----------------+----------------+
             | reference_image | modified_image |
@@ -168,9 +171,14 @@ class BatchMetrics(_MultipleInterface):
             +-----------------+----------------+
 
     metrics : list
-        List of metric instances.
+        List of metric instances. Each instance must be of type :py:class:`Metric`.
     metrics_parameters : list
         List of dictionaries containing the parameters for the metrics.
+    rois : list[list[tuple]], optional
+        A list of lists of tuples. Each tuple has the start and
+        end coordinates of the ROI in the format (x_start, x_end). Each tuple is
+        for one coordinate. Each entry of the outer list is
+        for one image pair.
 
     Raises
     ------
@@ -178,13 +186,14 @@ class BatchMetrics(_MultipleInterface):
         If the number of metrics and metric parameters is not equal.
         If the metric list contains non-metric objects.
         If the parameters list contains non-dictionary objects
-        If the CSV file does not contain the columns 'reference_image' and
+        If the pairs file does not contain the columns 'reference_image' and
         'modified_image'.
+        If the length of the pairs and ROIs is not equal.
 
     Notes
     -----
-    Make sure to use a well-structured CSV file as performance is better with e.g. the
-    same reference image in multiple consecutive rows.
+    Make sure to use a well-structured CSV/TSV file as performance is better with e.g.
+    the same reference image in multiple consecutive rows.
 
     .. attention::
 
@@ -200,7 +209,7 @@ class BatchMetrics(_MultipleInterface):
         >>> metrics_parameters = [{}, {'hist_bins': 16, 'num_peaks': 2}]
         >>> batch = BatchMetrics(
         ...     file_dir='path/to/images',
-        ...     pairs_csv='path/to/pairs.csv',
+        ...     pairs_file='path/to/pairs.csv',
         ...     metrics=metrics,
         ...     metrics_parameters=metrics_parameters
         ... )
@@ -208,13 +217,19 @@ class BatchMetrics(_MultipleInterface):
         >>> batch.export_results(file_path='path/to/results', file_name='results.csv')
     """
 
-    def __init__(self, file_dir, pairs_csv, metrics, metrics_parameters):
+    def __init__(self, file_dir, pairs_file, metrics, metrics_parameters, rois=None):
         """Construct method."""
         super().__init__(metrics, metrics_parameters)
 
         self.file_dir = file_dir
-        self.pairs_csv = pairs_csv
-        self.__pairs = _read_csv(self.pairs_csv)
+        self.pairs_file = pairs_file
+        self._pairs = _read_pairs(self.pairs_file)
+        if rois and len(self._pairs) != len(rois):
+            raise ValueError(
+                "The number of pairs and ROIs must be equal. "
+                f"Got {len(self._pairs)} pairs and {len(rois)} ROIs."
+            )
+        self.rois = rois
 
     def calculate(self, **kwargs):
         """Calculate the metrics in batch mode.
@@ -229,6 +244,9 @@ class BatchMetrics(_MultipleInterface):
         scaling_order : int, default=1
             Order of the spline interpolation used for image resizing. Default is 1.
             Passed to :py:func:`skimage.transform.resize`.
+        roi : list[tuple], optional
+            Region of interest to use for the calculation of all images. Overrides the
+            `rois` Class attribute.
 
         Returns
         -------
@@ -239,13 +257,24 @@ class BatchMetrics(_MultipleInterface):
         -----
         UserWarning
             If the images are the same as in the previous pair.
+            If the Class attribute `rois` is overwritten by the `roi` parameter.
         """
+        # Remove roi parameter from kwargs to avoid conflicts with loading
+        # Set None if not given to use either no roi or the class attribute rois
+        roi = kwargs.pop("roi", None)
+        self.global_roi = roi
+        if self.rois is not None and roi is not None:
+            warn(
+                "Class attribute `rois` is overwritten by the `roi` parameter.",
+                UserWarning,
+            )
+        scaling_order = kwargs.pop("scaling_order", 1)
         reference_img = None
         prev_ref_path = None
         modified_img = None
         prev_mod_path = None
         metric_results = None
-        for pair_num, pair in enumerate(tqdm(self.__pairs)):
+        for pair_num, pair in enumerate(tqdm(self._pairs)):
             reference_path = os.path.join(self.file_dir, pair["reference_image"])
             modified_path = os.path.join(self.file_dir, pair["modified_image"])
             # Skip calculation if the images are the same as in the previous pair
@@ -267,6 +296,9 @@ class BatchMetrics(_MultipleInterface):
             else:
                 prev_result_modified = metric_results
 
+            if self.global_roi is None and self.rois is not None:
+                roi = self.rois[pair_num]
+
             metric_results = _calc(
                 self.metrics,
                 self.metrics_parameters,
@@ -274,6 +306,8 @@ class BatchMetrics(_MultipleInterface):
                 modified_img,
                 prev_result_reference=prev_result_reference,
                 prev_result_modified=prev_result_modified,
+                scaling_order=scaling_order,
+                roi=roi,
                 **kwargs,
             )
             self._results[str(pair_num)] = metric_results
@@ -338,9 +372,12 @@ class BatchMetrics(_MultipleInterface):
                 ),
             )
         if image:
-            for pair_num, pair in enumerate(tqdm(self.__pairs)):
+            roi = self.global_roi
+            for pair_num, pair in enumerate(tqdm(self._pairs)):
                 img_r = os.path.join(self.file_dir, pair["reference_image"])
                 img_m = os.path.join(self.file_dir, pair["modified_image"])
+                if self.global_roi is None and self.rois is not None:
+                    roi = self.rois[pair_num]
                 export_image(
                     results=self.results[str(pair_num)],
                     img_r=img_r,
@@ -355,6 +392,7 @@ class BatchMetrics(_MultipleInterface):
                     x=x,
                     y=y,
                     z=z,
+                    roi=roi,
                 )
 
     def export_results(self, file_path=".", file_name="results.csv"):
@@ -375,7 +413,7 @@ class BatchMetrics(_MultipleInterface):
         """
         if os.path.splitext(file_name)[1] != ".csv":
             raise ValueError(
-                f"The file name {file_name} must have the " f"extension '.csv'."
+                f"The file name {file_name} must have the extension '.csv'."
             )
         path = os.path.join(file_path, file_name)
         with open(path, mode="w", newline="") as csvfile:
@@ -391,8 +429,8 @@ class BatchMetrics(_MultipleInterface):
             for pair_num, results in self.results.items():
                 writer.writerow(
                     [pair_num]
-                    + [self.__pairs[int(pair_num)]["reference_image"]]
-                    + [self.__pairs[int(pair_num)]["modified_image"]]
+                    + [self._pairs[int(pair_num)]["reference_image"]]
+                    + [self._pairs[int(pair_num)]["modified_image"]]
                     + list(results.values())
                 )
 
@@ -620,7 +658,7 @@ class MultipleMetrics(_MultipleInterface):
         """
         if os.path.splitext(file_name)[1] != ".csv":
             raise ValueError(
-                f"The file name {file_name} must have the " f"extension '.csv'."
+                f"The file name {file_name} must have the extension '.csv'."
             )
         path = os.path.join(file_path, file_name)
         with open(path, mode="w", newline="") as csvfile:
@@ -631,11 +669,11 @@ class MultipleMetrics(_MultipleInterface):
             writer.writerow(list(self.results.values()))
 
 
-def _read_csv(file_path):
-    with open(file_path, newline="") as csvfile:
-        dialect = csv.Sniffer().sniff(csvfile.read(1024))
-        csvfile.seek(0)
-        reader = csv.DictReader(csvfile, dialect=dialect)
+def _read_pairs(file_path):
+    with open(file_path, newline="") as file:
+        dialect = csv.Sniffer().sniff(file.readline(), ",;\t")
+        file.seek(0)
+        reader = csv.DictReader(file, dialect=dialect)
         if (
             "reference_image" not in reader.fieldnames
             or "modified_image" not in reader.fieldnames
@@ -652,11 +690,16 @@ def _calc(metrics, metrics_parameters, img_r, img_m, **kwargs):
     leave = kwargs.pop("leave", False)
     prev_result_reference = kwargs.pop("prev_result_reference", None)
     prev_result_modified = kwargs.pop("prev_result_modified", None)
+    roi = kwargs.pop("roi", None)
 
     img_r = load_data(img_r, **kwargs)
     img_m = load_data(img_m, **kwargs)
 
     img_m = _resize_image(img_r, img_m, scaling_order)
+
+    if roi is not None:
+        img_r = crop_image(img_r, *roi)
+        img_m = crop_image(img_m, *roi)
 
     img_r, img_m = _check_imgs(img_r, img_m, **kwargs)
 

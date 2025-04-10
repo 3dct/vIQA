@@ -1,22 +1,33 @@
 ---
 name: Documentation
+run-name: Build and deploy documentation
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Build"]
-    branches: [main]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Build"]
+  #   branches: [main]
+  #   types:
+  #     - completed
+  workflow_call:
+    inputs:
+      publish:
+        description: 'Should the Documentation be published?'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
-  Docs:
+  docs:
     name: Build and deploy documentation
     runs-on: ubuntu-latest
     concurrency: Docs
+    # if: |
+    #   github.event.workflow_run.conclusion == 'success' ||
+    #   github.event_name == 'workflow_dispatch' ||
+    #   github.event_name == 'workflow_call'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,18 +39,17 @@ jobs:
           python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
       - name: Install dependencies
         run: |
-          pip install sphinx furo sphinx-copybutton pytest-doctestplus \
-          sphinx_github_changelog piq scipy scikit-image matplotlib nibabel tqdm \
-          sphinxcontrib-email sphinx-last-updated-by-git sphinx-hoverxref
+          pip install -r ./requirements/docs.txt piq scipy scikit-image matplotlib nibabel tqdm
       - name: Sphinx build
         run: |
-          sphinx-build docs/source _build
+          sphinx-build docs/source docs/build/html
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ github.event_name == 'workflow_dispatch' || inputs.publish == 'true' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
+          publish_dir: docs/build/html
           force_orphan: true

@@ -2,6 +2,141 @@
 
 
 
+## v2.2.3 (2025-04-10)
+
+### Bug fixes
+
+* fix: fix using Class attribute rois when not using the same roi for all images in BatchMetrics ([`e98b15a`](https://github.com/3dct/vIQA/commit/e98b15a1de544022061c4643a95a84f8c9d5dc3e))
+
+
+## v2.2.2 (2025-04-09)
+
+### Bug fixes
+
+* fix: fix semantic release exclude commit pattern ([`b24070e`](https://github.com/3dct/vIQA/commit/b24070ec67f74d68d0915524d77bfa11a828bcc3))
+
+* fix: fix rois in BatchMetrics.report when exporting images ([`88c8931`](https://github.com/3dct/vIQA/commit/88c89317ae9735685f16953a5b2338e72fe2a74c))
+
+* fix: enable rois in BatchMetrics
+
+closes #11 ([`c2b0ce5`](https://github.com/3dct/vIQA/commit/c2b0ce5102aec6ee9ce9434bfc9d3ea8eabdbc12))
+
+* fix: add check for image dimensions during loading (#15)
+
+* fix: add check for image dimensions during loading
+
+closes #14
+
+* [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+for more information, see https://pre-commit.ci
+
+* refactor: refactor to comply with ruff
+
+* docs(load_data): add Exception to function docstring
+
+---------
+
+Co-authored-by: Lukas Nepelius <p42940@fhooe.at>
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+Co-authored-by: lukasbehammer <lukas.behammer@fh-wels.at> ([`a120ade`](https://github.com/3dct/vIQA/commit/a120adea9a19fa1e19b4f82cbf95232482fa7be4))
+
+### Documentation
+
+* docs: refactor user guide ([`c423f57`](https://github.com/3dct/vIQA/commit/c423f573db92326e4e96f815690ce50866a59a01))
+
+
+## v2.2.1 (2025-04-02)
+
+### Bug fixes
+
+* fix: last column of metrics will now be printed in export_image ([`2ab6643`](https://github.com/3dct/vIQA/commit/2ab6643084ff92cd16bd72584021a2c1be38eba6))
+
+
+## v2.2.0 (2025-03-31)
+
+### Features
+
+* feat: add script to crop images
+
+update script to reduce projections, refactor scripts to comply with ruff linting rules ([`8a84d44`](https://github.com/3dct/vIQA/commit/8a84d441211b83cb52d3fb99ba7ec2c7ea5f1b4e))
+
+### Unknown
+
+* notebook: update notebook documentation ([`779f7e7`](https://github.com/3dct/vIQA/commit/779f7e779a4ea1d82e3cdd0a882ad3ad4f8462b9))
+
+* notebook: update notebooks
+
+refactor notebooks to comply with ruff rules ([`0de8543`](https://github.com/3dct/vIQA/commit/0de8543236f1ac17c9d6a41b95b1f6983a0ac51c))
+
+
+## v2.1.0 (2025-03-06)
+
+### Bug fixes
+
+* fix: add function _parse_bitdepth to utils.loading.__init__.py
+
+update docs for export_metadata ([`4cc8e5a`](https://github.com/3dct/vIQA/commit/4cc8e5aaa0520f930e90ac87b37d7ac055d72344))
+
+* fix: fix integer overflow when loading large binary images ([`567d0d7`](https://github.com/3dct/vIQA/commit/567d0d7a74463d33af0eba89a83ad464b3878c78))
+
+### Documentation
+
+* docs: update for new loading options
+
+fix name "Structural Similarity" ([`16de59d`](https://github.com/3dct/vIQA/commit/16de59db2aa88ecda067965afc6bc33604ec2122))
+
+### Features
+
+* feat: add more .raw loading options ([`598a5a6`](https://github.com/3dct/vIQA/commit/598a5a6b4a4a653dd6a1665cd1bd335f54c54ddd))
+
+* feat: add visualization for different region types
+
+add return of parameters for signal_to_noise_ratio ([`6ea333a`](https://github.com/3dct/vIQA/commit/6ea333adc9f8c9ec0dc10f0e803d6215f69cb866))
+
+
+## v2.0.6 (2024-12-13)
+
+### Bug fixes
+
+* fix: fix bug when using batch mode
+
+batch mode couldn't be used without the parameter `roi` give ([`3693e64`](https://github.com/3dct/vIQA/commit/3693e64d0b9f81c40cbfc574287b3759c2a919d6))
+
+
+## v2.0.5 (2024-11-18)
+
+### Bug fixes
+
+* fix(crop_image): add checks if cropping is smaller than original image or image is already cropped ([`bb930b0`](https://github.com/3dct/vIQA/commit/bb930b04115fad7d550da58320aafbfad6bf4774))
+
+* fix: prevent forwarding of roi parameter in BatchMetrics.calculate ([`ea35048`](https://github.com/3dct/vIQA/commit/ea35048338ec2f1c0f46b115b5b392455d83ebe6))
+
+### Unknown
+
+* books: update report exporting in batch mode notebook ([`86c70b4`](https://github.com/3dct/vIQA/commit/86c70b432793cdd6e1da3e45c7bc5624ce8a93a3))
+
+
+## v2.0.4 (2024-11-11)
+
+### Bug fixes
+
+* fix(multiple.py): fix delimiter sniffing
+
+fix csv delimiter sniffing, add support for tsv and txt files during loading of pairs in BatchMetrics ([`dbd60ee`](https://github.com/3dct/vIQA/commit/dbd60ee36e1eaff8f6e026ec0ab71493595a5064))
+
+### Documentation
+
+* docs: update README.md badge ([`b5d0713`](https://github.com/3dct/vIQA/commit/b5d0713e0096892a8a6645a0b641bfc76ff2e661))
+
+
+## v2.0.3 (2024-10-30)
+
+### Bug fixes
+
+* fix: fix comparison operators and move them to Metric class ([`1af2e31`](https://github.com/3dct/vIQA/commit/1af2e31df5f4938dec9993c7663692fb6a105bb1))
+
+
 ## v2.0.2 (2024-10-29)
 
 ### Bug fixes
@@ -17,12 +152,6 @@
 
 
 ## v2.0.0 (2024-10-22)
-
-### Breaking
-
-* refactor!: move utility modules to utils subpackage
-
-BREAKING CHANGE: major refactoring of utility functions ([`d3945b4`](https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552))
 
 ### Bug fixes
 
@@ -77,6 +206,12 @@ update documentation, refactor definition of variable truncate ([`851521b`](http
 * perf(ImageArray): calculate statistics only on method call
 
 make sure that an ImageArray is returned via numpy ufunc ([`31524fb`](https://github.com/3dct/vIQA/commit/31524fbff81ff0cf52c9be7dc2e22b116c7dd286))
+
+### Refactoring
+
+* refactor!: move utility modules to utils subpackage
+
+BREAKING CHANGE: major refactoring of utility functions ([`d3945b4`](https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552))
 
 
 ## v1.13.0 (2024-09-24)
@@ -418,9 +553,8 @@ function writes custom parameters and package version to a .txt file ([`5b8e607`
 
 ## v1.0.0 (2024-08-05)
 
-### Breaking
+### Features
 
 * feat(ImageArray)!: add class for images
 
 subclass of np.ndarray, calculates image statistics ([`40f0d02`](https://github.com/3dct/vIQA/commit/40f0d029ad416747135f79e8716de040335da592))
-

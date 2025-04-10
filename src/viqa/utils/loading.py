@@ -335,7 +335,10 @@ class ImageArray(np.ndarray):
         return stats
 
     def visualize(
-        self, slices: Tuple[int, int, int], export_path=None, **kwargs
+        self,
+        slices: Union[Tuple[int, int, int], None] = None,
+        export_path: Union[str, os.PathLike, None] = None,
+        **kwargs,
     ) -> None:
         """
         Visualize the image array.
@@ -356,6 +359,7 @@ class ImageArray(np.ndarray):
         ------
         ValueError
             If the image is not 2D or 3D.
+            If parameter slices is not provided for 3D images.
 
         Warns
         -----
@@ -370,10 +374,13 @@ class ImageArray(np.ndarray):
         >>> img = ImageArray(img)
         >>> img.visualize(slices=(64, 64, 64))
         """
-        if self.ndim == 3:
+        if self.ndim == 3 and self.shape[-1] != 3:
+            if not slices:
+                raise ValueError("Parameter slices must be set for 3D images.")
             visualize_3d(self, slices, export_path, **kwargs)
-        elif self.ndim == 2:
-            warn("Image is 2D. Parameter slices will be ignored.", RuntimeWarning)
+        elif self.ndim == 2 or (self.ndim == 3 and self.shape[-1] == 3):
+            if slices:
+                warn("Image is 2D. Parameter slices will be ignored.", RuntimeWarning)
             visualize_2d(self, export_path, **kwargs)
         else:
             raise ValueError("Image must be 2D or 3D.")
@@ -449,6 +456,15 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     img_arr : np.ndarray
         Numpy array containing the data
 
+    Notes
+    -----
+    Currently supported bit depths are:
+    - 8 bit unsigned integer (MET_UCHAR)
+    - 16 bit unsigned integer (MET_USHORT)
+    - 32 bit unsigned integer (MET_UINT)
+    - 32 bit float (MET_FLOAT)
+    - 64 bit float (MET_DOUBLE)
+
     Raises
     ------
     ValueError
@@ -484,12 +500,16 @@ def load_mhd(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
-    if bit_depth == "MET_USHORT":
-        data_type = np.ushort  # Set data type to unsigned short
-    elif bit_depth == "MET_UCHAR":
+    if bit_depth == "MET_UCHAR":  # 8 bit
         data_type = np.ubyte  # Set data type to unsigned byte
+    elif bit_depth == "MET_USHORT":  # 16 bit
+        data_type = np.ushort  # Set data type to unsigned short
+    elif bit_depth == "MET_UINT":  # 32 bit
+        data_type = np.uintc  # Set data type to unsigned int
     elif bit_depth == "MET_FLOAT":
         data_type = np.float32  # Set data type to float32
+    elif bit_depth == "MET_DOUBLE":
+        data_type = np.float64  # Set data type to float64
     else:
         raise ValueError(
             "Bit depth not supported"
@@ -510,10 +530,32 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
     file_name : str or os.PathLike
         Name of the file with extension
 
+    .. todo:: Add support to overwrite size and bit depth.
+
     Returns
     -------
     img_arr : np.ndarray
         Numpy array containing the data
+
+    Notes
+    -----
+    The file name must contain the dimension and the bit depth in the following format:
+    ``DimSizeXxDimSizeYxDimSizeZ`` and ``_BitDepth.raw``. The bit depth must be one of
+    the following:
+    - 8ubit
+    - 16ubit
+    - 32ubit
+    for unsigned integer and
+    - 16fbit
+    - 32fbit
+    - 64fbit
+    for floating point numbers.
+
+    The following are used for backwards compatibility and denote the respective
+    unsigned integer bit depths:
+    - 8bit
+    - 16bit
+    - 32bit
 
     Raises
     ------
@@ -548,7 +590,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     # Check bit depth
     bit_depth_search_result = re.search(
-        r"(\d{1,2}bit)", file_name_head
+        r"(\d{1,2}[fu]?(?=bit[s]?))", file_name_head
     )  # Search for the bit depth in file name
     if bit_depth_search_result is not None:  # If the bit depth was found
         bit_depth = bit_depth_search_result.group(1)  # Get the bit depth from file name
@@ -557,15 +599,9 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
             "No bit depth found"
         )  # Raise exception if no bit depth was found
 
+    data_type: type[Union[np.floating[Any] | np.integer[Any] | np.unsignedinteger[Any]]]
     # Set data type according to bit depth
-    if bit_depth == "16bit":
-        data_type = np.ushort  # Set data type to unsigned short
-    elif bit_depth == "8bit":
-        data_type = np.ubyte  # Set data type to unsigned byte
-    else:
-        raise ValueError(
-            "Bit depth not supported"
-        )  # Raise exception if the bit depth is not supported
+    data_type = _parse_bitdepth(bit_depth)
 
     data_file_path = os.path.join(file_dir, file_name)  # Get data file path
 
@@ -608,7 +644,7 @@ def _load_binary(data_file_path, data_type, dim_size):
             file=f, dtype=data_type
         )  # Read data file into numpy array according to data type
 
-    if img_arr_orig.size != np.prod(dim_size):
+    if img_arr_orig.size != np.prod(np.array(dim_size).astype(np.int64)):
         raise ValueError(
             "Size of data file ("
             + data_file_path
@@ -649,9 +685,13 @@ def load_data(
         .. deprecated:: 4.0.0
             This will be deprecated in version 4.0.0.
 
+        .. todo:: Deprecate in version 4.0.0
+
     roi : list[Tuple[int, int]], optional, default=None
         Region of interest for cropping the image. The format is a list of tuples
-        with the ranges for the x, y and z axis. If not set, the whole image is loaded.
+        with the ranges for the x, y (and z) axis. First value in the tuple denotes the
+        start and the second value the end of the range. If not set, the whole image is
+        loaded.
 
     Returns
     -------
@@ -663,7 +703,8 @@ def load_data(
     ------
     ValueError
         If input type is not supported \n
-        If ``data_range=None`` and ``normalize=True``
+        If ``data_range=None`` and ``normalize=True`` \n
+        If number of dimensions not 2 or 3
 
     Warns
     -----
@@ -674,6 +715,8 @@ def load_data(
     Warnings
     --------
     ``batch`` will be deprecated in version 4.0.0.
+
+    .. todo:: Deprecate in version 4.0.0
 
     Examples
     --------
@@ -689,9 +732,10 @@ def load_data(
     >>> img_r = np.random.rand(128, 128)
     >>> img_r = load_data(img_r, data_range=255, normalize=True)
     """
+    # TODO: Deprecate in version 4.0.0
     if batch:
         raise RemovedInFutureVersionWarning(
-            "Batch loading is deprecated and will be removed in ViQa 4.0.x."
+            "Batch loading is deprecated and will be removed in vIQA 4.0.x."
         )
 
     # exceptions and warning for data_range and normalize
@@ -704,12 +748,13 @@ def load_data(
             RuntimeWarning,
         )
 
-    img_arr: list[np.ndarray] | np.ndarray
+    img_arr: list[np.ndarray] | np.ndarray  # TODO: list can be removed in version 4.0.0
     # Check input type
     match img:
         case str() | os.PathLike():  # If input is a file path
             # Check if batch
             if batch:
+                # TODO: Deprecate in version 4.0.0
                 # Get all files in directory
                 files = glob.glob(img)  # type: ignore[type-var]
                 img_arr = []  # Initialize list for numpy arrays
@@ -734,10 +779,7 @@ def load_data(
         case Tensor():  # If input is a pytorch tensor
             img_arr = img.cpu().numpy()  # Convert tensor to numpy array
         case [np.ndarray()]:  # If input is a list
-            # FIXME: This should never get called as the input should not be a list
-            #  according to the type hint.
-            #  Either add support for list input (and add case [ImageArray()]) or remove
-            #  this case.
+            # TODO: Deprecate in version 4.0.0
             img_arr = img  # Use input as list of ImageArrays
             batch = True  # Set batch to True to normalize list of numpy arrays
         case _:
@@ -745,8 +787,24 @@ def load_data(
                 "Input type not supported"
             )  # Raise exception if input type is not supported
 
+    if batch:
+        # TODO: Deprecate in version 4.0.0
+        for img_num, img in enumerate(img_arr):
+            if len(img.shape) > 3 or len(img.shape) < 2:
+                raise ValueError(
+                    f"Number of dimensions of input image should be 2 or 3, got "
+                    f"{len(img.shape)} for image number {img_num} in img_arr."
+                )
+    elif not isinstance(img_arr, list):
+        if len(img_arr.shape) > 3 or len(img_arr.shape) < 2:
+            raise ValueError(
+                f"Number of dimensions of input image should be 2 or 3, got "
+                f"{len(img_arr.shape)}."
+            )
+
     # Normalize data
     if normalize and data_range:
+        # TODO: Deprecate in version 4.0.0
         if batch:
             img_arr = [
                 normalize_data(img=img, data_range_output=(0, data_range))
@@ -758,6 +816,7 @@ def load_data(
     if roi:
         # Crop image
         if batch:
+            # TODO: Deprecate in version 4.0.0
             img_arr = [crop_image(img, *roi) for img in img_arr]
         elif not isinstance(img_arr, list):
             img_arr = crop_image(img_arr, *roi)
@@ -766,6 +825,7 @@ def load_data(
     if isinstance(img_arr, ImageArray):
         img_final = img_arr
     elif isinstance(img_arr, list):
+        # TODO: Deprecate in version 4.0.0
         img_final = [ImageArray(img) for img in img_arr]
     else:
         img_final = ImageArray(img_arr)
@@ -802,7 +862,7 @@ def normalize_data(
     ------
     ValueError
         If data type is not supported.
-        If ``data_range`` is not supported.
+        If ``data_range_output`` is not supported.
         If ``automatic_data_range`` is False and ``data_range_input`` is not set.
 
     Warns
@@ -883,7 +943,7 @@ def crop_image(
     img: np.ndarray | ImageArray,
     x: Tuple[int, int],
     y: Tuple[int, int],
-    z: Union[Tuple[int, int], None],
+    z: Union[Tuple[int, int], None] = None,
 ) -> np.ndarray | ImageArray:
     """
     Crop the image array.
@@ -908,19 +968,37 @@ def crop_image(
     ------
     ValueError
         If the image is not 2D or 3D.
+        If the cropped image shape is larger than the original image shape.
 
     Warns
     -----
     RuntimeWarning
         If the image is 2D, the parameter z will be ignored.
     """
-    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):
-        if z is not None:
-            warn("Image is 2D. Parameter z will be ignored.", RuntimeWarning)
-        img_crop = img[x[0] : x[1], y[0] : y[1]]
-    elif img.ndim == 3 and z is not None:
-        img_crop = img[x[0] : x[1], y[0] : y[1], z[0] : z[1]]
-    else:
+    # Get original shape to check if image is already cropped
+    img_shape = np.array(img.shape)
+
+    if img.ndim == 2 or (img.ndim == 3 and img.shape[-1] == 3):  # If image is 2D
+        crop_shape = np.array((x[1] - x[0], y[1] - y[0]))
+        if (crop_shape < img_shape).all():  # If cropping is smaller than original image
+            if z is not None:
+                warn("Image is 2D. Parameter z will be ignored.", RuntimeWarning)
+            img_crop = img[x[0] : x[1], y[0] : y[1]]
+        elif (crop_shape == img_shape).all():  # If image is already cropped
+            warn("Image is already cropped.", RuntimeWarning)
+            img_crop = img
+        else:  # If cropping is larger than original image
+            raise ValueError("Cropped image shape must be smaller than original image.")
+    elif img.ndim == 3 and z is not None:  # If image is 3D
+        crop_shape = np.array((x[1] - x[0], y[1] - y[0], z[1] - z[0]))
+        if (crop_shape < img_shape).all():  # If cropping is smaller than original image
+            img_crop = img[x[0] : x[1], y[0] : y[1], z[0] : z[1]]
+        elif (crop_shape == img_shape).all():  # If image is already cropped
+            warn("Image is already cropped.", RuntimeWarning)
+            img_crop = img
+        else:  # If cropping is larger than original image
+            raise ValueError("Cropped image shape must be smaller than original image.")
+    else:  # If image is not 2D or 3D
         raise ValueError("Image must be 2D or 3D.")
     return img_crop
 
@@ -989,3 +1067,25 @@ def _resize_image(img_r, img_m, scaling_order=1):
         )
         img_m = img_m.astype(img_r.dtype)
     return img_m
+
+
+def _parse_bitdepth(bitdepth):
+    # Set data type according to bit depth
+    match bitdepth:
+        case "8ubit" | "8bit":  # "8" is for backwards compatibility
+            data_type = np.ubyte  # Set data type to unsigned byte
+        case "16ubit" | "16bit":  # "16" is for backwards compatibility
+            data_type = np.ushort  # Set data type to unsigned short
+        case "32ubit" | "32bit":  # "32" is for backwards compatibility
+            data_type = np.uintc  # Set data type to unsigned int
+        case "16fbit":
+            data_type = np.half  # Set data type to half precision float
+        case "32fbit":
+            data_type = np.float32  # Set data type to float32
+        case "64fbit":
+            data_type = np.float64  # Set data type to float64
+        case _:
+            raise ValueError(
+                "Bit depth not supported"
+            )  # Raise exception if the bit depth is not supported
+    return data_type
