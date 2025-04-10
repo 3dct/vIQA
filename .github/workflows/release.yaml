@@ -255,8 +255,8 @@ jobs:
         with:
           python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
 
-      - name: Pause for 60 seconds
-        run: sleep 60
+      - name: Pause for 120 seconds
+        run: sleep 120
 
       - name: Test install from Test PyPI
         if: ${{ matrix.os == 'macos-14' || matrix.os == 'ubuntu-24.04' }}
