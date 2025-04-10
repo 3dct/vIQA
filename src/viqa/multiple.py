@@ -277,7 +277,7 @@ class BatchMetrics(_MultipleInterface):
             else:
                 prev_result_modified = metric_results
 
-            if roi is None and self.rois is not None:
+            if self.global_roi is None and self.rois is not None:
                 roi = self.rois[pair_num]
 
             metric_results = _calc(
