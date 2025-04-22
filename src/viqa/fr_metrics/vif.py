@@ -127,6 +127,9 @@ class VIFp(FullReferenceMetricsInterface):
             HVS model parameter (variance of the visual noise). See [3]_.
         reduction : str, default='mean'
             Specifies the reduction type: 'none', 'mean' or 'sum'.
+        device : Union[str, torch.device], default 'cpu'
+            Determines the device if the image is a PyTorch tensor,
+            e.g. "cuda", "cpu", "cuda:0", ...
 
         Returns
         -------
@@ -176,6 +179,7 @@ class VIFp(FullReferenceMetricsInterface):
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = vif_p(
                             img_r_tensor,
@@ -188,6 +192,7 @@ class VIFp(FullReferenceMetricsInterface):
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = vif_p(
                             img_r_tensor,
@@ -200,6 +205,7 @@ class VIFp(FullReferenceMetricsInterface):
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = vif_p(
                             img_r_tensor,
@@ -222,6 +228,7 @@ class VIFp(FullReferenceMetricsInterface):
                     img_r,
                     img_m,
                     self.parameters["chromatic"],
+                    self.parameters["device"],
                 )
                 score_val = vif_p(
                     img_r_tensor,
@@ -243,6 +250,7 @@ class VIFp(FullReferenceMetricsInterface):
                 img_r,
                 img_m,
                 self.parameters["chromatic"],
+                self.parameters["device"],
             )
             score_val = vif_p(
                 img_r_tensor,
