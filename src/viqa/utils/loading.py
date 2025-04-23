@@ -945,7 +945,7 @@ def crop_image(
         crop_shape = np.array((x[1] - x[0], y[1] - y[0], z[1] - z[0]))
         if (crop_shape < img_shape).all():  # If cropping is smaller than original image
             img_crop = img[x[0] : x[1], y[0] : y[1], z[0] : z[1]]
-        elif crop_shape == img_shape:  # If image is already cropped
+        elif (crop_shape == img_shape).all():  # If image is already cropped
             warn("Image is already cropped.", RuntimeWarning)
             img_crop = img
         else:  # If cropping is larger than original image

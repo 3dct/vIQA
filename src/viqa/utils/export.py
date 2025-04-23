@@ -47,7 +47,7 @@ from warnings import warn
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .loading import _check_imgs, _resize_image, load_data
+from .loading import _check_imgs, _resize_image, crop_image, load_data
 
 
 def export_results(metrics, output_path, filename, return_dict=False):
@@ -208,6 +208,7 @@ def export_image(
         warn("No results to plot. Only the images are plotted.", UserWarning)
 
     dpi = kwargs.pop("dpi", 300)
+    roi = kwargs.pop("roi", None)
 
     img_r = load_data(img_r)
     img_m = load_data(img_m)
@@ -216,6 +217,9 @@ def export_image(
         raise ValueError("Images must have the same number of dimensions.")
     scaling_order = kwargs.pop("scaling_order", 1)
     img_m = _resize_image(img_r, img_m, scaling_order=scaling_order)
+    if roi is not None:
+        img_r = crop_image(img_r, *roi)
+        img_m = crop_image(img_m, *roi)
     img_r, img_m = _check_imgs(img_r, img_m)
 
     if img_r.ndim == 2 or (img_r.ndim == 3 and img_r.shape[-1] == 3):

@@ -2,6 +2,50 @@
 
 
 
+## v2.2.3 (2025-04-10)
+
+### Bug fixes
+
+* fix: fix using Class attribute rois when not using the same roi for all images in BatchMetrics ([`e98b15a`](https://github.com/3dct/vIQA/commit/e98b15a1de544022061c4643a95a84f8c9d5dc3e))
+
+
+## v2.2.2 (2025-04-09)
+
+### Bug fixes
+
+* fix: fix semantic release exclude commit pattern ([`b24070e`](https://github.com/3dct/vIQA/commit/b24070ec67f74d68d0915524d77bfa11a828bcc3))
+
+* fix: fix rois in BatchMetrics.report when exporting images ([`88c8931`](https://github.com/3dct/vIQA/commit/88c89317ae9735685f16953a5b2338e72fe2a74c))
+
+* fix: enable rois in BatchMetrics
+
+closes #11 ([`c2b0ce5`](https://github.com/3dct/vIQA/commit/c2b0ce5102aec6ee9ce9434bfc9d3ea8eabdbc12))
+
+* fix: add check for image dimensions during loading (#15)
+
+* fix: add check for image dimensions during loading
+
+closes #14
+
+* [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+for more information, see https://pre-commit.ci
+
+* refactor: refactor to comply with ruff
+
+* docs(load_data): add Exception to function docstring
+
+---------
+
+Co-authored-by: Lukas Nepelius <p42940@fhooe.at>
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+Co-authored-by: lukasbehammer <lukas.behammer@fh-wels.at> ([`a120ade`](https://github.com/3dct/vIQA/commit/a120adea9a19fa1e19b4f82cbf95232482fa7be4))
+
+### Documentation
+
+* docs: refactor user guide ([`c423f57`](https://github.com/3dct/vIQA/commit/c423f573db92326e4e96f815690ce50866a59a01))
+
+
 ## v2.2.1 (2025-04-02)
 
 ### Bug fixes
@@ -109,12 +153,6 @@ fix csv delimiter sniffing, add support for tsv and txt files during loading of 
 
 ## v2.0.0 (2024-10-22)
 
-### Breaking
-
-* refactor!: move utility modules to utils subpackage
-
-BREAKING CHANGE: major refactoring of utility functions ([`d3945b4`](https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552))
-
 ### Bug fixes
 
 * fix: convert rgb images to grayscale before binarization ([`f258f96`](https://github.com/3dct/vIQA/commit/f258f96d38efd6acc56fca9f1dcd823987703058))
@@ -168,6 +206,12 @@ update documentation, refactor definition of variable truncate ([`851521b`](http
 * perf(ImageArray): calculate statistics only on method call
 
 make sure that an ImageArray is returned via numpy ufunc ([`31524fb`](https://github.com/3dct/vIQA/commit/31524fbff81ff0cf52c9be7dc2e22b116c7dd286))
+
+### Refactoring
+
+* refactor!: move utility modules to utils subpackage
+
+BREAKING CHANGE: major refactoring of utility functions ([`d3945b4`](https://github.com/3dct/vIQA/commit/d3945b47b710c471973296c70c93c272cc0f9552))
 
 
 ## v1.13.0 (2024-09-24)
@@ -509,9 +553,8 @@ function writes custom parameters and package version to a .txt file ([`5b8e607`
 
 ## v1.0.0 (2024-08-05)
 
-### Breaking
+### Features
 
 * feat(ImageArray)!: add class for images
 
 subclass of np.ndarray, calculates image statistics ([`40f0d02`](https://github.com/3dct/vIQA/commit/40f0d029ad416747135f79e8716de040335da592))
-

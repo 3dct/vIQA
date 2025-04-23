@@ -155,6 +155,11 @@ class BatchMetrics(_MultipleInterface):
         List of metric instances. Each instance must be of type :py:class:`Metric`.
     metrics_parameters : list
         List of dictionaries containing the parameters for the metrics.
+    rois : list[list[tuple]], optional
+        A list of lists of tuples. Each tuple has the start and
+        end coordinates of the ROI in the format (x_start, x_end). Each tuple is
+        for one coordinate. Each entry of the outer list is
+        for one image pair.
 
     Raises
     ------
@@ -164,6 +169,7 @@ class BatchMetrics(_MultipleInterface):
         If the parameters list contains non-dictionary objects
         If the pairs file does not contain the columns 'reference_image' and
         'modified_image'.
+        If the length of the pairs and ROIs is not equal.
 
     Notes
     -----
@@ -192,13 +198,19 @@ class BatchMetrics(_MultipleInterface):
         >>> batch.export_results(file_path='path/to/results', file_name='results.csv')
     """
 
-    def __init__(self, file_dir, pairs_file, metrics, metrics_parameters):
+    def __init__(self, file_dir, pairs_file, metrics, metrics_parameters, rois=None):
         """Construct method."""
         super().__init__(metrics, metrics_parameters)
 
         self.file_dir = file_dir
         self.pairs_file = pairs_file
         self.pairs = _read_pairs(self.pairs_file)
+        if rois and len(self.pairs) != len(rois):
+            raise ValueError(
+                "The number of pairs and ROIs must be equal. "
+                f"Got {len(self.pairs)} pairs and {len(rois)} ROIs."
+            )
+        self.rois = rois
 
     def calculate(self, **kwargs):
         """Calculate the metrics in batch mode.
@@ -213,6 +225,9 @@ class BatchMetrics(_MultipleInterface):
         scaling_order : int, default=1
             Order of the spline interpolation used for image resizing. Default is 1.
             Passed to :py:func:`skimage.transform.resize`.
+        roi : list[tuple], optional
+            Region of interest to use for the calculation of all images. Overrides the
+            `rois` Class attribute.
 
         Returns
         -------
@@ -223,7 +238,17 @@ class BatchMetrics(_MultipleInterface):
         -----
         UserWarning
             If the images are the same as in the previous pair.
+            If the Class attribute `rois` is overwritten by the `roi` parameter.
         """
+        # Remove roi parameter from kwargs to avoid conflicts with loading
+        # Set None if not given to use either no roi or the class attribute rois
+        roi = kwargs.pop("roi", None)
+        self.global_roi = roi
+        if self.rois is not None and roi is not None:
+            warn(
+                "Class attribute `rois` is overwritten by the `roi` parameter.",
+                UserWarning,
+            )
         scaling_order = kwargs.pop("scaling_order", 1)
         reference_img = None
         prev_ref_path = None
@@ -239,7 +264,6 @@ class BatchMetrics(_MultipleInterface):
                 warn("Skipping calculation for identical image pair.", UserWarning)
                 continue
             # Load the images only once if it is the same for multiple pairs
-            roi = kwargs.pop("roi", None)  # Remove roi parameter to avoid conflicts
             if reference_path != prev_ref_path:
                 reference_img = load_data(reference_path, **kwargs)
                 prev_ref_path = reference_path
@@ -252,6 +276,9 @@ class BatchMetrics(_MultipleInterface):
                 prev_result_modified = None
             else:
                 prev_result_modified = metric_results
+
+            if self.global_roi is None and self.rois is not None:
+                roi = self.rois[pair_num]
 
             metric_results = _calc(
                 self.metrics,
@@ -326,9 +353,12 @@ class BatchMetrics(_MultipleInterface):
                 ),
             )
         if image:
+            roi = self.global_roi
             for pair_num, pair in enumerate(tqdm(self.pairs)):
                 img_r = os.path.join(self.file_dir, pair["reference_image"])
                 img_m = os.path.join(self.file_dir, pair["modified_image"])
+                if self.global_roi is None and self.rois is not None:
+                    roi = self.rois[pair_num]
                 export_image(
                     results=self.results[str(pair_num)],
                     img_r=img_r,
@@ -343,6 +373,7 @@ class BatchMetrics(_MultipleInterface):
                     x=x,
                     y=y,
                     z=z,
+                    roi=roi,
                 )
 
     def export_results(self, file_path=".", file_name="results.csv"):

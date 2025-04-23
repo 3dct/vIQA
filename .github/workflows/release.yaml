@@ -8,6 +8,12 @@ on:
     branches:
       - main
       - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - .github/*
 
 jobs:
   changes:
@@ -93,7 +99,12 @@ jobs:
     name: Semantic Release
     runs-on: ubuntu-latest
     needs: [lint]
-    if: github.ref == 'refs/heads/main' && github.repository == '3dct/viqa' && always()
+    if: >-
+      ${{
+        github.ref == 'refs/heads/main' &&
+        github.repository == '3dct/viqa' &&
+        github.event_name != 'pull_request' && !cancelled()
+      }}
     permissions:
       id-token: write
       contents: write
@@ -113,7 +124,7 @@ jobs:
 
       - name: Python Semantic Release
         id: release
-        uses: python-semantic-release/python-semantic-release@v9.12.0
+        uses: python-semantic-release/python-semantic-release@v9.21.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           git_committer_name: "github-actions"
@@ -123,10 +134,12 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: [changes, semantic_release]
-    if: |
-      (needs.changes.outputs.build-changes == 'true' ||
-      needs.changes.outputs.src-changes == 'true' ||
-      needs.changes.outputs.ci-changes == 'true') && always()
+    if: >-
+      ${{
+        (needs.changes.outputs.build-changes == 'true' ||
+        needs.changes.outputs.src-changes == 'true' ||
+        needs.changes.outputs.ci-changes == 'true') && !cancelled()
+      }}
     strategy:
       fail-fast: false
       matrix:
@@ -154,8 +167,6 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.2
-        env:
-          CIBW_PRERELEASE_PYTHONS: true
         with:
           package-dir: .
           output-dir: wheelhouse
@@ -171,10 +182,12 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-24.04
     needs: [changes, semantic_release]
-    if: |
-      (needs.changes.outputs.build-changes == 'true' ||
-      needs.changes.outputs.src-changes == 'true' ||
-      needs.changes.outputs.ci-changes == 'true') && always()
+    if: >-
+      ${{
+        (needs.changes.outputs.build-changes == 'true' ||
+        needs.changes.outputs.src-changes == 'true' ||
+        needs.changes.outputs.ci-changes == 'true') && !cancelled()
+      }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -194,9 +207,11 @@ jobs:
   upload_testpypi:
     name: Upload to Test PyPI
     needs: [semantic_release, build_wheels, build_sdist]
-    if: |
-      (github.ref == 'refs/heads/dev' && startsWith(github.ref, 'refs/tags/v')) ||
-      (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true')
+    if: >-
+      ${{
+        (github.ref == 'refs/heads/dev' && startsWith(github.ref, 'refs/tags/v')) ||
+        (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true')
+      }}
     runs-on: ubuntu-latest
     environment:
       name: testpypi
@@ -238,8 +253,8 @@ jobs:
         with:
           python-version: ${{ vars.MINIMAL_PYTHON_VERSION }}
 
-      - name: Pause for 60 seconds
-        run: sleep 60
+      - name: Pause for 120 seconds
+        run: sleep 120
 
       - name: Test install from Test PyPI
         if: ${{ matrix.os == 'macos-14' || matrix.os == 'ubuntu-24.04' }}
@@ -269,11 +284,14 @@ jobs:
     name: Upload to PyPI
     needs: [semantic_release, build_wheels, build_sdist, upload_testpypi, test_install]
     runs-on: ubuntu-latest
-    if: |
-      needs.semantic_release.outputs.released == 'true' &&
-      needs.semantic_release.outputs.is_prerelease == 'false' &&
-      needs.test_install.outputs.tested == 'true' &&
-      needs.test_install.outputs.tested_windows == 'true'
+    if: >-
+      ${{
+        (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true') &&
+        needs.semantic_release.outputs.released == 'true' &&
+        needs.semantic_release.outputs.is_prerelease == 'false' &&
+        needs.test_install.outputs.tested == 'true' &&
+        needs.test_install.outputs.tested_windows == 'true'
+      }}
     environment:
       name: pypi
       url: https://pypi.org/project/vIQA/
@@ -296,11 +314,14 @@ jobs:
     name: Upload to GitHub Releases
     needs: [semantic_release, build_wheels, build_sdist, test_install]
     runs-on: ubuntu-latest
-    if: |
-      needs.semantic_release.outputs.released == 'true' &&
-      needs.semantic_release.outputs.is_prerelease == 'false' &&
-      needs.test_install.outputs.tested == 'true' &&
-      needs.test_install.outputs.tested_windows == 'true'
+    if: >-
+      ${{
+        (github.ref == 'refs/heads/main' && needs.semantic_release.outputs.released == 'true') &&
+        needs.semantic_release.outputs.released == 'true' &&
+        needs.semantic_release.outputs.is_prerelease == 'false' &&
+        needs.test_install.outputs.tested == 'true' &&
+        needs.test_install.outputs.tested_windows == 'true'
+      }}
     permissions:
       id-token: write
       contents: write
@@ -328,16 +349,14 @@ jobs:
             ./dist/*.whl
 
       - name: Publish package distributions to GitHub Releases
-        uses: python-semantic-release/publish-action@v9.12.0
+        uses: python-semantic-release/publish-action@v9.21.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   prepare_publish_input:
     name: Check if published
     runs-on: ubuntu-latest
-    if: |
-      (needs.changes.outputs.doc-changes == 'true' ||
-      needs.changes.outputs.docker-changes == 'true') && always()
+    if: ${{ !cancelled() }}
     outputs:
       docs_publish: ${{ steps.check_docs_publish.outputs.publish }}
       image_publish: ${{ steps.check_image_publish.outputs.publish }}
@@ -345,7 +364,7 @@ jobs:
     steps:
       - name: Check if documentation should be published
         id: check_docs_publish
-        if: needs.changes.outputs.doc-changes == 'true'
+        if: ${{ needs.changes.outputs.doc-changes == 'true' }}
         run: |
           # If either the PyPI or GitHub release was successful, publish the docs
           if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
@@ -360,10 +379,10 @@ jobs:
           fi
       - name: Check if Docker images should be published
         id: check_image_publish
-        if: needs.changes.outputs.docker-changes == 'true'
+        if: ${{ needs.changes.outputs.docker-changes == 'true' }}
         run: |
           # If either the PyPI or GitHub release was successful, publish the Docker images
-          if ${{ needs.upload_github.result == 'success' }} || ${{ needs.upload_pypi.result == 'success' }}; then
+          if ${{ needs.upload_github.result }} == 'success' || ${{ needs.upload_pypi.result }} == 'success'; then
             echo "publish=true" >> $GITHUB_OUTPUT
           else
             echo "publish=false" >> $GITHUB_OUTPUT
@@ -373,7 +392,7 @@ jobs:
     name: Build and deploy documentation
     uses: ./.github/workflows/documentation.yaml
     needs: [changes, prepare_publish_input]
-    if: github.repository == '3dct/viqa' && needs.changes.outputs.doc-changes == 'true'
+    if: ${{ github.repository == '3dct/viqa' && needs.changes.outputs.doc-changes == 'true' }}
     with:
       publish: ${{ needs.prepare_publish_input.outputs.docs_publish }}
 
@@ -381,7 +400,7 @@ jobs:
     name: Build and push Docker Images
     uses: ./.github/workflows/build_and_push_docker_images.yaml
     needs: [changes, semantic_release, prepare_publish_input]
-    if: github.repository == '3dct/viqa' && needs.changes.outputs.docker-changes == 'true'
+    if: ${{ github.repository == '3dct/viqa' && needs.changes.outputs.docker-changes == 'true' }}
     with:
       version: ${{ needs.semantic_release.outputs.version }}
       publish: ${{ needs.prepare_publish_input.outputs.image_publish }}
