@@ -425,8 +425,12 @@ def _check_chromatic(img_r, img_m, chromatic, device):
     if chromatic is False:
         if img_r.ndim == 3:
             # 3D images
-            img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2).to(device)
-            img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2).to(device)
+            img_r_tensor = (
+                torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2).to(device)
+            )
+            img_m_tensor = (
+                torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2).to(device)
+            )
         elif img_r.ndim == 2:
             # 2D images
             img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0).to(device)
