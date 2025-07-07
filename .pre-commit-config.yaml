@@ -40,7 +40,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.11.4
+    rev: v0.12.2
     hooks:
       # Run the linter.
       - id: ruff
@@ -56,17 +56,17 @@ repos:
         name: Validate pyproject.toml
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
+    rev: v3.20.0
     hooks:
       - id: pyupgrade
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.24.2
+    rev: v8.27.2
     hooks:
       - id: gitleaks
 
   - repo: https://github.com/rstcheck/rstcheck
-    rev: v6.2.4
+    rev: v6.2.5
     hooks:
       - id: rstcheck
         additional_dependencies:
@@ -89,7 +89,7 @@ repos:
       - id: actionlint
 
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.37.0
+    rev: v1.37.1
     hooks:
       - id: yamllint
         args: ["--strict", "--config-file=.yamllint.yaml"]
@@ -106,7 +106,7 @@ repos:
           )
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
+    rev: v1.16.1
     hooks:
       - id: mypy
         additional_dependencies:
