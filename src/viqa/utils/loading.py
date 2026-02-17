@@ -542,7 +542,7 @@ def load_raw(file_dir: str | os.PathLike, file_name: str | os.PathLike) -> np.nd
 
     # Check bit depth
     bit_depth_search_result = re.search(
-        r"(\d{1,2}[fu]?(?=bit[s]?))", file_name_head
+        r"(\d{1,2}[fu]?(bit[s]?))", file_name_head
     )  # Search for the bit depth in file name
     if bit_depth_search_result is not None:  # If the bit depth was found
         bit_depth = bit_depth_search_result.group(1)  # Get the bit depth from file name
