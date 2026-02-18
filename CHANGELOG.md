@@ -2,6 +2,21 @@
 
 
 
+## v2.2.4 (2026-02-18)
+
+### Unknown
+
+* Fix regex for bit depth extraction in file name
+
+Update regex to include optional 'bit' suffix in bit depth search. ([`057e20a`](https://github.com/3dct/vIQA/commit/057e20a61f5103bda6019e9b26dcc92b1fd3a7c0))
+
+* Revert "feat: Device option for image loading when the image is a Pytorch Tensor" ([`6eb8507`](https://github.com/3dct/vIQA/commit/6eb8507541dce5a0e570127f782c512906330dd5))
+
+* Revert "ci: test building for Python version 3.13"
+
+This reverts commit 5ffd933d65aefb82f046da1f713a4c7e8f199351. ([`458dbe7`](https://github.com/3dct/vIQA/commit/458dbe7dcb059b6725ad2e153fe2dbbab5b5c523))
+
+
 ## v2.2.3 (2025-04-10)
 
 ### Bug fixes
@@ -41,9 +56,19 @@ Co-authored-by: Lukas Nepelius <p42940@fhooe.at>
 Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
 Co-authored-by: lukasbehammer <lukas.behammer@fh-wels.at> ([`a120ade`](https://github.com/3dct/vIQA/commit/a120adea9a19fa1e19b4f82cbf95232482fa7be4))
 
+* fix: add check for image dimensions during loading
+
+closes #14 ([`036ebe5`](https://github.com/3dct/vIQA/commit/036ebe5d3716c97402b6458b5ffb072c323d1209))
+
 ### Documentation
 
+* docs(load_data): add Exception to function docstring ([`44f7d2e`](https://github.com/3dct/vIQA/commit/44f7d2e2221b3fc60a4df82f03f51a194dba98b3))
+
 * docs: refactor user guide ([`c423f57`](https://github.com/3dct/vIQA/commit/c423f573db92326e4e96f815690ce50866a59a01))
+
+### Unknown
+
+* Device can be set for torch tensor images ([`c12d261`](https://github.com/3dct/vIQA/commit/c12d2614f9ded3dada55816752307a477e79b322))
 
 
 ## v2.2.1 (2025-04-02)
