@@ -417,7 +417,7 @@ def gabor_convolve(
     return res
 
 
-def _check_chromatic(img_r, img_m, chromatic, device):
+def _check_chromatic(img_r, img_m, chromatic):
     """Permute image based on dimensions and chromaticity."""
     img_r = _to_float(img_r, np.float32)
     img_m = _to_float(img_m, np.float32)
@@ -425,21 +425,17 @@ def _check_chromatic(img_r, img_m, chromatic, device):
     if chromatic is False:
         if img_r.ndim == 3:
             # 3D images
-            img_r_tensor = (
-                torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2).to(device)
-            )
-            img_m_tensor = (
-                torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2).to(device)
-            )
+            img_r_tensor = torch.tensor(img_r).unsqueeze(0).permute(3, 0, 1, 2)
+            img_m_tensor = torch.tensor(img_m).unsqueeze(0).permute(3, 0, 1, 2)
         elif img_r.ndim == 2:
             # 2D images
-            img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0).to(device)
-            img_m_tensor = torch.tensor(img_m).unsqueeze(0).unsqueeze(0).to(device)
+            img_r_tensor = torch.tensor(img_r).unsqueeze(0).unsqueeze(0)
+            img_m_tensor = torch.tensor(img_m).unsqueeze(0).unsqueeze(0)
         else:
             raise ValueError("Image format not supported.")
     else:
-        img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0).to(device)
-        img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0).to(device)
+        img_r_tensor = torch.tensor(img_r).permute(2, 0, 1).unsqueeze(0)
+        img_m_tensor = torch.tensor(img_m).permute(2, 0, 1).unsqueeze(0)
     return img_r_tensor, img_m_tensor
 
 

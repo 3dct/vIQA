@@ -64,9 +64,6 @@ class VSI(FullReferenceMetricsInterface):
     ----------------
     chromatic : bool, default False
         If True, the input images are expected to be RGB images.
-    device : Union[str, torch.device], default 'cpu'
-        Determines the device if the image is a PyTorch tensor,
-        e.g. "cuda", "cpu", "cuda:0", ...
 
     Raises
     ------
@@ -200,7 +197,6 @@ class VSI(FullReferenceMetricsInterface):
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
                             self.parameters["chromatic"],
-                            self.parameters["device"],
                         )
                         score_val = vsi(
                             img_r_tensor,
@@ -213,7 +209,6 @@ class VSI(FullReferenceMetricsInterface):
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
                             self.parameters["chromatic"],
-                            self.parameters["device"],
                         )
                         score_val = vsi(
                             img_r_tensor,
@@ -226,7 +221,6 @@ class VSI(FullReferenceMetricsInterface):
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
                             self.parameters["chromatic"],
-                            self.parameters["device"],
                         )
                         score_val = vsi(
                             img_r_tensor,
@@ -249,7 +243,6 @@ class VSI(FullReferenceMetricsInterface):
                     img_r,
                     img_m,
                     self.parameters["chromatic"],
-                    self.parameters["device"],
                 )
                 score_val = vsi(
                     img_r_tensor,
@@ -271,7 +264,6 @@ class VSI(FullReferenceMetricsInterface):
                 img_r,
                 img_m,
                 self.parameters["chromatic"],
-                self.parameters["device"],
             )
             score_val = vsi(
                 img_r_tensor,
