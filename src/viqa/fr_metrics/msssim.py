@@ -145,6 +145,9 @@ class MSSSIM(FullReferenceMetricsInterface):
                 Algorithm parameter, K2 (small constant, see [3]_).
                 Try a larger K2 constant (e.g. 0.4) if you get a negative or NaN
                 results.
+            device : Union[str, torch.device], default 'cpu'
+                Determines the device if the image is a PyTorch tensor,
+                e.g. "cuda", "cpu", "cuda:0", ...
 
         .. seealso::
             See :py:func:`.viqa.fr_metrics.ssim.structural_similarity` for more
@@ -202,6 +205,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = multi_scale_ssim(
                             img_r_tensor,
@@ -214,6 +218,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = multi_scale_ssim(
                             img_r_tensor,
@@ -226,6 +231,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = multi_scale_ssim(
                             img_r_tensor,
@@ -249,6 +255,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                     img_r,
                     img_m,
                     self.parameters["chromatic"],
+                    self.parameters["device"],
                 )
                 score_val = multi_scale_ssim(
                     img_r_tensor,
@@ -270,6 +277,7 @@ class MSSSIM(FullReferenceMetricsInterface):
                 img_r,
                 img_m,
                 self.parameters["chromatic"],
+                self.parameters["device"],
             )
             score_val = multi_scale_ssim(
                 img_r_tensor,

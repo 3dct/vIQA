@@ -66,6 +66,9 @@ class FSIM(FullReferenceMetricsInterface):
         If True, the input images are expected to be RGB images and FSIMc is
         calculated. See [1]_. Passed to
         :py:func:`piq.fsim`. See the documentation under [2]_.
+    device : Union[str, torch.device], default 'cpu'
+        Determines the device if the image is a PyTorch tensor,
+        e.g. "cuda", "cpu", "cuda:0", ...
 
     Raises
     ------
@@ -197,6 +200,7 @@ class FSIM(FullReferenceMetricsInterface):
                             img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = fsim(
                             img_r_tensor,
@@ -210,6 +214,7 @@ class FSIM(FullReferenceMetricsInterface):
                             img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = fsim(
                             img_r_tensor,
@@ -223,6 +228,7 @@ class FSIM(FullReferenceMetricsInterface):
                             img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
                             self.parameters["chromatic"],
+                            self.parameters["device"],
                         )
                         score_val = fsim(
                             img_r_tensor,
@@ -246,6 +252,7 @@ class FSIM(FullReferenceMetricsInterface):
                     img_r,
                     img_m,
                     self.parameters["chromatic"],
+                    self.parameters["device"],
                 )
                 score_val = fsim(
                     img_r_tensor,
@@ -268,6 +275,7 @@ class FSIM(FullReferenceMetricsInterface):
                 img_r,
                 img_m,
                 self.parameters["chromatic"],
+                self.parameters["device"],
             )
             score_val = fsim(
                 img_r_tensor,

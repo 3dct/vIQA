@@ -30,7 +30,7 @@ class Metric:
             "normalize": normalize,
             "chromatic": False,
             "roi": None,
-            **kwargs,
+            "device": "cpu" ** kwargs,
         }
         self.score_val = None
         self._name = None
