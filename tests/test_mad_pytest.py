@@ -32,26 +32,26 @@ class TestScoring2D:
         img_r = np.zeros((128, 128))
         img_m = np.zeros((128, 128))
         mad = viqa.MAD(data_range=1)
-        assert mad.score(img_r, img_m) == 0.0, 'MAD of identical images should be 0'
+        assert mad(img_m, img_r) == 0.0, 'MAD of identical images should be 0'
 
     def test_mad_score_with_different_images_2d(self, data_2d_255_600x400):
         img_r, img_m = data_2d_255_600x400
         mad = viqa.MAD(data_range=255, normalize=False)
-        assert mad.score(img_r, img_m) != 0.0, 'MAD of completely different images should not be 0'
+        assert mad(img_m, img_r) != 0.0, 'MAD of completely different images should not be 0'
 
     def test_mad_score_with_random_images_2d(self):
         img_r = np.random.rand(128, 128)
         img_m = np.random.rand(128, 128)
         mad = viqa.MAD(data_range=1)
-        assert 0 <= mad.score(img_r, img_m) <= 1.0, 'MAD should be between 0 and 1'
+        assert 0 <= mad(img_m, img_r) <= 1.0, 'MAD should be between 0 and 1'
 
     def test_mad_score_with_different_data_ranges_2d(self):
         img_r = np.random.rand(128, 128)
         img_m = np.random.rand(128, 128)
         mad = viqa.MAD(data_range=1)
-        score1 = mad.score(img_r, img_m)
+        score1 = mad(img_m, img_r)
         mad = viqa.MAD(data_range=255, normalize=True)
-        score2 = mad.score(img_r, img_m)
+        score2 = mad(img_m, img_r)
         assert score1 != score2, 'MAD should be different for different data ranges'
 
     def test_mad_score_with_identical_images_2d_dim0(self):
@@ -59,7 +59,7 @@ class TestScoring2D:
         img_m = np.zeros((128, 128))
         mad = viqa.MAD(data_range=1)
         with pytest.warns(RuntimeWarning, match=re.escape('dim and im_slice are ignored for 2D images.')):
-            mad.score(img_r, img_m, dim=0, im_slice=32)
+            mad(img_m, img_r, dim=0, im_slice=32)
 
 
 class TestScoring3D:
@@ -67,67 +67,67 @@ class TestScoring3D:
         img_r = np.zeros((128, 128, 128))
         img_m = np.zeros((128, 128, 128))
         mad = viqa.MAD(data_range=1)
-        assert mad.score(img_r, img_m, dim=1) == 0.0, 'MAD of identical images should be 0'
+        assert mad(img_m, img_r, dim=1) == 0.0, 'MAD of identical images should be 0'
 
     def test_mad_score_with_different_images_3d_dim2_slice64(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         mad = viqa.MAD()
-        assert mad.score(img_r, img_m, dim=2, im_slice=64) != 0.0, 'MAD of completely different images should not be 0'
+        assert mad(img_m, img_r, dim=2, im_slice=64) != 0.0, 'MAD of completely different images should not be 0'
 
     # takes 7hr 41min
     def test_mad_score_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         mad = viqa.MAD()
-        assert 0 <= mad.score(img_r, img_m, dim=0) <= np.inf, 'MAD should be between 0 and inf'
+        assert 0 <= mad(img_m, img_r, dim=0) <= np.inf, 'MAD should be between 0 and inf'
 
     def test_mad_score_3d_dim3_slice64(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         mad = viqa.MAD(data_range=1)
         with pytest.raises(ValueError, match=re.escape('Invalid dim value. Must be integer of 0, 1 or 2.')):
-            mad.score(img_r, img_m, dim=3, im_slice=64)
+            mad(img_m, img_r, dim=3, im_slice=64)
 
     def test_mad_score_3d_dim1_slice64(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         mad = viqa.MAD(data_range=1)
-        mad.score(img_r, img_m, dim=1, im_slice=64)
+        mad(img_m, img_r, dim=1, im_slice=64)
 
     def test_mad_score_3d_dim2(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         mad = viqa.MAD(data_range=1)
-        mad.score(img_r, img_m, dim=2)
+        mad(img_m, img_r, dim=2)
 
     def test_mad_score_3d(self):
         img_r = np.random.rand(128, 128, 128)
         img_m = np.random.rand(128, 128, 128)
         mad = viqa.MAD(data_range=1)
         with pytest.raises(ValueError, match=re.escape('If images are 3D, dim and im_slice (optional) must be given.')):
-            mad.score(img_r, img_m)
+            mad(img_m, img_r)
 
     def test_mad_score_with_different_data_ranges_3d_dim0_slice64(self, data_3d_255_400x400x200,
                                                                   data_3d_native_400x400x200):
         img_r_255, img_m_255 = data_3d_255_400x400x200
         img_r, img_m = data_3d_native_400x400x200
         mad = viqa.MAD(data_range=255)
-        score1 = mad.score(img_r_255, img_m_255, dim=0, im_slice=64)
+        score1 = mad(img_m_255, img_r_255, dim=0, im_slice=64)
         mad_2 = viqa.MAD(data_range=65535)
-        score2 = mad_2.score(img_r, img_m, dim=0, im_slice=64)
+        score2 = mad_2(img_m, img_r, dim=0, im_slice=64)
         assert score1 != score2, 'MAD should be different for different data ranges'
 
 
 class TestPrintScore:
     def test_print_score_without_calculating_score_first(self):
         mad = viqa.MAD()
-        with pytest.warns(RuntimeWarning, match=re.escape('No score value for MAD. Run score() first.')):
+        with pytest.warns(RuntimeWarning, match=re.escape('No score value for MAD. Calculate the score first.')):
             mad.print_score()
 
     def test_print_score_with_calculating_score_first(self, capsys):
         img_r = np.random.rand(128, 128)
         img_m = np.random.rand(128, 128)
         mad = viqa.MAD(data_range=1)
-        mad.score(img_r, img_m)
+        mad(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             mad.print_score()
@@ -137,7 +137,7 @@ class TestPrintScore:
     def test_print_score_with_different_decimals(self, data_2d_255_600x400, capsys):
         img_r, img_m = data_2d_255_600x400
         mad = viqa.MAD()
-        mad.score(img_r, img_m)
+        mad(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             mad.print_score(decimals=2)
@@ -150,4 +150,4 @@ def test_mad_score_with_random_data_4d():
     img_m = np.random.rand(128, 128, 128, 128)
     mad = viqa.MAD(data_range=1)
     with pytest.raises(ValueError, match=re.escape('Images must be 2D or 3D.')):
-        mad.score(img_r, img_m)
+        mad(img_m, img_r)

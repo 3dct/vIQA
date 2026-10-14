@@ -20,7 +20,7 @@ Examples
     >>> img_r = 'path/to/reference_image'
     >>> img_m = 'path/to/modified_image'
     >>> multiple = MultipleMetrics(metrics, metrics_parameters)
-    >>> multiple.calculate(img_r, img_m)
+    >>> multiple.calculate(img_m, img_r)
     >>> multiple.report(
     ...     csv=True,
     ...     metadata=True,
@@ -462,7 +462,7 @@ class MultipleMetrics(_MultipleInterface):
         ... )
         >>> img_r = 'path/to/reference_image'
         >>> img_m = 'path/to/modified_image'
-        >>> multiple.calculate(img_r, img_m)
+        >>> multiple.calculate(img_m, img_r)
         >>> multiple.report(
         ...     csv=True,
         ...     metadata=True,
@@ -476,15 +476,15 @@ class MultipleMetrics(_MultipleInterface):
         """Construct method."""
         super().__init__(metrics, metrics_parameters)
 
-    def calculate(self, img_r, img_m, **kwargs):
+    def calculate(self, img_m, img_r, **kwargs):
         """Calculate multiple metrics for an image pair.
 
         Parameters
         ----------
-        img_r : str or np.ndarray
-            Path to the reference image or the image itself.
         img_m : str or np.ndarray
             Path to the modified image or the image itself.
+        img_r : str or np.ndarray
+            Path to the reference image or the image itself.
         kwargs : dict
             Additional parameters. Passed to :py:func:`viqa.utils.load_data`.
 
@@ -696,16 +696,16 @@ def _calc(metrics, metrics_parameters, img_r, img_m, **kwargs):
                     name := metric._name + "_r"
                 ]
             else:
-                result_r = metric.score(img_r, **parameters)
+                result_r = metric(img_r, **parameters)
                 metric_results[metric._name + "_r"] = float(result_r)
             if prev_result_modified is not None and isinstance(
                 prev_result_modified, dict
             ):
                 metric_results[name] = prev_result_modified[name := metric._name + "_m"]
             else:
-                result_m = metric.score(img_m, **parameters)
+                result_m = metric(img_m, **parameters)
                 metric_results[metric._name + "_m"] = float(result_m)
         elif metric.type == "full-reference":
-            result = metric.score(img_r, img_m, **parameters)
+            result = metric(img_m, img_r, **parameters)
             metric_results[metric._name] = float(result)
     return metric_results

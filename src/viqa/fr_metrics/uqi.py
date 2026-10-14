@@ -25,18 +25,18 @@ Examples
         >>> uqi = UQI(data_range=1, normalize=False)
         >>> uqi
         UQI(score_val=None)
-        >>> score = uqi.score(img_r, img_m)
+        >>> score = uqi(img_m, img_r)
         >>> score
         0.0
         >>> uqi.print_score()
         UQI: 1.0
         >>> img_r = np.zeros((256, 256))
         >>> img_m = np.zeros((256, 256))
-        >>> uqi.score(img_r, img_m)
+        >>> uqi(img_m, img_r)
         1.0
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(128, 128)
-        >>> uqi.score(img_r, img_m)
+        >>> uqi(img_m, img_r)
         Traceback (most recent call last):
             ...
         ValueError: Image shapes do not match
@@ -104,7 +104,7 @@ class UQI(FullReferenceMetricsInterface):
     -----
     ``data_range`` for image loading is also used for the UQI calculation if the image
     type is integer and therefore must be set. The parameter is set through the
-    constructor of the class and is passed to :py:meth:`score`. UQI [1]_ is a
+    constructor of the class and is passed to :py:meth:`__call__`. UQI [1]_ is a
     full-reference IQA metric. It is based on the human visual system and is designed to
     predict the perceived quality of an image.
 
@@ -126,15 +126,15 @@ class UQI(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "UQI"
 
-    def score(self, img_r, img_m, **kwargs):
+    def __call__(self, img_m, img_r, **kwargs):
         """Calculate the universal quality index (UQI) between two images.
 
         Parameters
         ----------
-        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Modified image to calculate score of.
+        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
+            Reference image to calculate score against.
         **kwargs : optional
             Additional parameters for the UQI calculation. The keyword arguments are
             passed to :py:func:`viqa.fr_metrics.ssim.structural_similarity`.
@@ -152,8 +152,8 @@ class UQI(FullReferenceMetricsInterface):
         img_r, img_m = self.load_images(img_r, img_m)
 
         score_val = structural_similarity(
-            img_r,
             img_m,
+            img_r,
             data_range=self.parameters["data_range"],
             k_1=0,
             k_2=0,
@@ -182,4 +182,4 @@ class UQI(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("UQI: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for UQI. Run score() first.", RuntimeWarning)
+            warn("No score value for UQI. Calculate the score first.", RuntimeWarning)

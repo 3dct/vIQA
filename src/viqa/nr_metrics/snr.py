@@ -10,7 +10,7 @@ Examples
         >>> snr = SNR(data_range=1, normalize=False)
         >>> snr
         SNR(score_val=None)
-        >>> score = snr.score(img,
+        >>> score = snr(img,
         ...                   signal_center=(32, 32),
         ...                   radius=16)
 """
@@ -107,7 +107,7 @@ class SNR(NoReferenceMetricsInterface):
             data_range=data_range, normalize=normalize, name=name, **kwargs
         )
 
-    def score(self, img, **kwargs):
+    def __call__(self, img, **kwargs):
         """Calculate the signal-to-noise ratio (SNR) for an image.
 
         Parameters
@@ -163,7 +163,7 @@ class SNR(NoReferenceMetricsInterface):
         if self.score_val is not None:
             print("SNR: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for SNR. Run score() first.", RuntimeWarning)
+            warn("No score value for SNR. Calculate the score first.", RuntimeWarning)
 
     def visualize_centers(
         self,

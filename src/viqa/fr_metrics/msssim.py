@@ -10,7 +10,7 @@ Examples
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(256, 256)
         >>> msssim = MSSSIM()
-        >>> msssim.score(img_r, img_m, data_range=1)
+        >>> msssim(img_m, img_r, data_range=1)
 
 """
 
@@ -55,7 +55,7 @@ class MSSSIM(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the MS-SSIM calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`__call__`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
@@ -108,17 +108,17 @@ class MSSSIM(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "MS-SSIM"
 
-    def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
+    def __call__(self, img_m, img_r, dim=None, im_slice=None, **kwargs):
         """
         Calculate the multiscale structural similarity index (MS-SSIM) between two
         images.
 
         Parameters
         ----------
-        img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
         dim : {0, 1, 2}, optional
             MS-SSIM for 3D images is calculated as mean over all slices of the given
             dimension.
@@ -204,8 +204,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                             self.parameters["chromatic"],
                         )
                         score_val = multi_scale_ssim(
-                            img_r_tensor,
                             img_m_tensor,
+                            img_r_tensor,
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -216,8 +216,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                             self.parameters["chromatic"],
                         )
                         score_val = multi_scale_ssim(
-                            img_r_tensor,
                             img_m_tensor,
+                            img_r_tensor,
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -228,8 +228,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                             self.parameters["chromatic"],
                         )
                         score_val = multi_scale_ssim(
-                            img_r_tensor,
                             img_m_tensor,
+                            img_r_tensor,
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -251,8 +251,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                     self.parameters["chromatic"],
                 )
                 score_val = multi_scale_ssim(
-                    img_r_tensor,
                     img_m_tensor,
+                    img_r_tensor,
                     data_range=self.parameters["data_range"],
                     **kwargs,
                 )
@@ -272,8 +272,8 @@ class MSSSIM(FullReferenceMetricsInterface):
                 self.parameters["chromatic"],
             )
             score_val = multi_scale_ssim(
-                img_r_tensor,
                 img_m_tensor,
+                img_r_tensor,
                 data_range=self.parameters["data_range"],
                 **kwargs,
             )
@@ -299,4 +299,4 @@ class MSSSIM(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("MS-SSIM: {}".format(np.round(self.score_val, decimals)))
         else:
-            print("No score value for MS-SSIM. Run score() first.")
+            print("No score value for MS-SSIM. Calculate the score first.")
