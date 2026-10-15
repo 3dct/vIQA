@@ -75,6 +75,7 @@ class TestScoring3D:
         assert mad(img_m, img_r, dim=2, im_slice=64) != 0.0, 'MAD of completely different images should not be 0'
 
     # takes 7hr 41min
+    @pytest.mark.slow
     def test_mad_score_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         mad = viqa.MAD()
@@ -142,7 +143,7 @@ class TestPrintScore:
             warnings.simplefilter('ignore')
             mad.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert len(captured.out) == 10, 'Printed score should have 10 characters'
+            assert re.fullmatch(r'MAD: -?\d+\.\d{1,2}\n', captured.out), 'Printed score should have at most 2 decimals'
 
 
 def test_mad_score_with_random_data_4d():

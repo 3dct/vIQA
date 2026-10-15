@@ -81,7 +81,7 @@ class TestScoring3D:
         snr = viqa.SNR()
         score1 = snr(img, signal_center=(300, 300, 290), radius=20)
         snr = viqa.SNR()
-        score2 = snr(img, signal_center=(600, 600, 500), radius=20)
+        score2 = snr(img, signal_center=(600, 600, 350), radius=20)
         assert score1 != score2, 'SNR should be different for different images'
 
 
@@ -109,7 +109,7 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             snr.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert len(captured.out) == 10, 'Printed score should have 11 characters'
+            assert re.fullmatch(r'SNR: -?\d+\.\d{1,2}\n', captured.out), 'Printed score should have at most 2 decimals'
 
 
 class TestCenterAndRadius:

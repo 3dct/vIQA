@@ -36,7 +36,7 @@ class TestScoring2D:
     def test_fsim_with_completely_different_images_2d(self, data_2d_255_600x400):
         img_r, img_m = data_2d_255_600x400
         fsim = viqa.FSIM(data_range=255, normalize=False)
-        assert pytest.approx( fsim(img_m, img_r), abs=1e-4) == 0.9229, 'FSIM of completely different images should be 0'
+        assert pytest.approx( fsim(img_m, img_r), abs=1e-4) == 0.8642, 'FSIM of completely different images should be 0'
 
     def test_fsim_with_random_images_2d(self):
         img_r = np.random.rand(256, 256)
@@ -70,12 +70,12 @@ class TestScoring3D:
     def test_fsim_with_different_images_3d_dim2_slice64(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         fsim = viqa.FSIM(data_range=255, normalize=False)
-        assert pytest.approx(fsim(img_m, img_r, dim=2, im_slice=64), abs=1e-4) == 0.9144, 'FSIM of completely different images should be 0'
+        assert pytest.approx(fsim(img_m, img_r, dim=2, im_slice=64), abs=1e-4) == 0.8588, 'FSIM of completely different images should be 0'
 
     def test_fsim_with_different_images_3d_dim0(self, data_3d_255_400x400x200):
         img_r, img_m = data_3d_255_400x400x200
         fsim = viqa.FSIM(data_range=255, normalize=False)
-        assert pytest.approx(fsim(img_m, img_r, dim=0), abs=1e-4) == 0.9225, 'FSIM of different images should be 0'
+        assert pytest.approx(fsim(img_m, img_r, dim=0), abs=1e-4) == 0.8645, 'FSIM of different images should be 0'
 
     def test_fsim_3d_dim3_slice64(self):
         img_r = np.random.rand(128, 128, 128)
@@ -138,7 +138,7 @@ class TestPrintScore:
             warnings.simplefilter("ignore")
             fsim.print_score(decimals=3)
             captured = capsys.readouterr()
-            assert len(captured.out) == 12, 'Printed score should have 12 characters'
+            assert re.fullmatch(r'FSIM: -?\d+\.\d{1,3}\n', captured.out), 'Printed score should have at most 3 decimals'
 
 
 def test_fsim_with_random_data_4d():

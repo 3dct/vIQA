@@ -109,7 +109,7 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             cnr.print_score(decimals=2)
             captured = capsys.readouterr()
-            assert len(captured.out) == 10, 'Printed score should have 11 characters'
+            assert re.fullmatch(r'CNR: -?\d+\.\d{1,2}\n', captured.out), 'Printed score should have at most 2 decimals'
 
 
 class TestCenterAndRadius:
