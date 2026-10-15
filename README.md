@@ -300,7 +300,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Contacts
-Lukas Behammer, [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
+* Lukas Behammer, [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
+* Lukas Nepelius, [lukas.nepelius@fh-wels.at](mailto:lukas.nepelius@fh-wels.at)
 
 ## References
 [^1]: Wang, Z., & Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL

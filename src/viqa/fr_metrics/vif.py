@@ -230,7 +230,7 @@ class VIFp(FullReferenceMetricsInterface):
                     **kwargs,
                 )
             else:
-                if type(im_slice) is not int or None:
+                if type(im_slice) is not int and im_slice is not None:
                     raise ValueError("im_slice must be an integer.")
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
@@ -272,4 +272,4 @@ class VIFp(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("VIFp: {}".format(np.round(self.score_val, decimals)))
         else:
-            print("No score value for VIFp. Calculate the score first.")
+            warn("No score value for VIFp. Calculate the score first.", RuntimeWarning)
