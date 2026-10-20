@@ -2,6 +2,13 @@
 
 
 
+## v3.0.1 (2026-10-20)
+
+### Bug fixes
+
+* fix(build): Update MACOSX_DEPLOYMENT_TARGET to 14.0 ([`bb10728`](https://github.com/3dct/vIQA/commit/bb10728ab9205d8fca39fc0514c7ce9e9669d4ba))
+
+
 ## v3.0.0 (2026-10-20)
 
 ### Bug fixes
