@@ -2,6 +2,28 @@
 
 
 
+## v3.0.0 (2026-10-20)
+
+### Bug fixes
+
+* fix(snr): return score instead of (score, parameters) tuple ([`c5f552e`](https://github.com/3dct/vIQA/commit/c5f552e067d9318c857e641cb9ac3bbf1ac53b9b))
+
+* fix(mad): correct block statistics in C extension, block indexing and im_slice check ([`a41a9b1`](https://github.com/3dct/vIQA/commit/a41a9b13d84b0cac1b71ef10300d84dfdcebc210))
+
+* fix: raise RuntimeWarning in VIFp.print_score and fix im_slice check ([`c52f44f`](https://github.com/3dct/vIQA/commit/c52f44fb5b8dc38e0e8a17e92cb0cd7a15a62211))
+
+### Features
+
+* feat!: call metrics directly with (img_m, img_r)
+
+Fix argument order passed to piq (x=modified, y=reference), which made
+VIFp scores wrong.
+
+BREAKING CHANGE: All public functions now take the modified image first:
+(img_m, img_r). Metrics are called directly via Metric.__call__().
+Metric.score() is deprecated and takes the new argument order as well. ([`04ffd93`](https://github.com/3dct/vIQA/commit/04ffd93f94882abdcf17b138a776110611afce80))
+
+
 ## v2.2.4 (2026-02-18)
 
 ### Unknown
