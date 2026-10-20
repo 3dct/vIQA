@@ -31,30 +31,30 @@ class TestScoring2D:
     def test_ssim_with_identical_images_2d(self):
         img_r = np.random.rand(256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score = ssim.score(img_r, img_r)
+        score = ssim(img_r, img_r)
         assert score == 1.0, 'SSIM of identical images should be 1.0'
 
     def test_ssim_with_completely_different_images_no_gaussian_2d(self):
         img_r = np.zeros((256, 256))
         img_m = np.ones((256, 256))
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score = ssim.score(img_r, img_m, gaussian_weights=False)
+        score = ssim(img_m, img_r, gaussian_weights=False)
         assert pytest.approx(score, abs=1e-4) == 0.0, 'SSIM of completely different images should be 0'
 
     def test_ssim_with_random_images_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score = ssim.score(img_r, img_m)
+        score = ssim(img_m, img_r)
         assert 0 <= score <= 1.0, 'SSIM should be between 0 and 1'
 
     def test_ssim_with_different_data_ranges_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score1 = ssim.score(img_r, img_m)
+        score1 = ssim(img_m, img_r)
         ssim = viqa.SSIM(data_range=255, normalize=True)
-        score2 = ssim.score(img_r, img_m)
+        score2 = ssim(img_m, img_r)
         assert score1 != score2, 'SSIM should be different for different data ranges'
 
     def test_ssim_with_random_images_float_alpha_2d(self):
@@ -62,65 +62,65 @@ class TestScoring2D:
         img_m = np.random.rand(256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
         with pytest.warns(RuntimeWarning, match=re.escape('alpha is not an integer. Cast to int.')):
-            ssim.score(img_r, img_m, alpha=8.5)
+            ssim(img_m, img_r, alpha=8.5)
 
     def test_ssim_with_random_images_float_beta_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
         with pytest.warns(RuntimeWarning, match=re.escape('beta is not an integer. Cast to int.')):
-            ssim.score(img_r, img_m, beta=8.5)
+            ssim(img_m, img_r, beta=8.5)
 
     def test_ssim_with_random_images_float_gamma_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
         with pytest.warns(RuntimeWarning, match=re.escape('gamma is not an integer. Cast to int.')):
-            ssim.score(img_r, img_m, gamma=8.5)
+            ssim(img_m, img_r, gamma=8.5)
 
 
 class TestScoring3D:
     def test_ssim_with_identical_images_3d(self):
         img_r = np.random.rand(256, 256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score = ssim.score(img_r, img_r)
+        score = ssim(img_r, img_r)
         assert score == 1.0, 'SSIM of identical images should be 1.0'
 
     def test_ssim_with_completely_different_images_3d(self):
         img_r = np.zeros((256, 256, 256))
         img_m = np.ones((256, 256, 256))
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score = ssim.score(img_r, img_m)
+        score = ssim(img_m, img_r)
         assert pytest.approx(score, abs=1e-4) == 0.0, 'SSIM of completely different images should be 0'
 
     def test_ssim_with_random_images_3d(self):
         img_r = np.random.rand(256, 256, 256)
         img_m = np.random.rand(256, 256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score = ssim.score(img_r, img_m)
+        score = ssim(img_m, img_r)
         assert 0 <= score <= 1.0, 'SSIM should be between 0 and 1'
 
     def test_ssim_with_different_data_ranges_3d(self):
         img_r = np.random.rand(256, 256, 256)
         img_m = np.random.rand(256, 256, 256)
         ssim = viqa.SSIM(data_range=1, normalize=False)
-        score1 = ssim.score(img_r, img_m)
+        score1 = ssim(img_m, img_r)
         ssim = viqa.SSIM(data_range=255, normalize=True)
-        score2 = ssim.score(img_r, img_m)
+        score2 = ssim(img_m, img_r)
         assert score1 != score2, 'SSIM should be different for different data ranges'
 
 
 class TestPrinting:
     def test_ssim_print_score_without_calculating_score(self):
         ssim = viqa.SSIM()
-        with pytest.warns(RuntimeWarning, match=re.escape('No score value for SSIM. Run score() first.')):
+        with pytest.warns(RuntimeWarning, match=re.escape('No score value for SSIM. Calculate the score first.')):
             ssim.print_score()
 
     def test_ssim_print_score_with_calculating_score(self, capsys):
         img_r = np.zeros((256, 256))
         img_m = np.zeros((256, 256))
         ssim = viqa.SSIM()
-        ssim.score(img_r, img_m)
+        ssim(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             ssim.print_score()
@@ -131,7 +131,7 @@ class TestPrinting:
         img_r = np.zeros((256, 256))
         img_m = np.ones((256, 256))
         ssim = viqa.SSIM()
-        ssim.score(img_r, img_m)
+        ssim(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             ssim.print_score(decimals=2)
@@ -143,25 +143,25 @@ def test_ssim_invalid_k1():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
     with pytest.raises(ValueError, match=re.escape('K1 must be positive')):
-        viqa.SSIM().score(img_r, img_m, K1=-1)
+        viqa.SSIM()(img_m, img_r, K1=-1)
 
 
 def test_ssim_invalid_k2():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
     with pytest.raises(ValueError, match=re.escape('K2 must be positive')):
-        viqa.SSIM().score(img_r, img_m, K2=-1)
+        viqa.SSIM()(img_m, img_r, K2=-1)
 
 
 def test_ssim_invalid_sigma():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
     with pytest.raises(ValueError, match=re.escape('sigma must be positive')):
-        viqa.SSIM().score(img_r, img_m, sigma=-1)
+        viqa.SSIM()(img_m, img_r, sigma=-1)
 
 
 def test_ssim_even_win_size():
     img_r = np.random.rand(128, 128)
     img_m = np.random.rand(128, 128)
     with pytest.raises(ValueError, match=re.escape('win_size must be odd.')):
-        viqa.SSIM().score(img_r, img_m, win_size=2)
+        viqa.SSIM()(img_m, img_r, win_size=2)

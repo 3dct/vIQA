@@ -9,7 +9,7 @@ Examples
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(256, 256)
         >>> vsi = VSI()
-        >>> vsi.score(img_r, img_m, data_range=1)
+        >>> vsi(img_m, img_r, data_range=1)
 
 """
 
@@ -52,7 +52,7 @@ class VSI(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the VSI calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`__call__`.
     normalize : bool, default=False
         If True, the input images are normalized to the ``data_range`` argument.
 
@@ -100,7 +100,7 @@ class VSI(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "VSI"
 
-    def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
+    def __call__(self, img_m, img_r, dim=None, im_slice=None, **kwargs):
         """Calculate the visual saliency index (VSI) between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the
@@ -110,10 +110,10 @@ class VSI(FullReferenceMetricsInterface):
 
         Parameters
         ----------
-        img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
         dim : {0, 1, 2}, optional
             VSI for 3D images is calculated as mean over all slices of the given
             dimension.
@@ -199,8 +199,8 @@ class VSI(FullReferenceMetricsInterface):
                             self.parameters["chromatic"],
                         )
                         score_val = vsi(
-                            img_r_tensor,
                             img_m_tensor,
+                            img_r_tensor,
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -211,8 +211,8 @@ class VSI(FullReferenceMetricsInterface):
                             self.parameters["chromatic"],
                         )
                         score_val = vsi(
-                            img_r_tensor,
                             img_m_tensor,
+                            img_r_tensor,
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -223,8 +223,8 @@ class VSI(FullReferenceMetricsInterface):
                             self.parameters["chromatic"],
                         )
                         score_val = vsi(
-                            img_r_tensor,
                             img_m_tensor,
+                            img_r_tensor,
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -245,13 +245,13 @@ class VSI(FullReferenceMetricsInterface):
                     self.parameters["chromatic"],
                 )
                 score_val = vsi(
-                    img_r_tensor,
                     img_m_tensor,
+                    img_r_tensor,
                     data_range=self.parameters["data_range"],
                     **kwargs,
                 )
             else:
-                if type(im_slice) is not int or None:
+                if type(im_slice) is not int and im_slice is not None:
                     raise ValueError("im_slice must be an integer.")
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
@@ -266,8 +266,8 @@ class VSI(FullReferenceMetricsInterface):
                 self.parameters["chromatic"],
             )
             score_val = vsi(
-                img_r_tensor,
                 img_m_tensor,
+                img_r_tensor,
                 data_range=self.parameters["data_range"],
                 **kwargs,
             )
@@ -293,4 +293,4 @@ class VSI(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("VSI: {}".format(np.round(self.score_val, decimals)))
         else:
-            print("No score value for VSI. Run score() first.")
+            print("No score value for VSI. Calculate the score first.")

@@ -17,20 +17,21 @@ Examples
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(256, 256)
         >>> mad = MAD()
-        >>> mad.score(img_r, img_m, data_range=1)
+        >>> mad(img_m, img_r, data_range=1)
 
 """
 
 # Authors
 # -------
-# Author: Lukas Behammer
+# Author: Lukas Behammer, Lukas Nepelius
 # Research Center Wels
-# University of Applied Sciences Upper Austria, 2023
+# University of Applied Sciences Upper Austria, 2023, 2026
 # CT Research Group
 #
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Adapted code, 2026, Lukas Nepelius
 #
 # License
 # -------
@@ -106,7 +107,7 @@ class MAD(FullReferenceMetricsInterface):
     -----
     ``data_range`` for image loading is also used for the MAD calculation if the image
     type is integer and therefore must be set. The parameter is set through the
-    constructor of the class and is passed to :py:meth:`score`. MAD [1]_ is a
+    constructor of the class and is passed to :py:meth:`__call__`. MAD [1]_ is a
     full-reference IQA metric. It is based on the human visual system and is designed to
     predict the perceived quality of an image.
 
@@ -124,7 +125,7 @@ class MAD(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "MAD"
 
-    def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
+    def __call__(self, img_m, img_r, dim=None, im_slice=None, **kwargs):
         """Calculate the MAD between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the
@@ -134,10 +135,10 @@ class MAD(FullReferenceMetricsInterface):
 
         Parameters
         ----------
-        img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
         dim : {0, 1, 2}, optional
             MAD for 3D images is calculated as mean over all slices of the given
             dimension.
@@ -186,22 +187,22 @@ class MAD(FullReferenceMetricsInterface):
                 match dim:
                     case 0:
                         score_val = most_apparent_distortion(
-                            img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
+                            img_r[im_slice, :, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         score_val = most_apparent_distortion(
-                            img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
+                            img_r[:, im_slice, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         score_val = most_apparent_distortion(
-                            img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
+                            img_r[:, :, im_slice],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -217,17 +218,13 @@ class MAD(FullReferenceMetricsInterface):
                     RuntimeWarning,
                 )
                 score_val = most_apparent_distortion_3d(
-                    img_r,
                     img_m,
+                    img_r,
                     data_range=self.parameters["data_range"],
                     dim=dim,
                     **kwargs,
                 )
-            elif (
-                dim is not None
-                and type(im_slice) is not int
-                or type(im_slice) is not None
-            ):
+            elif dim is not None:  # dim is given, but im_slice is neither int nor None
                 raise ValueError("im_slice must be an integer or None.")
             else:
                 raise ValueError(
@@ -238,7 +235,7 @@ class MAD(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate MAD for 2D images
             score_val = most_apparent_distortion(
-                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
+                img_m, img_r, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")
@@ -262,20 +259,20 @@ class MAD(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("MAD: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for MAD. Run score() first.", RuntimeWarning)
+            warn("No score value for MAD. Calculate the score first.", RuntimeWarning)
 
 
 def most_apparent_distortion_3d(
-    img_r: np.ndarray, img_m: np.ndarray, dim: int = 2, **kwargs: Any
+    img_m: np.ndarray, img_r: np.ndarray, dim: int = 2, **kwargs: Any
 ) -> float:
     """Calculate the MAD for a 3D image.
 
     Parameters
     ----------
-    img_r : np.ndarray
-        Reference image to calculate score against
     img_m : np.ndarray
         Distorted image to calculate score of
+    img_r : np.ndarray
+        Reference image to calculate score against
     dim : {0, 1, 2}, default=2
         Dimension on which the slices are iterated.
     **kwargs : optional
@@ -316,21 +313,21 @@ def most_apparent_distortion_3d(
             for slice_ in trange(x):
                 scores.append(
                     most_apparent_distortion(
-                        img_r[slice_, :, :], img_m[slice_, :, :], **kwargs
+                        img_m[slice_, :, :], img_r[slice_, :, :], **kwargs
                     )
                 )
         case 1:
             for slice_ in trange(y):
                 scores.append(
                     most_apparent_distortion(
-                        img_r[:, slice_, :], img_m[:, slice_, :], **kwargs
+                        img_m[:, slice_, :], img_r[:, slice_, :], **kwargs
                     )
                 )
         case 2:
             for slice_ in trange(z):
                 scores.append(
                     most_apparent_distortion(
-                        img_r[:, :, slice_], img_m[:, :, slice_], **kwargs
+                        img_m[:, :, slice_], img_r[:, :, slice_], **kwargs
                     )
                 )
         case _:
@@ -339,8 +336,8 @@ def most_apparent_distortion_3d(
 
 
 def most_apparent_distortion(
-    img_r: np.ndarray,
     img_m: np.ndarray,
+    img_r: np.ndarray,
     data_range: int = 255,
     block_size: int = 16,
     block_overlap: float = 0.75,
@@ -354,10 +351,10 @@ def most_apparent_distortion(
 
     Parameters
     ----------
-    img_r : np.ndarray
-        Reference image to calculate score against.
     img_m : np.ndarray
         Distorted image to calculate score of.
+    img_r : np.ndarray
+        Reference image to calculate score against.
     data_range : int, default=255
         Data range of the input images.
     block_size : int, default=16
@@ -645,9 +642,10 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     std_err = np.zeros(i_err.shape)
 
     # Assign local statistics to image blocks of size stride x stride
+    # (same block positions as in _extract_blocks)
     block_n = 0
-    for x in range(0, i_org.shape[0] - STRIDE * 3, STRIDE):
-        for y in range(0, i_org.shape[1] - STRIDE * 3, STRIDE):
+    for x in range(0, i_org.shape[0] - (BLOCK_SIZE - 1), STRIDE):
+        for y in range(0, i_org.shape[1] - (BLOCK_SIZE - 1), STRIDE):
             mu_org[x : x + STRIDE, y : y + STRIDE] = mu_org_p[block_n]
             std_err[x : x + STRIDE, y : y + STRIDE] = std_err_p[block_n]
             block_n += 1

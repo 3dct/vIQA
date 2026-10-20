@@ -9,7 +9,7 @@ Examples
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(256, 256)
         >>> gsm = GSM()
-        >>> gsm.score(img_r, img_m, data_range=1)
+        >>> gsm(img_m, img_r, data_range=1)
 
 """
 
@@ -111,7 +111,7 @@ class GSM(FullReferenceMetricsInterface):
     luminosity information and contrast-structural information. For further details,
     see [1]_. ``data_range`` for image loading is also used for the GSM calculation and
     therefore must be set. The parameter is set through the constructor of the class and
-    is passed to :py:meth:`score`.
+    is passed to :py:meth:`__call__`.
 
     References
     ----------
@@ -127,7 +127,7 @@ class GSM(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "GSM"
 
-    def score(self, img_r, img_m, dim=None, im_slice=None, **kwargs):
+    def __call__(self, img_m, img_r, dim=None, im_slice=None, **kwargs):
         """Calculate the gradient similarity (GSM) between two images.
 
         The metric can be calculated for 2D and 3D images. If the images are 3D, the
@@ -137,10 +137,10 @@ class GSM(FullReferenceMetricsInterface):
 
         Parameters
         ----------
-        img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
         dim : {0, 1, 2}, optional
             GSM for 3D images is calculated as mean over all slices of the given
             dimension.
@@ -199,22 +199,22 @@ class GSM(FullReferenceMetricsInterface):
                 match dim:
                     case 0:
                         score_val = gradient_similarity(
-                            img_r[im_slice, :, :],
                             img_m[im_slice, :, :],
+                            img_r[im_slice, :, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 1:
                         score_val = gradient_similarity(
-                            img_r[:, im_slice, :],
                             img_m[:, im_slice, :],
+                            img_r[:, im_slice, :],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
                     case 2:
                         score_val = gradient_similarity(
-                            img_r[:, :, im_slice],
                             img_m[:, :, im_slice],
+                            img_r[:, :, im_slice],
                             data_range=self.parameters["data_range"],
                             **kwargs,
                         )
@@ -230,14 +230,14 @@ class GSM(FullReferenceMetricsInterface):
                     RuntimeWarning,
                 )
                 score_val = gradient_similarity_3d(
-                    img_r,
                     img_m,
+                    img_r,
                     data_range=self.parameters["data_range"],
                     dim=dim,
                     **kwargs,
                 )
             else:
-                if type(im_slice) is not int or None:
+                if type(im_slice) is not int and im_slice is not None:
                     raise ValueError("im_slice must be an integer.")
                 raise ValueError(
                     "If images are 3D, dim and im_slice (optional) must be given."
@@ -247,7 +247,7 @@ class GSM(FullReferenceMetricsInterface):
                 warn("dim and im_slice are ignored for 2D images.", RuntimeWarning)
             # Calculate GSM for 2D images
             score_val = gradient_similarity(
-                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
+                img_m, img_r, data_range=self.parameters["data_range"], **kwargs
             )
         else:
             raise ValueError("Images must be 2D or 3D.")
@@ -271,18 +271,18 @@ class GSM(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("GSM: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for GSM. Run score() first.", RuntimeWarning)
+            warn("No score value for GSM. Calculate the score first.", RuntimeWarning)
 
 
-def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
+def gradient_similarity_3d(img_m, img_r, dim=0, experimental=False, **kwargs):
     """Calculate the gradient similarity (GSM) between two 3D images.
 
     Parameters
     ----------
-    img_r : np.ndarray
-        Reference image to calculate score against
     img_m : np.ndarray
         Distorted image to calculate score of
+    img_r : np.ndarray
+        Reference image to calculate score against
     dim : {0, 1, 2}, default=2
         Dimension on which the slices are iterated.
     experimental : bool, default=False
@@ -334,39 +334,39 @@ def gradient_similarity_3d(img_r, img_m, dim=0, experimental=False, **kwargs):
                 for slice_ in trange(x):
                     scores.append(
                         gradient_similarity(
-                            img_r[slice_, :, :], img_m[slice_, :, :], **kwargs
+                            img_m[slice_, :, :], img_r[slice_, :, :], **kwargs
                         )
                     )
             case 1:
                 for slice_ in trange(y):
                     scores.append(
                         gradient_similarity(
-                            img_r[:, slice_, :], img_m[:, slice_, :], **kwargs
+                            img_m[:, slice_, :], img_r[:, slice_, :], **kwargs
                         )
                     )
             case 2:
                 for slice_ in trange(z):
                     scores.append(
                         gradient_similarity(
-                            img_r[:, :, slice_], img_m[:, :, slice_], **kwargs
+                            img_m[:, :, slice_], img_r[:, :, slice_], **kwargs
                         )
                     )
             case _:
                 raise ValueError("Invalid dim value. Must be integer of 0, 1 or 2.")
         return np.mean(np.array(scores))
     else:
-        return gradient_similarity(img_r, img_m, **kwargs)
+        return gradient_similarity(img_m, img_r, **kwargs)
 
 
-def gradient_similarity(img_r, img_m, data_range=255, c=200, p=0.1):
+def gradient_similarity(img_m, img_r, data_range=255, c=200, p=0.1):
     """Calculate the gradient similarity between two images.
 
     Parameters
     ----------
-    img_r : np.ndarray
-        Reference image to calculate score against
     img_m : np.ndarray
         Distorted image to calculate score of
+    img_r : np.ndarray
+        Reference image to calculate score against
     data_range : {1, 255, 65535}
         Data range of the input images
     c : int, default=200

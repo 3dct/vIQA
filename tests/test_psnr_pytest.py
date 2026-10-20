@@ -31,30 +31,30 @@ class TestScoring2D:
     def test_psnr_with_identical_images_2d(self):
         img_r = np.random.rand(256, 256)
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score = psnr.score(img_r, img_r)
+        score = psnr(img_r, img_r)
         assert score == float('inf'), 'PSNR of identical images should be infinity'
 
     def test_psnr_with_completely_different_images_2d(self):
         img_r = np.zeros((256, 256))
         img_m = np.ones((256, 256))
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score = psnr.score(img_r, img_m)
+        score = psnr(img_m, img_r)
         assert score == 0.0, 'PSNR of completely different images should be 0'
 
     def test_psnr_with_random_images_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score = psnr.score(img_r, img_m)
+        score = psnr(img_m, img_r)
         assert 0 <= score <= float('inf'), 'PSNR should be between 0 and infinity'
 
     def test_psnr_with_different_data_ranges_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score1 = psnr.score(img_r, img_m)
+        score1 = psnr(img_m, img_r)
         psnr = viqa.PSNR(data_range=255, normalize=True)
-        score2 = psnr.score(img_r, img_m)
+        score2 = psnr(img_m, img_r)
         assert score1 != score2, 'PSNR should be different for different data ranges'
 
 
@@ -62,44 +62,44 @@ class TestScoring3D:
     def test_psnr_with_identical_images_3d(self):
         img_r = np.random.rand(256, 256, 256)
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score = psnr.score(img_r, img_r)
+        score = psnr(img_r, img_r)
         assert score == float('inf'), 'PSNR of identical images should be infinity'
 
     def test_psnr_with_completely_different_images_3d(self):
         img_r = np.zeros((256, 256, 256))
         img_m = np.ones((256, 256, 256))
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score = psnr.score(img_r, img_m)
+        score = psnr(img_m, img_r)
         assert score == 0.0, 'PSNR of completely different images should be 0'
 
     def test_psnr_with_random_images_3d(self):
         img_r = np.random.rand(256, 256, 256)
         img_m = np.random.rand(256, 256, 256)
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score = psnr.score(img_r, img_m)
+        score = psnr(img_m, img_r)
         assert 0 <= score <= float('inf'), 'PSNR should be between 0 and infinity'
 
     def test_psnr_with_different_data_ranges_3d(self):
         img_r = np.random.rand(256, 256, 256)
         img_m = np.random.rand(256, 256, 256)
         psnr = viqa.PSNR(data_range=1, normalize=False)
-        score1 = psnr.score(img_r, img_m)
+        score1 = psnr(img_m, img_r)
         psnr = viqa.PSNR(data_range=255, normalize=True)
-        score2 = psnr.score(img_r, img_m)
+        score2 = psnr(img_m, img_r)
         assert score1 != score2, 'PSNR should be different for different data ranges'
 
 
 class TestPrinting:
     def test_psnr_print_score_without_calculating_score(self):
         psnr = viqa.PSNR()
-        with pytest.warns(RuntimeWarning, match=re.escape('No score value for PSNR. Run score() first.')):
+        with pytest.warns(RuntimeWarning, match=re.escape('No score value for PSNR. Calculate the score first.')):
             psnr.print_score()
 
     def test_psnr_print_score_with_calculating_score(self, capsys):
         img_r = np.zeros((256, 256))
         img_m = np.zeros((256, 256))
         psnr = viqa.PSNR()
-        psnr.score(img_r, img_m)
+        psnr(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             psnr.print_score()
@@ -110,7 +110,7 @@ class TestPrinting:
         img_r = np.zeros((256, 256))
         img_m = np.ones((256, 256))
         psnr = viqa.PSNR()
-        psnr.score(img_r, img_m)
+        psnr(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             psnr.print_score(decimals=2)

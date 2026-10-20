@@ -18,7 +18,7 @@ Examples
         >>> qm = QMeasure()
         >>> qm
         QMeasure(score_val=None)
-        >>> score = qm.score(img, hist_bins=128, num_peaks=2)
+        >>> score = qm(img, hist_bins=128, num_peaks=2)
 """
 
 # Authors
@@ -94,7 +94,7 @@ class QMeasure(NoReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "Q-Measure"
 
-    def score(self, img, **kwargs):
+    def __call__(self, img, **kwargs):
         """Calculate the Q-Measure between two images.
 
         Parameters
@@ -169,4 +169,7 @@ class QMeasure(NoReferenceMetricsInterface):
         if self.score_val is not None:
             print("Q-Measure: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for Q-Measure. Run score() first.", RuntimeWarning)
+            warn(
+                "No score value for Q-Measure. Calculate the score first.",
+                RuntimeWarning,
+            )
