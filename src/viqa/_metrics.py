@@ -19,8 +19,14 @@ This module contains the abstract classes for the metrics.
 """
 
 from abc import ABC, abstractmethod
+from warnings import warn
 
-from viqa.utils import _check_imgs, export_results, load_data
+from viqa.utils import (
+    RemovedInFutureVersionWarning,
+    _check_imgs,
+    export_results,
+    load_data,
+)
 
 
 class Metric:
@@ -38,9 +44,25 @@ class Metric:
             raise ValueError("If normalize is True, data_range must be specified")
 
     @abstractmethod
-    def score(self, *args):
+    def __call__(self, *args):
         """Calculate the score."""
         pass
+
+    def score(self, *args, **kwargs):
+        """Calculate the score.
+
+        .. deprecated:: 3.0.0
+            Call the metric directly instead, e.g. ``metric(img_m, img_r)``.
+            ``score`` will be removed in the future. For full-reference metrics.
+        """
+        warn(
+            "score() is deprecated and will be removed in the future. Call the metric "
+            "directly instead. Note that it takes the modified image first: "
+            "metric(img_m, img_r).",
+            RemovedInFutureVersionWarning,
+            stacklevel=2,
+        )
+        return self(*args, **kwargs)
 
     @abstractmethod
     def print_score(self, *args):

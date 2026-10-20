@@ -7,15 +7,15 @@
  * University Of Washington Seattle, 2009
  * Image Coding and Analysis Lab
  *
- * Adaption: Lukas Behammer
+ * Adaption: Lukas Behammer, Lukas Nepelius
  * Research Center Wels
- * University of Applied Sciences Upper Austria, 2023
+ * University of Applied Sciences Upper Austria, 2023, 2026
  * CT Research Group
  *
  * Modifications
  * #############
  * Original code, 2008, Eric Larson
- * Adaption for Python, 2024, Lukas Behammer
+ * Adaption for Python, 2024, Lukas Behammer, 2026, Lukas Nepelius
  */
 
 #define PY_SSIZE_T_CLEAN
@@ -53,32 +53,47 @@ static PyObject
 *minstd(PyObject *self, PyObject *args)
 {
     // Declare variables
+    PyObject *objin;
     PyArrayObject *matin, *matout, *tmp;
     double **cin, **cout, **tmp_data, mean, stdev, val;
-    int iblocksize, istride, i, j, u, v, n, m;
+    int iblocksize, istride, i, j, u, v, di, dj, n, m;
     npy_intp dims[2];
 
     // Parse input arguments
-    if (!PyArg_ParseTuple(args, "O!ii", &PyArray_Type, &matin, &iblocksize, &istride)) {
+    if (!PyArg_ParseTuple(args, "Oii", &objin, &iblocksize, &istride)) {
         return NULL;
     }
+    if (iblocksize < 2 || istride < 1 || istride > iblocksize) {
+        PyErr_SetString(PyExc_ValueError, "blocksize must be >= 2 and stride must be between 1 and blocksize.");
+        return NULL;
+    }
+    // Convert input to a C-contiguous 2D array of doubles (copies only if necessary)
+    matin = (PyArrayObject *) PyArray_FROMANY(objin, NPY_DOUBLE, 2, 2, NPY_ARRAY_IN_ARRAY);
     if (NULL == matin) return NULL;
-    // Get dimensions of input array
-    n = dims[0] = matin->dimensions[0];
-    m = dims[1] = matin->dimensions[1];
 
-    // Create output arrays
-    matout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
-    tmp=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    // Get dimensions of input array (n rows, m columns)
+    n = dims[0] = PyArray_DIM(matin, 0);
+    m = dims[1] = PyArray_DIM(matin, 1);
+
+    // Create zero-initialized output arrays
+    matout = (PyArrayObject *) PyArray_ZEROS(2, dims, NPY_DOUBLE, 0);
+    tmp = (PyArrayObject *) PyArray_ZEROS(2, dims, NPY_DOUBLE, 0);
+    if (NULL == matout || NULL == tmp) {
+        Py_DECREF(matin);
+        Py_XDECREF(matout);
+        Py_XDECREF(tmp);
+        return NULL;
+    }
 
     // Convert input and output arrays to C pointers
     tmp_data=pymatrix_to_Carrayptrs(tmp);
     cin=pymatrix_to_Carrayptrs(matin);
     cout=pymatrix_to_Carrayptrs(matout);
 
-    // For each area of size istride x istride, calculate the standard deviation
-    for (i = 0; i < m-(iblocksize-1); i += istride) {
-        for (j = 0; j < n-(iblocksize-1); j += istride) {
+    // For each block of size iblocksize x iblocksize, calculate the standard deviation
+    // and assign it to the area of size istride x istride at the start of the block
+    for (i = 0; i < n-(iblocksize-1); i += istride) {
+        for (j = 0; j < m-(iblocksize-1); j += istride) {
             // Calculate the mean for each block
             mean = 0;
             for (u = i; u < i+iblocksize; u++) {
@@ -107,16 +122,16 @@ static PyObject
         }
     }
 
-    // Calculate minimum standard deviation for each area
-    for (i = 0; i < m-(iblocksize-1); i += istride) {
-        for (j = 0; j < n-(iblocksize-1); j += istride) {
-            // Look for minimum standard deviation in blocks of size istride x istride
+    // For each block, use the minimum standard deviation of the block and its
+    // neighbouring blocks within half the block size
+    for (i = 0; i < n-(iblocksize-1); i += istride) {
+        for (j = 0; j < m-(iblocksize-1); j += istride) {
             val = tmp_data[i][j];
-            for (u = i; u < (iblocksize/2); u += (istride+1)) {
-                for (v = j; v < (iblocksize/2); v += (istride+1)) {
-                    if (tmp_data[u][v] < val)
+            for (di = 0; di < iblocksize/2 && i+di < n-(iblocksize-1); di += istride) {
+                for (dj = 0; dj < iblocksize/2 && j+dj < m-(iblocksize-1); dj += istride) {
+                    if (tmp_data[i+di][j+dj] < val)
                     {
-                        val = tmp_data[u][v];
+                        val = tmp_data[i+di][j+dj];
                     }
                 }
             }
@@ -134,6 +149,8 @@ static PyObject
     free_Carrayptrs(cin);
     free_Carrayptrs(cout);
     free_Carrayptrs(tmp_data);
+    Py_DECREF(tmp);
+    Py_DECREF(matin);
 
     // Return output array
     return PyArray_Return(matout);
@@ -143,25 +160,39 @@ static PyObject
 *getstatistics(PyObject *self, PyObject *args)
 {
     // Declare variables
+    PyObject *objin, *result;
     PyArrayObject *matin, *stdevout, *skwout, *krtout;
     double **cin, **stdev_data, **skw_data, **krt_data, tmp, stmp, mean, stdev, krt, skw;
     int iblocksize, istride, i, j, u, v, n, m;
     npy_intp dims[2];
 
     // Parse input arguments
-    if (!PyArg_ParseTuple(args, "O!ii", &PyArray_Type, &matin, &iblocksize, &istride)) {
+    if (!PyArg_ParseTuple(args, "Oii", &objin, &iblocksize, &istride)) {
         return NULL;
     }
+    if (iblocksize < 2 || istride < 1 || istride > iblocksize) {
+        PyErr_SetString(PyExc_ValueError, "blocksize must be >= 2 and stride must be between 1 and blocksize.");
+        return NULL;
+    }
+    // Convert input to a C-contiguous 2D array of doubles (copies only if necessary)
+    matin = (PyArrayObject *) PyArray_FROMANY(objin, NPY_DOUBLE, 2, 2, NPY_ARRAY_IN_ARRAY);
     if (NULL == matin) return NULL;
 
-    // Get dimensions of input array
-    n = dims[0] = matin->dimensions[0];
-    m = dims[1] = matin->dimensions[1];
+    // Get dimensions of input array (n rows, m columns)
+    n = dims[0] = PyArray_DIM(matin, 0);
+    m = dims[1] = PyArray_DIM(matin, 1);
 
-    // Create output arrays
-    stdevout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
-    skwout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
-    krtout=(PyArrayObject *) PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    // Create zero-initialized output arrays
+    stdevout = (PyArrayObject *) PyArray_ZEROS(2, dims, NPY_DOUBLE, 0);
+    skwout = (PyArrayObject *) PyArray_ZEROS(2, dims, NPY_DOUBLE, 0);
+    krtout = (PyArrayObject *) PyArray_ZEROS(2, dims, NPY_DOUBLE, 0);
+    if (NULL == stdevout || NULL == skwout || NULL == krtout) {
+        Py_DECREF(matin);
+        Py_XDECREF(stdevout);
+        Py_XDECREF(skwout);
+        Py_XDECREF(krtout);
+        return NULL;
+    }
 
     // Convert input and output arrays to C pointers
     cin=pymatrix_to_Carrayptrs(matin);
@@ -170,8 +201,8 @@ static PyObject
     krt_data=pymatrix_to_Carrayptrs(krtout);
 
     // For each area of size istride x istride, calculate the standard deviation, skewness and kurtosis
-    for (i = 0; i < m-(iblocksize-1); i += istride) {
-        for (j = 0; j < n-(iblocksize-1); j += istride) {
+    for (i = 0; i < n-(iblocksize-1); i += istride) {
+        for (j = 0; j < m-(iblocksize-1); j += istride) {
             // Calculate the mean for each block
             mean = 0;
             for (u=i; u<i+iblocksize; u++) {
@@ -224,9 +255,14 @@ static PyObject
     free_Carrayptrs(stdev_data);
     free_Carrayptrs(skw_data);
     free_Carrayptrs(krt_data);
+    Py_DECREF(matin);
 
-    // Return output arrays as Python tuple
-    return PyTuple_Pack(3, stdevout, skwout, krtout);
+    // Return output arrays as Python tuple (PyTuple_Pack adds its own references)
+    result = PyTuple_Pack(3, stdevout, skwout, krtout);
+    Py_DECREF(stdevout);
+    Py_DECREF(skwout);
+    Py_DECREF(krtout);
+    return result;
 }
 
 /*

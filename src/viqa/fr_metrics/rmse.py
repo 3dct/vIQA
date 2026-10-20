@@ -11,18 +11,18 @@ Examples
         >>> rmse = RMSE()
         >>> rmse
         RMSE(score_val=None)
-        >>> score = rmse.score(img_r, img_m)
+        >>> score = rmse(img_m, img_r)
         >>> score
         1.0
         >>> rmse.print_score()
         RMSE: 1.0
         >>> img_r = np.zeros((256, 256))
         >>> img_m = np.zeros((256, 256))
-        >>> rmse.score(img_r, img_m)
+        >>> rmse(img_m, img_r)
         0.0
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(128, 128)
-        >>> rmse.score(img_r, img_m)
+        >>> rmse(img_m, img_r)
         Traceback (most recent call last):
             ...
         ValueError: Image shapes do not match
@@ -89,15 +89,15 @@ class RMSE(FullReferenceMetricsInterface):
         else:
             self._name = "RMSE"
 
-    def score(self, img_r, img_m):
+    def __call__(self, img_m, img_r):
         """Calculate the RMSE score between two images.
 
         Parameters
         ----------
-        img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
 
         Returns
         -------
@@ -127,4 +127,4 @@ class RMSE(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("RMSE: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for RMSE. Run score() first.", RuntimeWarning)
+            warn("No score value for RMSE. Calculate the score first.", RuntimeWarning)

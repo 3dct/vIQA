@@ -164,7 +164,7 @@ img_m = load_data(file_path_img_m)  # per default: normalize=False
 
 # calculate and print RMSE score
 rmse = viqa.RMSE()
-score_rmse = rmse.score(img_r, img_m)  # RMSE does not need any parameters
+score_rmse = rmse(img_m, img_r)  # RMSE does not need any parameters
 rmse.print_score(decimals=2)
 
 # normalize to 16-bit
@@ -174,7 +174,7 @@ img_m = load_data(img_m, data_range=65535, normalize=True)
 
 # calculate and print PSNR score
 psnr = viqa.PSNR(data_range=65535)  # PSNR needs data_range to calculate the score
-score_psnr = psnr.score(img_r, img_m)
+score_psnr = psnr(img_m, img_r)
 psnr.print_score(decimals=2)
 
 # set optional parameters for MAD as dict
@@ -191,7 +191,7 @@ calc_parameters = {
 
 # calculate and print MAD score
 mad = viqa.MAD(data_range=65535)  # MAD needs data_range to calculate the score
-score_mad = mad.score(img_r, img_m, dim=2, **calc_parameters)
+score_mad = mad(img_m, img_r, dim=2, **calc_parameters)
 mad.print_score(decimals=2)
 ```
 Possible, but worse (recommended only if you want to calculate a single metric):
@@ -212,7 +212,7 @@ psnr = viqa.PSNR(**load_parameters)  # load_parameters necessary due to direct l
 # also PSNR needs data_range to calculate the score
 # if images would not be normalized, data_range should be
 # 65535 for 16-bit images for correct calculation
-score = psnr.score(file_path_img_r, file_path_img_m)
+score = psnr(file_path_img_m, file_path_img_r)
 # --> images are loaded as 16-bit images and normalized to 0-1 via the `load_data` function
 #     called by the score method
 psnr.print_score(decimals=2)
@@ -300,7 +300,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Contacts
-Lukas Behammer, [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
+* Lukas Behammer, [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
+* Lukas Nepelius, [lukas.nepelius@fh-wels.at](mailto:lukas.nepelius@fh-wels.at)
 
 ## References
 [^1]: Wang, Z., & Bovik, A. C. (2002). A Universal Image Quality Index. IEEE SIGNAL

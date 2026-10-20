@@ -8,7 +8,7 @@ Thank you for considering contributing to vIQA! To improve this package and make
 
 The easiest way to contribute is to report a bug. To do so, please open an issue on the [GitHub repository](https://github.com/3dct/vIQA/issues).
 Please provide as much information as possible, including the version of vIQA you are using, the operating system you are using, and the steps to reproduce the bug.
-If you find a security vulnerability, do NOT open an issue. Email [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at) instead.
+If you find a security vulnerability, do NOT open an issue. Email [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at) or [lukas.nepelius@fh-wels.at](mailto:lukas.nepelius@fh-wels.at) instead.
 
 ## Want to suggest a feature?
 
@@ -37,7 +37,8 @@ To make sure that your work is not duplicated, please open an issue or pull requ
 
 ## Other questions?
 
-Email the author: [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
+Email the original author: [lukas.behammer@fh-wels.at](mailto:lukas.behammer@fh-wels.at)
+Maintainer: [lukas.nepelius@fh-wels.at](mailto:lukas.nepelius@fh-wels.at)
 
 ## Code of Conduct
 

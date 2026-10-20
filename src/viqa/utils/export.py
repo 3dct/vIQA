@@ -17,8 +17,8 @@ Examples
         >>> export_metadata(metrics, [{"param1": 1}, {"param2": 2}], "path/to/output")
         >>> export_image(
         >>>    results_dict,
-        >>>    "path/to/reference/image",
         >>>    "path/to/modified/image",
+        >>>    "path/to/reference/image",
         >>>    x=50,
         >>> )
 """
@@ -151,8 +151,8 @@ def export_metadata(metrics, metrics_parameters, file_path, file_name="metadata.
 
 def export_image(
     results,
-    img_r,
     img_m,
+    img_r,
     x=None,
     y=None,
     z=None,
@@ -167,10 +167,10 @@ def export_image(
     ----------
     results : dict
         Dictionary containing the metric values.
-    img_r : str or np.ndarray
-        Path to the reference image or the image itself.
     img_m : str or np.ndarray
         Path to the modified image or the image itself.
+    img_r : str or np.ndarray
+        Path to the reference image or the image itself.
     x, y, z : int, optional
         The index of the slice to be plotted. Only one axis can be specified.
     file_path : str, optional

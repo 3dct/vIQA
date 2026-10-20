@@ -10,7 +10,7 @@ Examples
         >>> snr = SNR(data_range=1, normalize=False)
         >>> snr
         SNR(score_val=None)
-        >>> score = snr.score(img,
+        >>> score = snr(img,
         ...                   signal_center=(32, 32),
         ...                   radius=16)
 """
@@ -107,7 +107,7 @@ class SNR(NoReferenceMetricsInterface):
             data_range=data_range, normalize=normalize, name=name, **kwargs
         )
 
-    def score(self, img, **kwargs):
+    def __call__(self, img, **kwargs):
         """Calculate the signal-to-noise ratio (SNR) for an image.
 
         Parameters
@@ -143,7 +143,13 @@ class SNR(NoReferenceMetricsInterface):
         # write kwargs to .parameters attribute
         self.parameters.update(kwargs)
 
-        score_val = signal_to_noise_ratio(img, **kwargs)
+        result = signal_to_noise_ratio(img, **kwargs)
+        if isinstance(result[-1], dict):  # grayscale images also return the parameters
+            score_val, parameters = result
+            parameters.pop("signal", None)  # do not store the image region
+            self.parameters.update(parameters)
+        else:  # RGB images return the SNR values of the channels
+            score_val = result
         self.score_val = score_val
         return score_val
 
@@ -163,7 +169,7 @@ class SNR(NoReferenceMetricsInterface):
         if self.score_val is not None:
             print("SNR: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for SNR. Run score() first.", RuntimeWarning)
+            warn("No score value for SNR. Calculate the score first.", RuntimeWarning)
 
     def visualize_centers(
         self,
@@ -1063,15 +1069,13 @@ def signal_to_noise_ratio(
             ]
             return snr_val[0], snr_val[1], snr_val[2]
         else:
-            snr_lum = np.float64(
-                signal_to_noise_ratio(
-                    _to_grayscale(img),
-                    signal_center,
-                    radius,
-                    region_type,
-                    auto_center=False,
-                    yuv=False,
-                )
+            snr_lum, _ = signal_to_noise_ratio(
+                _to_grayscale(img),
+                signal_center,
+                radius,
+                region_type,
+                auto_center=False,
+                yuv=False,
             )
             snr_val = [
                 np.float64(np.mean(signal[..., i]) / sdev[i]) if sdev[i] != 0 else 0

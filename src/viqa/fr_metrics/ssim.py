@@ -20,18 +20,18 @@ Examples
         >>> ssim = SSIM(data_range=1, normalize=False)
         >>> ssim
         SSIM(score_val=None)
-        >>> score = ssim.score(img_r, img_m)
+        >>> score = ssim(img_m, img_r)
         >>> score
         0.0
         >>> ssim.print_score()
         SSIM: 1.0
         >>> img_r = np.zeros((256, 256))
         >>> img_m = np.zeros((256, 256))
-        >>> ssim.score(img_r, img_m)
+        >>> ssim(img_m, img_r)
         1.0
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(128, 128)
-        >>> ssim.score(img_r, img_m)
+        >>> ssim(img_m, img_r)
         Traceback (most recent call last):
             ...
         ValueError: Image shapes do not match
@@ -100,7 +100,7 @@ class SSIM(FullReferenceMetricsInterface):
     -----
     ``data_range`` for image loading is also used for the SSIM calculation if the image
     type is integer and therefore must be set. The parameter is set through the
-    constructor of the class and is passed to :py:meth:`score`. SSIM [1]_ is a
+    constructor of the class and is passed to :py:meth:`__call__`. SSIM [1]_ is a
     full-reference IQA metric. It is based on the human visual system and is designed to
     predict the perceived quality of an image.
 
@@ -124,15 +124,15 @@ class SSIM(FullReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "SSIM"
 
-    def score(self, img_r, img_m, color_weights=None, **kwargs):
+    def __call__(self, img_m, img_r, color_weights=None, **kwargs):
         """Calculate the structural similarity index (SSIM) between two images.
 
         Parameters
         ----------
-        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
             Modified image to calculate score of.
+        img_r : np.ndarray, viqa.ImageArray, torch.Tensor, str or os.PathLike
+            Reference image to calculate score against.
         color_weights : np.ndarray, optional
             Weights for the color channels. The array must have the same length as the
             number of color channels in the images. Is only effective if
@@ -164,8 +164,8 @@ class SSIM(FullReferenceMetricsInterface):
             scores = []
             for channel in range(img_r.shape[-1]):
                 score = structural_similarity(
-                    img_r[..., channel],
                     img_m[..., channel],
+                    img_r[..., channel],
                     data_range=self.parameters["data_range"],
                     **kwargs,
                 )
@@ -173,7 +173,7 @@ class SSIM(FullReferenceMetricsInterface):
             score_val = (color_weights * np.array(scores)).mean()
         else:
             score_val = structural_similarity(
-                img_r, img_m, data_range=self.parameters["data_range"], **kwargs
+                img_m, img_r, data_range=self.parameters["data_range"], **kwargs
             )
         self.score_val = score_val
         return score_val
@@ -194,12 +194,12 @@ class SSIM(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("SSIM: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for SSIM. Run score() first.", RuntimeWarning)
+            warn("No score value for SSIM. Calculate the score first.", RuntimeWarning)
 
 
 def structural_similarity(
-    img_r,
     img_m,
+    img_r,
     win_size=None,
     data_range=None,
     gaussian_weights=True,
@@ -212,10 +212,10 @@ def structural_similarity(
 
     Parameters
     ----------
-    img_r : np.ndarray
-        Reference image to calculate score against.
     img_m : np.ndarray
         Modified image to calculate score of.
+    img_r : np.ndarray
+        Reference image to calculate score against.
     win_size : int or None, optional
         The side-length of the sliding window used in comparison. Must be an
         odd value. If ``gaussian_weights`` is True, this is ignored and the

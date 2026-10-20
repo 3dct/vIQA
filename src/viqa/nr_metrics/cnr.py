@@ -10,7 +10,7 @@ Examples
         >>> cnr = CNR(data_range=1, normalize=False)
         >>> cnr
         CNR(score_val=None)
-        >>> score = cnr.score(img,
+        >>> score = cnr(img,
         ...                   background_center=(128, 128),
         ...                   signal_center=(32, 32),
         ...                   radius=16)
@@ -103,7 +103,7 @@ class CNR(NoReferenceMetricsInterface):
         super().__init__(data_range=data_range, normalize=normalize, **kwargs)
         self._name = "CNR"
 
-    def score(self, img, **kwargs):
+    def __call__(self, img, **kwargs):
         """Calculate the contrast-to-noise ratio (CNR) for an image.
 
         Parameters
@@ -157,7 +157,7 @@ class CNR(NoReferenceMetricsInterface):
         if self.score_val is not None:
             print("CNR: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for CNR. Run score() first.", RuntimeWarning)
+            warn("No score value for CNR. Calculate the score first.", RuntimeWarning)
 
     def visualize_centers(
         self,

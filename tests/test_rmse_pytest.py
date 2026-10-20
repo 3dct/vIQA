@@ -28,27 +28,27 @@ class TestScoring2D:
         img_r = np.zeros((256, 256))
         img_m = np.zeros((256, 256))
         rmse = viqa.RMSE()
-        assert rmse.score(img_r, img_m) == 0.0, 'RMSE of identical images should be 0'
+        assert rmse(img_m, img_r) == 0.0, 'RMSE of identical images should be 0'
 
     def test_rmse_with_completely_different_images_2d(self):
         img_r = np.zeros((256, 256))
         img_m = np.ones((256, 256))
         rmse = viqa.RMSE()
-        assert rmse.score(img_r, img_m) == 1.0, 'RMSE of completely different images should be 1'
+        assert rmse(img_m, img_r) == 1.0, 'RMSE of completely different images should be 1'
 
     def test_rmse_with_random_images_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         rmse = viqa.RMSE()
-        assert 0 <= rmse.score(img_r, img_m) <= 1.0, 'RMSE should be between 0 and 1'
+        assert 0 <= rmse(img_m, img_r) <= 1.0, 'RMSE should be between 0 and 1'
 
     def test_psnr_with_different_data_ranges_2d(self):
         img_r = np.random.rand(256, 256)
         img_m = np.random.rand(256, 256)
         rmse = viqa.RMSE()
-        score1 = rmse.score(img_r, img_m)
+        score1 = rmse(img_m, img_r)
         rmse = viqa.RMSE(data_range=255, normalize=True)
-        score2 = rmse.score(img_r, img_m)
+        score2 = rmse(img_m, img_r)
         assert score1 != score2, 'RMSE should be different for different data ranges'
 
 
@@ -57,41 +57,41 @@ class TestScoring3D:
         img_r = np.zeros((256, 256, 256))
         img_m = np.zeros((256, 256, 256))
         rmse = viqa.RMSE()
-        assert rmse.score(img_r, img_m) == 0.0, 'RMSE of identical images should be 0'
+        assert rmse(img_m, img_r) == 0.0, 'RMSE of identical images should be 0'
 
     def test_rmse_with_completely_different_images_3d(self):
         img_r = np.zeros((256, 256, 256))
         img_m = np.ones((256, 256, 256))
         rmse = viqa.RMSE()
-        assert rmse.score(img_r, img_m) == 1.0, 'RMSE of completely different images should be 1'
+        assert rmse(img_m, img_r) == 1.0, 'RMSE of completely different images should be 1'
 
     def test_rmse_with_random_images_3d(self):
         img_r = np.random.rand(256, 256, 256)
         img_m = np.random.rand(256, 256, 256)
         rmse = viqa.RMSE()
-        assert 0 <= rmse.score(img_r, img_m) <= 1.0, 'RMSE should be between 0 and 1'
+        assert 0 <= rmse(img_m, img_r) <= 1.0, 'RMSE should be between 0 and 1'
 
     def test_psnr_with_different_data_ranges_3d(self):
         img_r = np.random.rand(256, 256, 256)
         img_m = np.random.rand(256, 256, 256)
         rmse = viqa.RMSE()
-        score1 = rmse.score(img_r, img_m)
+        score1 = rmse(img_m, img_r)
         rmse = viqa.RMSE(data_range=255, normalize=True)
-        score2 = rmse.score(img_r, img_m)
+        score2 = rmse(img_m, img_r)
         assert score1 != score2, 'RMSE should be different for different data ranges'
 
 
 class TestPrinting:
     def test_print_score_without_calculating_score_first(self):
         rmse = viqa.RMSE()
-        with pytest.warns(RuntimeWarning, match=re.escape('No score value for RMSE. Run score() first.')):
+        with pytest.warns(RuntimeWarning, match=re.escape('No score value for RMSE. Calculate the score first.')):
             rmse.print_score()
 
     def test_print_score_with_calculating_score_first(self, capsys):
         img_r = np.zeros((256, 256))
         img_m = np.zeros((256, 256))
         rmse = viqa.RMSE()
-        rmse.score(img_r, img_m)
+        rmse(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("error")
             rmse.print_score()
@@ -102,7 +102,7 @@ class TestPrinting:
         img_r = np.zeros((256, 256))
         img_m = np.random.rand(256, 256)
         rmse = viqa.RMSE()
-        rmse.score(img_r, img_m)
+        rmse(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("error")
             rmse.print_score(decimals=2)

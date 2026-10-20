@@ -11,18 +11,18 @@ Examples
         >>> psnr = PSNR(data_range=1, normalize=False)
         >>> psnr
         PSNR(score_val=None)
-        >>> score = psnr.score(img_r, img_m)
+        >>> score = psnr(img_m, img_r)
         >>> score
         0.0
         >>> psnr.print_score()
         PSNR: 0.0
         >>> img_r = np.zeros((256, 256))
         >>> img_m = np.zeros((256, 256))
-        >>> psnr.score(img_r, img_m)
+        >>> psnr(img_m, img_r)
         inf
         >>> img_r = np.random.rand(256, 256)
         >>> img_m = np.random.rand(128, 128)
-        >>> psnr.score(img_r, img_m)
+        >>> psnr(img_m, img_r)
         Traceback (most recent call last):
             ...
         ValueError: Image shapes do not match
@@ -66,7 +66,7 @@ class PSNR(FullReferenceMetricsInterface):
     data_range : {1, 255, 65535}, default=255
         Data range of the returned data in data loading. Is used for image loading when
         ``normalize`` is True and for the PSNR calculation. Passed to
-        :py:func:`viqa.utils.load_data` and :py:meth:`score`.
+        :py:func:`viqa.utils.load_data` and :py:meth:`__call__`.
     normalize : bool, default False
         If True, the input images are normalized to the ``data_range`` argument.
 
@@ -89,7 +89,7 @@ class PSNR(FullReferenceMetricsInterface):
     -----
     ``data_range`` for image loading is also used for the PSNR calculation and therefore
     must be set. The parameter is set through the constructor of the class and is passed
-    to :py:meth:`score`.
+    to :py:meth:`__call__`.
     """
 
     def __init__(self, data_range=255, normalize=False, **kwargs) -> None:
@@ -102,15 +102,15 @@ class PSNR(FullReferenceMetricsInterface):
         else:
             self._name = "PSNR"
 
-    def score(self, img_r, img_m):
+    def __call__(self, img_m, img_r):
         """Calculate the peak signal-to-noise ratio (PSNR) between two images.
 
         Parameters
         ----------
-        img_r : np.ndarray or Tensor or str or os.PathLike
-            Reference image to calculate score against.
         img_m : np.ndarray or Tensor or str or os.PathLike
             Distorted image to calculate score of.
+        img_r : np.ndarray or Tensor or str or os.PathLike
+            Reference image to calculate score against.
 
         Returns
         -------
@@ -144,4 +144,4 @@ class PSNR(FullReferenceMetricsInterface):
         if self.score_val is not None:
             print("PSNR: {}".format(np.round(self.score_val, decimals)))
         else:
-            warn("No score value for PSNR. Run score() first.", RuntimeWarning)
+            warn("No score value for PSNR. Calculate the score first.", RuntimeWarning)
