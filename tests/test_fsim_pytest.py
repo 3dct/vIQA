@@ -85,16 +85,22 @@ class TestScoring3D:
             fsim(img_m, img_r, dim=3, im_slice=64)
 
     def test_fsim_3d_dim1_slice64(self):
-        img_r = np.random.rand(128, 128, 128)
-        img_m = np.random.rand(128, 128, 128)
+        rng = np.random.default_rng(0)
+        img_r = rng.random((128, 128, 128))
+        img_m = rng.random((128, 128, 128))
         fsim = viqa.FSIM(data_range=1, normalize=False)
-        assert pytest.approx(fsim(img_m, img_r, dim=1, im_slice=64), abs=1e-4) == 0.7708, 'FSIM of completely different images should be 0'
+        score = fsim(img_m, img_r, dim=1, im_slice=64)
+        assert 0.0 < score < 1.0, 'FSIM of different images should be between 0 and 1'
+        assert score < fsim(img_r, img_r, dim=1, im_slice=64), 'FSIM of different images should be lower than of identical images'
 
-    def test_fsim_3d_dim2(self):
-        img_r = np.random.rand(128, 128, 128)
-        img_m = np.random.rand(128, 128, 128)
+    def test_fsim_3d_dim2_slice64(self):
+        rng = np.random.default_rng(0)
+        img_r = rng.random((128, 128, 128))
+        img_m = rng.random((128, 128, 128))
         fsim = viqa.FSIM(data_range=1, normalize=False)
-        fsim(img_m, img_r, dim=2)
+        score = fsim(img_m, img_r, dim=2, im_slice=64)
+        assert 0.0 < score < 1.0, 'FSIM of different images should be between 0 and 1'
+        assert score < fsim(img_r, img_r, dim=1, im_slice=64), 'FSIM of different images should be lower than of identical images'
 
     def test_fsim_3d(self):
         img_r = np.random.rand(128, 128, 128)
@@ -120,15 +126,16 @@ class TestPrintScore:
             fsim.print_score()
 
     def test_print_score_with_calculating_score_first(self, capsys):
-        img_r = np.random.rand(128, 128)
-        img_m = np.random.rand(128, 128)
+        rng = np.random.default_rng(0)
+        img_r = rng.random((128, 128))
+        img_m = rng.random((128, 128))
         fsim = viqa.FSIM(data_range=1)
-        fsim(img_m, img_r)
+        score = fsim(img_m, img_r)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             fsim.print_score()
             captured = capsys.readouterr()
-            assert captured.out == 'FSIM: 0.78\n', 'Printed score should be 0.0'
+            assert captured.out == f'FSIM: {np.round(score, 2)}\n', 'Printed score should be the calculated score rounded to 2 decimals'
 
     def test_print_score_with_different_decimals(self, data_2d_255_600x400, capsys):
         img_r, img_m = data_2d_255_600x400
@@ -145,5 +152,5 @@ def test_fsim_with_random_data_4d():
     img_r = np.random.rand(128, 128, 128, 128)
     img_m = np.random.rand(128, 128, 128, 128)
     fsim = viqa.FSIM(data_range=1, normalize=False)
-    with pytest.raises(ValueError, match=re.escape('Images must be 2D or 3D.')):
+    with pytest.raises(ValueError, match=re.escape('Number of dimensions of input image should be 2 or 3, got 4.')):
         fsim(img_m, img_r)

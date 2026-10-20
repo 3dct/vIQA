@@ -143,7 +143,13 @@ class SNR(NoReferenceMetricsInterface):
         # write kwargs to .parameters attribute
         self.parameters.update(kwargs)
 
-        score_val = signal_to_noise_ratio(img, **kwargs)
+        result = signal_to_noise_ratio(img, **kwargs)
+        if isinstance(result[-1], dict):  # grayscale images also return the parameters
+            score_val, parameters = result
+            parameters.pop("signal", None)  # do not store the image region
+            self.parameters.update(parameters)
+        else:  # RGB images return the SNR values of the channels
+            score_val = result
         self.score_val = score_val
         return score_val
 
@@ -1063,15 +1069,13 @@ def signal_to_noise_ratio(
             ]
             return snr_val[0], snr_val[1], snr_val[2]
         else:
-            snr_lum = np.float64(
-                signal_to_noise_ratio(
-                    _to_grayscale(img),
-                    signal_center,
-                    radius,
-                    region_type,
-                    auto_center=False,
-                    yuv=False,
-                )
+            snr_lum, _ = signal_to_noise_ratio(
+                _to_grayscale(img),
+                signal_center,
+                radius,
+                region_type,
+                auto_center=False,
+                yuv=False,
             )
             snr_val = [
                 np.float64(np.mean(signal[..., i]) / sdev[i]) if sdev[i] != 0 else 0

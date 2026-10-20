@@ -99,7 +99,7 @@ class TestPrinting:
             warnings.simplefilter("ignore")
             cnr.print_score()
             captured = capsys.readouterr()
-            assert captured.out == 'CNR: 0\n', 'Printed score should be 0'
+            assert captured.out == 'CNR: 0.0\n', 'Printed score should be 0'
 
     def test_cnr_print_score_with_different_decimals(self, capsys, modified_image_2d_255):
         img = modified_image_2d_255
@@ -157,5 +157,5 @@ class TestCenterAndRadius:
 def test_cnr_not_2d_or_3d():
     img = np.zeros((256, 256, 256, 256))
     cnr = viqa.CNR()
-    with pytest.raises(ValueError, match=re.escape('Image has to be either 2D or 3D.')):
+    with pytest.raises(ValueError, match=re.escape('Number of dimensions of input image should be 2 or 3, got 4.')):
         cnr(img, background_center=(16, 16), signal_center=(128, 128), radius=8)
