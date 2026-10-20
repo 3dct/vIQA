@@ -237,7 +237,7 @@ setup-args = "--vsenv"
 
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
-environment = { MACOSX_DEPLOYMENT_TARGET = "13.3" }
+environment = { MACOSX_DEPLOYMENT_TARGET = "14.0" }
 
 ######################################################################
 # Semantic Release
