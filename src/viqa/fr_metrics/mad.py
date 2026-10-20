@@ -23,14 +23,15 @@ Examples
 
 # Authors
 # -------
-# Author: Lukas Behammer
+# Author: Lukas Behammer, Lukas Nepelius
 # Research Center Wels
-# University of Applied Sciences Upper Austria, 2023
+# University of Applied Sciences Upper Austria, 2023, 2026
 # CT Research Group
 #
 # Modifications
 # -------------
 # Original code, 2024, Lukas Behammer
+# Adapted code, 2026, Lukas Nepelius
 #
 # License
 # -------
@@ -223,11 +224,7 @@ class MAD(FullReferenceMetricsInterface):
                     dim=dim,
                     **kwargs,
                 )
-            elif (
-                dim is not None
-                and type(im_slice) is not int
-                or type(im_slice) is not None
-            ):
+            elif dim is not None:  # dim is given, but im_slice is neither int nor None
                 raise ValueError("im_slice must be an integer or None.")
             else:
                 raise ValueError(
@@ -645,9 +642,10 @@ def _high_quality(img_r: np.ndarray, img_m: np.ndarray, **kwargs) -> float:
     std_err = np.zeros(i_err.shape)
 
     # Assign local statistics to image blocks of size stride x stride
+    # (same block positions as in _extract_blocks)
     block_n = 0
-    for x in range(0, i_org.shape[0] - STRIDE * 3, STRIDE):
-        for y in range(0, i_org.shape[1] - STRIDE * 3, STRIDE):
+    for x in range(0, i_org.shape[0] - (BLOCK_SIZE - 1), STRIDE):
+        for y in range(0, i_org.shape[1] - (BLOCK_SIZE - 1), STRIDE):
             mu_org[x : x + STRIDE, y : y + STRIDE] = mu_org_p[block_n]
             std_err[x : x + STRIDE, y : y + STRIDE] = std_err_p[block_n]
             block_n += 1

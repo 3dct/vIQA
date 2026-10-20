@@ -150,5 +150,5 @@ def test_mad_score_with_random_data_4d():
     img_r = np.random.rand(128, 128, 128, 128)
     img_m = np.random.rand(128, 128, 128, 128)
     mad = viqa.MAD(data_range=1)
-    with pytest.raises(ValueError, match=re.escape('Images must be 2D or 3D.')):
+    with pytest.raises(ValueError, match=re.escape('Number of dimensions of input image should be 2 or 3, got 4.')):
         mad(img_m, img_r)
