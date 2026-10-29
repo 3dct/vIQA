@@ -16,6 +16,7 @@
  */
 
 #define PY_SSIZE_T_CLEAN
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "qmeasurecalcmodule.h"
@@ -40,7 +41,7 @@ static struct PyModuleDef qmeasureModule = {
 
 // Module Initialization
 PyMODINIT_FUNC PyInit_qmeasurecalc(void) {
-    _import_array();
+    import_array();
     return PyModule_Create(&qmeasureModule);
 }
 
@@ -48,22 +49,24 @@ static PyObject
 *qmeasure(PyObject *self, PyObject *args)
 {
     // Declare variables
+    PyObject *objin;
     PyArrayObject *matin;
     double qvalue;
     int imin, imax, ihistbins, inumpeaks;
-    bool banalyzepeak;
     int dims[3];
 
     // Parse input arguments
-    if (!PyArg_ParseTuple(args, "O!iiii", &PyArray_Type, &matin, &imin, &imax, &ihistbins, &inumpeaks)) {
+    if (!PyArg_ParseTuple(args, "O!iiii", &PyArray_Type, &objin, &imin, &imax, &ihistbins, &inumpeaks)) {
         return NULL;
     }
+    // Convert input to a C-contiguous 3D array of floats (copies only if necessary)
+    matin = (PyArrayObject *) PyArray_FROMANY(objin, NPY_FLOAT, 3, 3, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
     if (NULL == matin) return NULL;
 
     // Get dimensions of input array and cast to int
-    dims[0] = static_cast<int>(matin->dimensions[0]);
-    dims[1] = static_cast<int>(matin->dimensions[1]);
-    dims[2] = static_cast<int>(matin->dimensions[2]);
+    dims[0] = static_cast<int>(PyArray_DIM(matin, 0));
+    dims[1] = static_cast<int>(PyArray_DIM(matin, 1));
+    dims[2] = static_cast<int>(PyArray_DIM(matin, 2));
 
     // Get data range
     double data_range[2];
@@ -76,6 +79,7 @@ static PyObject
     // Call the C++ function
     QMeasureCalculation QMeasureCalculation;
     auto result = QMeasureCalculation.computeOrigQ(data, dims, data_range, ihistbins, inumpeaks, false);
+    Py_DECREF(matin);
 
     // Get Q value from map
     qvalue = result["Q (orig, equ 1)"];
