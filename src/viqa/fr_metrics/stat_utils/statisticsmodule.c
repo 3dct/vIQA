@@ -19,6 +19,7 @@
  */
 
 #define PY_SSIZE_T_CLEAN
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "statisticsmodule.h"
@@ -45,7 +46,7 @@ static struct PyModuleDef statisticsModule = {
 
 // Module Initialization
 PyMODINIT_FUNC PyInit_statisticscalc(void) {
-    _import_array();
+    import_array();
     return PyModule_Create(&statisticsModule);
 }
 
@@ -277,10 +278,10 @@ double
     double **c, *a;
     int i,n,m;
 
-    n = arrayin->dimensions[0];
-    m = arrayin->dimensions[1];
+    n = PyArray_DIM(arrayin, 0);
+    m = PyArray_DIM(arrayin, 1);
     c = ptrvector(n);
-    a = (double *) arrayin->data; /* pointer to arrayin data as double */
+    a = (double *) PyArray_DATA(arrayin); /* pointer to arrayin data as double */
     for (i = 0; i < n; i++) {
         c[i] = a + i*m;
     }
