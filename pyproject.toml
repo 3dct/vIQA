@@ -26,6 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: C",
     "Programming Language :: C++",
     "Operating System :: Microsoft :: Windows",
@@ -34,13 +35,13 @@ classifiers = [
 #license = { file = "LICENSE.txt" }
 license = { text = "BSD-3-Clause" }
 dependencies = [
-    "scipy >=1.10.0",
-    "numpy <2.0.0, >=1.24.0",
-    "torch >=1.13.0",
+    "scipy >=1.13.0",
+    "numpy >=1.24.0",
+    "torch >=2.3.0",
     "piq >=0.8.0",
-    "scikit-image >=0.19.0",
-    "nibabel >=5.0.0",
-    "matplotlib >=3.5.0",
+    "scikit-image >=0.24.0",
+    "nibabel >=5.2.1",
+    "matplotlib >=3.8.4",
     "tqdm >=4.65.0",
 ]
 
@@ -70,7 +71,7 @@ docs = [
 ]
 cd = [
     "python-semantic-release ==9.21.0",
-    "cibuildwheel ==2.19.2",
+    "cibuildwheel ==3.2.1",
 ]
 build = [
     "meson-python >=0.16.0",
@@ -91,7 +92,7 @@ Tracker = "https://github.com/3dct/vIQA/issues"
 Download = "https://pypi.org/project/vIQA/#files"
 
 [build-system]
-requires = ["meson-python>=0.16.0", "numpy<2.0.0"]
+requires = ["meson-python>=0.16.0", "numpy>=2.0.0"]
 build-backend = "mesonpy"
 
 ######################################################################
@@ -208,17 +209,20 @@ omit = [
 build = [
     "cp311-manylinux_x86_64",
     "cp312-manylinux_x86_64",
-#    "cp313-manylinux_x86_64",
+    "cp313-manylinux_x86_64",
+    "cp314-manylinux_x86_64",
     "cp311-musllinux_x86_64",
     "cp312-musllinux_x86_64",
-#    "cp313-musllinux_x86_64",
+    "cp313-musllinux_x86_64",
+    "cp314-musllinux_x86_64",
     "cp311-win_*64",
     "cp312-win_*64",
-#    "cp313-win_*64",
+    "cp313-win_*64",
+    "cp314-win_*64",
     "cp311-macosx*",
     "cp312-macosx*",
-#    "cp313-macosx_x86_64",
-#    "cp313-macosx_arm64",
+    "cp313-macosx*",
+    "cp314-macosx*",
 
 ]
 manylinux-x86_64-image = "manylinux_2_28"

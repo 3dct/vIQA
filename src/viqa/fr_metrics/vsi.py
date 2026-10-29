@@ -275,7 +275,7 @@ class VSI(FullReferenceMetricsInterface):
             raise ValueError("Images must be 2D or 3D.")
 
         self.score_val = float(score_val)
-        return score_val
+        return self.score_val
 
     def print_score(self, decimals=2):
         """Print the VSI score value of the last calculation.
