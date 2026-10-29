@@ -2,6 +2,26 @@
 
 
 
+## v3.1.0 (2026-10-29)
+
+### Bug fixes
+
+* fix(qmeasure): convert input to C-contiguous float32 array in C extension ([`06fdd9c`](https://github.com/3dct/vIQA/commit/06fdd9c7861da4d23296cbaae7c3dd16cb8646ee))
+
+* fix: return float instead of torch tensor in VIFp, FSIM, VSI and MS-SSIM ([`6004545`](https://github.com/3dct/vIQA/commit/6004545b9d71dfb70653302858e473768bb94b12))
+
+### Features
+
+* feat: support Python 3.13 and 3.14
+
+- build against NumPy 2 and drop the numpy<2 runtime pin
+- raise minimum versions of scipy, torch, scikit-image, nibabel and
+  matplotlib to the first NumPy-2-compatible releases
+- use the public NumPy C API in the statistics extension
+- get the NumPy include path from the build interpreter in meson
+- build cp313 and cp314 wheels with cibuildwheel 3.2.1 ([`bc9a88f`](https://github.com/3dct/vIQA/commit/bc9a88f77aa1285bbf869bf04d802753f6242fa6))
+
+
 ## v3.0.1 (2026-10-20)
 
 ### Bug fixes
